@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReadySteadyBang", "ReadySte
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KinectLaenge", "KinectBodySize\KinectLaenge.csproj", "{90DDAA0E-6056-4E51-87C2-2F6221E8EAC1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccessoryLib", "AccessoryLib\AccessoryLib.csproj", "{E7CEE4BD-1956-4199-9525-4B5583557D56}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +27,10 @@ Global
 		{90DDAA0E-6056-4E51-87C2-2F6221E8EAC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{90DDAA0E-6056-4E51-87C2-2F6221E8EAC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{90DDAA0E-6056-4E51-87C2-2F6221E8EAC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7CEE4BD-1956-4199-9525-4B5583557D56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7CEE4BD-1956-4199-9525-4B5583557D56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7CEE4BD-1956-4199-9525-4B5583557D56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7CEE4BD-1956-4199-9525-4B5583557D56}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
