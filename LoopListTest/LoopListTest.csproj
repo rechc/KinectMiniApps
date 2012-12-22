@@ -103,10 +103,18 @@
     <Content Include="images\teletubbies_02.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\teletubbies_03.jpg" />
-    <Content Include="images\teletubbies_05.jpg" />
-    <Content Include="images\teletubbies_06.jpg" />
-    <Content Include="images\teletubbies_04.jpg" />
+    <Content Include="images\teletubbies_03.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\teletubbies_05.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\teletubbies_06.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\teletubbies_04.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
