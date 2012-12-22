@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 
-namespace WpfApplication1
+namespace LoopListTest
 {
     /// <summary>
     /// Interaktionslogik für "App.xaml"
