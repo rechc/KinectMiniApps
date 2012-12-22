@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -21,6 +22,9 @@ namespace LoopListTest
     /// </summary>
     public partial class MainWindow : Window
     {
+        private Point? oldMouseMovePoint;
+        private bool doDrag;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -30,6 +34,7 @@ namespace LoopListTest
                 myLoopList.add(path);
             }
         }
+
 
         protected override void OnKeyDown(KeyEventArgs e)
         {
@@ -41,6 +46,41 @@ namespace LoopListTest
             {
                 myLoopList.rightAnim();
             }
+        }
+
+        private void myLoopList_MouseMove_1(object sender, MouseEventArgs e)
+        {
+            if (doDrag)
+            {
+                Point currentPos = e.GetPosition(myLoopList);
+                if (!oldMouseMovePoint.HasValue)
+                {
+                    oldMouseMovePoint = currentPos;
+                }
+                if (oldMouseMovePoint.HasValue && oldMouseMovePoint.Value.X == currentPos.X)
+                {
+                    return;
+                }
+
+                int xDistance = (int)(currentPos.X - oldMouseMovePoint.Value.X);
+                bool mayDragOn = myLoopList.drag(xDistance);
+                if (!mayDragOn)
+                {
+                    doDrag = false;
+                }
+                oldMouseMovePoint = currentPos;
+            }
+        }
+
+        private void myLoopList_MouseUp_1(object sender, MouseButtonEventArgs e)
+        {
+            doDrag = false;
+            oldMouseMovePoint = null;
+        }
+
+        private void myLoopList_MouseDown_1(object sender, MouseButtonEventArgs e)
+        {
+            doDrag = true;
         }
 
     }

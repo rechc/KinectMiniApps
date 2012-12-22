@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,6 +25,7 @@ namespace LoopList
         private List<String> pathList = new List<String>();
         private Image left, center, right;
         private int centerIndex;
+        private int dragging;
 
         public LoopList()
         {
@@ -72,65 +74,112 @@ namespace LoopList
             pathList.Add(path);
         }
 
-        public void leftAnim()
+        public bool drag(int xDistance)
         {
-            TranslateTransform ttCenter = (TranslateTransform)center.RenderTransform;
-            TranslateTransform ttRight = (TranslateTransform)right.RenderTransform;
-            TranslateTransform ttLeft = (TranslateTransform)left.RenderTransform;
+            if (dragging == 0)
+            {
+                TranslateTransform ttCenter = (TranslateTransform)center.RenderTransform;
+                TranslateTransform ttRight = (TranslateTransform)right.RenderTransform;
+                TranslateTransform ttLeft = (TranslateTransform)left.RenderTransform;
 
-            DoubleAnimation doubleAnimationCenter = new DoubleAnimation();
-            doubleAnimationCenter.From = ttCenter.X;
-            doubleAnimationCenter.To = ttCenter.X - center.ActualWidth;
-            doubleAnimationCenter.Duration = new Duration(new TimeSpan(0, 0, 0, 0, 200));
-            ttCenter.BeginAnimation(TranslateTransform.XProperty, doubleAnimationCenter);
+                ttCenter.X += xDistance;
+                ttRight.X += xDistance;
+                ttLeft.X += xDistance;
 
-            DoubleAnimation doubleAnimationRight = new DoubleAnimation();
-            doubleAnimationRight.From = ttRight.X;
-            doubleAnimationRight.To = ttRight.X - right.ActualWidth;
-            doubleAnimationRight.Duration = new Duration(new TimeSpan(0, 0, 0, 0, 200));
-            ttRight.BeginAnimation(TranslateTransform.XProperty, doubleAnimationRight);
-
-            ttLeft.BeginAnimation(TranslateTransform.XProperty, null);
-            ttLeft.X = left.ActualWidth;
-
-            Image tmp = left;
-            left = center;
-            center = right;
-            right = tmp;
-            centerIndex = nextIndex(centerIndex);
-            int indexForRight = nextIndex(centerIndex);
-            right.Source = loadData(pathList[indexForRight]);    
+                if (ttCenter.X > center.ActualWidth * 0.4)
+                {
+                    rightAnim();
+                    return false;
+                }
+                if ((ttCenter.X + center.ActualWidth) < center.ActualWidth*0.6)
+                {
+                    leftAnim();
+                    return false;
+                }
+                return true;
+            }
+            return false;
         }
 
+  
+
+        public void leftAnim()
+        {
+            if (dragging == 0)
+            {
+                dragging = 2;
+                TranslateTransform ttCenter = (TranslateTransform)center.RenderTransform;
+                TranslateTransform ttRight = (TranslateTransform)right.RenderTransform;
+                TranslateTransform ttLeft = (TranslateTransform)left.RenderTransform;
+
+                DoubleAnimation doubleAnimationCenter = new DoubleAnimation();
+                doubleAnimationCenter.From = ttCenter.X;
+                doubleAnimationCenter.To = -center.ActualWidth;
+                doubleAnimationCenter.Duration = new Duration(new TimeSpan(0, 0, 0, 0, 200));
+                doubleAnimationCenter.Completed += (s, _) => FadeAnimationCompleted(ttCenter, doubleAnimationCenter.To);
+                ttCenter.BeginAnimation(TranslateTransform.XProperty, doubleAnimationCenter);
+
+                DoubleAnimation doubleAnimationRight = new DoubleAnimation();
+                doubleAnimationRight.From = ttRight.X;
+                doubleAnimationRight.To = 0;
+                doubleAnimationRight.Duration = new Duration(new TimeSpan(0, 0, 0, 0, 200));
+                doubleAnimationRight.Completed += (s, _) => FadeAnimationCompleted(ttRight, doubleAnimationRight.To);
+                ttRight.BeginAnimation(TranslateTransform.XProperty, doubleAnimationRight);
+
+                ttLeft.X = left.ActualWidth;
+
+                Image tmp = left;
+                left = center;
+                center = right;
+                right = tmp;
+                centerIndex = nextIndex(centerIndex);
+                int indexForRight = nextIndex(centerIndex);
+                right.Source = loadData(pathList[indexForRight]);
+            }
+        }
+
+        void FadeAnimationCompleted(TranslateTransform element, double? to)
+        {
+            dragging--;
+            element.BeginAnimation(TranslateTransform.XProperty, null);
+            element.X = to.Value;
+        }
 
         public void rightAnim()
         {
-            TranslateTransform ttCenter = (TranslateTransform)center.RenderTransform;
-            TranslateTransform ttRight = (TranslateTransform)right.RenderTransform;
-            TranslateTransform ttLeft = (TranslateTransform)left.RenderTransform;
+            if (dragging == 0)
+            {
+                dragging = 2;
+                TranslateTransform ttCenter = (TranslateTransform)center.RenderTransform;
+                TranslateTransform ttRight = (TranslateTransform)right.RenderTransform;
+                TranslateTransform ttLeft = (TranslateTransform)left.RenderTransform;
 
-            DoubleAnimation doubleAnimationCenter = new DoubleAnimation();
-            doubleAnimationCenter.From = ttCenter.X;
-            doubleAnimationCenter.To = ttCenter.X + center.ActualWidth;
-            doubleAnimationCenter.Duration = new Duration(new TimeSpan(0, 0, 0, 0, 200));
-            ttCenter.BeginAnimation(TranslateTransform.XProperty, doubleAnimationCenter);
+                DoubleAnimation doubleAnimationCenter = new DoubleAnimation();
+                doubleAnimationCenter.From = ttCenter.X;
+                doubleAnimationCenter.To = center.ActualWidth;
+                doubleAnimationCenter.Duration = new Duration(new TimeSpan(0, 0, 0, 0, 200));
+                doubleAnimationCenter.Completed += (s, _) => FadeAnimationCompleted(ttCenter, doubleAnimationCenter.To);
+                ttCenter.BeginAnimation(TranslateTransform.XProperty, doubleAnimationCenter);
 
-            DoubleAnimation doubleAnimationLeft = new DoubleAnimation();
-            doubleAnimationLeft.From = ttLeft.X;
-            doubleAnimationLeft.To = ttLeft.X + left.ActualWidth;
-            doubleAnimationLeft.Duration = new Duration(new TimeSpan(0, 0, 0, 0, 200));
-            ttLeft.BeginAnimation(TranslateTransform.XProperty, doubleAnimationLeft);
+                DoubleAnimation doubleAnimationLeft = new DoubleAnimation();
+                doubleAnimationLeft.From = ttLeft.X;
+                doubleAnimationLeft.To = 0;
+                doubleAnimationLeft.Duration = new Duration(new TimeSpan(0, 0, 0, 0, 200));
+                doubleAnimationLeft.Completed += (s, _) => FadeAnimationCompleted(ttLeft, doubleAnimationLeft.To);
+                ttLeft.BeginAnimation(TranslateTransform.XProperty, doubleAnimationLeft);
 
-            ttRight.BeginAnimation(TranslateTransform.XProperty, null);
-            ttRight.X = -right.ActualWidth;
+                ttRight.X = -right.ActualWidth;
 
-            Image tmp = right;
-            right = center;
-            center = left;
-            left = tmp;
-            centerIndex = previousIndex(centerIndex);
-            int indexForLeft = previousIndex(centerIndex);
-            left.Source = loadData(pathList[indexForLeft]);
+
+
+                Image tmp = right;
+                right = center;
+                center = left;
+                left = tmp;
+                centerIndex = previousIndex(centerIndex);
+                int indexForLeft = previousIndex(centerIndex);
+                left.Source = loadData(pathList[indexForLeft]);
+            }
         }
 
         private int nextIndex(int index)

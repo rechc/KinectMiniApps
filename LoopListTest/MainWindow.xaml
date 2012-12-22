@@ -2,8 +2,9 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:stas="clr-namespace:LoopList;assembly=LoopList"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="350" Width="525"
+        >
     <Grid>
-        <stas:LoopList x:Name="myLoopList"/>
+        <stas:LoopList x:Name="myLoopList" MouseDown="myLoopList_MouseDown_1" MouseMove="myLoopList_MouseMove_1" MouseUp="myLoopList_MouseUp_1"/>
     </Grid>
 </Window>
