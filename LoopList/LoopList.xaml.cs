@@ -62,15 +62,13 @@ namespace LoopList
                 left.Source = center.Source;
                 right.Source = center.Source;
             }
+            left.Source = loadData(path);
             if (pathList.Count == 1)
             {
-                left.Source = loadData(path);
+                
                 right.Source = left.Source;
             }
-            if (pathList.Count == 2)
-            {
-                left.Source = loadData(path);
-            }
+            
             pathList.Add(path);
         }
 
