@@ -32,17 +32,17 @@ namespace LoopList
             InitializeComponent();
 
             left = new Border();
-            left.BorderThickness = new Thickness(10);
+            left.BorderThickness = new Thickness(10, 5, 10, 5);
             left.RenderTransform = new TranslateTransform();
             left.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
 
             center = new Border();
-            center.BorderThickness = new Thickness(10);
+            center.BorderThickness = new Thickness(10, 5, 10, 5);
             center.RenderTransform = new TranslateTransform();
             center.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
             
             right = new Border();
-            right.BorderThickness = new Thickness(10);
+            right.BorderThickness = new Thickness(10, 5, 10, 5);
             right.RenderTransform = new TranslateTransform();
             right.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
 
@@ -63,12 +63,12 @@ namespace LoopList
             Loaded += delegate
             {
                 TranslateTransform ttLeft = (TranslateTransform)left.RenderTransform;
-                ttLeft.X = -left.ActualWidth + center.ActualWidth * 0.1;
+                ttLeft.X = -left.ActualWidth + center.ActualWidth * 0.2;
 
                 TranslateTransform ttRight = (TranslateTransform)right.RenderTransform;
-                ttRight.X = right.ActualWidth - center.ActualWidth * 0.1;
+                ttRight.X = right.ActualWidth - center.ActualWidth * 0.2;
 
-                rootGrid.Margin = new Thickness(center.ActualWidth * 0.05, 0, center.ActualWidth * 0.05, 0);
+                rootGrid.Margin = new Thickness(center.ActualWidth * 0.1, 0, center.ActualWidth * 0.1, 0);
             };
 
 
@@ -79,17 +79,15 @@ namespace LoopList
 
         public void add(string path)
         {
+            ((Image)left.Child).Source = loadData(path);
             if (pathList.Count == 0)
             {
-                ((Image)center.Child).Source = loadData(path);
-                ((Image)left.Child).Source = ((Image)center.Child).Source;
-                ((Image)right.Child).Source = ((Image)center.Child).Source;
+                ((Image)center.Child).Source = ((Image)left.Child).Source;
+                ((Image)right.Child).Source = ((Image)left.Child).Source;
                 
             }
-            ((Image)left.Child).Source = loadData(path);
             if (pathList.Count == 1)
             {
-
                 ((Image)right.Child).Source = ((Image)left.Child).Source;
             }
             
@@ -103,6 +101,14 @@ namespace LoopList
                 TranslateTransform ttCenter = (TranslateTransform)center.RenderTransform;
                 TranslateTransform ttRight = (TranslateTransform)right.RenderTransform;
                 TranslateTransform ttLeft = (TranslateTransform)left.RenderTransform;
+
+                ttLeft.X = (double)ttLeft.GetValue(TranslateTransform.XProperty);
+                ttCenter.X = (double)ttCenter.GetValue(TranslateTransform.XProperty);
+                ttRight.X = (double)ttRight.GetValue(TranslateTransform.XProperty);
+
+                ttLeft.BeginAnimation(TranslateTransform.XProperty, null);
+                ttCenter.BeginAnimation(TranslateTransform.XProperty, null);
+                ttRight.BeginAnimation(TranslateTransform.XProperty, null);
 
                 ttCenter.X += xDistance;
                 ttRight.X += xDistance;
@@ -129,10 +135,7 @@ namespace LoopList
         {
             if (dragging == 0)
             {
-                dragging = 2;
-                Grid.SetZIndex(left, 0);
-                Grid.SetZIndex(center, 1);
-                Grid.SetZIndex(right, 1);
+                dragging = 3;
 
                 TranslateTransform ttCenter = (TranslateTransform)center.RenderTransform;
                 TranslateTransform ttRight = (TranslateTransform)right.RenderTransform;
@@ -141,18 +144,25 @@ namespace LoopList
                 DoubleAnimation doubleAnimationCenter = new DoubleAnimation();
                 doubleAnimationCenter.From = ttCenter.X;
                 doubleAnimationCenter.To = -center.ActualWidth;
-                doubleAnimationCenter.Duration = new Duration(new TimeSpan(0, 0, 0, 0, 150));
-                doubleAnimationCenter.Completed += (s, _) => FadeAnimationCompleted(ttCenter, doubleAnimationCenter.To);
+                doubleAnimationCenter.Duration = new Duration(new TimeSpan(0, 0, 0, 0, 250));
+                doubleAnimationCenter.Completed += (s, _) => animCompleted();
                 ttCenter.BeginAnimation(TranslateTransform.XProperty, doubleAnimationCenter);
 
                 DoubleAnimation doubleAnimationRight = new DoubleAnimation();
                 doubleAnimationRight.From = ttRight.X;
                 doubleAnimationRight.To = 0;
-                doubleAnimationRight.Duration = new Duration(new TimeSpan(0, 0, 0, 0, 150));
-                doubleAnimationRight.Completed += (s, _) => FadeAnimationCompleted(ttRight, doubleAnimationRight.To);
+                doubleAnimationRight.Duration = new Duration(new TimeSpan(0, 0, 0, 0, 250));
+                doubleAnimationRight.Completed += (s, _) => animCompleted();
                 ttRight.BeginAnimation(TranslateTransform.XProperty, doubleAnimationRight);
 
-                ttLeft.X = left.ActualWidth;
+
+                DoubleAnimation doubleAnimationLeft = new DoubleAnimation();
+                doubleAnimationLeft.From = left.ActualWidth*1.6;
+                doubleAnimationLeft.To = left.ActualWidth;
+                doubleAnimationLeft.Duration = new Duration(new TimeSpan(0, 0, 0, 0, 250));
+                doubleAnimationLeft.Completed += (s, _) => animCompleted();
+                ttLeft.BeginAnimation(TranslateTransform.XProperty, doubleAnimationLeft);
+
 
                 Border tmp = left;
                 left = center;
@@ -164,21 +174,16 @@ namespace LoopList
             }
         }
 
-        void FadeAnimationCompleted(TranslateTransform element, double? to)
+        void animCompleted()
         {
             dragging--;
-            element.BeginAnimation(TranslateTransform.XProperty, null);
-            element.X = to.Value;
         }
 
         public void rightAnim()
         {
             if (dragging == 0)
             {
-                dragging = 2;
-                Grid.SetZIndex(right, 0);
-                Grid.SetZIndex(center, 1);
-                Grid.SetZIndex(left, 1);
+                dragging = 3;
                 TranslateTransform ttCenter = (TranslateTransform)center.RenderTransform;
                 TranslateTransform ttRight = (TranslateTransform)right.RenderTransform;
                 TranslateTransform ttLeft = (TranslateTransform)left.RenderTransform;
@@ -186,18 +191,26 @@ namespace LoopList
                 DoubleAnimation doubleAnimationCenter = new DoubleAnimation();
                 doubleAnimationCenter.From = ttCenter.X;
                 doubleAnimationCenter.To = center.ActualWidth;
-                doubleAnimationCenter.Duration = new Duration(new TimeSpan(0, 0, 0, 0, 150));
-                doubleAnimationCenter.Completed += (s, _) => FadeAnimationCompleted(ttCenter, doubleAnimationCenter.To);
+                doubleAnimationCenter.Duration = new Duration(new TimeSpan(0, 0, 0, 0, 250));
+                doubleAnimationCenter.Completed += (s, _) => animCompleted();
                 ttCenter.BeginAnimation(TranslateTransform.XProperty, doubleAnimationCenter);
 
                 DoubleAnimation doubleAnimationLeft = new DoubleAnimation();
                 doubleAnimationLeft.From = ttLeft.X;
                 doubleAnimationLeft.To = 0;
-                doubleAnimationLeft.Duration = new Duration(new TimeSpan(0, 0, 0, 0, 150));
-                doubleAnimationLeft.Completed += (s, _) => FadeAnimationCompleted(ttLeft, doubleAnimationLeft.To);
+                doubleAnimationLeft.Duration = new Duration(new TimeSpan(0, 0, 0, 0, 250));
+                doubleAnimationLeft.Completed += (s, _) => animCompleted();
                 ttLeft.BeginAnimation(TranslateTransform.XProperty, doubleAnimationLeft);
 
-                ttRight.X = -right.ActualWidth;
+
+                DoubleAnimation doubleAnimationRight = new DoubleAnimation();
+                doubleAnimationRight.From = -right.ActualWidth * 1.6;
+                doubleAnimationRight.To = -right.ActualWidth;
+                doubleAnimationRight.Duration = new Duration(new TimeSpan(0, 0, 0, 0, 250));
+                doubleAnimationRight.Completed += (s, _) => animCompleted();
+                ttRight.BeginAnimation(TranslateTransform.XProperty, doubleAnimationRight);
+
+
 
                 Border tmp = right;
                 right = center;
