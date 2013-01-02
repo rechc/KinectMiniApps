@@ -28,7 +28,7 @@ namespace LoopListTest
         public MainWindow()
         {
             InitializeComponent();
-            myLoopList.setAutoDragOffset(0.61);
+            myLoopList.setAutoDragOffset(0.55);
             string[] paths = Directory.GetFiles(Environment.CurrentDirectory + @"\images");
             for (int i = 0; i < paths.Count(); i++)
             {
@@ -69,11 +69,12 @@ namespace LoopListTest
         {
             if (e.Key == Key.Left)
             {
-                myLoopList.anim(true);
+                myLoopList.animH(true);
             }
             if (e.Key == Key.Right)
             {
-                myLoopList.anim(false);
+                myLoopList.animH(false);
+                
             }
         }
 
@@ -81,6 +82,7 @@ namespace LoopListTest
         {
             if (doDrag)
             {
+                
                 Point currentPos = e.GetPosition(myLoopList);
                 if (!oldMouseMovePoint.HasValue)
                 {
@@ -90,7 +92,7 @@ namespace LoopListTest
                 {
                     return;
                 }
-
+                
                 int xDistance = (int)(currentPos.X - oldMouseMovePoint.Value.X);
                 bool mayDragOn = myLoopList.drag(xDistance);
                 if (!mayDragOn)
@@ -105,6 +107,7 @@ namespace LoopListTest
         {
             doDrag = false;
             oldMouseMovePoint = null;
+            myLoopList.animBack();
         }
 
         private void myLoopList_MouseDown_1(object sender, MouseButtonEventArgs e)

@@ -32,7 +32,7 @@ namespace LoopList
         private List<FrameworkElement> controlsList = new List<FrameworkElement>();
         private Border left, right;
         private int index;
-        private int dragging;
+        private int animating;
         private int lastX;
         private double autoDrag;
 
@@ -70,7 +70,7 @@ namespace LoopList
 
         public bool drag(int xDistance)
         {
-            if (dragging == 0 && controlsList.Count > 1)
+            if (animating == 0 && controlsList.Count > 1)
             {
                 TranslateTransform ttRight = (TranslateTransform)right.RenderTransform;
                 TranslateTransform ttLeft = (TranslateTransform)left.RenderTransform;
@@ -96,7 +96,7 @@ namespace LoopList
 
                 if (ttRight.X < 0 && lastX >= 0)
                 {
-                    Debug.WriteLine(ttRight.X);
+                    
                     ttLeft.X = right.ActualWidth + ttRight.X;
 
                     if (lastX == 0)
@@ -106,8 +106,9 @@ namespace LoopList
                         nextIndex();
                         nextIndex();
                     }
-                    left.Child = null;
+
                     left.Child = controlsList[index];
+                    Debug.WriteLine(ttRight.X);
                     lastX = -1;
                 }
                 else
@@ -123,6 +124,7 @@ namespace LoopList
                             previousIndex();
                         }
                         left.Child = controlsList[index];
+                        Debug.WriteLine(ttRight.X);
                         lastX = 1;
                     }
                 }
@@ -130,11 +132,11 @@ namespace LoopList
                 {
                     if (ttRight.X >= right.ActualWidth * autoDrag)
                     {
-                        anim(false);
+                        animH(false);
                         return false;
                     } else if (ttRight.X <= -right.ActualWidth*(autoDrag))
                     {
-                        anim(true);
+                        animH(true);
                         return false;
                     }
                 }
@@ -145,12 +147,12 @@ namespace LoopList
 
         void animCompleted()
         {
-            dragging--;
+            animating--;
         }
 
-        public void anim(bool leftDir)
+        public void animH(bool leftDir)
         {
-            if (dragging == 0 && controlsList.Count > 1)
+            if (animating == 0 && controlsList.Count > 1)
             {
                 TranslateTransform ttRight = (TranslateTransform)right.RenderTransform;
                 TranslateTransform ttLeft = (TranslateTransform)left.RenderTransform;
@@ -166,7 +168,7 @@ namespace LoopList
                         drag(1);
                     }
                 }
-                dragging = 2;
+                animating = 2;
 
                 DoubleAnimation doubleAnimationCenter = new DoubleAnimation();
                 doubleAnimationCenter.From = ttRight.X;
@@ -211,5 +213,34 @@ namespace LoopList
         }
 
 
+
+        public void animBack()
+        {
+            if (animating == 0 && lastX != 0)
+            {
+                TranslateTransform ttRight = (TranslateTransform)right.RenderTransform;
+                TranslateTransform ttLeft = (TranslateTransform)left.RenderTransform;
+
+                animating = 2;
+
+                DoubleAnimation doubleAnimationCenter = new DoubleAnimation();
+                doubleAnimationCenter.From = ttRight.X;
+                doubleAnimationCenter.To = 0;
+                doubleAnimationCenter.Duration = new Duration(new TimeSpan(0, 0, 0, 0, 250));
+                doubleAnimationCenter.Completed += (s, _) => animCompleted();
+                ttRight.BeginAnimation(TranslateTransform.XProperty, doubleAnimationCenter);
+
+                DoubleAnimation doubleAnimationLeft = new DoubleAnimation();
+                doubleAnimationLeft.From = ttLeft.X;
+                if (lastX < 0)
+                    doubleAnimationLeft.To = right.ActualWidth;
+                if (lastX > 0)
+                    doubleAnimationLeft.To = -right.ActualWidth;
+                doubleAnimationLeft.Duration = new Duration(new TimeSpan(0, 0, 0, 0, 250));
+                doubleAnimationLeft.Completed += (s, _) => animCompleted();
+                ttLeft.BeginAnimation(TranslateTransform.XProperty, doubleAnimationLeft);
+
+            }
+        }
     }
 }
