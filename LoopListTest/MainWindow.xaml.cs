@@ -28,11 +28,40 @@ namespace LoopListTest
         public MainWindow()
         {
             InitializeComponent();
+            myLoopList.setAutoDragOffset(0.61);
             string[] paths = Directory.GetFiles(Environment.CurrentDirectory + @"\images");
-            foreach (string path in paths)
+            for (int i = 0; i < paths.Count(); i++)
             {
-                myLoopList.add(path);
+                string path = paths[i];
+                Grid grid = new Grid();
+                grid.RowDefinitions.Add(new RowDefinition());
+                grid.RowDefinitions.Add(new RowDefinition());
+                Button button = new Button();
+                button.Content = "button " + (i + 2);
+                button.Click += printName;
+
+                Image img = new Image();
+                img.Stretch = Stretch.Fill;
+                img.Source = loadData(path);
+                grid.Children.Add(img);
+                grid.Children.Add(button);
+                button.SetValue(Grid.RowProperty, 1);
+                myLoopList.add(grid);
             }
+        }
+
+        void printName(object sender, EventArgs e)
+        {
+            Debug.WriteLine(((Button)sender).Content);
+        }
+
+        private BitmapImage loadData(string path)
+        {
+            BitmapImage bi = new BitmapImage();
+            bi.BeginInit();
+            bi.UriSource = new Uri(path, UriKind.RelativeOrAbsolute);
+            bi.EndInit();
+            return bi;
         }
 
 
@@ -40,11 +69,11 @@ namespace LoopListTest
         {
             if (e.Key == Key.Left)
             {
-                myLoopList.leftAnim();
+                myLoopList.anim(true);
             }
             if (e.Key == Key.Right)
             {
-                myLoopList.rightAnim();
+                myLoopList.anim(false);
             }
         }
 

@@ -1,7 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -9,11 +14,13 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml;
 
 namespace LoopList
 {
@@ -22,156 +29,118 @@ namespace LoopList
     /// </summary>
     public partial class LoopList : UserControl
     {
-        private List<String> pathList = new List<String>();
-        private Border left, center, right;
-        private int centerIndex;
+        private List<FrameworkElement> controlsList = new List<FrameworkElement>();
+        private Border left, right;
+        private int index;
         private int dragging;
+        private int lastX;
+        private double autoDrag;
+
 
         public LoopList()
         {
-            InitializeComponent();
 
+            InitializeComponent();
             left = new Border();
             left.BorderThickness = new Thickness(10, 5, 10, 5);
             left.RenderTransform = new TranslateTransform();
             left.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
 
-            center = new Border();
-            center.BorderThickness = new Thickness(10, 5, 10, 5);
-            center.RenderTransform = new TranslateTransform();
-            center.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
-            
             right = new Border();
             right.BorderThickness = new Thickness(10, 5, 10, 5);
             right.RenderTransform = new TranslateTransform();
             right.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
 
-            Image leftImg = new Image();
-            leftImg.Stretch = Stretch.Fill;
-
-            Image centerImg = new Image();
-            centerImg.Stretch = Stretch.Fill;
-
-            Image rightImg = new Image();
-            rightImg.Stretch = Stretch.Fill;
-
-            left.Child = leftImg;
-            center.Child = centerImg;
-            right.Child = rightImg;
-
-
-            Loaded += delegate
-            {
-                TranslateTransform ttLeft = (TranslateTransform)left.RenderTransform;
-                ttLeft.X = -left.ActualWidth + center.ActualWidth * 0.2;
-
-                TranslateTransform ttRight = (TranslateTransform)right.RenderTransform;
-                ttRight.X = right.ActualWidth - center.ActualWidth * 0.2;
-
-                rootGrid.Margin = new Thickness(center.ActualWidth * 0.1, 0, center.ActualWidth * 0.1, 0);
-            };
-
-
             rootGrid.Children.Add(left);
-            rootGrid.Children.Add(center);
             rootGrid.Children.Add(right);
+
         }
 
-        public void add(string path)
+        public void setAutoDragOffset(double autoDrag)
         {
-            ((Image)left.Child).Source = loadData(path);
-            if (pathList.Count == 0)
-            {
-                ((Image)center.Child).Source = ((Image)left.Child).Source;
-                ((Image)right.Child).Source = ((Image)left.Child).Source;
-                
-            }
-            if (pathList.Count == 1)
-            {
-                ((Image)right.Child).Source = ((Image)left.Child).Source;
-            }
-            
-            pathList.Add(path);
+            this.autoDrag = autoDrag;
+        }
+
+        public void add(FrameworkElement control)
+        {
+            right.Child = control;
+            controlsList.Add(control);
+            nextIndex();
         }
 
         public bool drag(int xDistance)
         {
-            if (dragging == 0)
+            if (dragging == 0 && controlsList.Count > 1)
             {
-                TranslateTransform ttCenter = (TranslateTransform)center.RenderTransform;
                 TranslateTransform ttRight = (TranslateTransform)right.RenderTransform;
                 TranslateTransform ttLeft = (TranslateTransform)left.RenderTransform;
 
                 ttLeft.X = (double)ttLeft.GetValue(TranslateTransform.XProperty);
-                ttCenter.X = (double)ttCenter.GetValue(TranslateTransform.XProperty);
                 ttRight.X = (double)ttRight.GetValue(TranslateTransform.XProperty);
 
                 ttLeft.BeginAnimation(TranslateTransform.XProperty, null);
-                ttCenter.BeginAnimation(TranslateTransform.XProperty, null);
                 ttRight.BeginAnimation(TranslateTransform.XProperty, null);
-
-                ttCenter.X += xDistance;
+                
                 ttRight.X += xDistance;
                 ttLeft.X += xDistance;
 
-                if (ttCenter.X > center.ActualWidth * 0.4)
+                if ((ttRight.X <= -right.ActualWidth || ttRight.X >= right.ActualWidth))
                 {
-                    rightAnim();
-                    return false;
+                    Border tmp = right;
+                    right = left;
+                    left = tmp;
+                    lastX = 0;
+                    ttRight = (TranslateTransform)right.RenderTransform;
+                    ttLeft = (TranslateTransform)left.RenderTransform;
                 }
-                if ((ttCenter.X + center.ActualWidth) < center.ActualWidth*0.6)
+
+                if (ttRight.X < 0 && lastX >= 0)
                 {
-                    leftAnim();
-                    return false;
+                    Debug.WriteLine(ttRight.X);
+                    ttLeft.X = right.ActualWidth + ttRight.X;
+
+                    if (lastX == 0)
+                        nextIndex();
+                    else
+                    {
+                        nextIndex();
+                        nextIndex();
+                    }
+                    left.Child = null;
+                    left.Child = controlsList[index];
+                    lastX = -1;
+                }
+                else
+                {
+                    if (ttRight.X > 0 && lastX <= 0)
+                    {
+                        ttLeft.X = -right.ActualWidth + ttRight.X;
+                        if (lastX == 0)
+                            previousIndex();
+                        else
+                        {
+                            previousIndex();
+                            previousIndex();
+                        }
+                        left.Child = controlsList[index];
+                        lastX = 1;
+                    }
+                }
+                if (autoDrag > 0 && autoDrag < 1)
+                {
+                    if (ttRight.X >= right.ActualWidth * autoDrag)
+                    {
+                        anim(false);
+                        return false;
+                    } else if (ttRight.X <= -right.ActualWidth*(autoDrag))
+                    {
+                        anim(true);
+                        return false;
+                    }
                 }
                 return true;
             }
             return false;
-        }
-
-  
-
-        public void leftAnim()
-        {
-            if (dragging == 0)
-            {
-                dragging = 3;
-
-                TranslateTransform ttCenter = (TranslateTransform)center.RenderTransform;
-                TranslateTransform ttRight = (TranslateTransform)right.RenderTransform;
-                TranslateTransform ttLeft = (TranslateTransform)left.RenderTransform;
-
-                DoubleAnimation doubleAnimationCenter = new DoubleAnimation();
-                doubleAnimationCenter.From = ttCenter.X;
-                doubleAnimationCenter.To = -center.ActualWidth;
-                doubleAnimationCenter.Duration = new Duration(new TimeSpan(0, 0, 0, 0, 250));
-                doubleAnimationCenter.Completed += (s, _) => animCompleted();
-                ttCenter.BeginAnimation(TranslateTransform.XProperty, doubleAnimationCenter);
-
-                DoubleAnimation doubleAnimationRight = new DoubleAnimation();
-                doubleAnimationRight.From = ttRight.X;
-                doubleAnimationRight.To = 0;
-                doubleAnimationRight.Duration = new Duration(new TimeSpan(0, 0, 0, 0, 250));
-                doubleAnimationRight.Completed += (s, _) => animCompleted();
-                ttRight.BeginAnimation(TranslateTransform.XProperty, doubleAnimationRight);
-
-
-                DoubleAnimation doubleAnimationLeft = new DoubleAnimation();
-                doubleAnimationLeft.From = left.ActualWidth*1.6;
-                doubleAnimationLeft.To = left.ActualWidth;
-                doubleAnimationLeft.Duration = new Duration(new TimeSpan(0, 0, 0, 0, 250));
-                doubleAnimationLeft.Completed += (s, _) => animCompleted();
-                ttLeft.BeginAnimation(TranslateTransform.XProperty, doubleAnimationLeft);
-
-
-                Border tmp = left;
-                left = center;
-                center = right;
-                right = tmp;
-                centerIndex = nextIndex(centerIndex);
-                int indexForRight = nextIndex(centerIndex);
-                ((Image)right.Child).Source = loadData(pathList[indexForRight]);
-            }
         }
 
         void animCompleted()
@@ -179,21 +148,35 @@ namespace LoopList
             dragging--;
         }
 
-        public void rightAnim()
+        public void anim(bool leftDir)
         {
-            if (dragging == 0)
+            if (dragging == 0 && controlsList.Count > 1)
             {
-                dragging = 3;
-                TranslateTransform ttCenter = (TranslateTransform)center.RenderTransform;
                 TranslateTransform ttRight = (TranslateTransform)right.RenderTransform;
                 TranslateTransform ttLeft = (TranslateTransform)left.RenderTransform;
 
+                if (ttRight.X == 0)
+                {
+                    if (leftDir)
+                    {
+                        drag(-1);
+                    }
+                    else
+                    {
+                        drag(1);
+                    }
+                }
+                dragging = 2;
+
                 DoubleAnimation doubleAnimationCenter = new DoubleAnimation();
-                doubleAnimationCenter.From = ttCenter.X;
-                doubleAnimationCenter.To = center.ActualWidth;
+                doubleAnimationCenter.From = ttRight.X;
+                if (leftDir)
+                    doubleAnimationCenter.To = -right.ActualWidth;
+                else
+                    doubleAnimationCenter.To = right.ActualWidth;
                 doubleAnimationCenter.Duration = new Duration(new TimeSpan(0, 0, 0, 0, 250));
                 doubleAnimationCenter.Completed += (s, _) => animCompleted();
-                ttCenter.BeginAnimation(TranslateTransform.XProperty, doubleAnimationCenter);
+                ttRight.BeginAnimation(TranslateTransform.XProperty, doubleAnimationCenter);
 
                 DoubleAnimation doubleAnimationLeft = new DoubleAnimation();
                 doubleAnimationLeft.From = ttLeft.X;
@@ -202,53 +185,31 @@ namespace LoopList
                 doubleAnimationLeft.Completed += (s, _) => animCompleted();
                 ttLeft.BeginAnimation(TranslateTransform.XProperty, doubleAnimationLeft);
 
-
-                DoubleAnimation doubleAnimationRight = new DoubleAnimation();
-                doubleAnimationRight.From = -right.ActualWidth * 1.6;
-                doubleAnimationRight.To = -right.ActualWidth;
-                doubleAnimationRight.Duration = new Duration(new TimeSpan(0, 0, 0, 0, 250));
-                doubleAnimationRight.Completed += (s, _) => animCompleted();
-                ttRight.BeginAnimation(TranslateTransform.XProperty, doubleAnimationRight);
-
-
-
                 Border tmp = right;
-                right = center;
-                center = left;
+                right = left;
                 left = tmp;
-                centerIndex = previousIndex(centerIndex);
-                int indexForLeft = previousIndex(centerIndex);
-                ((Image)left.Child).Source = loadData(pathList[indexForLeft]);
+                lastX = 0;
             }
         }
 
-        private int nextIndex(int index)
+        private void nextIndex()
         {
             index++;
-            if (index == pathList.Count)
+            if (index == controlsList.Count)
             {
                 index = 0;
             }
-            return index;
         }
 
-        private int previousIndex(int index)
+        private void previousIndex()
         {
             index--;
             if (index == -1)
             {
-                index = pathList.Count - 1;
+                index = controlsList.Count - 1;
             }
-            return index;
         }
 
-        private BitmapImage loadData(string path)
-        {
-            BitmapImage bi = new BitmapImage();
-            bi.BeginInit();
-            bi.UriSource = new Uri(path, UriKind.RelativeOrAbsolute);
-            bi.EndInit();
-            return bi;
-        }
+
     }
 }
