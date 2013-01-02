@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LoopList;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -30,6 +31,7 @@ namespace LoopListTest
             InitializeComponent();
             myLoopList.setAutoDragOffset(0.55);
             string[] paths = Directory.GetFiles(Environment.CurrentDirectory + @"\images");
+            Node anchor = null;
             for (int i = 0; i < paths.Count(); i++)
             {
                 string path = paths[i];
@@ -46,8 +48,9 @@ namespace LoopListTest
                 grid.Children.Add(img);
                 grid.Children.Add(button);
                 button.SetValue(Grid.RowProperty, 1);
-                myLoopList.add(grid);
+                anchor = myLoopList.addToRight(anchor, grid);
             }
+
         }
 
         void printName(object sender, EventArgs e)

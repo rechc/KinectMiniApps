@@ -29,9 +29,8 @@ namespace LoopList
     /// </summary>
     public partial class LoopList : UserControl
     {
-        private List<FrameworkElement> controlsList = new List<FrameworkElement>();
         private Border left, right;
-        private int index;
+        private Node first, node;
         private int animating;
         private int lastX;
         private double autoDrag;
@@ -39,7 +38,6 @@ namespace LoopList
 
         public LoopList()
         {
-
             InitializeComponent();
             left = new Border();
             left.BorderThickness = new Thickness(10, 5, 10, 5);
@@ -61,16 +59,66 @@ namespace LoopList
             this.autoDrag = autoDrag;
         }
 
-        public void add(FrameworkElement control)
+        private void initNode(FrameworkElement frameworkElement)
         {
-            right.Child = control;
-            controlsList.Add(control);
-            nextIndex();
+            this.node = new Node(frameworkElement);
+            this.first = node;
+            node.setRight(node);
+            node.setLeft(node);
         }
 
+        public Node addToLeft(Node anchor, FrameworkElement frameworkElement)
+        {
+            this.node = anchor;
+            if (node == null)
+            {
+                initNode(frameworkElement);
+            }
+            else
+            {
+                Node newNode = new Node(frameworkElement);
+                node.setLeft(newNode);
+                newNode.setLeft(first);
+                newNode.setRight(node);
+                first.setRight(newNode);
+                node = newNode;
+            }
+            right.Child = node.getFrameworkElement();
+
+            return node;
+        }
+
+        public Node addToRight(Node anchor, FrameworkElement frameworkElement)
+        {
+            this.node = anchor;
+            if (node == null)
+            {
+                initNode(frameworkElement);
+            }
+            else
+            {
+                Node newNode = new Node(frameworkElement);
+                node.setRight(newNode);
+                newNode.setRight(first);
+                newNode.setLeft(node);
+                first.setLeft(newNode);
+                node = newNode;
+            }
+            right.Child = node.getFrameworkElement();
+            return node;
+        }
+
+        private bool moreThanOneNodeExists()
+        {
+            if (node.getLeft() != node.getRight())
+            {
+                return true;
+            }
+            return false;
+        }
         public bool drag(int xDistance)
         {
-            if (animating == 0 && controlsList.Count > 1)
+            if (animating == 0 && moreThanOneNodeExists())
             {
                 TranslateTransform ttRight = (TranslateTransform)right.RenderTransform;
                 TranslateTransform ttLeft = (TranslateTransform)left.RenderTransform;
@@ -100,14 +148,16 @@ namespace LoopList
                     ttLeft.X = right.ActualWidth + ttRight.X;
 
                     if (lastX == 0)
-                        nextIndex();
+                    {
+                        node = node.getRight();
+                    }
                     else
                     {
-                        nextIndex();
-                        nextIndex();
+                        node = node.getRight();
+                        node = node.getRight();
                     }
 
-                    left.Child = controlsList[index];
+                    left.Child = node.getFrameworkElement();
                     Debug.WriteLine(ttRight.X);
                     lastX = -1;
                 }
@@ -117,13 +167,13 @@ namespace LoopList
                     {
                         ttLeft.X = -right.ActualWidth + ttRight.X;
                         if (lastX == 0)
-                            previousIndex();
+                            node = node.getLeft();
                         else
                         {
-                            previousIndex();
-                            previousIndex();
+                            node = node.getLeft();
+                            node = node.getLeft();
                         }
-                        left.Child = controlsList[index];
+                        left.Child = node.getFrameworkElement();
                         Debug.WriteLine(ttRight.X);
                         lastX = 1;
                     }
@@ -152,7 +202,7 @@ namespace LoopList
 
         public void animH(bool leftDir)
         {
-            if (animating == 0 && controlsList.Count > 1)
+            if (animating == 0 && moreThanOneNodeExists())
             {
                 TranslateTransform ttRight = (TranslateTransform)right.RenderTransform;
                 TranslateTransform ttLeft = (TranslateTransform)left.RenderTransform;
@@ -193,26 +243,6 @@ namespace LoopList
                 lastX = 0;
             }
         }
-
-        private void nextIndex()
-        {
-            index++;
-            if (index == controlsList.Count)
-            {
-                index = 0;
-            }
-        }
-
-        private void previousIndex()
-        {
-            index--;
-            if (index == -1)
-            {
-                index = controlsList.Count - 1;
-            }
-        }
-
-
 
         public void animBack()
         {
