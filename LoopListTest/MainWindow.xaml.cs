@@ -64,7 +64,7 @@ namespace LoopListTest
 
             Image mokuImg = new Image();
             mokuImg.Stretch = Stretch.Fill;
-            mokuImg.Source = loadImage(Environment.CurrentDirectory + @"\images\mokup.png");
+            mokuImg.Source = loadImage(Environment.CurrentDirectory + @"\images\mokup.jpg");
 
             mokupGrid.Children.Add(mokuImg);
 

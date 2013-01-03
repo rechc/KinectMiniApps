@@ -100,7 +100,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="images\mokup.png">
+    <Content Include="images\mokup.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="images\teletubbies_02.jpg">
