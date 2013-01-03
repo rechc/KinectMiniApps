@@ -6,16 +6,16 @@
         >
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <stas:LoopList x:Name="myLoopList" MouseDown="myLoopList_MouseDown_1" MouseMove="myLoopList_MouseMove_1" MouseUp="myLoopList_MouseUp_1" Grid.RowSpan="3" Grid.Column="1" />
-        <Button Width="100" Height="30" Background="Black">
+        <Button Background="Black">
             <TextBlock Text="usa" Foreground="White" FontWeight="Bold" FontSize="20">
                 <TextBlock.RenderTransform>
                     <TranslateTransform Y="-3"/>
@@ -25,7 +25,7 @@
             </Button.LayoutTransform>
         </Button>
 
-        <Button Width="100" Height="30" Background="Black" Grid.Row="1">
+        <Button Background="Black" Grid.Row="1">
             <TextBlock Text="top10" Foreground="White" FontWeight="Bold" FontSize="20">
                 <TextBlock.RenderTransform>
                     <TranslateTransform Y="-3"/>
@@ -35,7 +35,7 @@
             </Button.LayoutTransform>
         </Button>
 
-        <Button Width="100" Height="30" Background="Black" Grid.Row="2">
+        <Button Background="Black" Grid.Row="2">
             <TextBlock Text="spanien" Foreground="White" FontWeight="Bold" FontSize="20">
                 <TextBlock.RenderTransform>
                     <TranslateTransform Y="-3"/>

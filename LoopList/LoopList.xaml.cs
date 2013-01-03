@@ -94,12 +94,14 @@ namespace LoopList
             
             Viewbox leftDirViewbox = new Viewbox();
             leftDirViewbox.Margin = new Thickness(0, 0, 2, 0);
+            leftDirViewbox.Stretch = Stretch.Fill;
             leftDirViewbox.Child = hPolygon;
 
             Viewbox rightDirViewbox = new Viewbox();
             rightDirViewbox.Margin = new Thickness(2, 0, 0, 0);
             hPolygon = (Polygon)cloneElement(hPolygon);
             hPolygon.RenderTransform = new RotateTransform(180, 10, 150);
+            rightDirViewbox.Stretch = Stretch.Fill;
             rightDirViewbox.Child = hPolygon;
 
             Polygon vPolygon = new Polygon();
@@ -114,11 +116,13 @@ namespace LoopList
             Viewbox topDirViewbox = new Viewbox();
             topDirViewbox.Margin = new Thickness(0, 0, 0, 2);
             topDirViewbox.Child = vPolygon;
+            topDirViewbox.Stretch = Stretch.Fill;
 
             Viewbox bottomDirViewbox = new Viewbox();
             bottomDirViewbox.Margin = new Thickness(0, 2, 0, 0);
             vPolygon = (Polygon)cloneElement(vPolygon);
             vPolygon.RenderTransform = new RotateTransform(180, 150, 10);
+            bottomDirViewbox.Stretch = Stretch.Fill;
             bottomDirViewbox.Child = vPolygon;
 
             Grid.SetRowSpan(leftBorderRect, 5);
