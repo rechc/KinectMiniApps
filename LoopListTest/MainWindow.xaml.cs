@@ -48,6 +48,7 @@ namespace LoopListTest
                 img.Source = loadData(path);
                 grid.Children.Add(img);
                 grid.Children.Add(button);
+                //grid.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
                 if (i != 3)
                     anchor = myLoopList.addToRight(anchor, grid);
                 else
