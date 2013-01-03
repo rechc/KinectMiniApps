@@ -34,11 +34,15 @@ namespace LoopList
         private int animating;
         private int lastX, lastY;
         private double autoDrag;
+        private Duration duration;
 
 
         public LoopList()
         {
             InitializeComponent();
+
+            duration = new Duration(new TimeSpan(0, 0, 0, 0, 250));
+
             left = new Border();
             left.BorderThickness = new Thickness(10, 5, 10, 5);
             left.RenderTransform = new TranslateTransform();
@@ -54,11 +58,29 @@ namespace LoopList
             above.RenderTransform = new TranslateTransform();
             above.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
 
+
+
             rootGrid.Children.Add(left);
             rootGrid.Children.Add(right);
             rootGrid.Children.Add(above);
+
+
+            Loaded += LoopList_Loaded;
         }
 
+        void LoopList_Loaded(object sender, RoutedEventArgs e)
+        {
+            TranslateTransform ttAbove = (TranslateTransform)above.RenderTransform;
+            TranslateTransform ttLeft = (TranslateTransform)left.RenderTransform;
+
+            ttAbove.Y = -right.ActualHeight;
+            ttLeft.X = -right.ActualWidth;
+        }
+
+        public void setDuration(Duration duration)
+        {
+            this.duration = duration;
+        }
         public void setAutoDragOffset(double autoDrag)
         {
             this.autoDrag = autoDrag;
@@ -115,6 +137,7 @@ namespace LoopList
                 currentNode = newNode;
             }
             right.Child = currentNode.getFrameworkElement();
+
             return currentNode;
         }
 
@@ -196,7 +219,7 @@ namespace LoopList
             {
                 TranslateTransform ttRight = (TranslateTransform)right.RenderTransform;
                 TranslateTransform ttLeft = (TranslateTransform)left.RenderTransform;
-                if (ttRight.Y != 0) return true;
+                if (ttRight.Y != 0) return true; // diagonales scrollen gibts nicht
                 if (hNeighbourExists())
                 {
                     ttLeft.X = (double)ttLeft.GetValue(TranslateTransform.XProperty);
@@ -208,42 +231,55 @@ namespace LoopList
                     ttRight.X += xDistance;
                     ttLeft.X += xDistance;
 
-                    if (ttRight.X < 0 && lastX >= 0)
+
+                    if (ttRight.X >= right.ActualWidth || ttRight.X <= -right.ActualWidth)
                     {
+                        Border tmp = right;
+                        right = left;
+                        left = tmp;
+                        ttRight = (TranslateTransform)right.RenderTransform;
+                        ttLeft = (TranslateTransform)left.RenderTransform;
+                        lastX = 0;
+                    }
 
-                        ttLeft.X = right.ActualWidth + ttRight.X;
-
-                        if (lastX == 0)
-                        {
-                            currentNode = currentNode.getRight();
-                        }
-                        else
-                        {
-                            currentNode = currentNode.getRight();
-                            currentNode = currentNode.getRight();
-                        }
-                        Debug.WriteLine(((Button)((Grid)currentNode.getFrameworkElement()).Children[1]).Content);
-                        left.Child = currentNode.getFrameworkElement();
-                        lastX = -1;
-                        lastY = 0;
+                    if (ttRight.X == 0)
+                    {
+                        right.BorderBrush = new SolidColorBrush(Colors.PaleVioletRed);
                     }
                     else
                     {
-                        if (ttRight.X > 0 && lastX <= 0)
+                        right.BorderBrush = new SolidColorBrush(Colors.White);
+                    }
+
+                    if (ttRight.X >= 0 && lastX < 0)
+                    {
+                        currentNode = currentNode.getLeft();
+                        Debug.WriteLine(((Button)((Grid)currentNode.getFrameworkElement()).Children[1]).Content);
+                        lastX = 0;
+                    }
+                    if (ttRight.X <= 0 && lastX > 0)
+                    {
+                        currentNode = currentNode.getRight();
+                        Debug.WriteLine(((Button)((Grid)currentNode.getFrameworkElement()).Children[1]).Content);
+                        lastX = 0;
+                    }
+                    if (ttRight.X < 0 && lastX == 0)
+                    {
+                        ttLeft.X = right.ActualWidth + ttRight.X;
+                        currentNode = currentNode.getRight();
+                        Debug.WriteLine(((Button)((Grid)currentNode.getFrameworkElement()).Children[1]).Content);
+                        left.Child = currentNode.getFrameworkElement();
+                        lastX = -1;
+                    }
+                    else
+                    {
+                        if (ttRight.X > 0 && lastX == 0)
                         {
                             ttLeft.X = -right.ActualWidth + ttRight.X;
-                            if (lastX == 0)
-                                currentNode = currentNode.getLeft();
-                            else
-                            {
-                                currentNode = currentNode.getLeft();
-                                currentNode = currentNode.getLeft();
-                            }
+                            currentNode = currentNode.getLeft();
                             Debug.WriteLine(((Button)((Grid)currentNode.getFrameworkElement()).Children[1]).Content);
                             left.Child = currentNode.getFrameworkElement();
-                           
                             lastX = 1;
-                            lastY = 0;
                         }
                     }
                 }
@@ -264,17 +300,15 @@ namespace LoopList
             }
             return false;
         }
-       
+
         public bool vDrag(int yDistance)
         {
             if (animating == 0)
             {
-                
                 TranslateTransform ttRight = (TranslateTransform)right.RenderTransform;
                 TranslateTransform ttAbove = (TranslateTransform)above.RenderTransform;
                 if (ttRight.X != 0)
                 {
-
                     return true;
                 }
                 if (vNeighbourExists())
@@ -288,43 +322,55 @@ namespace LoopList
                     ttRight.Y += yDistance;
                     ttAbove.Y += yDistance;
 
-                    if (ttRight.Y < 0 && lastY >= 0)
+                    if (ttRight.Y >= right.ActualHeight || ttRight.Y <= -right.ActualHeight)
                     {
+                        Border tmp = right;
+                        right = above;
+                        above = tmp;
+                        ttRight = (TranslateTransform)right.RenderTransform;
+                        ttAbove = (TranslateTransform)above.RenderTransform;
+                        lastY = 0;
+                    }
 
-                        ttAbove.Y = right.ActualHeight + ttRight.Y;
-
-                        if (lastY == 0)
-                        {
-                            currentNode = currentNode.getBelow();
-                        }
-                        else
-                        {
-                            currentNode = currentNode.getBelow();
-                            currentNode = currentNode.getBelow();
-                        }
-                        Debug.WriteLine(((Button)((Grid)currentNode.getFrameworkElement()).Children[1]).Content);
-                        above.Child = currentNode.getFrameworkElement();
-    
-                        lastY = -1;
-                        lastX = 0;
+                    if (ttRight.Y == 0)
+                    {
+                        right.BorderBrush = new SolidColorBrush(Colors.PaleVioletRed);
                     }
                     else
                     {
-                        if (ttRight.Y > 0 && lastY <= 0)
+                        right.BorderBrush = new SolidColorBrush(Colors.White);
+                    }
+
+                    if (ttRight.Y >= 0 && lastY < 0)
+                    {
+                        currentNode = currentNode.getAbove();
+                        Debug.WriteLine(((Button)((Grid)currentNode.getFrameworkElement()).Children[1]).Content);
+                        lastY = 0;
+                    }
+                    if (ttRight.Y <= 0 && lastY > 0)
+                    {
+                        currentNode = currentNode.getBelow();
+                        Debug.WriteLine(((Button)((Grid)currentNode.getFrameworkElement()).Children[1]).Content);
+                        lastY = 0;
+                    }
+
+                    if (ttRight.Y < 0 && lastY == 0)
+                    {
+                        ttAbove.Y = right.ActualHeight + ttRight.Y;
+                        currentNode = currentNode.getBelow();
+                        Debug.WriteLine(((Button)((Grid)currentNode.getFrameworkElement()).Children[1]).Content);
+                        above.Child = currentNode.getFrameworkElement();
+                        lastY = -1;
+                    }
+                    else
+                    {
+                        if (ttRight.Y > 0 && lastY == 0)
                         {
                             ttAbove.Y = -right.ActualHeight + ttRight.Y;
-                            if (lastY == 0)
-                                currentNode = currentNode.getAbove();
-                            else
-                            {
-                                currentNode = currentNode.getAbove();
-                                currentNode = currentNode.getAbove();
-                            }
+                            currentNode = currentNode.getAbove();
                             Debug.WriteLine(((Button)((Grid)currentNode.getFrameworkElement()).Children[1]).Content);
                             above.Child = currentNode.getFrameworkElement();
-                   
                             lastY = 1;
-                            lastX = 0;
                         }
                     }
                 }
@@ -377,14 +423,14 @@ namespace LoopList
                     doubleAnimationCenter.To = -right.ActualWidth;
                 else
                     doubleAnimationCenter.To = right.ActualWidth;
-                doubleAnimationCenter.Duration = new Duration(new TimeSpan(0, 0, 0, 0, 250));
+                doubleAnimationCenter.Duration = duration;
                 doubleAnimationCenter.Completed += (s, _) => animCompleted();
                 ttRight.BeginAnimation(TranslateTransform.XProperty, doubleAnimationCenter);
 
                 DoubleAnimation doubleAnimationLeft = new DoubleAnimation();
                 doubleAnimationLeft.From = ttLeft.X;
                 doubleAnimationLeft.To = 0;
-                doubleAnimationLeft.Duration = new Duration(new TimeSpan(0, 0, 0, 0, 250));
+                doubleAnimationLeft.Duration = duration;
                 doubleAnimationLeft.Completed += (s, _) => animCompleted();
                 ttLeft.BeginAnimation(TranslateTransform.XProperty, doubleAnimationLeft);
 
@@ -422,14 +468,14 @@ namespace LoopList
                     doubleAnimationCenter.To = -right.ActualHeight;
                 else
                     doubleAnimationCenter.To = right.ActualHeight;
-                doubleAnimationCenter.Duration = new Duration(new TimeSpan(0, 0, 0, 0, 250));
+                doubleAnimationCenter.Duration = duration;
                 doubleAnimationCenter.Completed += (s, _) => animCompleted();
                 ttRight.BeginAnimation(TranslateTransform.YProperty, doubleAnimationCenter);
 
                 DoubleAnimation doubleAnimationLeft = new DoubleAnimation();
                 doubleAnimationLeft.From = ttAbove.Y;
                 doubleAnimationLeft.To = 0;
-                doubleAnimationLeft.Duration = new Duration(new TimeSpan(0, 0, 0, 0, 250));
+                doubleAnimationLeft.Duration = duration;
                 doubleAnimationLeft.Completed += (s, _) => animCompleted();
                 ttAbove.BeginAnimation(TranslateTransform.YProperty, doubleAnimationLeft);
 
@@ -454,7 +500,7 @@ namespace LoopList
                     DoubleAnimation doubleAnimationCenter = new DoubleAnimation();
                     doubleAnimationCenter.From = ttRight.X;
                     doubleAnimationCenter.To = 0;
-                    doubleAnimationCenter.Duration = new Duration(new TimeSpan(0, 0, 0, 0, 250));
+                    doubleAnimationCenter.Duration = duration;
                     doubleAnimationCenter.Completed += (s, _) => animCompleted();
                     ttRight.BeginAnimation(TranslateTransform.XProperty, doubleAnimationCenter);
 
@@ -464,7 +510,7 @@ namespace LoopList
                         doubleAnimationLeft.To = right.ActualWidth;
                     if (lastX > 0)
                         doubleAnimationLeft.To = -right.ActualWidth;
-                    doubleAnimationLeft.Duration = new Duration(new TimeSpan(0, 0, 0, 0, 250));
+                    doubleAnimationLeft.Duration = duration;
                     doubleAnimationLeft.Completed += (s, _) => animCompleted();
                     ttLeft.BeginAnimation(TranslateTransform.XProperty, doubleAnimationLeft);
                     if (lastX < 0)
@@ -492,7 +538,7 @@ namespace LoopList
                         DoubleAnimation doubleAnimationCenter = new DoubleAnimation();
                         doubleAnimationCenter.From = ttRight.Y;
                         doubleAnimationCenter.To = 0;
-                        doubleAnimationCenter.Duration = new Duration(new TimeSpan(0, 0, 0, 0, 250));
+                        doubleAnimationCenter.Duration = duration;
                         doubleAnimationCenter.Completed += (s, _) => animCompleted();
                         ttRight.BeginAnimation(TranslateTransform.YProperty, doubleAnimationCenter);
 
@@ -502,7 +548,7 @@ namespace LoopList
                             doubleAnimationLeft.To = right.ActualHeight;
                         if (lastY > 0)
                             doubleAnimationLeft.To = -right.ActualHeight;
-                        doubleAnimationLeft.Duration = new Duration(new TimeSpan(0, 0, 0, 0, 250));
+                        doubleAnimationLeft.Duration = duration;
                         doubleAnimationLeft.Completed += (s, _) => animCompleted();
                         ttAbove.BeginAnimation(TranslateTransform.YProperty, doubleAnimationLeft);
                         if (lastY < 0)
@@ -521,7 +567,6 @@ namespace LoopList
 
                 }
             }
-
         }
     }
 }
