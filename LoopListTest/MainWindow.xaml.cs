@@ -25,6 +25,7 @@ namespace LoopListTest
     {
         private Point? oldMouseMovePoint;
         private bool doDrag;
+        private int dragDirection;
 
         public MainWindow()
         {
@@ -36,19 +37,20 @@ namespace LoopListTest
             {
                 string path = paths[i];
                 Grid grid = new Grid();
-                grid.RowDefinitions.Add(new RowDefinition());
-                grid.RowDefinitions.Add(new RowDefinition());
                 Button button = new Button();
                 button.Content = "button " + (i + 2);
                 button.Click += printName;
+                button.MaxHeight = 50;
 
                 Image img = new Image();
                 img.Stretch = Stretch.Fill;
                 img.Source = loadData(path);
                 grid.Children.Add(img);
                 grid.Children.Add(button);
-                button.SetValue(Grid.RowProperty, 1);
-                anchor = myLoopList.addToRight(anchor, grid);
+                if (i != 3)
+                    anchor = myLoopList.addToRight(anchor, grid);
+                else
+                    anchor = myLoopList.addToAbove(anchor, grid);
             }
 
         }
@@ -83,6 +85,7 @@ namespace LoopListTest
 
         private void myLoopList_MouseMove_1(object sender, MouseEventArgs e)
         {
+           
             if (doDrag)
             {
                 
@@ -91,13 +94,35 @@ namespace LoopListTest
                 {
                     oldMouseMovePoint = currentPos;
                 }
-                if (oldMouseMovePoint.HasValue && oldMouseMovePoint.Value.X == currentPos.X)
+                if (oldMouseMovePoint.HasValue && oldMouseMovePoint.Value.X == currentPos.X && oldMouseMovePoint.Value.Y == currentPos.Y)
                 {
                     return;
                 }
                 
                 int xDistance = (int)(currentPos.X - oldMouseMovePoint.Value.X);
-                bool mayDragOn = myLoopList.drag(xDistance);
+                int yDistance = (int)(currentPos.Y - oldMouseMovePoint.Value.Y);
+
+                if (dragDirection == 0)
+                {
+                    if (Math.Abs(xDistance) >= Math.Abs(yDistance))
+                    {
+                        dragDirection = 1;
+                    }
+                    else
+                    {
+                        dragDirection = 2;
+                        
+                    }
+                }
+                bool mayDragOn = false;
+                if (dragDirection == 1)
+                {
+                    mayDragOn = myLoopList.hDrag(xDistance);
+                }
+                if (dragDirection == 2)
+                {
+                    mayDragOn = myLoopList.vDrag(yDistance);
+                }
                 if (!mayDragOn)
                 {
                     doDrag = false;
@@ -111,6 +136,7 @@ namespace LoopListTest
             doDrag = false;
             oldMouseMovePoint = null;
             myLoopList.animBack();
+            dragDirection = 0;
         }
 
         private void myLoopList_MouseDown_1(object sender, MouseButtonEventArgs e)
