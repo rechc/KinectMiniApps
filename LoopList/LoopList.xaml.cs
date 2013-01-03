@@ -36,8 +36,6 @@ namespace LoopList
         private double autoDrag;
         private Duration duration;
 
-
-
         public LoopList()
         {
             InitializeComponent();
@@ -73,12 +71,55 @@ namespace LoopList
             Rectangle topBorderRect = new Rectangle();
             Rectangle bottomBorderRect = new Rectangle();
 
+            leftBorderRect.Fill = new SolidColorBrush(Colors.Red);
+            rightBorderRect.Fill = new SolidColorBrush(Colors.Red);
+            topBorderRect.Fill = new SolidColorBrush(Colors.Red);
+            bottomBorderRect.Fill = new SolidColorBrush(Colors.Red);
 
-            Rectangle leftDirRect = new Rectangle();
-            Rectangle rightDirRect = new Rectangle();
-            Rectangle topDirRect = new Rectangle();
-            Rectangle bottomDirRect = new Rectangle();
+            leftBorderRect.Visibility = Visibility.Collapsed;
+            rightBorderRect.Visibility = Visibility.Collapsed;
+            topBorderRect.Visibility = Visibility.Collapsed;
+            bottomBorderRect.Visibility = Visibility.Collapsed;
+            
+            Polygon hPolygon = new Polygon();
+            PointCollection polygonPoints = new PointCollection();
+            polygonPoints.Add(new Point(20, 0));
+            polygonPoints.Add(new Point(20, 300));
+            polygonPoints.Add(new Point(0, 150));
+            polygonPoints.Add(new Point(20, 0));
+            hPolygon.Points = polygonPoints;
+            hPolygon.Fill = new SolidColorBrush(Colors.DarkBlue);
 
+
+            
+            Viewbox leftDirViewbox = new Viewbox();
+            leftDirViewbox.Margin = new Thickness(0, 0, 2, 0);
+            leftDirViewbox.Child = hPolygon;
+
+            Viewbox rightDirViewbox = new Viewbox();
+            rightDirViewbox.Margin = new Thickness(2, 0, 0, 0);
+            hPolygon = (Polygon)cloneElement(hPolygon);
+            hPolygon.RenderTransform = new RotateTransform(180, 10, 150);
+            rightDirViewbox.Child = hPolygon;
+
+            Polygon vPolygon = new Polygon();
+            polygonPoints = new PointCollection();
+            polygonPoints.Add(new Point(0, 20));
+            polygonPoints.Add(new Point(300, 20));
+            polygonPoints.Add(new Point(150, 0));
+            polygonPoints.Add(new Point(0, 20));
+            vPolygon.Points = polygonPoints;
+            vPolygon.Fill = new SolidColorBrush(Colors.DarkBlue);
+
+            Viewbox topDirViewbox = new Viewbox();
+            topDirViewbox.Margin = new Thickness(0, 0, 0, 2);
+            topDirViewbox.Child = vPolygon;
+
+            Viewbox bottomDirViewbox = new Viewbox();
+            bottomDirViewbox.Margin = new Thickness(0, 2, 0, 0);
+            vPolygon = (Polygon)cloneElement(vPolygon);
+            vPolygon.RenderTransform = new RotateTransform(180, 150, 10);
+            bottomDirViewbox.Child = vPolygon;
 
             Grid.SetRowSpan(leftBorderRect, 5);
 
@@ -92,33 +133,27 @@ namespace LoopList
             Grid.SetRowSpan(rightBorderRect, 5);
             Grid.SetColumn(rightBorderRect, 4);
 
-            Grid.SetColumn(leftDirRect, 1);
-            Grid.SetRow(leftDirRect, 2);
+            Grid.SetColumn(leftDirViewbox, 1);
+            Grid.SetRow(leftDirViewbox, 2);
 
-            Grid.SetRow(topDirRect, 1);
-            Grid.SetColumn(topDirRect, 2);
+            Grid.SetRow(topDirViewbox, 1);
+            Grid.SetColumn(topDirViewbox, 2);
 
-            Grid.SetRow(bottomDirRect, 3);
-            Grid.SetColumn(bottomDirRect, 2);
+            Grid.SetRow(bottomDirViewbox, 3);
+            Grid.SetColumn(bottomDirViewbox, 2);
 
-            Grid.SetRow(rightDirRect, 2);
-            Grid.SetColumn(rightDirRect, 3);
-
-
-
-
-
-
+            Grid.SetRow(rightDirViewbox, 2);
+            Grid.SetColumn(rightDirViewbox, 3);
 
             left.Children.Add(leftBorderRect);
             left.Children.Add(topBorderRect);
             left.Children.Add(bottomBorderRect);
             left.Children.Add(rightBorderRect);
 
-            left.Children.Add(leftDirRect);
-            left.Children.Add(topDirRect);
-            left.Children.Add(bottomDirRect);
-            left.Children.Add(rightDirRect);
+            left.Children.Add(leftDirViewbox);
+            left.Children.Add(topDirViewbox);
+            left.Children.Add(bottomDirViewbox);
+            left.Children.Add(rightDirViewbox);
 
             right = (Grid)cloneElement(left);
             above = (Grid)cloneElement(left);
@@ -127,10 +162,19 @@ namespace LoopList
             rootGrid.Children.Add(right);
             rootGrid.Children.Add(above);
 
+            
 
             Loaded += LoopList_Loaded;
 
+        }
 
+        private BitmapImage loadImage(string path)
+        {
+            BitmapImage bi = new BitmapImage();
+            bi.BeginInit();
+            bi.UriSource = new Uri(path, UriKind.RelativeOrAbsolute);
+            bi.EndInit();
+            return bi;
         }
 
         private UIElement cloneElement(UIElement orig)
@@ -155,8 +199,8 @@ namespace LoopList
             TranslateTransform ttAbove = (TranslateTransform)above.RenderTransform;
             TranslateTransform ttLeft = (TranslateTransform)left.RenderTransform;
 
-            ttAbove.Y = -right.ActualHeight;
-            ttLeft.X = -right.ActualWidth;
+            ttAbove.Y = -right.ActualHeight*4;
+            ttLeft.X = -right.ActualWidth*4;
         }
 
         public void setDuration(Duration duration)
@@ -173,23 +217,23 @@ namespace LoopList
         {
             if (hNeighbourExists())
             {
-                ((Rectangle)grid.Children[4]).Fill = new SolidColorBrush(Colors.Blue);
-                ((Rectangle)grid.Children[7]).Fill = new SolidColorBrush(Colors.Blue);
+                grid.Children[4].Visibility = System.Windows.Visibility.Visible;
+                grid.Children[7].Visibility = System.Windows.Visibility.Visible;
             }
             else
             {
-                ((Rectangle)grid.Children[4]).Fill = new SolidColorBrush(Colors.White);
-                ((Rectangle)grid.Children[7]).Fill = new SolidColorBrush(Colors.White);
+                grid.Children[4].Visibility = System.Windows.Visibility.Collapsed;
+                grid.Children[7].Visibility = System.Windows.Visibility.Collapsed;
             }
             if (vNeighbourExists())
             {
-                ((Rectangle)grid.Children[5]).Fill = new SolidColorBrush(Colors.Blue);
-                ((Rectangle)grid.Children[6]).Fill = new SolidColorBrush(Colors.Blue);
+                grid.Children[5].Visibility = System.Windows.Visibility.Visible;
+                grid.Children[6].Visibility = System.Windows.Visibility.Visible;
             }
             else
             {
-                ((Rectangle)grid.Children[5]).Fill = new SolidColorBrush(Colors.White);
-                ((Rectangle)grid.Children[6]).Fill = new SolidColorBrush(Colors.White);
+                grid.Children[5].Visibility = System.Windows.Visibility.Collapsed;
+                grid.Children[6].Visibility = System.Windows.Visibility.Collapsed;
             }
         }
 
@@ -336,19 +380,19 @@ namespace LoopList
 
         private void markCentered()
         {
-            
-            ((Rectangle)right.Children[0]).Fill = new SolidColorBrush(Colors.Red);
-            ((Rectangle)right.Children[1]).Fill = new SolidColorBrush(Colors.Red);
-            ((Rectangle)right.Children[2]).Fill = new SolidColorBrush(Colors.Red);
-            ((Rectangle)right.Children[3]).Fill = new SolidColorBrush(Colors.Red);
+
+            right.Children[0].Visibility = Visibility.Visible;
+            right.Children[1].Visibility = Visibility.Visible;
+            right.Children[2].Visibility = Visibility.Visible;
+            right.Children[3].Visibility = Visibility.Visible;
         }
 
         private void unmarkCentered()
         {
-            ((Rectangle)right.Children[0]).Fill = new SolidColorBrush(Colors.White);
-            ((Rectangle)right.Children[1]).Fill = new SolidColorBrush(Colors.White);
-            ((Rectangle)right.Children[2]).Fill = new SolidColorBrush(Colors.White);
-            ((Rectangle)right.Children[3]).Fill = new SolidColorBrush(Colors.White);
+            right.Children[0].Visibility = Visibility.Collapsed;
+            right.Children[1].Visibility = Visibility.Collapsed;
+            right.Children[2].Visibility = Visibility.Collapsed;
+            right.Children[3].Visibility = Visibility.Collapsed;
         }
 
         public bool hDrag(int xDistance)
@@ -392,20 +436,17 @@ namespace LoopList
                     if (ttRight.X >= 0 && lastX < 0)
                     {
                         currentNode = currentNode.getLeft();
-                        Debug.WriteLine(((Button)((Grid)currentNode.getFrameworkElement()).Children[1]).Content);
                         lastX = 0;
                     }
                     if (ttRight.X <= 0 && lastX > 0)
                     {
                         currentNode = currentNode.getRight();
-                        Debug.WriteLine(((Button)((Grid)currentNode.getFrameworkElement()).Children[1]).Content);
                         lastX = 0;
                     }
                     if (ttRight.X < 0 && lastX == 0)
                     {
                         ttLeft.X = right.ActualWidth + ttRight.X;
                         currentNode = currentNode.getRight();
-                        Debug.WriteLine(((Button)((Grid)currentNode.getFrameworkElement()).Children[1]).Content);
                         setChild(left, currentNode.getFrameworkElement());
                         lastX = -1;
                     }
@@ -415,7 +456,6 @@ namespace LoopList
                         {
                             ttLeft.X = -right.ActualWidth + ttRight.X;
                             currentNode = currentNode.getLeft();
-                            Debug.WriteLine(((Button)((Grid)currentNode.getFrameworkElement()).Children[1]).Content);
                             setChild(left, currentNode.getFrameworkElement());
                             lastX = 1;
                         }
@@ -482,13 +522,11 @@ namespace LoopList
                     if (ttRight.Y >= 0 && lastY < 0)
                     {
                         currentNode = currentNode.getAbove();
-                        Debug.WriteLine(((Button)((Grid)currentNode.getFrameworkElement()).Children[1]).Content);
                         lastY = 0;
                     }
                     if (ttRight.Y <= 0 && lastY > 0)
                     {
                         currentNode = currentNode.getBelow();
-                        Debug.WriteLine(((Button)((Grid)currentNode.getFrameworkElement()).Children[1]).Content);
                         lastY = 0;
                     }
 
@@ -496,7 +534,6 @@ namespace LoopList
                     {
                         ttAbove.Y = right.ActualHeight + ttRight.Y;
                         currentNode = currentNode.getBelow();
-                        Debug.WriteLine(((Button)((Grid)currentNode.getFrameworkElement()).Children[1]).Content);
                         setChild(above, currentNode.getFrameworkElement());
                         lastY = -1;
                     }
@@ -506,7 +543,6 @@ namespace LoopList
                         {
                             ttAbove.Y = -right.ActualHeight + ttRight.Y;
                             currentNode = currentNode.getAbove();
-                            Debug.WriteLine(((Button)((Grid)currentNode.getFrameworkElement()).Children[1]).Content);
                             setChild(above, currentNode.getFrameworkElement());
                             lastY = 1;
                         }
@@ -654,12 +690,10 @@ namespace LoopList
                     if (lastX < 0)
                     {
                         currentNode = currentNode.getLeft();
-                        Debug.WriteLine(((Button)((Grid)currentNode.getFrameworkElement()).Children[1]).Content);
                     }
                     if (lastX > 0)
                     {
                         currentNode = currentNode.getRight();
-                        Debug.WriteLine(((Button)((Grid)currentNode.getFrameworkElement()).Children[1]).Content);
                     }
                     lastX = 0;
                     lastY = 0;
@@ -692,12 +726,10 @@ namespace LoopList
                         if (lastY < 0)
                         {
                             currentNode = currentNode.getAbove();
-                            Debug.WriteLine(((Button)((Grid)currentNode.getFrameworkElement()).Children[1]).Content);
                         }
                         if (lastY > 0)
                         {
                             currentNode = currentNode.getBelow();
-                            Debug.WriteLine(((Button)((Grid)currentNode.getFrameworkElement()).Children[1]).Content);
                         }
                         lastY = 0;
                         lastX = 0;
