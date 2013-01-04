@@ -59,7 +59,6 @@ namespace LoopListTest
                 else
                     anchor = myLoopList.addToAbove(anchor, grid);
             }
-
             Grid mokupGrid = new Grid();
 
             Image mokuImg = new Image();
@@ -164,6 +163,11 @@ namespace LoopListTest
                 myLoopList.animV(false);
             }
             e.Handled = true;
+        }
+
+        private void myLoopList_MouseLeave_1(object sender, MouseEventArgs e)
+        {
+            myLoopList_MouseUp_1(null, null);
         }
 
     }
