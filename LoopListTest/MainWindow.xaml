@@ -5,6 +5,46 @@
         Title="MainWindow" Height="350" Width="525"
         >
     <Grid>
-        <stas:LoopList x:Name="myLoopList" MouseDown="myLoopList_MouseDown_1" MouseMove="myLoopList_MouseMove_1" MouseUp="myLoopList_MouseUp_1"/>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <stas:LoopList x:Name="myLoopList" MouseDown="myLoopList_MouseDown_1" MouseMove="myLoopList_MouseMove_1" MouseUp="myLoopList_MouseUp_1" MouseLeave="myLoopList_MouseLeave_1"
+ Grid.RowSpan="3" Grid.Column="1" />
+        <Button Background="Black">
+            <TextBlock Text="usa" Foreground="White" FontWeight="Bold" FontSize="20">
+                <TextBlock.RenderTransform>
+                    <TranslateTransform Y="-3"/>
+                </TextBlock.RenderTransform></TextBlock>
+            <Button.LayoutTransform>
+                <RotateTransform Angle="90" CenterX="15" CenterY="50"/>
+            </Button.LayoutTransform>
+        </Button>
+
+        <Button Background="Black" Grid.Row="1">
+            <TextBlock Text="top10" Foreground="White" FontWeight="Bold" FontSize="20">
+                <TextBlock.RenderTransform>
+                    <TranslateTransform Y="-3"/>
+                </TextBlock.RenderTransform></TextBlock>
+            <Button.LayoutTransform>
+                <RotateTransform Angle="90" CenterX="15" CenterY="50"/>
+            </Button.LayoutTransform>
+        </Button>
+
+        <Button Background="Black" Grid.Row="2">
+            <TextBlock Text="spanien" Foreground="White" FontWeight="Bold" FontSize="20">
+                <TextBlock.RenderTransform>
+                    <TranslateTransform Y="-3"/>
+                </TextBlock.RenderTransform></TextBlock>
+            <Button.LayoutTransform>
+                <RotateTransform Angle="90" CenterX="15" CenterY="50"/>
+            </Button.LayoutTransform>
+        </Button>
+
     </Grid>
 </Window>
