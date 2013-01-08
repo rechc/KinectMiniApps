@@ -23,51 +23,58 @@ namespace LoopListTest
     /// </summary>
     public partial class MainWindow : Window
     {
-        private Point? oldMouseMovePoint;
-        private bool doDrag;
-        private int dragDirection;
+        private Point? _oldMouseMovePoint;
+        private bool _doDrag;
+        private int _dragDirection;
 
         public MainWindow()
         {
             InitializeComponent();
-            myLoopList.setAutoDragOffset(0.55);
-            myLoopList.setDuration(new Duration(new TimeSpan(2000000))); //200ms
+            myLoopList.SetAutoDragOffset(0.55);
+            myLoopList.SetDuration(new Duration(new TimeSpan(2000000))); //200ms
             string[] paths = Directory.GetFiles(Environment.CurrentDirectory + @"\images", "tele*");
             Node anchor = null;
             Node anchorForMokup = null;
+
             for (int i = 0; i < paths.Count(); i++)
             {
                 string path = paths[i];
                 Grid grid = new Grid();
-                Button button = new Button();
-                button.Content = "button " + (i + 2);
+                Button button = new Button
+                    {
+                        Content = "button " + (i + 2)
+                    };
                 button.Click += printName;
                 button.MaxHeight = 50;
 
-                Image img = new Image();
-                img.Stretch = Stretch.Fill;
-                img.Source = loadImage(path);
+                Image img = new Image
+                    {
+                        Stretch = Stretch.Fill, 
+                        Source = loadImage(path)
+                    };
                 grid.Children.Add(img);
                 grid.Children.Add(button);
                 if (i != 3) {
-                    anchor = myLoopList.addToRight(anchor, grid);
+                    anchor = myLoopList.AddToRight(anchor, grid);
                     if (i == 1)
                     {
                         anchorForMokup = anchor;
                     }
                 }
                 else
-                    anchor = myLoopList.addToAbove(anchor, grid);
+                    anchor = myLoopList.AddToAbove(anchor, grid);
             }
             Grid mokupGrid = new Grid();
 
-            Image mokuImg = new Image();
-            mokuImg.Stretch = Stretch.Fill;
-            mokuImg.Source = loadImage(Environment.CurrentDirectory + @"\images\mokup.jpg");
+            Image mokuImg = new Image
+                {
+                    Stretch = Stretch.Fill,
+                    Source = loadImage(Environment.CurrentDirectory + @"\images\mokup.jpg")
+                };
 
             mokupGrid.Children.Add(mokuImg);
 
-            myLoopList.addToAbove(anchorForMokup, mokupGrid);
+            myLoopList.AddToAbove(anchorForMokup, mokupGrid);
         }
 
         void printName(object sender, EventArgs e)
@@ -88,58 +95,46 @@ namespace LoopListTest
 
         private void myLoopList_MouseMove_1(object sender, MouseEventArgs e)
         {
-
-            if (doDrag)
+            if (!_doDrag) return;
+            Point currentPos = e.GetPosition(myLoopList);
+            if (!_oldMouseMovePoint.HasValue)
+                _oldMouseMovePoint = currentPos;
+            if (Math.Abs(_oldMouseMovePoint.Value.X - currentPos.X) < 0.000000001 && Math.Abs(_oldMouseMovePoint.Value.Y - currentPos.Y) < 0.000000001)
             {
-                Point currentPos = e.GetPosition(myLoopList);
-                if (!oldMouseMovePoint.HasValue)
-                {
-                    oldMouseMovePoint = currentPos;
-                }
-                if (oldMouseMovePoint.HasValue && oldMouseMovePoint.Value.X == currentPos.X && oldMouseMovePoint.Value.Y == currentPos.Y)
-                {
-                    return;
-                }
-
-                int xDistance = (int)(currentPos.X - oldMouseMovePoint.Value.X);
-                int yDistance = (int)(currentPos.Y - oldMouseMovePoint.Value.Y);
-
-                if (Math.Abs(xDistance) >= Math.Abs(yDistance))
-                {
-                    dragDirection = 1;
-                }
-                else
-                {
-                    dragDirection = 2;
-                }
-                bool mayDragOn = false;
-                if (dragDirection == 1)
-                {
-                    mayDragOn = myLoopList.hDrag(xDistance);
-                }
-                if (dragDirection == 2)
-                {
-                    mayDragOn = myLoopList.vDrag(yDistance);
-                }
-                if (!mayDragOn)
-                {
-                    doDrag = false;
-                }
-                oldMouseMovePoint = currentPos;
+                return;
             }
+
+            int xDistance = (int)(currentPos.X - _oldMouseMovePoint.Value.X);
+            int yDistance = (int)(currentPos.Y - _oldMouseMovePoint.Value.Y);
+
+            _dragDirection = Math.Abs(xDistance) >= Math.Abs(yDistance) ? 1 : 2;
+            bool mayDragOn = false;
+            if (_dragDirection == 1)
+            {
+                mayDragOn = myLoopList.HDrag(xDistance);
+            }
+            if (_dragDirection == 2)
+            {
+                mayDragOn = myLoopList.VDrag(yDistance);
+            }
+            if (!mayDragOn)
+            {
+                _doDrag = false;
+            }
+            _oldMouseMovePoint = currentPos;
         }
 
         private void myLoopList_MouseUp_1(object sender, MouseButtonEventArgs e)
         {
-            doDrag = false;
-            oldMouseMovePoint = null;
-            myLoopList.animBack();
-            dragDirection = 0;
+            _doDrag = false;
+            _oldMouseMovePoint = null;
+            myLoopList.AnimBack();
+            _dragDirection = 0;
         }
 
         private void myLoopList_MouseDown_1(object sender, MouseButtonEventArgs e)
         {
-            doDrag = true;
+            _doDrag = true;
         }
 
 
@@ -147,20 +142,20 @@ namespace LoopListTest
         {
             if (e.Key == Key.Left)
             {
-                myLoopList.animH(true);
+                myLoopList.AnimH(true);
             }
             if (e.Key == Key.Right)
             {
-                myLoopList.animH(false);
+                myLoopList.AnimH(false);
 
             }
             if (e.Key == Key.Up)
             {
-                myLoopList.animV(true);
+                myLoopList.AnimV(true);
             }
             if (e.Key == Key.Down)
             {
-                myLoopList.animV(false);
+                myLoopList.AnimV(false);
             }
             e.Handled = true;
         }
