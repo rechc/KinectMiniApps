@@ -14,7 +14,7 @@ namespace LoopList
     /// <summary>
     /// Interaktionslogik für UserControl1.xaml
     /// </summary>
-    public partial class LoopList : UserControl
+    public partial class LoopList
     {
         private Grid _left, _right, _above;
         private Node _currentNode;
@@ -233,21 +233,21 @@ namespace LoopList
             }
             else
             {
-                if (!_currentNode.isMarkedLeft())
+                if (!_currentNode.IsMarkedLeft())
                 {
                     throw new Exception("why you no add to marked anchor???");
                 }
                 Node newNode = new Node(frameworkElement);
-                Node first = _currentNode.getLeft();
-                _currentNode.setLeft(newNode);
-                _currentNode.unmarkLeft();
-                newNode.setRight(_currentNode);
-                newNode.unmarkRight();
-                newNode.setLeft(first);
-                first.setRight(newNode);
+                Node first = _currentNode.GetLeft();
+                _currentNode.SetLeft(newNode);
+                _currentNode.UnmarkLeft();
+                newNode.SetRight(_currentNode);
+                newNode.UnmarkRight();
+                newNode.SetLeft(first);
+                first.SetRight(newNode);
                 _currentNode = newNode;
             }
-            SetChild(_right, _currentNode.getFrameworkElement());
+            SetChild(_right, _currentNode.GetFrameworkElement());
             
             return _currentNode;
         }
@@ -274,21 +274,21 @@ namespace LoopList
             }
             else
             {
-                if (!_currentNode.isMarkedRight())
+                if (!_currentNode.IsMarkedRight())
                 {
                     throw new Exception("why you no add to marked anchor???");
                 }
                 Node newNode = new Node(frameworkElement);
-                Node first = _currentNode.getRight();
-                _currentNode.setRight(newNode);
-                _currentNode.unmarkRight();
-                newNode.setLeft(_currentNode);
-                newNode.unmarkLeft();
-                newNode.setRight(first);
-                first.setLeft(newNode);
+                Node first = _currentNode.GetRight();
+                _currentNode.SetRight(newNode);
+                _currentNode.UnmarkRight();
+                newNode.SetLeft(_currentNode);
+                newNode.UnmarkLeft();
+                newNode.SetRight(first);
+                first.SetLeft(newNode);
                 _currentNode = newNode;
             }
-            SetChild(_right, _currentNode.getFrameworkElement());
+            SetChild(_right, _currentNode.GetFrameworkElement());
 
             return _currentNode;
         }
@@ -302,21 +302,21 @@ namespace LoopList
             }
             else
             {
-                if (!_currentNode.isMarkedAbove())
+                if (!_currentNode.IsMarkedAbove())
                 {
                     throw new Exception("why you no add to marked anchor???");
                 }
                 Node newNode = new Node(frameworkElement);
-                Node first = _currentNode.getAbove();
-                _currentNode.setAbove(newNode);
-                _currentNode.unmarkAbove();
-                newNode.setBelow(_currentNode);
-                newNode.unmarkBelow();
-                newNode.setAbove(first);
-                first.setBelow(newNode);
+                Node first = _currentNode.GetAbove();
+                _currentNode.SetAbove(newNode);
+                _currentNode.UnmarkAbove();
+                newNode.SetBelow(_currentNode);
+                newNode.UnmarkBelow();
+                newNode.SetAbove(first);
+                first.SetBelow(newNode);
                 _currentNode = newNode;
             }
-            SetChild(_right, _currentNode.getFrameworkElement());
+            SetChild(_right, _currentNode.GetFrameworkElement());
             return _currentNode;
         }
 
@@ -329,27 +329,27 @@ namespace LoopList
             }
             else
             {
-                if (!_currentNode.isMarkedBelow())
+                if (!_currentNode.IsMarkedBelow())
                 {
                     throw new Exception("why you no add to marked anchor???");
                 }
                 Node newNode = new Node(frameworkElement);
-                Node first = _currentNode.getBelow();
-                _currentNode.setBelow(newNode);
-                _currentNode.unmarkBelow();
-                newNode.setAbove(_currentNode);
-                newNode.unmarkAbove();
-                newNode.setBelow(first);
-                first.setAbove(newNode);
+                Node first = _currentNode.GetBelow();
+                _currentNode.SetBelow(newNode);
+                _currentNode.UnmarkBelow();
+                newNode.SetAbove(_currentNode);
+                newNode.UnmarkAbove();
+                newNode.SetBelow(first);
+                first.SetAbove(newNode);
                 _currentNode = newNode;
             }
-            SetChild(_right, _currentNode.getFrameworkElement());
+            SetChild(_right, _currentNode.GetFrameworkElement());
             return _currentNode;
         }
 
         private bool HNeighbourExists()
         {
-            if (!_currentNode.isMarkedLeft() || !_currentNode.isMarkedRight())
+            if (!_currentNode.IsMarkedLeft() || !_currentNode.IsMarkedRight())
             {
                 return true;
             }
@@ -358,7 +358,7 @@ namespace LoopList
 
         private bool VNeighbourExists()
         {
-            if (!_currentNode.isMarkedBelow() || !_currentNode.isMarkedAbove())
+            if (!_currentNode.IsMarkedBelow() || !_currentNode.IsMarkedAbove())
             {
                 return true;
             }
@@ -421,19 +421,19 @@ namespace LoopList
 
                     if (ttRight.X >= 0 && _lastX < 0)
                     {
-                        _currentNode = _currentNode.getLeft();
+                        _currentNode = _currentNode.GetLeft();
                         _lastX = 0;
                     }
                     if (ttRight.X <= 0 && _lastX > 0)
                     {
-                        _currentNode = _currentNode.getRight();
+                        _currentNode = _currentNode.GetRight();
                         _lastX = 0;
                     }
                     if (ttRight.X < 0 && _lastX == 0)
                     {
                         ttLeft.X = _right.ActualWidth + ttRight.X;
-                        _currentNode = _currentNode.getRight();
-                        SetChild(_left, _currentNode.getFrameworkElement());
+                        _currentNode = _currentNode.GetRight();
+                        SetChild(_left, _currentNode.GetFrameworkElement());
                         _lastX = -1;
                     }
                     else
@@ -441,8 +441,8 @@ namespace LoopList
                         if (ttRight.X > 0 && _lastX == 0)
                         {
                             ttLeft.X = -_right.ActualWidth + ttRight.X;
-                            _currentNode = _currentNode.getLeft();
-                            SetChild(_left, _currentNode.getFrameworkElement());
+                            _currentNode = _currentNode.GetLeft();
+                            SetChild(_left, _currentNode.GetFrameworkElement());
                             _lastX = 1;
                         }
                     }
@@ -507,20 +507,20 @@ namespace LoopList
 
                     if (ttRight.Y >= 0 && _lastY < 0)
                     {
-                        _currentNode = _currentNode.getAbove();
+                        _currentNode = _currentNode.GetAbove();
                         _lastY = 0;
                     }
                     if (ttRight.Y <= 0 && _lastY > 0)
                     {
-                        _currentNode = _currentNode.getBelow();
+                        _currentNode = _currentNode.GetBelow();
                         _lastY = 0;
                     }
 
                     if (ttRight.Y < 0 && _lastY == 0)
                     {
                         ttAbove.Y = _right.ActualHeight + ttRight.Y;
-                        _currentNode = _currentNode.getBelow();
-                        SetChild(_above, _currentNode.getFrameworkElement());
+                        _currentNode = _currentNode.GetBelow();
+                        SetChild(_above, _currentNode.GetFrameworkElement());
                         _lastY = -1;
                     }
                     else
@@ -528,8 +528,8 @@ namespace LoopList
                         if (ttRight.Y > 0 && _lastY == 0)
                         {
                             ttAbove.Y = -_right.ActualHeight + ttRight.Y;
-                            _currentNode = _currentNode.getAbove();
-                            SetChild(_above, _currentNode.getFrameworkElement());
+                            _currentNode = _currentNode.GetAbove();
+                            SetChild(_above, _currentNode.GetFrameworkElement());
                             _lastY = 1;
                         }
                     }
@@ -670,11 +670,11 @@ namespace LoopList
                 ttLeft.BeginAnimation(TranslateTransform.XProperty, doubleAnimationLeft);
                 if (_lastX < 0)
                 {
-                    _currentNode = _currentNode.getLeft();
+                    _currentNode = _currentNode.GetLeft();
                 }
                 if (_lastX > 0)
                 {
-                    _currentNode = _currentNode.getRight();
+                    _currentNode = _currentNode.GetRight();
                 }
                 _lastX = 0;
                 _lastY = 0;
@@ -707,11 +707,11 @@ namespace LoopList
                     ttAbove.BeginAnimation(TranslateTransform.YProperty, doubleAnimationLeft);
                     if (_lastY < 0)
                     {
-                        _currentNode = _currentNode.getAbove();
+                        _currentNode = _currentNode.GetAbove();
                     }
                     if (_lastY > 0)
                     {
-                        _currentNode = _currentNode.getBelow();
+                        _currentNode = _currentNode.GetBelow();
                     }
                     _lastY = 0;
                     _lastX = 0;

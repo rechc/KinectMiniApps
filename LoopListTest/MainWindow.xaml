@@ -30,7 +30,8 @@
             <TextBlock Text="top10" Foreground="White" FontWeight="Bold" FontSize="20">
                 <TextBlock.RenderTransform>
                     <TranslateTransform Y="-3"/>
-                </TextBlock.RenderTransform></TextBlock>
+                </TextBlock.RenderTransform>
+            </TextBlock>
             <Button.LayoutTransform>
                 <RotateTransform Angle="90" CenterX="15" CenterY="50"/>
             </Button.LayoutTransform>
