@@ -96,6 +96,7 @@ namespace Antialiasing
 
         private int[] x = new int[16];
         private int n;
+        private int[] arr;
 
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
@@ -104,6 +105,7 @@ namespace Antialiasing
         {
             InitializeComponent();
             n = Convert.ToInt32(Math.Sqrt(x.Length));
+            arr = new int[n];
         }
 
         /// <summary>
@@ -303,7 +305,7 @@ namespace Antialiasing
 
                     int counter = 0;
                     // int pos = -1;
-                    int[] arr = new int[4];
+                    
                     int arrI = 0;
 
                     for (int j = 0; j < x.Length; j++)
@@ -333,14 +335,6 @@ namespace Antialiasing
                         }
                     }
                 }
-
-                //for (int i = 0; i < this.greenScreenPixelData.Length; i++)
-                //{
-                //    if (this.greenScreenPixelData[i] == -2)
-                //    {
-                //        this.greenScreenPixelData[i] = -1;
-                //    }
-                //}
 
             }
 
