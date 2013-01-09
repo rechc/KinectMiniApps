@@ -32,7 +32,7 @@ namespace Antialiasing
         /// <summary>
         /// Format we will use for the depth stream
         /// </summary>
-        private const DepthImageFormat DepthFormat = DepthImageFormat.Resolution320x240Fps30;
+        private const DepthImageFormat DepthFormat = DepthImageFormat.Resolution640x480Fps30;
 
         /// <summary>
         /// Format we will use for the color stream
@@ -93,6 +93,8 @@ namespace Antialiasing
         /// Indicates opaque in an opacity mask
         /// </summary>
         private int opaquePixelValue = -1;
+
+        private int[] x = new int[4];
 
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
@@ -282,6 +284,65 @@ namespace Antialiasing
                         }
                     }
                 }
+
+                for (int i = 0; i < this.greenScreenPixelData.Length - (this.depthWidth*2) -2; i++)
+                {
+
+                    //ToDo Werte können im Randbereich liegen
+                    x[0] = i;
+                    x[1] = x[0] + 1;
+                    x[2] = i + this.depthWidth;
+                    x[3] = x[2] + 1;
+                    //x[4] = x[3] + 1;
+                    //x[5] = x[3] + 2;
+                    //x[6] = i + this.depthWidth * 2;
+                    //x[7] = x[6] + 1;
+                    //x[8] = x[6] + 2;
+
+                    //for (int j = 0; j < x.Length; j++)
+                    //{
+                    //    x[j] = i;
+                    //}
+
+                    int counter = 0;
+                    int pos = -1;
+
+                    for (int j = 0; j < x.Length; j++)
+                    {
+                        var p = this.greenScreenPixelData[x[j]];
+                        if (p == -1)
+                        {
+                            counter++;
+                        }
+                        else
+                        {
+                            pos = j;
+                        }
+                    }
+                    if (counter == 3)
+                    {
+
+                        this.greenScreenPixelData[x[pos]] = -2;
+
+                        //for (int j = 0; j < x.Length; j++)
+                        //{
+                        //    if (this.greenScreenPixelData[x[j]] != -1)
+                        //    {
+                        //        this.greenScreenPixelData[x[j]] = -2;
+                        //    }
+                        //}
+
+                    }
+                }
+
+                for (int i = 0; i < this.greenScreenPixelData.Length; i++)
+                {
+                    if (this.greenScreenPixelData[i] == -2)
+                    {
+                        this.greenScreenPixelData[i] = -1;
+                    }
+                }
+
             }
 
             // do our processing outside of the using block
