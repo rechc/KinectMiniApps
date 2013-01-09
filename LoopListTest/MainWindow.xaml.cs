@@ -93,12 +93,10 @@ namespace LoopListTest
                 switch (((LoopListArgs) e).GetDirection())
                 {
                     case Direction.Top:
-                        MyTextLoopList.Anim(true);
-                        _waitForTextList = true;
+                        _waitForTextList = MyTextLoopList.Anim(true);
                         break;
                     case Direction.Down:
-                        MyTextLoopList.Anim(false);
-                        _waitForTextList = true;
+                        _waitForTextList = MyTextLoopList.Anim(false);
                         break;
                 }
                 

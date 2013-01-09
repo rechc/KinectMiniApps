@@ -135,10 +135,11 @@ namespace LoopList
             _texts.Add(text);
         }
 
-        public void Anim(bool up)
+
+        public bool Anim(bool up)
         {
             
-            if (_animating > 0 || _texts.Count <= 1) return;
+            if (_animating > 0 || _texts.Count <= 1) return false;
             TranslateTransform ttTop = (TranslateTransform)_top.RenderTransform;
             TranslateTransform ttCenter = (TranslateTransform)_center.RenderTransform;
             TranslateTransform ttBottom = (TranslateTransform)_bottom.RenderTransform;
@@ -226,7 +227,8 @@ namespace LoopList
             fadeOut.Completed += (s, _) => AnimCompleted();
             
             disappearing.BeginAnimation(OpacityProperty, fadeOut);
-       }
+            return true;
+        }
 
         private void AnimCompleted()
         {
