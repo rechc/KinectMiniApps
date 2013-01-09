@@ -321,14 +321,17 @@ namespace Antialiasing
 
                             if (changeValueCounter >= changeValues.Length)
                             {
-                                changeValueCounter = -1;
                                 break;
                             }
                             changeValues[changeValueCounter] = j;
                             changeValueCounter++;
                         }
                     }
-                    if (counter >= (3 / 4 * opaqueMatrix.Length) && changeValueCounter != -1)
+                    if (changeValueCounter < changeValues.Length)
+                    {
+                        var y = 1;
+                    }
+                    if (counter >= (3 / 4 * opaqueMatrix.Length) && changeValueCounter < changeValues.Length)
                     {
                         for (int k = 0; k < changeValues.Length; k++)
                         {
