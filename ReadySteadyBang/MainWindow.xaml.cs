@@ -4,7 +4,7 @@
 // </copyright>
 //------------------------------------------------------------------------------
 
-namespace $safeprojectname$
+namespace ReadySteadyBang
 {
     using System.IO;
     using System.Linq;
