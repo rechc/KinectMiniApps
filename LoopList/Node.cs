@@ -1,134 +1,129 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 
 namespace LoopList
 {
     public class Node
     {
-        private Node left, right, above, below;
-        private FrameworkElement frameworkElement;
-        private bool markedAbove, markedBelow, markedLeft, markedRight;
+        private Node _left, _right, _above, _below;
+        private readonly FrameworkElement _frameworkElement;
+        private bool _markedAbove, _markedBelow, _markedLeft, _markedRight;
 
-        internal void markAbove()
+        internal void MarkAbove()
         {
-            markedAbove = true;
+            _markedAbove = true;
         }
 
-        internal void markBelow()
+        internal void MarkBelow()
         {
-            markedBelow = true;
+            _markedBelow = true;
         }
 
-        internal void markLeft()
+        internal void MarkLeft()
         {
-            markedLeft = true;
+            _markedLeft = true;
         }
 
-        internal void markRight()
+        internal void MarkRight()
         {
-            markedRight = true;
+            _markedRight = true;
         }
 
-        internal void unmarkBelow()
+        internal void UnmarkBelow()
         {
-            markedBelow = false;
+            _markedBelow = false;
         }
 
-        internal void unmarkAbove()
+        internal void UnmarkAbove()
         {
-            markedAbove = false;
+            _markedAbove = false;
         }
 
-        internal void unmarkLeft()
+        internal void UnmarkLeft()
         {
-            markedLeft = false;
+            _markedLeft = false;
         }
 
-        internal void unmarkRight()
+        internal void UnmarkRight()
         {
-            markedRight = false;
+            _markedRight = false;
         }
 
-        internal bool isMarkedAbove()
+        internal bool IsMarkedAbove()
         {
-            return markedAbove;
+            return _markedAbove;
         }
 
-        internal bool isMarkedBelow()
+        internal bool IsMarkedBelow()
         {
-            return markedBelow;
+            return _markedBelow;
         }
 
-        internal bool isMarkedLeft()
+        internal bool IsMarkedLeft()
         {
-            return markedLeft;
+            return _markedLeft;
         }
 
-        internal bool isMarkedRight()
+        internal bool IsMarkedRight()
         {
-            return markedRight;
+            return _markedRight;
         }
 
         internal Node(FrameworkElement frameworkElement)
         {
-            this.frameworkElement = frameworkElement;
-            markRight();
-            markAbove();
-            markLeft();
-            markBelow();
-            this.left = this;
-            this.right = this;
-            this.below = this;
-            this.above = this;
+            _frameworkElement = frameworkElement;
+            MarkRight();
+            MarkAbove();
+            MarkLeft();
+            MarkBelow();
+            _left = this;
+            _right = this;
+            _below = this;
+            _above = this;
         }
 
-        internal void setLeft(Node left)
+        internal void SetLeft(Node left)
         {
-            this.left = left;
+            _left = left;
         }
 
-        internal void setRight(Node right)
+        internal void SetRight(Node right)
         {
-            this.right = right;
+            _right = right;
         }
 
-        internal FrameworkElement getFrameworkElement()
+        internal FrameworkElement GetFrameworkElement()
         {
-            return frameworkElement;
+            return _frameworkElement;
         }
 
-        internal Node getRight()
+        internal Node GetRight()
         {
-            return right;
+            return _right;
         }
 
-        internal Node getLeft()
+        internal Node GetLeft()
         {
-            return left;
+            return _left;
         }
 
-        internal Node getAbove()
+        internal Node GetAbove()
         {
-            return above;
+            return _above;
         }
 
-        internal Node getBelow()
+        internal Node GetBelow()
         {
-            return below;
+            return _below;
         }
 
-        internal void setBelow(Node below)
+        internal void SetBelow(Node below)
         {
-            this.below = below;
+            _below = below;
         }
 
-        internal void setAbove(Node above)
+        internal void SetAbove(Node above)
         {
-            this.above = above;
+            _above = above;
         }
     }
 }

@@ -1,70 +1,57 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml;
+
 
 namespace LoopList
 {
     /// <summary>
     /// Interaktionslogik für UserControl1.xaml
     /// </summary>
-    public partial class LoopList : UserControl
+    public partial class LoopList
     {
-        private Grid left, right, above;
-        private Node currentNode;
-        private int animating;
-        private int lastX, lastY;
-        private double autoDrag;
-        private Duration duration;
+        private Grid _left, _right, _above;
+        private Node _currentNode;
+        private int _animating;
+        private int _lastX, _lastY;
+        private double _autoDrag;
+        private Duration _duration;
 
         public LoopList()
         {
             InitializeComponent();
 
-            duration = new Duration(new TimeSpan(0, 0, 0, 0, 250));
+            _duration = new Duration(new TimeSpan(0, 0, 0, 0, 250));
 
-            left = new Grid();
-            left.RowDefinitions.Add(new RowDefinition());
-            left.RowDefinitions.Add(new RowDefinition());
-            left.RowDefinitions.Add(new RowDefinition());
-            left.RowDefinitions.Add(new RowDefinition());
-            left.RowDefinitions.Add(new RowDefinition());
+            _left = new Grid();
+            _left.RowDefinitions.Add(new RowDefinition());
+            _left.RowDefinitions.Add(new RowDefinition());
+            _left.RowDefinitions.Add(new RowDefinition());
+            _left.RowDefinitions.Add(new RowDefinition());
+            _left.RowDefinitions.Add(new RowDefinition());
 
-            left.ColumnDefinitions.Add(new ColumnDefinition());
-            left.ColumnDefinitions.Add(new ColumnDefinition());
-            left.ColumnDefinitions.Add(new ColumnDefinition());
-            left.ColumnDefinitions.Add(new ColumnDefinition());
-            left.ColumnDefinitions.Add(new ColumnDefinition());
+            _left.ColumnDefinitions.Add(new ColumnDefinition());
+            _left.ColumnDefinitions.Add(new ColumnDefinition());
+            _left.ColumnDefinitions.Add(new ColumnDefinition());
+            _left.ColumnDefinitions.Add(new ColumnDefinition());
+            _left.ColumnDefinitions.Add(new ColumnDefinition());
 
-            left.RowDefinitions[0].Height = new GridLength(10, GridUnitType.Pixel);
-            left.ColumnDefinitions[0].Width = new GridLength(10, GridUnitType.Pixel);
-            left.RowDefinitions[1].Height = new GridLength(10, GridUnitType.Pixel);
-            left.ColumnDefinitions[1].Width = new GridLength(10, GridUnitType.Pixel);
-            left.RowDefinitions[3].Height = new GridLength(10, GridUnitType.Pixel);
-            left.ColumnDefinitions[3].Width = new GridLength(10, GridUnitType.Pixel);
-            left.RowDefinitions[4].Height = new GridLength(10, GridUnitType.Pixel);
-            left.ColumnDefinitions[4].Width = new GridLength(10, GridUnitType.Pixel);
+            _left.RowDefinitions[0].Height = new GridLength(10, GridUnitType.Pixel);
+            _left.ColumnDefinitions[0].Width = new GridLength(10, GridUnitType.Pixel);
+            _left.RowDefinitions[1].Height = new GridLength(10, GridUnitType.Pixel);
+            _left.ColumnDefinitions[1].Width = new GridLength(10, GridUnitType.Pixel);
+            _left.RowDefinitions[3].Height = new GridLength(10, GridUnitType.Pixel);
+            _left.ColumnDefinitions[3].Width = new GridLength(10, GridUnitType.Pixel);
+            _left.RowDefinitions[4].Height = new GridLength(10, GridUnitType.Pixel);
+            _left.ColumnDefinitions[4].Width = new GridLength(10, GridUnitType.Pixel);
 
-            left.RenderTransform = new TranslateTransform();
+            _left.RenderTransform = new TranslateTransform();
 
             Rectangle leftBorderRect = new Rectangle();
             Rectangle rightBorderRect = new Rectangle();
@@ -82,45 +69,51 @@ namespace LoopList
             bottomBorderRect.Visibility = Visibility.Collapsed;
             
             Polygon hPolygon = new Polygon();
-            PointCollection polygonPoints = new PointCollection();
-            polygonPoints.Add(new Point(20, 0));
-            polygonPoints.Add(new Point(20, 300));
-            polygonPoints.Add(new Point(0, 150));
-            polygonPoints.Add(new Point(20, 0));
+            PointCollection polygonPoints = new PointCollection
+                {
+                    new Point(20, 0),
+                    new Point(20, 300),
+                    new Point(0, 150),
+                    new Point(20, 0)
+                };
             hPolygon.Points = polygonPoints;
             hPolygon.Fill = new SolidColorBrush(Colors.DarkBlue);
 
 
             
-            Viewbox leftDirViewbox = new Viewbox();
-            leftDirViewbox.Margin = new Thickness(0, 0, 2, 0);
-            leftDirViewbox.Stretch = Stretch.Fill;
-            leftDirViewbox.Child = hPolygon;
+            Viewbox leftDirViewbox = new Viewbox
+                {
+                    Margin = new Thickness(0, 0, 2, 0),
+                    Stretch = Stretch.Fill,
+                    Child = hPolygon
+                };
 
-            Viewbox rightDirViewbox = new Viewbox();
-            rightDirViewbox.Margin = new Thickness(2, 0, 0, 0);
-            hPolygon = (Polygon)cloneElement(hPolygon);
+            Viewbox rightDirViewbox = new Viewbox {Margin = new Thickness(2, 0, 0, 0)};
+            hPolygon = (Polygon)CloneElement(hPolygon);
             hPolygon.RenderTransform = new RotateTransform(180, 10, 150);
             rightDirViewbox.Stretch = Stretch.Fill;
             rightDirViewbox.Child = hPolygon;
 
             Polygon vPolygon = new Polygon();
-            polygonPoints = new PointCollection();
-            polygonPoints.Add(new Point(0, 20));
-            polygonPoints.Add(new Point(300, 20));
-            polygonPoints.Add(new Point(150, 0));
-            polygonPoints.Add(new Point(0, 20));
+            polygonPoints = new PointCollection
+                {
+                    new Point(0, 20),
+                    new Point(300, 20),
+                    new Point(150, 0),
+                    new Point(0, 20)
+                };
             vPolygon.Points = polygonPoints;
             vPolygon.Fill = new SolidColorBrush(Colors.DarkBlue);
 
-            Viewbox topDirViewbox = new Viewbox();
-            topDirViewbox.Margin = new Thickness(0, 0, 0, 2);
-            topDirViewbox.Child = vPolygon;
-            topDirViewbox.Stretch = Stretch.Fill;
+            Viewbox topDirViewbox = new Viewbox
+                {
+                    Margin = new Thickness(0, 0, 0, 2),
+                    Child = vPolygon,
+                    Stretch = Stretch.Fill
+                };
 
-            Viewbox bottomDirViewbox = new Viewbox();
-            bottomDirViewbox.Margin = new Thickness(0, 2, 0, 0);
-            vPolygon = (Polygon)cloneElement(vPolygon);
+            Viewbox bottomDirViewbox = new Viewbox {Margin = new Thickness(0, 2, 0, 0)};
+            vPolygon = (Polygon)CloneElement(vPolygon);
             vPolygon.RenderTransform = new RotateTransform(180, 150, 10);
             bottomDirViewbox.Stretch = Stretch.Fill;
             bottomDirViewbox.Child = vPolygon;
@@ -149,39 +142,29 @@ namespace LoopList
             Grid.SetRow(rightDirViewbox, 2);
             Grid.SetColumn(rightDirViewbox, 3);
 
-            left.Children.Add(leftBorderRect);
-            left.Children.Add(topBorderRect);
-            left.Children.Add(bottomBorderRect);
-            left.Children.Add(rightBorderRect);
+            _left.Children.Add(leftBorderRect);
+            _left.Children.Add(topBorderRect);
+            _left.Children.Add(bottomBorderRect);
+            _left.Children.Add(rightBorderRect);
 
-            left.Children.Add(leftDirViewbox);
-            left.Children.Add(topDirViewbox);
-            left.Children.Add(bottomDirViewbox);
-            left.Children.Add(rightDirViewbox);
+            _left.Children.Add(leftDirViewbox);
+            _left.Children.Add(topDirViewbox);
+            _left.Children.Add(bottomDirViewbox);
+            _left.Children.Add(rightDirViewbox);
 
-            right = (Grid)cloneElement(left);
-            above = (Grid)cloneElement(left);
+            _right = (Grid)CloneElement(_left);
+            _above = (Grid)CloneElement(_left);
 
-            rootGrid.Children.Add(left);
-            rootGrid.Children.Add(right);
-            rootGrid.Children.Add(above);
-
-            
+            rootGrid.Children.Add(_left);
+            rootGrid.Children.Add(_right);
+            rootGrid.Children.Add(_above);
 
             Loaded += LoopList_Loaded;
 
         }
 
-        private BitmapImage loadImage(string path)
-        {
-            BitmapImage bi = new BitmapImage();
-            bi.BeginInit();
-            bi.UriSource = new Uri(path, UriKind.RelativeOrAbsolute);
-            bi.EndInit();
-            return bi;
-        }
 
-        private UIElement cloneElement(UIElement orig)
+        private static UIElement CloneElement(UIElement orig)
         {
 
             if (orig == null)
@@ -192,7 +175,7 @@ namespace LoopList
 
             StringReader stringReader = new StringReader(s);
 
-            XmlReader xmlReader = XmlTextReader.Create(stringReader, new XmlReaderSettings());
+            XmlReader xmlReader = XmlReader.Create(stringReader, new XmlReaderSettings());
 
             return (UIElement)XamlReader.Load(xmlReader);
 
@@ -200,76 +183,76 @@ namespace LoopList
 
         void LoopList_Loaded(object sender, RoutedEventArgs e)
         {
-            TranslateTransform ttAbove = (TranslateTransform)above.RenderTransform;
-            TranslateTransform ttLeft = (TranslateTransform)left.RenderTransform;
+            TranslateTransform ttAbove = (TranslateTransform)_above.RenderTransform;
+            TranslateTransform ttLeft = (TranslateTransform)_left.RenderTransform;
 
-            ttAbove.Y = -right.ActualHeight*4;
-            ttLeft.X = -right.ActualWidth*4;
+            ttAbove.Y = -_right.ActualHeight*4;
+            ttLeft.X = -_right.ActualWidth*4;
         }
 
-        public void setDuration(Duration duration)
+        public void SetDuration(Duration duration)
         {
-            this.duration = duration;
+            _duration = duration;
         }
 
-        public void setAutoDragOffset(double autoDrag)
+        public void SetAutoDragOffset(double autoDrag)
         {
-            this.autoDrag = autoDrag;
+            _autoDrag = autoDrag;
         }
 
-        private void markDirections(Grid grid)
+        private void MarkDirections(Grid grid)
         {
-            if (hNeighbourExists())
+            if (HNeighbourExists())
             {
-                grid.Children[4].Visibility = System.Windows.Visibility.Visible;
-                grid.Children[7].Visibility = System.Windows.Visibility.Visible;
+                grid.Children[4].Visibility = Visibility.Visible;
+                grid.Children[7].Visibility = Visibility.Visible;
             }
             else
             {
-                grid.Children[4].Visibility = System.Windows.Visibility.Collapsed;
-                grid.Children[7].Visibility = System.Windows.Visibility.Collapsed;
+                grid.Children[4].Visibility = Visibility.Collapsed;
+                grid.Children[7].Visibility = Visibility.Collapsed;
             }
-            if (vNeighbourExists())
+            if (VNeighbourExists())
             {
-                grid.Children[5].Visibility = System.Windows.Visibility.Visible;
-                grid.Children[6].Visibility = System.Windows.Visibility.Visible;
+                grid.Children[5].Visibility = Visibility.Visible;
+                grid.Children[6].Visibility = Visibility.Visible;
             }
             else
             {
-                grid.Children[5].Visibility = System.Windows.Visibility.Collapsed;
-                grid.Children[6].Visibility = System.Windows.Visibility.Collapsed;
+                grid.Children[5].Visibility = Visibility.Collapsed;
+                grid.Children[6].Visibility = Visibility.Collapsed;
             }
         }
 
-        public Node addToLeft(Node anchor, FrameworkElement frameworkElement)
+        public Node AddToLeft(Node anchor, FrameworkElement frameworkElement)
         {
-            this.currentNode = anchor;
-            if (currentNode == null)
+            _currentNode = anchor;
+            if (_currentNode == null)
             {
-                this.currentNode = new Node(frameworkElement);
+                _currentNode = new Node(frameworkElement);
             }
             else
             {
-                if (!currentNode.isMarkedLeft())
+                if (!_currentNode.IsMarkedLeft())
                 {
                     throw new Exception("why you no add to marked anchor???");
                 }
                 Node newNode = new Node(frameworkElement);
-                Node first = currentNode.getLeft();
-                currentNode.setLeft(newNode);
-                currentNode.unmarkLeft();
-                newNode.setRight(currentNode);
-                newNode.unmarkRight();
-                newNode.setLeft(first);
-                first.setRight(newNode);
-                currentNode = newNode;
+                Node first = _currentNode.GetLeft();
+                _currentNode.SetLeft(newNode);
+                _currentNode.UnmarkLeft();
+                newNode.SetRight(_currentNode);
+                newNode.UnmarkRight();
+                newNode.SetLeft(first);
+                first.SetRight(newNode);
+                _currentNode = newNode;
             }
-            setChild(right, currentNode.getFrameworkElement());
+            SetChild(_right, _currentNode.GetFrameworkElement());
             
-            return currentNode;
+            return _currentNode;
         }
 
-        private void setChild(Grid grid, FrameworkElement frameworkElement)
+        private void SetChild(Grid grid, FrameworkElement frameworkElement)
         {
             Grid.SetRow(frameworkElement, 2);
             Grid.SetColumn(frameworkElement, 2);
@@ -279,134 +262,133 @@ namespace LoopList
                 grid.Children.RemoveAt(8);
             }
             grid.Children.Add(frameworkElement);
-            markDirections(grid);
+            MarkDirections(grid);
         }
 
-        public Node addToRight(Node anchor, FrameworkElement frameworkElement)
+        public Node AddToRight(Node anchor, FrameworkElement frameworkElement)
         {
-            this.currentNode = anchor;
-            if (currentNode == null)
+            _currentNode = anchor;
+            if (_currentNode == null)
             {
-                this.currentNode = new Node(frameworkElement);
+                _currentNode = new Node(frameworkElement);
             }
             else
             {
-                if (!currentNode.isMarkedRight())
+                if (!_currentNode.IsMarkedRight())
                 {
                     throw new Exception("why you no add to marked anchor???");
                 }
                 Node newNode = new Node(frameworkElement);
-                Node first = currentNode.getRight();
-                currentNode.setRight(newNode);
-                currentNode.unmarkRight();
-                newNode.setLeft(currentNode);
-                newNode.unmarkLeft();
-                newNode.setRight(first);
-                first.setLeft(newNode);
-                currentNode = newNode;
+                Node first = _currentNode.GetRight();
+                _currentNode.SetRight(newNode);
+                _currentNode.UnmarkRight();
+                newNode.SetLeft(_currentNode);
+                newNode.UnmarkLeft();
+                newNode.SetRight(first);
+                first.SetLeft(newNode);
+                _currentNode = newNode;
             }
-            setChild(right, currentNode.getFrameworkElement());
+            SetChild(_right, _currentNode.GetFrameworkElement());
 
-            return currentNode;
+            return _currentNode;
         }
 
-        public Node addToAbove(Node anchor, FrameworkElement frameworkElement)
+        public Node AddToAbove(Node anchor, FrameworkElement frameworkElement)
         {
-            this.currentNode = anchor;
-            if (currentNode == null)
+            _currentNode = anchor;
+            if (_currentNode == null)
             {
-                this.currentNode = new Node(frameworkElement);
+                _currentNode = new Node(frameworkElement);
             }
             else
             {
-                if (!currentNode.isMarkedAbove())
+                if (!_currentNode.IsMarkedAbove())
                 {
                     throw new Exception("why you no add to marked anchor???");
                 }
                 Node newNode = new Node(frameworkElement);
-                Node first = currentNode.getAbove();
-                currentNode.setAbove(newNode);
-                currentNode.unmarkAbove();
-                newNode.setBelow(currentNode);
-                newNode.unmarkBelow();
-                newNode.setAbove(first);
-                first.setBelow(newNode);
-                currentNode = newNode;
+                Node first = _currentNode.GetAbove();
+                _currentNode.SetAbove(newNode);
+                _currentNode.UnmarkAbove();
+                newNode.SetBelow(_currentNode);
+                newNode.UnmarkBelow();
+                newNode.SetAbove(first);
+                first.SetBelow(newNode);
+                _currentNode = newNode;
             }
-            setChild(right, currentNode.getFrameworkElement());
-            return currentNode;
+            SetChild(_right, _currentNode.GetFrameworkElement());
+            return _currentNode;
         }
 
-        public Node addToBelow(Node anchor, FrameworkElement frameworkElement)
+        public Node AddToBelow(Node anchor, FrameworkElement frameworkElement)
         {
-            this.currentNode = anchor;
-            if (currentNode == null)
+            _currentNode = anchor;
+            if (_currentNode == null)
             {
-                this.currentNode = new Node(frameworkElement);
+                _currentNode = new Node(frameworkElement);
             }
             else
             {
-                if (!currentNode.isMarkedBelow())
+                if (!_currentNode.IsMarkedBelow())
                 {
                     throw new Exception("why you no add to marked anchor???");
                 }
                 Node newNode = new Node(frameworkElement);
-                Node first = currentNode.getBelow();
-                currentNode.setBelow(newNode);
-                currentNode.unmarkBelow();
-                newNode.setAbove(currentNode);
-                newNode.unmarkAbove();
-                newNode.setBelow(first);
-                first.setAbove(newNode);
-                currentNode = newNode;
+                Node first = _currentNode.GetBelow();
+                _currentNode.SetBelow(newNode);
+                _currentNode.UnmarkBelow();
+                newNode.SetAbove(_currentNode);
+                newNode.UnmarkAbove();
+                newNode.SetBelow(first);
+                first.SetAbove(newNode);
+                _currentNode = newNode;
             }
-            setChild(right, currentNode.getFrameworkElement());
-            return currentNode;
+            SetChild(_right, _currentNode.GetFrameworkElement());
+            return _currentNode;
         }
 
-        private bool hNeighbourExists()
+        private bool HNeighbourExists()
         {
-            if (!currentNode.isMarkedLeft() || !currentNode.isMarkedRight())
+            if (!_currentNode.IsMarkedLeft() || !_currentNode.IsMarkedRight())
             {
                 return true;
             }
             return false;
         }
 
-        private bool vNeighbourExists()
+        private bool VNeighbourExists()
         {
-            if (!currentNode.isMarkedBelow() || !currentNode.isMarkedAbove())
+            if (!_currentNode.IsMarkedBelow() || !_currentNode.IsMarkedAbove())
             {
                 return true;
             }
             return false;
         }
 
-        private void markCentered()
+        private void MarkCentered()
         {
-
-            right.Children[0].Visibility = Visibility.Visible;
-            right.Children[1].Visibility = Visibility.Visible;
-            right.Children[2].Visibility = Visibility.Visible;
-            right.Children[3].Visibility = Visibility.Visible;
-        }
-
-        private void unmarkCentered()
-        {
-            right.Children[0].Visibility = Visibility.Collapsed;
-            right.Children[1].Visibility = Visibility.Collapsed;
-            right.Children[2].Visibility = Visibility.Collapsed;
-            right.Children[3].Visibility = Visibility.Collapsed;
-        }
-
-        public bool hDrag(int xDistance)
-        {
-            if (animating == 0)
+            for (int i = 0; i < 4; i++)
             {
-                TranslateTransform ttRight = (TranslateTransform)right.RenderTransform;
-                TranslateTransform ttLeft = (TranslateTransform)left.RenderTransform;
-                if (ttRight.Y != 0) return true; // diagonales scrollen gibts nicht
-                if (hNeighbourExists())
+                _right.Children[i].Visibility = Visibility.Visible;
+            }
+        }
+
+        private void UnmarkCentered()
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                _right.Children[i].Visibility = Visibility.Collapsed;
+            }
+        }
+
+        public bool HDrag(int xDistance)
+        {
+            if (_animating == 0)
+            {
+                TranslateTransform ttRight = (TranslateTransform)_right.RenderTransform;
+                TranslateTransform ttLeft = (TranslateTransform)_left.RenderTransform;
+                if (Math.Abs(ttRight.Y - 0) > 0.000000001) return true; // diagonales scrollen gibts nicht
+                if (HNeighbourExists())
                 {
                     ttLeft.X = (double)ttLeft.GetValue(TranslateTransform.XProperty);
                     ttRight.X = (double)ttRight.GetValue(TranslateTransform.XProperty);
@@ -418,63 +400,63 @@ namespace LoopList
                     ttLeft.X += xDistance;
 
 
-                    if (ttRight.X >= right.ActualWidth || ttRight.X <= -right.ActualWidth)
+                    if (ttRight.X >= _right.ActualWidth || ttRight.X <= -_right.ActualWidth)
                     {
-                        Grid tmp = right;
-                        right = left;
-                        left = tmp;
-                        ttRight = (TranslateTransform)right.RenderTransform;
-                        ttLeft = (TranslateTransform)left.RenderTransform;
-                        lastX = 0;
+                        Grid tmp = _right;
+                        _right = _left;
+                        _left = tmp;
+                        ttRight = (TranslateTransform)_right.RenderTransform;
+                        ttLeft = (TranslateTransform)_left.RenderTransform;
+                        _lastX = 0;
                     }
 
-                    if (ttRight.X == 0)
+                    if (Math.Abs(ttRight.X - 0) < 0.0000001)
                     {
-                        markCentered();
+                        MarkCentered();
                     }
                     else
                     {
-                        unmarkCentered();
+                        UnmarkCentered();
                     }
 
-                    if (ttRight.X >= 0 && lastX < 0)
+                    if (ttRight.X >= 0 && _lastX < 0)
                     {
-                        currentNode = currentNode.getLeft();
-                        lastX = 0;
+                        _currentNode = _currentNode.GetLeft();
+                        _lastX = 0;
                     }
-                    if (ttRight.X <= 0 && lastX > 0)
+                    if (ttRight.X <= 0 && _lastX > 0)
                     {
-                        currentNode = currentNode.getRight();
-                        lastX = 0;
+                        _currentNode = _currentNode.GetRight();
+                        _lastX = 0;
                     }
-                    if (ttRight.X < 0 && lastX == 0)
+                    if (ttRight.X < 0 && _lastX == 0)
                     {
-                        ttLeft.X = right.ActualWidth + ttRight.X;
-                        currentNode = currentNode.getRight();
-                        setChild(left, currentNode.getFrameworkElement());
-                        lastX = -1;
+                        ttLeft.X = _right.ActualWidth + ttRight.X;
+                        _currentNode = _currentNode.GetRight();
+                        SetChild(_left, _currentNode.GetFrameworkElement());
+                        _lastX = -1;
                     }
                     else
                     {
-                        if (ttRight.X > 0 && lastX == 0)
+                        if (ttRight.X > 0 && _lastX == 0)
                         {
-                            ttLeft.X = -right.ActualWidth + ttRight.X;
-                            currentNode = currentNode.getLeft();
-                            setChild(left, currentNode.getFrameworkElement());
-                            lastX = 1;
+                            ttLeft.X = -_right.ActualWidth + ttRight.X;
+                            _currentNode = _currentNode.GetLeft();
+                            SetChild(_left, _currentNode.GetFrameworkElement());
+                            _lastX = 1;
                         }
                     }
                 }
-                if (autoDrag > 0 && autoDrag < 1)
+                if (_autoDrag > 0 && _autoDrag < 1)
                 {
-                    if (ttRight.X >= right.ActualWidth * autoDrag)
+                    if (ttRight.X >= _right.ActualWidth * _autoDrag)
                     {
-                        animH(false);
+                        AnimH(false);
                         return false;
                     }
-                    else if (ttRight.X <= -right.ActualWidth * (autoDrag))
+                    if (ttRight.X <= -_right.ActualWidth * (_autoDrag))
                     {
-                        animH(true);
+                        AnimH(true);
                         return false;
                     }
                 }
@@ -483,17 +465,17 @@ namespace LoopList
             return false;
         }
        
-        public bool vDrag(int yDistance)
+        public bool VDrag(int yDistance)
         {
-            if (animating == 0)
+            if (_animating == 0)
             {
-                TranslateTransform ttRight = (TranslateTransform)right.RenderTransform;
-                TranslateTransform ttAbove = (TranslateTransform)above.RenderTransform;
-                if (ttRight.X != 0)
+                TranslateTransform ttRight = (TranslateTransform)_right.RenderTransform;
+                TranslateTransform ttAbove = (TranslateTransform)_above.RenderTransform;
+                if (Math.Abs(ttRight.X - 0) > 0.00000001)
                 {
                     return true;
                 }
-                if (vNeighbourExists())
+                if (VNeighbourExists())
                 {
                     ttAbove.Y = (double)ttAbove.GetValue(TranslateTransform.YProperty);
                     ttRight.Y = (double)ttRight.GetValue(TranslateTransform.YProperty);
@@ -504,64 +486,64 @@ namespace LoopList
                     ttRight.Y += yDistance;
                     ttAbove.Y += yDistance;
 
-                    if (ttRight.Y >= right.ActualHeight || ttRight.Y <= -right.ActualHeight)
+                    if (ttRight.Y >= _right.ActualHeight || ttRight.Y <= -_right.ActualHeight)
                     {
-                        Grid tmp = right;
-                        right = above;
-                        above = tmp;
-                        ttRight = (TranslateTransform)right.RenderTransform;
-                        ttAbove = (TranslateTransform)above.RenderTransform;
-                        lastY = 0;
+                        Grid tmp = _right;
+                        _right = _above;
+                        _above = tmp;
+                        ttRight = (TranslateTransform)_right.RenderTransform;
+                        ttAbove = (TranslateTransform)_above.RenderTransform;
+                        _lastY = 0;
                     }
 
-                    if (ttRight.Y == 0)
+                    if (Math.Abs(ttRight.Y - 0) < 0.00000001)
                     {
-                        markCentered();
+                        MarkCentered();
                     }
                     else
                     {
-                        unmarkCentered();
+                        UnmarkCentered();
                     }
 
-                    if (ttRight.Y >= 0 && lastY < 0)
+                    if (ttRight.Y >= 0 && _lastY < 0)
                     {
-                        currentNode = currentNode.getAbove();
-                        lastY = 0;
+                        _currentNode = _currentNode.GetAbove();
+                        _lastY = 0;
                     }
-                    if (ttRight.Y <= 0 && lastY > 0)
+                    if (ttRight.Y <= 0 && _lastY > 0)
                     {
-                        currentNode = currentNode.getBelow();
-                        lastY = 0;
+                        _currentNode = _currentNode.GetBelow();
+                        _lastY = 0;
                     }
 
-                    if (ttRight.Y < 0 && lastY == 0)
+                    if (ttRight.Y < 0 && _lastY == 0)
                     {
-                        ttAbove.Y = right.ActualHeight + ttRight.Y;
-                        currentNode = currentNode.getBelow();
-                        setChild(above, currentNode.getFrameworkElement());
-                        lastY = -1;
+                        ttAbove.Y = _right.ActualHeight + ttRight.Y;
+                        _currentNode = _currentNode.GetBelow();
+                        SetChild(_above, _currentNode.GetFrameworkElement());
+                        _lastY = -1;
                     }
                     else
                     {
-                        if (ttRight.Y > 0 && lastY == 0)
+                        if (ttRight.Y > 0 && _lastY == 0)
                         {
-                            ttAbove.Y = -right.ActualHeight + ttRight.Y;
-                            currentNode = currentNode.getAbove();
-                            setChild(above, currentNode.getFrameworkElement());
-                            lastY = 1;
+                            ttAbove.Y = -_right.ActualHeight + ttRight.Y;
+                            _currentNode = _currentNode.GetAbove();
+                            SetChild(_above, _currentNode.GetFrameworkElement());
+                            _lastY = 1;
                         }
                     }
                 }
-                if (autoDrag > 0 && autoDrag < 1)
+                if (_autoDrag > 0 && _autoDrag < 1)
                 {
-                    if (ttRight.Y >= right.ActualHeight * autoDrag)
+                    if (ttRight.Y >= _right.ActualHeight * _autoDrag)
                     {
-                        animV(false);
+                        AnimV(false);
                         return false;
                     }
-                    else if (ttRight.Y <= -right.ActualHeight * (autoDrag))
+                    if (ttRight.Y <= -_right.ActualHeight * (_autoDrag))
                     {
-                        animV(true);
+                        AnimV(true);
                         return false;
                     }
                 }
@@ -570,176 +552,171 @@ namespace LoopList
             return false;
         }
 
-        void animCompleted()
+        void AnimCompleted()
         {
-            animating--;
+            _animating--;
         }
 
-        public void animH(bool leftDir)
+        public void AnimH(bool leftDir)
         {
-            if (animating == 0 && hNeighbourExists())
+            if (_animating == 0 && HNeighbourExists())
             {
-                TranslateTransform ttRight = (TranslateTransform)right.RenderTransform;
-                TranslateTransform ttLeft = (TranslateTransform)left.RenderTransform;
+                TranslateTransform ttRight = (TranslateTransform)_right.RenderTransform;
+                TranslateTransform ttLeft = (TranslateTransform)_left.RenderTransform;
 
-                if (ttRight.X == 0)
+                if (Math.Abs(ttRight.X - 0) < 0.00000001)
                 {
                     if (leftDir)
                     {
-                        hDrag(-1);
+                        HDrag(-1);
                     }
                     else
                     {
-                        hDrag(1);
+                        HDrag(1);
                     }
                 }
-                animating = 2;
+                _animating = 2;
 
-                DoubleAnimation doubleAnimationCenter = new DoubleAnimation();
-                doubleAnimationCenter.From = ttRight.X;
+                DoubleAnimation doubleAnimationCenter = new DoubleAnimation {From = ttRight.X};
                 if (leftDir)
-                    doubleAnimationCenter.To = -right.ActualWidth;
+                    doubleAnimationCenter.To = -_right.ActualWidth;
                 else
-                    doubleAnimationCenter.To = right.ActualWidth;
-                doubleAnimationCenter.Duration = duration;
-                doubleAnimationCenter.Completed += (s, _) => animCompleted();
+                    doubleAnimationCenter.To = _right.ActualWidth;
+                doubleAnimationCenter.Duration = _duration;
+                doubleAnimationCenter.Completed += (s, _) => AnimCompleted();
                 ttRight.BeginAnimation(TranslateTransform.XProperty, doubleAnimationCenter);
 
-                DoubleAnimation doubleAnimationLeft = new DoubleAnimation();
-                doubleAnimationLeft.From = ttLeft.X;
-                doubleAnimationLeft.To = 0;
-                doubleAnimationLeft.Duration = duration;
-                doubleAnimationLeft.Completed += (s, _) => animCompleted();
+                DoubleAnimation doubleAnimationLeft = new DoubleAnimation
+                    {
+                        From = ttLeft.X,
+                        To = 0,
+                        Duration = _duration
+                    };
+                doubleAnimationLeft.Completed += (s, _) => AnimCompleted();
                 ttLeft.BeginAnimation(TranslateTransform.XProperty, doubleAnimationLeft);
 
-                Grid tmp = right;
-                right = left;
-                left = tmp;
-                lastX = 0;
-                lastY = 0;
+                Grid tmp = _right;
+                _right = _left;
+                _left = tmp;
+                _lastX = 0;
+                _lastY = 0;
             }
         }
 
-        public void animV(bool upDir)
+        public void AnimV(bool upDir)
         {
-            if (animating == 0 && vNeighbourExists())
+            if (_animating != 0 || !VNeighbourExists()) return;
+            TranslateTransform ttRight = (TranslateTransform)_right.RenderTransform;
+            TranslateTransform ttAbove = (TranslateTransform)_above.RenderTransform;
+
+            if (Math.Abs(ttRight.Y) < 0.0000000001)
             {
-                TranslateTransform ttRight = (TranslateTransform)right.RenderTransform;
-                TranslateTransform ttAbove = (TranslateTransform)above.RenderTransform;
-
-                if (ttRight.Y == 0)
-                {
-                    if (upDir)
-                    {
-                        vDrag(-1);
-                    }
-                    else
-                    {
-                        vDrag(1);
-                    }
-                }
-                animating = 2;
-
-                DoubleAnimation doubleAnimationCenter = new DoubleAnimation();
-                doubleAnimationCenter.From = ttRight.Y;
                 if (upDir)
-                    doubleAnimationCenter.To = -right.ActualHeight;
+                {
+                    VDrag(-1);
+                }
                 else
-                    doubleAnimationCenter.To = right.ActualHeight;
-                doubleAnimationCenter.Duration = duration;
-                doubleAnimationCenter.Completed += (s, _) => animCompleted();
-                ttRight.BeginAnimation(TranslateTransform.YProperty, doubleAnimationCenter);
-
-                DoubleAnimation doubleAnimationLeft = new DoubleAnimation();
-                doubleAnimationLeft.From = ttAbove.Y;
-                doubleAnimationLeft.To = 0;
-                doubleAnimationLeft.Duration = duration;
-                doubleAnimationLeft.Completed += (s, _) => animCompleted();
-                ttAbove.BeginAnimation(TranslateTransform.YProperty, doubleAnimationLeft);
-
-                Grid tmp = right;
-                right = above;
-                above = tmp;
-                lastY = 0;
+                {
+                    VDrag(1);
+                }
             }
+            _animating = 2;
+
+            DoubleAnimation doubleAnimationCenter = new DoubleAnimation {From = ttRight.Y};
+            if (upDir)
+                doubleAnimationCenter.To = -_right.ActualHeight;
+            else
+                doubleAnimationCenter.To = _right.ActualHeight;
+            doubleAnimationCenter.Duration = _duration;
+            doubleAnimationCenter.Completed += (s, _) => AnimCompleted();
+            ttRight.BeginAnimation(TranslateTransform.YProperty, doubleAnimationCenter);
+
+            DoubleAnimation doubleAnimationLeft = new DoubleAnimation {From = ttAbove.Y, To = 0, Duration = _duration};
+            doubleAnimationLeft.Completed += (s, _) => AnimCompleted();
+            ttAbove.BeginAnimation(TranslateTransform.YProperty, doubleAnimationLeft);
+
+            Grid tmp = _right;
+            _right = _above;
+            _above = tmp;
+            _lastY = 0;
         }
 
-        public void animBack()
+        public void AnimBack()
         {
-            if (animating == 0)
+            if (_animating != 0) return;
+            if (_lastX != 0)
             {
-                if (lastX != 0)
+                TranslateTransform ttRight = (TranslateTransform)_right.RenderTransform;
+                TranslateTransform ttLeft = (TranslateTransform)_left.RenderTransform;
+
+                _animating = 2;
+
+                DoubleAnimation doubleAnimationCenter = new DoubleAnimation
+                    {
+                        From = ttRight.X,
+                        To = 0,
+                        Duration = _duration
+                    };
+                doubleAnimationCenter.Completed += (s, _) => AnimCompleted();
+                ttRight.BeginAnimation(TranslateTransform.XProperty, doubleAnimationCenter);
+
+                DoubleAnimation doubleAnimationLeft = new DoubleAnimation {From = ttLeft.X};
+                if (_lastX < 0)
+                    doubleAnimationLeft.To = _right.ActualWidth;
+                if (_lastX > 0)
+                    doubleAnimationLeft.To = -_right.ActualWidth;
+                doubleAnimationLeft.Duration = _duration;
+                doubleAnimationLeft.Completed += (s, _) => AnimCompleted();
+                ttLeft.BeginAnimation(TranslateTransform.XProperty, doubleAnimationLeft);
+                if (_lastX < 0)
                 {
-                    TranslateTransform ttRight = (TranslateTransform)right.RenderTransform;
-                    TranslateTransform ttLeft = (TranslateTransform)left.RenderTransform;
-
-                    animating = 2;
-
-                    DoubleAnimation doubleAnimationCenter = new DoubleAnimation();
-                    doubleAnimationCenter.From = ttRight.X;
-                    doubleAnimationCenter.To = 0;
-                    doubleAnimationCenter.Duration = duration;
-                    doubleAnimationCenter.Completed += (s, _) => animCompleted();
-                    ttRight.BeginAnimation(TranslateTransform.XProperty, doubleAnimationCenter);
-
-                    DoubleAnimation doubleAnimationLeft = new DoubleAnimation();
-                    doubleAnimationLeft.From = ttLeft.X;
-                    if (lastX < 0)
-                        doubleAnimationLeft.To = right.ActualWidth;
-                    if (lastX > 0)
-                        doubleAnimationLeft.To = -right.ActualWidth;
-                    doubleAnimationLeft.Duration = duration;
-                    doubleAnimationLeft.Completed += (s, _) => animCompleted();
-                    ttLeft.BeginAnimation(TranslateTransform.XProperty, doubleAnimationLeft);
-                    if (lastX < 0)
-                    {
-                        currentNode = currentNode.getLeft();
-                    }
-                    if (lastX > 0)
-                    {
-                        currentNode = currentNode.getRight();
-                    }
-                    lastX = 0;
-                    lastY = 0;
+                    _currentNode = _currentNode.GetLeft();
                 }
-                else
+                if (_lastX > 0)
                 {
-                    if (lastY != 0)
-                    {
-                        TranslateTransform ttRight = (TranslateTransform)right.RenderTransform;
-                        TranslateTransform ttAbove = (TranslateTransform)above.RenderTransform;
-
-                        animating = 2;
-
-                        DoubleAnimation doubleAnimationCenter = new DoubleAnimation();
-                        doubleAnimationCenter.From = ttRight.Y;
-                        doubleAnimationCenter.To = 0;
-                        doubleAnimationCenter.Duration = duration;
-                        doubleAnimationCenter.Completed += (s, _) => animCompleted();
-                        ttRight.BeginAnimation(TranslateTransform.YProperty, doubleAnimationCenter);
-
-                        DoubleAnimation doubleAnimationLeft = new DoubleAnimation();
-                        doubleAnimationLeft.From = ttAbove.Y;
-                        if (lastY < 0)
-                            doubleAnimationLeft.To = right.ActualHeight;
-                        if (lastY > 0)
-                            doubleAnimationLeft.To = -right.ActualHeight;
-                        doubleAnimationLeft.Duration = duration;
-                        doubleAnimationLeft.Completed += (s, _) => animCompleted();
-                        ttAbove.BeginAnimation(TranslateTransform.YProperty, doubleAnimationLeft);
-                        if (lastY < 0)
-                        {
-                            currentNode = currentNode.getAbove();
-                        }
-                        if (lastY > 0)
-                        {
-                            currentNode = currentNode.getBelow();
-                        }
-                        lastY = 0;
-                        lastX = 0;
-                    }
-
+                    _currentNode = _currentNode.GetRight();
                 }
+                _lastX = 0;
+                _lastY = 0;
+            }
+            else
+            {
+                if (_lastY != 0)
+                {
+                    TranslateTransform ttRight = (TranslateTransform)_right.RenderTransform;
+                    TranslateTransform ttAbove = (TranslateTransform)_above.RenderTransform;
+
+                    _animating = 2;
+
+                    DoubleAnimation doubleAnimationCenter = new DoubleAnimation
+                        {
+                            From = ttRight.Y,
+                            To = 0,
+                            Duration = _duration
+                        };
+                    doubleAnimationCenter.Completed += (s, _) => AnimCompleted();
+                    ttRight.BeginAnimation(TranslateTransform.YProperty, doubleAnimationCenter);
+
+                    DoubleAnimation doubleAnimationLeft = new DoubleAnimation {From = ttAbove.Y};
+                    if (_lastY < 0)
+                        doubleAnimationLeft.To = _right.ActualHeight;
+                    if (_lastY > 0)
+                        doubleAnimationLeft.To = -_right.ActualHeight;
+                    doubleAnimationLeft.Duration = _duration;
+                    doubleAnimationLeft.Completed += (s, _) => AnimCompleted();
+                    ttAbove.BeginAnimation(TranslateTransform.YProperty, doubleAnimationLeft);
+                    if (_lastY < 0)
+                    {
+                        _currentNode = _currentNode.GetAbove();
+                    }
+                    if (_lastY > 0)
+                    {
+                        _currentNode = _currentNode.GetBelow();
+                    }
+                    _lastY = 0;
+                    _lastX = 0;
+                }
+
             }
         }
     }
