@@ -94,7 +94,7 @@ namespace Antialiasing
         /// </summary>
         private int opaquePixelValue = -1;
 
-        private int[] x = new int[4];
+        private int[] x = new int[16];
         private int n;
 
         /// <summary>
@@ -287,21 +287,10 @@ namespace Antialiasing
                     }
                 }
 
-                for (int i = 0; i < this.greenScreenPixelData.Length - (this.depthWidth*2) -2; i++)
+                for (int i = 0; i < this.greenScreenPixelData.Length - (this.depthWidth * 3) - 3; i++)
                 {
 
                     //ToDo Werte können im Randbereich liegen
-                    //x[0] = i;
-                    //x[1] = x[0] + 1;
-                    //x[2] = i + this.depthWidth;
-                    //x[3] = x[2] + 1;
-                    //x[4] = x[3] + 1;
-                    //x[5] = x[3] + 2;
-                    //x[6] = i + this.depthWidth * 2;
-                    //x[7] = x[6] + 1;
-                    //x[8] = x[6] + 2;
-
-
 
                     for (int j = 0; j < n; j++)
                     {
@@ -313,7 +302,9 @@ namespace Antialiasing
                     }
 
                     int counter = 0;
-                    int pos = -1;
+                    // int pos = -1;
+                    int[] arr = new int[4];
+                    int arrI = 0;
 
                     for (int j = 0; j < x.Length; j++)
                     {
@@ -324,22 +315,22 @@ namespace Antialiasing
                         }
                         else
                         {
-                            pos = j;
+
+                            if (arrI >= 4)
+                            {
+                                arrI = -1;
+                                break;
+                            }
+                            arr[arrI] = j;
+                            arrI++;
                         }
                     }
-                    if (counter == 3)
+                    if (counter >= (3 / 4 * x.Length) && arrI != -1)
                     {
-
-                        this.greenScreenPixelData[x[pos]] = -2;
-
-                        //for (int j = 0; j < x.Length; j++)
-                        //{
-                        //    if (this.greenScreenPixelData[x[j]] != -1)
-                        //    {
-                        //        this.greenScreenPixelData[x[j]] = -2;
-                        //    }
-                        //}
-
+                        for (int k = 0; k < arr.Length; k++)
+                        {
+                            this.greenScreenPixelData[x[arr[k]]] = -2;
+                        }
                     }
                 }
 
