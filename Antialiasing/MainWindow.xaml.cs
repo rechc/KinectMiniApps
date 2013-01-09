@@ -334,13 +334,13 @@ namespace Antialiasing
                     }
                 }
 
-                for (int i = 0; i < this.greenScreenPixelData.Length; i++)
-                {
-                    if (this.greenScreenPixelData[i] == -2)
-                    {
-                        this.greenScreenPixelData[i] = -1;
-                    }
-                }
+                //for (int i = 0; i < this.greenScreenPixelData.Length; i++)
+                //{
+                //    if (this.greenScreenPixelData[i] == -2)
+                //    {
+                //        this.greenScreenPixelData[i] = -1;
+                //    }
+                //}
 
             }
 
