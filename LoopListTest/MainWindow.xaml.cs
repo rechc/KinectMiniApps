@@ -30,6 +30,7 @@ namespace LoopListTest
             MyTextLoopList.Scrolled += MyTextLoopList_Scrolled;
             MyTextLoopList.SetFontSize(16);
             MyTextLoopList.SetFontFamily("Miriam Fixed");
+            MyTextLoopList.SetDuration(new Duration(new TimeSpan(2500000)));
             string[] paths = Directory.GetFiles(Environment.CurrentDirectory + @"\images", "tele*");
             Node anchor = null;
             Node anchorForMokup = null;
@@ -74,9 +75,6 @@ namespace LoopListTest
 
             MyLoopList.AddToAbove(anchorForMokup, mokupGrid);
             
-            MyTextLoopList.Add("Ebene5");
-            MyTextLoopList.Add("Ebene4");
-            MyTextLoopList.Add("Ebene3");
             MyTextLoopList.Add("Ebene2");
             MyTextLoopList.Add("Ebene1");
             
@@ -92,20 +90,16 @@ namespace LoopListTest
         private void MyLoopListOnScrolled(object sender, EventArgs e)
         {
             if (e != null)
-                if (((LoopListArgs) e).GetDirection() == Direction.Top)
+                switch (((LoopListArgs) e).GetDirection())
                 {
-                    MyTextLoopList.Anim(true);
-                    _waitForTextList = true;
-
-                }
-                else
-                {
-                    if (((LoopListArgs) e).GetDirection() == Direction.Down)
-                    {
+                    case Direction.Top:
+                        MyTextLoopList.Anim(true);
+                        _waitForTextList = true;
+                        break;
+                    case Direction.Down:
                         MyTextLoopList.Anim(false);
                         _waitForTextList = true;
-
-                    }
+                        break;
                 }
                 
         }
@@ -129,14 +123,7 @@ namespace LoopListTest
 
         private void myLoopList_MouseMove_1(object sender, MouseEventArgs e)
         {
-            if (!_doDrag)
-            {
-                return;
-            }
-            if (_waitForTextList) {
-                myLoopList_MouseUp_1(null, null);
-                return;
-            }
+            if (!_doDrag) return;
             Point currentPos = e.GetPosition(MyLoopList);
             if (!_oldMouseMovePoint.HasValue)
                 _oldMouseMovePoint = currentPos;
@@ -156,7 +143,8 @@ namespace LoopListTest
             }
             if (_dragDirection == 2)
             {
-                mayDragOn = MyLoopList.VDrag(yDistance);
+                if (!_waitForTextList)
+                    mayDragOn = MyLoopList.VDrag(yDistance);
             }
             if (!mayDragOn)
             {
@@ -181,26 +169,24 @@ namespace LoopListTest
 
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            if (e.Key == Key.Left)
+            switch (e.Key)
             {
-                MyLoopList.AnimH(true);
+                case Key.Left:
+                    MyLoopList.AnimH(true);
+                    break;
+                case Key.Right:
+                    MyLoopList.AnimH(false);
+                    break;
+                case Key.Up:
+                    if (!_waitForTextList)
+                        MyLoopList.AnimV(true);
+                    break;
+                case Key.Down:
+                    if (!_waitForTextList)
+                        MyLoopList.AnimV(false);
+                    break;
             }
-            if (e.Key == Key.Right)
-            {
-                MyLoopList.AnimH(false);
 
-            }
-            if (!_waitForTextList)
-            {
-                if (e.Key == Key.Up)
-                {
-                    MyLoopList.AnimV(true);
-                }
-                if (e.Key == Key.Down)
-                {
-                    MyLoopList.AnimV(false);
-                }
-            }
             e.Handled = true;
         }
 

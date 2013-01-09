@@ -21,12 +21,17 @@ namespace LoopList
         private int _lastLastY;
         private int _index;
         private double _topYPos, _bottomYPos;
+        private Duration _duration;
+
         public event EventHandler Scrolled;
 
 
         public TextLoopList()
         {
             InitializeComponent();
+
+
+            _duration = new Duration(new TimeSpan(0, 0, 0, 0, 250));
 
             TextBlock centerBlock = new TextBlock();
             TextBlock topBlock = new TextBlock();
@@ -61,6 +66,11 @@ namespace LoopList
             RootGrid.Children.Add(_bottom);
 
             SizeChanged +=TextLoopList_SizeChanged;
+        }
+
+        public void SetDuration(Duration duration)
+        {
+            _duration = duration;
         }
 
         public void SetFontFamily(string ff)
@@ -145,7 +155,7 @@ namespace LoopList
                     {
                         From = ttTop.Y,
                         To = _topYPos*2,
-                        Duration = new Duration(new TimeSpan(0, 0, 0, 0, 250))
+                        Duration = _duration
                     };
                 ttTop.BeginAnimation(TranslateTransform.YProperty, doubleAnimationTop);
 
@@ -153,7 +163,7 @@ namespace LoopList
                     {
                         From = ttCenter.Y,
                         To = _topYPos,
-                        Duration = new Duration(new TimeSpan(0, 0, 0, 0, 250))
+                        Duration = _duration
                     };
                 doubleAnimationCenter.Completed += (s, _) => AnimCompleted();
                 ttCenter.BeginAnimation(TranslateTransform.YProperty, doubleAnimationCenter);
@@ -162,7 +172,7 @@ namespace LoopList
                     {
                         From = ttBottom.Y,
                         To = 0,
-                        Duration = new Duration(new TimeSpan(0, 0, 0, 0, 250))
+                        Duration = _duration
                     };
                 doubleAnimationBottom.Completed += (s, _) => AnimCompleted();
                 ttBottom.BeginAnimation(TranslateTransform.YProperty, doubleAnimationBottom);
@@ -179,7 +189,7 @@ namespace LoopList
                 {
                     From = ttTop.Y,
                     To = 0,
-                    Duration = new Duration(new TimeSpan(0, 0, 0, 0, 250))
+                    Duration = _duration
                 };
                 doubleAnimationTop.Completed += (s, _) => AnimCompleted();
                 ttTop.BeginAnimation(TranslateTransform.YProperty, doubleAnimationTop);
@@ -188,7 +198,7 @@ namespace LoopList
                 {
                     From = ttCenter.Y,
                     To = _bottomYPos,
-                    Duration = new Duration(new TimeSpan(0, 0, 0, 0, 250))
+                    Duration = _duration
                 };
                 doubleAnimationCenter.Completed += (s, _) => AnimCompleted();
                 ttCenter.BeginAnimation(TranslateTransform.YProperty, doubleAnimationCenter);
@@ -197,7 +207,7 @@ namespace LoopList
                 {
                     From = ttBottom.Y,
                     To = _bottomYPos*2,
-                    Duration = new Duration(new TimeSpan(0, 0, 0, 0, 250))
+                    Duration = _duration
                 };
                 ttBottom.BeginAnimation(TranslateTransform.YProperty, doubleAnimationBottom);
                 
@@ -211,7 +221,7 @@ namespace LoopList
             {
                 From = 1,
                 To = 0,
-                Duration = new Duration(new TimeSpan(0, 0, 0, 0, 150))
+                Duration = _duration
             };
             fadeOut.Completed += (s, _) => AnimCompleted();
             
@@ -249,7 +259,7 @@ namespace LoopList
                         {
                             From = _bottomYPos*2,
                             To = _bottomYPos,
-                            Duration = new Duration(new TimeSpan(0, 0, 0, 0, 250))
+                            Duration = _duration
                         };
                     doubleAnimationBottom.Completed += (s, _) => AnimCompleted();
                     ttBottom.BeginAnimation(TranslateTransform.YProperty, doubleAnimationBottom);
@@ -279,7 +289,7 @@ namespace LoopList
                         {
                             From = _topYPos*2,
                             To = _topYPos,
-                            Duration = new Duration(new TimeSpan(0, 0, 0, 0, 250))
+                            Duration = _duration
                         };
                     doubleAnimationBottom.Completed += (s, _) => AnimCompleted();
                     ttBottom.BeginAnimation(TranslateTransform.YProperty, doubleAnimationBottom);
@@ -289,7 +299,7 @@ namespace LoopList
                 {
                     From = 0,
                     To = 1,
-                    Duration = new Duration(new TimeSpan(0, 0, 0, 0, 250))
+                    Duration = _duration
                 };
                 appearing.BeginAnimation(OpacityProperty, fadeIn);
 
