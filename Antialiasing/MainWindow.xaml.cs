@@ -32,7 +32,7 @@ namespace Antialiasing
         /// <summary>
         /// Format we will use for the depth stream
         /// </summary>
-        private const DepthImageFormat DepthFormat = DepthImageFormat.Resolution640x480Fps30;
+        private const DepthImageFormat DepthFormat = DepthImageFormat.Resolution320x240Fps30;
 
         /// <summary>
         /// Format we will use for the color stream
@@ -95,6 +95,7 @@ namespace Antialiasing
         private int opaquePixelValue = -1;
 
         private int[] x = new int[4];
+        private int n;
 
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
@@ -102,6 +103,7 @@ namespace Antialiasing
         public MainWindow()
         {
             InitializeComponent();
+            n = Convert.ToInt32(Math.Sqrt(x.Length));
         }
 
         /// <summary>
@@ -289,20 +291,26 @@ namespace Antialiasing
                 {
 
                     //ToDo Werte können im Randbereich liegen
-                    x[0] = i;
-                    x[1] = x[0] + 1;
-                    x[2] = i + this.depthWidth;
-                    x[3] = x[2] + 1;
+                    //x[0] = i;
+                    //x[1] = x[0] + 1;
+                    //x[2] = i + this.depthWidth;
+                    //x[3] = x[2] + 1;
                     //x[4] = x[3] + 1;
                     //x[5] = x[3] + 2;
                     //x[6] = i + this.depthWidth * 2;
                     //x[7] = x[6] + 1;
                     //x[8] = x[6] + 2;
 
-                    //for (int j = 0; j < x.Length; j++)
-                    //{
-                    //    x[j] = i;
-                    //}
+
+
+                    for (int j = 0; j < n; j++)
+                    {
+                        for (int k = 0; k < n; k++)
+                        {
+                            x[j * n + k] = i + k + this.depthWidth * j;
+
+                        }
+                    }
 
                     int counter = 0;
                     int pos = -1;
