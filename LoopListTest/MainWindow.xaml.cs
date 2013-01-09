@@ -19,12 +19,15 @@ namespace LoopListTest
         private Point? _oldMouseMovePoint;
         private bool _doDrag;
         private int _dragDirection;
+        private bool waitForTextList = false;
 
         public MainWindow()
         {
             InitializeComponent();
-            myLoopList.SetAutoDragOffset(0.55);
-            myLoopList.SetDuration(new Duration(new TimeSpan(2000000))); //200ms
+            MyLoopList.SetAutoDragOffset(0.55);
+            MyLoopList.SetDuration(new Duration(new TimeSpan(3000000))); //300ms
+            MyLoopList.Scrolled += MyLoopListOnScrolled;
+            MyTextLoopList.Scrolled += MyTextLoopList_Scrolled;
             string[] paths = Directory.GetFiles(Environment.CurrentDirectory + @"\images", "tele*");
             Node anchor = null;
             Node anchorForMokup = null;
@@ -37,45 +40,78 @@ namespace LoopListTest
                     {
                         Content = "button " + (i + 2)
                     };
-                button.Click += printName;
+                button.Click += PrintName;
                 button.MaxHeight = 50;
 
                 Image img = new Image
                     {
                         Stretch = Stretch.Fill, 
-                        Source = loadImage(path)
+                        Source = LoadImage(path)
                     };
                 grid.Children.Add(img);
                 grid.Children.Add(button);
                 if (i != 3) {
-                    anchor = myLoopList.AddToRight(anchor, grid);
+                    anchor = MyLoopList.AddToRight(anchor, grid);
                     if (i == 1)
                     {
                         anchorForMokup = anchor;
                     }
                 }
                 else
-                    anchor = myLoopList.AddToAbove(anchor, grid);
+                    anchor = MyLoopList.AddToAbove(anchor, grid);
             }
             Grid mokupGrid = new Grid();
 
             Image mokuImg = new Image
                 {
                     Stretch = Stretch.Fill,
-                    Source = loadImage(Environment.CurrentDirectory + @"\images\mokup.jpg")
+                    Source = LoadImage(Environment.CurrentDirectory + @"\images\mokup.jpg")
                 };
 
             mokupGrid.Children.Add(mokuImg);
 
-            myLoopList.AddToAbove(anchorForMokup, mokupGrid);
+            MyLoopList.AddToAbove(anchorForMokup, mokupGrid);
+
+            MyTextLoopList.Add("Ebene2");
+            MyTextLoopList.Add("Ebene1");
+            
+
+
         }
 
-        void printName(object sender, EventArgs e)
+        private void MyTextLoopList_Scrolled(object sender, EventArgs e)
+        {
+            waitForTextList = false;
+        }
+
+        private void MyLoopListOnScrolled(object sender, EventArgs e)
+        {
+            if (e != null)
+                if (((LoopListArgs) e).GetDirection() == Direction.Top)
+                {
+                    MyTextLoopList.Anim(true);
+                    waitForTextList = true;
+
+                }
+                else
+                {
+                    if (((LoopListArgs) e).GetDirection() == Direction.Down)
+                    {
+                        MyTextLoopList.Anim(false);
+                        waitForTextList = true;
+
+                    }
+                }
+                
+        }
+
+        static void PrintName(object sender, EventArgs e)
         {
             Debug.WriteLine(((Button)sender).Content);
+
         }
 
-        private BitmapImage loadImage(string path)
+        private static BitmapImage LoadImage(string path)
         {
             BitmapImage bi = new BitmapImage();
             bi.BeginInit();
@@ -88,8 +124,12 @@ namespace LoopListTest
 
         private void myLoopList_MouseMove_1(object sender, MouseEventArgs e)
         {
-            if (!_doDrag) return;
-            Point currentPos = e.GetPosition(myLoopList);
+            if (!_doDrag && !waitForTextList)
+            {
+                myLoopList_MouseUp_1(null, null);
+                return;
+            }
+            Point currentPos = e.GetPosition(MyLoopList);
             if (!_oldMouseMovePoint.HasValue)
                 _oldMouseMovePoint = currentPos;
             if (Math.Abs(_oldMouseMovePoint.Value.X - currentPos.X) < 0.000000001 && Math.Abs(_oldMouseMovePoint.Value.Y - currentPos.Y) < 0.000000001)
@@ -104,11 +144,11 @@ namespace LoopListTest
             bool mayDragOn = false;
             if (_dragDirection == 1)
             {
-                mayDragOn = myLoopList.HDrag(xDistance);
+                mayDragOn = MyLoopList.HDrag(xDistance);
             }
             if (_dragDirection == 2)
             {
-                mayDragOn = myLoopList.VDrag(yDistance);
+                mayDragOn = MyLoopList.VDrag(yDistance);
             }
             if (!mayDragOn)
             {
@@ -121,7 +161,7 @@ namespace LoopListTest
         {
             _doDrag = false;
             _oldMouseMovePoint = null;
-            myLoopList.AnimBack();
+            MyLoopList.AnimBack();
             _dragDirection = 0;
         }
 
@@ -135,20 +175,23 @@ namespace LoopListTest
         {
             if (e.Key == Key.Left)
             {
-                myLoopList.AnimH(true);
+                MyLoopList.AnimH(true);
             }
             if (e.Key == Key.Right)
             {
-                myLoopList.AnimH(false);
+                MyLoopList.AnimH(false);
 
             }
-            if (e.Key == Key.Up)
+            if (!waitForTextList)
             {
-                myLoopList.AnimV(true);
-            }
-            if (e.Key == Key.Down)
-            {
-                myLoopList.AnimV(false);
+                if (e.Key == Key.Up)
+                {
+                    MyLoopList.AnimV(true);
+                }
+                if (e.Key == Key.Down)
+                {
+                    MyLoopList.AnimV(false);
+                }
             }
             e.Handled = true;
         }

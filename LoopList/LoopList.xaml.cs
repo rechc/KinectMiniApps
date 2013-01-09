@@ -23,6 +23,8 @@ namespace LoopList
         private double _autoDrag;
         private Duration _duration;
 
+        public event EventHandler Scrolled;
+
         public LoopList()
         {
             InitializeComponent();
@@ -155,14 +157,19 @@ namespace LoopList
             _right = (Grid)CloneElement(_left);
             _above = (Grid)CloneElement(_left);
 
-            rootGrid.Children.Add(_left);
-            rootGrid.Children.Add(_right);
-            rootGrid.Children.Add(_above);
+            RootGrid.Children.Add(_left);
+            RootGrid.Children.Add(_right);
+            RootGrid.Children.Add(_above);
 
             Loaded += LoopList_Loaded;
 
         }
 
+        private void FireScrolled(LoopListArgs args)
+        {
+            if (args == null) throw new ArgumentNullException("args");
+            Scrolled(this, args);
+        }
 
         private static UIElement CloneElement(UIElement orig)
         {
@@ -383,173 +390,175 @@ namespace LoopList
 
         public bool HDrag(int xDistance)
         {
-            if (_animating == 0)
+            if (_animating != 0) return false;
+            TranslateTransform ttRight = (TranslateTransform)_right.RenderTransform;
+            TranslateTransform ttLeft = (TranslateTransform)_left.RenderTransform;
+            if (Math.Abs(ttRight.Y - 0) > 0.000000001) return true; // diagonales scrollen gibts nicht
+            if (HNeighbourExists())
             {
-                TranslateTransform ttRight = (TranslateTransform)_right.RenderTransform;
-                TranslateTransform ttLeft = (TranslateTransform)_left.RenderTransform;
-                if (Math.Abs(ttRight.Y - 0) > 0.000000001) return true; // diagonales scrollen gibts nicht
-                if (HNeighbourExists())
+                ttLeft.X = (double)ttLeft.GetValue(TranslateTransform.XProperty);
+                ttRight.X = (double)ttRight.GetValue(TranslateTransform.XProperty);
+
+                ttLeft.BeginAnimation(TranslateTransform.XProperty, null);
+                ttRight.BeginAnimation(TranslateTransform.XProperty, null);
+
+                ttRight.X += xDistance;
+                ttLeft.X += xDistance;
+
+
+                if (ttRight.X >= _right.ActualWidth || ttRight.X <= -_right.ActualWidth)
                 {
-                    ttLeft.X = (double)ttLeft.GetValue(TranslateTransform.XProperty);
-                    ttRight.X = (double)ttRight.GetValue(TranslateTransform.XProperty);
+                    Grid tmp = _right;
+                    _right = _left;
+                    _left = tmp;
+                    FireScrolled(ttRight.X >= _right.ActualWidth
+                                     ? new LoopListArgs(Direction.Left)
+                                     : new LoopListArgs(Direction.Right));
+                    ttRight = (TranslateTransform) _right.RenderTransform;
+                    ttLeft = (TranslateTransform) _left.RenderTransform;
+                    _lastX = 0;
 
-                    ttLeft.BeginAnimation(TranslateTransform.XProperty, null);
-                    ttRight.BeginAnimation(TranslateTransform.XProperty, null);
+                }
 
-                    ttRight.X += xDistance;
-                    ttLeft.X += xDistance;
+                if (Math.Abs(ttRight.X) < 1)
+                {
+                    MarkCentered();
+                }
+                else
+                {
+                    UnmarkCentered();
+                }
 
-
-                    if (ttRight.X >= _right.ActualWidth || ttRight.X <= -_right.ActualWidth)
+                if (ttRight.X >= 0 && _lastX < 0)
+                {
+                    _currentNode = _currentNode.GetLeft();
+                    _lastX = 0;
+                }
+                if (ttRight.X <= 0 && _lastX > 0)
+                {
+                    _currentNode = _currentNode.GetRight();
+                    _lastX = 0;
+                }
+                if (ttRight.X < 0 && _lastX == 0)
+                {
+                    ttLeft.X = _right.ActualWidth + ttRight.X;
+                    _currentNode = _currentNode.GetRight();
+                    SetChild(_left, _currentNode.GetFrameworkElement());
+                    _lastX = -1;
+                }
+                else
+                {
+                    if (ttRight.X > 0 && _lastX == 0)
                     {
-                        Grid tmp = _right;
-                        _right = _left;
-                        _left = tmp;
-                        ttRight = (TranslateTransform)_right.RenderTransform;
-                        ttLeft = (TranslateTransform)_left.RenderTransform;
-                        _lastX = 0;
-                    }
-
-                    if (Math.Abs(ttRight.X - 0) < 0.0000001)
-                    {
-                        MarkCentered();
-                    }
-                    else
-                    {
-                        UnmarkCentered();
-                    }
-
-                    if (ttRight.X >= 0 && _lastX < 0)
-                    {
+                        ttLeft.X = -_right.ActualWidth + ttRight.X;
                         _currentNode = _currentNode.GetLeft();
-                        _lastX = 0;
-                    }
-                    if (ttRight.X <= 0 && _lastX > 0)
-                    {
-                        _currentNode = _currentNode.GetRight();
-                        _lastX = 0;
-                    }
-                    if (ttRight.X < 0 && _lastX == 0)
-                    {
-                        ttLeft.X = _right.ActualWidth + ttRight.X;
-                        _currentNode = _currentNode.GetRight();
                         SetChild(_left, _currentNode.GetFrameworkElement());
-                        _lastX = -1;
-                    }
-                    else
-                    {
-                        if (ttRight.X > 0 && _lastX == 0)
-                        {
-                            ttLeft.X = -_right.ActualWidth + ttRight.X;
-                            _currentNode = _currentNode.GetLeft();
-                            SetChild(_left, _currentNode.GetFrameworkElement());
-                            _lastX = 1;
-                        }
+                        _lastX = 1;
                     }
                 }
-                if (_autoDrag > 0 && _autoDrag < 1)
-                {
-                    if (ttRight.X >= _right.ActualWidth * _autoDrag)
-                    {
-                        AnimH(false);
-                        return false;
-                    }
-                    if (ttRight.X <= -_right.ActualWidth * (_autoDrag))
-                    {
-                        AnimH(true);
-                        return false;
-                    }
-                }
-                return true;
             }
-            return false;
+            if (_autoDrag > 0 && _autoDrag < 1)
+            {
+                if (ttRight.X >= _right.ActualWidth * _autoDrag)
+                {
+                    AnimH(false);
+                    return false;
+                }
+                if (ttRight.X <= -_right.ActualWidth * (_autoDrag))
+                {
+                    AnimH(true);
+                    return false;
+                }
+            }
+            return true;
         }
        
         public bool VDrag(int yDistance)
         {
-            if (_animating == 0)
+            if (_animating != 0) return false;
+            TranslateTransform ttRight = (TranslateTransform)_right.RenderTransform;
+            TranslateTransform ttAbove = (TranslateTransform)_above.RenderTransform;
+            if (Math.Abs(ttRight.X - 0) > 0.00000001)
             {
-                TranslateTransform ttRight = (TranslateTransform)_right.RenderTransform;
-                TranslateTransform ttAbove = (TranslateTransform)_above.RenderTransform;
-                if (Math.Abs(ttRight.X - 0) > 0.00000001)
-                {
-                    return true;
-                }
-                if (VNeighbourExists())
-                {
-                    ttAbove.Y = (double)ttAbove.GetValue(TranslateTransform.YProperty);
-                    ttRight.Y = (double)ttRight.GetValue(TranslateTransform.YProperty);
-
-                    ttAbove.BeginAnimation(TranslateTransform.YProperty, null);
-                    ttRight.BeginAnimation(TranslateTransform.YProperty, null);
-
-                    ttRight.Y += yDistance;
-                    ttAbove.Y += yDistance;
-
-                    if (ttRight.Y >= _right.ActualHeight || ttRight.Y <= -_right.ActualHeight)
-                    {
-                        Grid tmp = _right;
-                        _right = _above;
-                        _above = tmp;
-                        ttRight = (TranslateTransform)_right.RenderTransform;
-                        ttAbove = (TranslateTransform)_above.RenderTransform;
-                        _lastY = 0;
-                    }
-
-                    if (Math.Abs(ttRight.Y - 0) < 0.00000001)
-                    {
-                        MarkCentered();
-                    }
-                    else
-                    {
-                        UnmarkCentered();
-                    }
-
-                    if (ttRight.Y >= 0 && _lastY < 0)
-                    {
-                        _currentNode = _currentNode.GetAbove();
-                        _lastY = 0;
-                    }
-                    if (ttRight.Y <= 0 && _lastY > 0)
-                    {
-                        _currentNode = _currentNode.GetBelow();
-                        _lastY = 0;
-                    }
-
-                    if (ttRight.Y < 0 && _lastY == 0)
-                    {
-                        ttAbove.Y = _right.ActualHeight + ttRight.Y;
-                        _currentNode = _currentNode.GetBelow();
-                        SetChild(_above, _currentNode.GetFrameworkElement());
-                        _lastY = -1;
-                    }
-                    else
-                    {
-                        if (ttRight.Y > 0 && _lastY == 0)
-                        {
-                            ttAbove.Y = -_right.ActualHeight + ttRight.Y;
-                            _currentNode = _currentNode.GetAbove();
-                            SetChild(_above, _currentNode.GetFrameworkElement());
-                            _lastY = 1;
-                        }
-                    }
-                }
-                if (_autoDrag > 0 && _autoDrag < 1)
-                {
-                    if (ttRight.Y >= _right.ActualHeight * _autoDrag)
-                    {
-                        AnimV(false);
-                        return false;
-                    }
-                    if (ttRight.Y <= -_right.ActualHeight * (_autoDrag))
-                    {
-                        AnimV(true);
-                        return false;
-                    }
-                }
                 return true;
             }
-            return false;
+            if (VNeighbourExists())
+            {
+                ttAbove.Y = (double)ttAbove.GetValue(TranslateTransform.YProperty);
+                ttRight.Y = (double)ttRight.GetValue(TranslateTransform.YProperty);
+
+                ttAbove.BeginAnimation(TranslateTransform.YProperty, null);
+                ttRight.BeginAnimation(TranslateTransform.YProperty, null);
+
+                ttRight.Y += yDistance;
+                ttAbove.Y += yDistance;
+
+                if (ttRight.Y >= _right.ActualHeight || ttRight.Y <= -_right.ActualHeight)
+                {
+                    Grid tmp = _right;
+                    _right = _above;
+                    _above = tmp;
+                    FireScrolled(ttRight.Y >= _right.ActualHeight
+                                     ? new LoopListArgs(Direction.Top)
+                                     : new LoopListArgs(Direction.Down));
+                    ttRight = (TranslateTransform)_right.RenderTransform;
+                    ttAbove = (TranslateTransform)_above.RenderTransform;
+                    _lastY = 0;
+
+                }
+
+                if (Math.Abs(ttRight.Y) < 1)
+                {
+                    MarkCentered();
+                }
+                else
+                {
+                    UnmarkCentered();
+                }
+
+                if (ttRight.Y >= 0 && _lastY < 0)
+                {
+                    _currentNode = _currentNode.GetAbove();
+                    _lastY = 0;
+                }
+                if (ttRight.Y <= 0 && _lastY > 0)
+                {
+                    _currentNode = _currentNode.GetBelow();
+                    _lastY = 0;
+                }
+
+                if (ttRight.Y < 0 && _lastY == 0)
+                {
+                    ttAbove.Y = _right.ActualHeight + ttRight.Y;
+                    _currentNode = _currentNode.GetBelow();
+                    SetChild(_above, _currentNode.GetFrameworkElement());
+                    _lastY = -1;
+                }
+                else
+                {
+                    if (ttRight.Y > 0 && _lastY == 0)
+                    {
+                        ttAbove.Y = -_right.ActualHeight + ttRight.Y;
+                        _currentNode = _currentNode.GetAbove();
+                        SetChild(_above, _currentNode.GetFrameworkElement());
+                        _lastY = 1;
+                    }
+                }
+            }
+            if (_autoDrag > 0 && _autoDrag < 1)
+            {
+                if (ttRight.Y >= _right.ActualHeight * _autoDrag)
+                {
+                    AnimV(false);
+                    return false;
+                }
+                if (ttRight.Y <= -_right.ActualHeight * (_autoDrag))
+                {
+                    AnimV(true);
+                    return false;
+                }
+            }
+            return true;
         }
 
         void AnimCompleted()
@@ -559,48 +568,50 @@ namespace LoopList
 
         public void AnimH(bool leftDir)
         {
-            if (_animating == 0 && HNeighbourExists())
+            if (_animating != 0 || !HNeighbourExists()) return;
+            TranslateTransform ttRight = (TranslateTransform)_right.RenderTransform;
+            TranslateTransform ttLeft = (TranslateTransform)_left.RenderTransform;
+
+            if (Math.Abs(ttRight.X - 0) < 0.00000001)
             {
-                TranslateTransform ttRight = (TranslateTransform)_right.RenderTransform;
-                TranslateTransform ttLeft = (TranslateTransform)_left.RenderTransform;
-
-                if (Math.Abs(ttRight.X - 0) < 0.00000001)
-                {
-                    if (leftDir)
-                    {
-                        HDrag(-1);
-                    }
-                    else
-                    {
-                        HDrag(1);
-                    }
-                }
-                _animating = 2;
-
-                DoubleAnimation doubleAnimationCenter = new DoubleAnimation {From = ttRight.X};
                 if (leftDir)
-                    doubleAnimationCenter.To = -_right.ActualWidth;
+                {
+                    HDrag(-1);
+                }
                 else
-                    doubleAnimationCenter.To = _right.ActualWidth;
-                doubleAnimationCenter.Duration = _duration;
-                doubleAnimationCenter.Completed += (s, _) => AnimCompleted();
-                ttRight.BeginAnimation(TranslateTransform.XProperty, doubleAnimationCenter);
-
-                DoubleAnimation doubleAnimationLeft = new DoubleAnimation
-                    {
-                        From = ttLeft.X,
-                        To = 0,
-                        Duration = _duration
-                    };
-                doubleAnimationLeft.Completed += (s, _) => AnimCompleted();
-                ttLeft.BeginAnimation(TranslateTransform.XProperty, doubleAnimationLeft);
-
-                Grid tmp = _right;
-                _right = _left;
-                _left = tmp;
-                _lastX = 0;
-                _lastY = 0;
+                {
+                    HDrag(1);
+                }
             }
+            _animating = 2;
+
+            DoubleAnimation doubleAnimationCenter = new DoubleAnimation {From = ttRight.X};
+            if (leftDir)
+                doubleAnimationCenter.To = -_right.ActualWidth;
+            else
+                doubleAnimationCenter.To = _right.ActualWidth;
+            doubleAnimationCenter.Duration = _duration;
+            doubleAnimationCenter.Completed += (s, _) => AnimCompleted();
+            ttRight.BeginAnimation(TranslateTransform.XProperty, doubleAnimationCenter);
+
+            DoubleAnimation doubleAnimationLeft = new DoubleAnimation
+                {
+                    From = ttLeft.X,
+                    To = 0,
+                    Duration = _duration
+                };
+            doubleAnimationLeft.Completed += (s, _) => AnimCompleted();
+            ttLeft.BeginAnimation(TranslateTransform.XProperty, doubleAnimationLeft);
+
+            FireScrolled(_lastX > 0
+                             ? new LoopListArgs(Direction.Left)
+                             : new LoopListArgs(Direction.Right));
+
+            Grid tmp = _right;
+            _right = _left;
+            _left = tmp;
+            _lastX = 0;
+            _lastY = 0;
         }
 
         public void AnimV(bool upDir)
@@ -634,6 +645,10 @@ namespace LoopList
             DoubleAnimation doubleAnimationLeft = new DoubleAnimation {From = ttAbove.Y, To = 0, Duration = _duration};
             doubleAnimationLeft.Completed += (s, _) => AnimCompleted();
             ttAbove.BeginAnimation(TranslateTransform.YProperty, doubleAnimationLeft);
+
+            FireScrolled(_lastY > 0
+             ? new LoopListArgs(Direction.Down)
+             : new LoopListArgs(Direction.Top));
 
             Grid tmp = _right;
             _right = _above;

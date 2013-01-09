@@ -47,6 +47,9 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TextLoopList.xaml.cs">
+      <DependentUpon>TextLoopList.xaml</DependentUpon>
+    </Compile>
     <Page Include="LoopList.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -55,8 +58,13 @@
       <DependentUpon>LoopList.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="TextLoopList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LoopListArgs.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
