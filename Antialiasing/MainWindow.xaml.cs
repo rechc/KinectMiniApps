@@ -94,9 +94,10 @@ namespace Antialiasing
         /// </summary>
         private int opaquePixelValue = -1;
 
-        private int[] x = new int[16];
-        private int n;
-        private int[] arr;
+        private int[] opaqueMatrix = new int[16];
+        private int opaqueMatrixLenghtSqrt;
+        private int[] changeValues;
+        private int widthRange;
 
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
@@ -104,8 +105,9 @@ namespace Antialiasing
         public MainWindow()
         {
             InitializeComponent();
-            n = Convert.ToInt32(Math.Sqrt(x.Length));
-            arr = new int[n];
+            opaqueMatrixLenghtSqrt = Convert.ToInt32(Math.Sqrt(opaqueMatrix.Length));
+            changeValues = new int[opaqueMatrixLenghtSqrt];
+            widthRange = opaqueMatrixLenghtSqrt - 1;
         }
 
         /// <summary>
@@ -289,28 +291,27 @@ namespace Antialiasing
                     }
                 }
 
-                for (int i = 0; i < this.greenScreenPixelData.Length - (this.depthWidth * 3) - 3; i++)
+                
+                for (int i = 0; i < this.greenScreenPixelData.Length - (this.depthWidth * widthRange) - widthRange; i++)
                 {
 
                     //ToDo Werte können im Randbereich liegen
 
-                    for (int j = 0; j < n; j++)
+                    for (int j = 0; j < opaqueMatrixLenghtSqrt; j++)
                     {
-                        for (int k = 0; k < n; k++)
+                        for (int k = 0; k < opaqueMatrixLenghtSqrt; k++)
                         {
-                            x[j * n + k] = i + k + this.depthWidth * j;
+                            opaqueMatrix[j * opaqueMatrixLenghtSqrt + k] = i + k + this.depthWidth * j;
 
                         }
                     }
 
                     int counter = 0;
-                    // int pos = -1;
-                    
-                    int arrI = 0;
+                    int changeValueCounter = 0;
 
-                    for (int j = 0; j < x.Length; j++)
+                    for (int j = 0; j < opaqueMatrix.Length; j++)
                     {
-                        var p = this.greenScreenPixelData[x[j]];
+                        var p = this.greenScreenPixelData[opaqueMatrix[j]];
                         if (p == -1)
                         {
                             counter++;
@@ -318,20 +319,20 @@ namespace Antialiasing
                         else
                         {
 
-                            if (arrI >= 4)
+                            if (changeValueCounter >= changeValues.Length)
                             {
-                                arrI = -1;
+                                changeValueCounter = -1;
                                 break;
                             }
-                            arr[arrI] = j;
-                            arrI++;
+                            changeValues[changeValueCounter] = j;
+                            changeValueCounter++;
                         }
                     }
-                    if (counter >= (3 / 4 * x.Length) && arrI != -1)
+                    if (counter >= (3 / 4 * opaqueMatrix.Length) && changeValueCounter != -1)
                     {
-                        for (int k = 0; k < arr.Length; k++)
+                        for (int k = 0; k < changeValues.Length; k++)
                         {
-                            this.greenScreenPixelData[x[arr[k]]] = -2;
+                            this.greenScreenPixelData[opaqueMatrix[changeValues[k]]] = -2;
                         }
                     }
                 }
