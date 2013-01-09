@@ -222,90 +222,92 @@ namespace LoopList
             {
                 From = 1,
                 To = 0,
-                Duration = _duration
+                Duration = _duration.TimeSpan.Subtract(new TimeSpan((int)(_duration.TimeSpan.Ticks*0.5)))
             };
-            fadeOut.Completed += (s, _) => AnimCompleted();
+            fadeOut.Completed += (s, _) => FadeOutAnimCompleted();
             
             disappearing.BeginAnimation(OpacityProperty, fadeOut);
             return true;
         }
 
-        private void AnimCompleted()
+        private void FadeOutAnimCompleted()
         {
-            _animating--;
-            if (_animating == 1)
+            Border appearing;
+            if (_lastY > 0)
             {
-                Border appearing;
-                if (_lastY > 0)
+                appearing = _bottom;
+                NextIndex();
+                if (_lastLastY == 0)
                 {
-                    appearing = _bottom;
                     NextIndex();
-                    if (_lastLastY == 0)
-                    {
-                        NextIndex();
-                    }
-                    else
-                    {
-                        if (_lastLastY < 0)
-                        {
-                            NextIndex();
-                            NextIndex();
-                        }
-
-                    }
-
-                    ((TextBlock) _bottom.Child).Text = _texts[_index];
-
-                    TranslateTransform ttBottom = (TranslateTransform) _bottom.RenderTransform;
-                    DoubleAnimation doubleAnimationBottom = new DoubleAnimation
-                        {
-                            From = _bottomYPos*2,
-                            To = _bottomYPos,
-                            Duration = _duration
-                        };
-                    doubleAnimationBottom.Completed += (s, _) => AnimCompleted();
-                    ttBottom.BeginAnimation(TranslateTransform.YProperty, doubleAnimationBottom);
-
                 }
                 else
                 {
-                    appearing = _top;
-                    PreviousIndex();
-                    if (_lastLastY == 0)
+                    if (_lastLastY < 0)
                     {
-                        PreviousIndex();
+                        NextIndex();
+                        NextIndex();
                     }
-                    else
-                    {
-                        if (_lastLastY > 0)
-                        {
-                            PreviousIndex();
-                            PreviousIndex();
-                        }
-                    }
-
-                    ((TextBlock) _top.Child).Text = _texts[_index];
-
-                    TranslateTransform ttBottom = (TranslateTransform) _top.RenderTransform;
-                    DoubleAnimation doubleAnimationBottom = new DoubleAnimation
-                        {
-                            From = _topYPos*2,
-                            To = _topYPos,
-                            Duration = _duration
-                        };
-                    doubleAnimationBottom.Completed += (s, _) => AnimCompleted();
-                    ttBottom.BeginAnimation(TranslateTransform.YProperty, doubleAnimationBottom);
 
                 }
-                DoubleAnimation fadeIn = new DoubleAnimation
+
+                ((TextBlock)_bottom.Child).Text = _texts[_index];
+
+                TranslateTransform ttBottom = (TranslateTransform)_bottom.RenderTransform;
+                DoubleAnimation doubleAnimationBottom = new DoubleAnimation
                 {
-                    From = 0,
-                    To = 1,
+                    From = _bottomYPos * 2,
+                    To = _bottomYPos,
                     Duration = _duration
                 };
-                appearing.BeginAnimation(OpacityProperty, fadeIn);
+                doubleAnimationBottom.Completed += (s, _) => AnimCompleted();
+                ttBottom.BeginAnimation(TranslateTransform.YProperty, doubleAnimationBottom);
 
             }
+            else
+            {
+                appearing = _top;
+                PreviousIndex();
+                if (_lastLastY == 0)
+                {
+                    PreviousIndex();
+                }
+                else
+                {
+                    if (_lastLastY > 0)
+                    {
+                        PreviousIndex();
+                        PreviousIndex();
+                    }
+                }
+
+                ((TextBlock)_top.Child).Text = _texts[_index];
+
+                TranslateTransform ttBottom = (TranslateTransform)_top.RenderTransform;
+                DoubleAnimation doubleAnimationBottom = new DoubleAnimation
+                {
+                    From = _topYPos * 2,
+                    To = _topYPos,
+                    Duration = _duration
+                };
+                doubleAnimationBottom.Completed += (s, _) => AnimCompleted();
+                ttBottom.BeginAnimation(TranslateTransform.YProperty, doubleAnimationBottom);
+
+            }
+            DoubleAnimation fadeIn = new DoubleAnimation
+            {
+                From = 0,
+                To = 1,
+                Duration = _duration
+            };
+            fadeIn.Completed += (s, _) => AnimCompleted();
+            appearing.BeginAnimation(OpacityProperty, fadeIn);
+
+        }
+
+        private void AnimCompleted()
+        {
+            _animating--;
             if (_animating != 0) return;
             if (_lastY > 0)
                 FireScrolled(new LoopListArgs(Direction.Top));
