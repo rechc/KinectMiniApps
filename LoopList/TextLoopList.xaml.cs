@@ -1,19 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace LoopList
 {
@@ -26,7 +16,7 @@ namespace LoopList
         private Border _center = new Border();
         private Border _bottom = new Border();
         private readonly List<string> _texts = new List<string>();
-        private int _animating = 0;
+        private int _animating;
         private int _lastY;
         private int _lastLastY;
         private int _index;
@@ -42,32 +32,24 @@ namespace LoopList
             TextBlock topBlock = new TextBlock();
             TextBlock bottomBlock = new TextBlock();
 
-            const int fontSize = 16;
-
-            topBlock.FontSize = fontSize;
-            centerBlock.FontSize = fontSize;
-            bottomBlock.FontSize = fontSize;
-
-            _top.Height = fontSize + 2;
-            _center.Height = fontSize + 2;
-            _bottom.Height = fontSize + 2;
-
             centerBlock.HorizontalAlignment = HorizontalAlignment.Center;
             centerBlock.VerticalAlignment = VerticalAlignment.Center;
-            _center.BorderBrush = new SolidColorBrush(Colors.Black);
             centerBlock.Foreground = new SolidColorBrush(Colors.White);
 
             topBlock.HorizontalAlignment = HorizontalAlignment.Center;
-            _top.BorderBrush = new SolidColorBrush(Colors.Black);
+            topBlock.VerticalAlignment = VerticalAlignment.Center;
             topBlock.Foreground = new SolidColorBrush(Colors.White);
 
             bottomBlock.HorizontalAlignment = HorizontalAlignment.Center;
-            _bottom.BorderBrush = new SolidColorBrush(Colors.Black);
             bottomBlock.Foreground = new SolidColorBrush(Colors.White);
+            bottomBlock.VerticalAlignment = VerticalAlignment.Center;
 
             _top.Child = topBlock;
             _center.Child = centerBlock;
             _bottom.Child = bottomBlock;
+
+            SetFontSize(10);
+            SetFontFamily("Verdana");
 
             _top.RenderTransform = new TranslateTransform();
             _center.RenderTransform = new TranslateTransform();
@@ -81,7 +63,26 @@ namespace LoopList
             SizeChanged +=TextLoopList_SizeChanged;
         }
 
-        private void FireScrolled(LoopListArgs args)
+        public void SetFontFamily(string ff)
+        {
+            ((TextBlock)_top.Child).FontFamily = new FontFamily(ff);
+            ((TextBlock)_center.Child).FontFamily = new FontFamily(ff);
+            ((TextBlock)_bottom.Child).FontFamily = new FontFamily(ff);
+        }
+
+        public void SetFontSize(int fontSize)
+        {
+            ((TextBlock)_top.Child).FontSize = fontSize;
+            ((TextBlock)_center.Child).FontSize = fontSize;
+            ((TextBlock)_bottom.Child).FontSize = fontSize;
+
+            _top.Height = fontSize + 2;
+            _center.Height = fontSize + 2;
+            _bottom.Height = fontSize + 2;
+        }
+
+
+        private void FireScrolled(EventArgs args)
         {
             if (args == null) throw new ArgumentNullException("args");
             Scrolled(this, args);
@@ -92,6 +93,10 @@ namespace LoopList
             TranslateTransform ttTop = (TranslateTransform)_top.RenderTransform;
             TranslateTransform ttCenter = (TranslateTransform)_center.RenderTransform;
             TranslateTransform ttBottom = (TranslateTransform)_bottom.RenderTransform;
+
+            ttTop.BeginAnimation(TranslateTransform.YProperty, null);
+            ttCenter.BeginAnimation(TranslateTransform.YProperty, null);
+            ttBottom.BeginAnimation(TranslateTransform.YProperty, null);
 
             _topYPos = -RootGrid.ActualHeight/3.5 + _top.ActualHeight/2.0;
             _bottomYPos = RootGrid.ActualHeight/3.5 - _bottom.ActualHeight/2.0;
@@ -121,7 +126,7 @@ namespace LoopList
         }
 
         public void Anim(bool up)
-       {
+        {
             
             if (_animating > 0 || _texts.Count <= 1) return;
             TranslateTransform ttTop = (TranslateTransform)_top.RenderTransform;
@@ -130,14 +135,16 @@ namespace LoopList
 
             _animating = 4;
 
-            Border disappearing = null; 
+            _lastLastY = _lastY;
+
+            Border disappearing; 
             if (up)
             {
                 disappearing = _top;
                 DoubleAnimation doubleAnimationTop = new DoubleAnimation
                     {
                         From = ttTop.Y,
-                        To = _topYPos*3,
+                        To = _topYPos*2,
                         Duration = new Duration(new TimeSpan(0, 0, 0, 0, 250))
                     };
                 ttTop.BeginAnimation(TranslateTransform.YProperty, doubleAnimationTop);
@@ -159,7 +166,6 @@ namespace LoopList
                     };
                 doubleAnimationBottom.Completed += (s, _) => AnimCompleted();
                 ttBottom.BeginAnimation(TranslateTransform.YProperty, doubleAnimationBottom);
-                _lastLastY = _lastY;
                 _lastY = 1;
                 Border tmp = _top;
                 _top = _center;
@@ -194,9 +200,7 @@ namespace LoopList
                     Duration = new Duration(new TimeSpan(0, 0, 0, 0, 250))
                 };
                 ttBottom.BeginAnimation(TranslateTransform.YProperty, doubleAnimationBottom);
-
-
-                _lastLastY = _lastY;
+                
                 _lastY = -1;
                 Border tmp = _bottom;
                 _bottom = _center;
@@ -219,12 +223,13 @@ namespace LoopList
             _animating--;
             if (_animating == 1)
             {
-
+                Border appearing;
                 if (_lastY > 0)
                 {
+                    appearing = _bottom;
+                    NextIndex();
                     if (_lastLastY == 0)
                     {
-                        NextIndex();
                         NextIndex();
                     }
                     else
@@ -232,11 +237,6 @@ namespace LoopList
                         if (_lastLastY < 0)
                         {
                             NextIndex();
-                            NextIndex();
-                            NextIndex();
-                        }
-                        else
-                        {
                             NextIndex();
                         }
 
@@ -247,25 +247,20 @@ namespace LoopList
                     TranslateTransform ttBottom = (TranslateTransform) _bottom.RenderTransform;
                     DoubleAnimation doubleAnimationBottom = new DoubleAnimation
                         {
-                            From = _bottomYPos*3,
+                            From = _bottomYPos*2,
                             To = _bottomYPos,
                             Duration = new Duration(new TimeSpan(0, 0, 0, 0, 250))
                         };
                     doubleAnimationBottom.Completed += (s, _) => AnimCompleted();
                     ttBottom.BeginAnimation(TranslateTransform.YProperty, doubleAnimationBottom);
-                    DoubleAnimation fadeIn = new DoubleAnimation
-                        {
-                            From = 0,
-                            To = 1,
-                            Duration = new Duration(new TimeSpan(0, 0, 0, 0, 150))
-                        };
-                    _bottom.BeginAnimation(OpacityProperty, fadeIn);
+
                 }
                 else
                 {
+                    appearing = _top;
+                    PreviousIndex();
                     if (_lastLastY == 0)
                     {
-                        PreviousIndex();
                         PreviousIndex();
                     }
                     else
@@ -274,13 +269,7 @@ namespace LoopList
                         {
                             PreviousIndex();
                             PreviousIndex();
-                            PreviousIndex();
                         }
-                        else
-                        {
-                            PreviousIndex();
-                        }
-
                     }
 
                     ((TextBlock) _top.Child).Text = _texts[_index];
@@ -288,35 +277,30 @@ namespace LoopList
                     TranslateTransform ttBottom = (TranslateTransform) _top.RenderTransform;
                     DoubleAnimation doubleAnimationBottom = new DoubleAnimation
                         {
-                            From = _topYPos*3,
+                            From = _topYPos*2,
                             To = _topYPos,
                             Duration = new Duration(new TimeSpan(0, 0, 0, 0, 250))
                         };
                     doubleAnimationBottom.Completed += (s, _) => AnimCompleted();
                     ttBottom.BeginAnimation(TranslateTransform.YProperty, doubleAnimationBottom);
-                    DoubleAnimation fadeIn = new DoubleAnimation
-                        {
-                            From = 0,
-                            To = 1,
-                            Duration = new Duration(new TimeSpan(0, 0, 0, 0, 150))
-                        };
-                    _top.BeginAnimation(OpacityProperty, fadeIn);
+
                 }
+                DoubleAnimation fadeIn = new DoubleAnimation
+                {
+                    From = 0,
+                    To = 1,
+                    Duration = new Duration(new TimeSpan(0, 0, 0, 0, 250))
+                };
+                appearing.BeginAnimation(OpacityProperty, fadeIn);
 
             }
-            if (_animating == 0)
+            if (_animating != 0) return;
+            if (_lastY > 0)
+                FireScrolled(new LoopListArgs(Direction.Top));
+            else
             {
-                if (_lastY > 0)
-                    FireScrolled(new LoopListArgs(Direction.Top));
-                else
-                {
-                    if (_lastY < 0)
-                        FireScrolled(new LoopListArgs(Direction.Down));
-                    else
-                    {
-                        throw new Exception("hä?");
-                    }
-                }
+                if (_lastY < 0)
+                    FireScrolled(new LoopListArgs(Direction.Down));
             }
         }
 

@@ -19,15 +19,17 @@ namespace LoopListTest
         private Point? _oldMouseMovePoint;
         private bool _doDrag;
         private int _dragDirection;
-        private bool waitForTextList = false;
+        private bool _waitForTextList = false;
 
         public MainWindow()
         {
             InitializeComponent();
             MyLoopList.SetAutoDragOffset(0.55);
-            MyLoopList.SetDuration(new Duration(new TimeSpan(3000000))); //300ms
+            MyLoopList.SetDuration(new Duration(new TimeSpan(3000000))); //300m
             MyLoopList.Scrolled += MyLoopListOnScrolled;
             MyTextLoopList.Scrolled += MyTextLoopList_Scrolled;
+            MyTextLoopList.SetFontSize(16);
+            MyTextLoopList.SetFontFamily("Miriam Fixed");
             string[] paths = Directory.GetFiles(Environment.CurrentDirectory + @"\images", "tele*");
             Node anchor = null;
             Node anchorForMokup = null;
@@ -71,7 +73,10 @@ namespace LoopListTest
             mokupGrid.Children.Add(mokuImg);
 
             MyLoopList.AddToAbove(anchorForMokup, mokupGrid);
-
+            
+            MyTextLoopList.Add("Ebene5");
+            MyTextLoopList.Add("Ebene4");
+            MyTextLoopList.Add("Ebene3");
             MyTextLoopList.Add("Ebene2");
             MyTextLoopList.Add("Ebene1");
             
@@ -81,7 +86,7 @@ namespace LoopListTest
 
         private void MyTextLoopList_Scrolled(object sender, EventArgs e)
         {
-            waitForTextList = false;
+            _waitForTextList = false;
         }
 
         private void MyLoopListOnScrolled(object sender, EventArgs e)
@@ -90,7 +95,7 @@ namespace LoopListTest
                 if (((LoopListArgs) e).GetDirection() == Direction.Top)
                 {
                     MyTextLoopList.Anim(true);
-                    waitForTextList = true;
+                    _waitForTextList = true;
 
                 }
                 else
@@ -98,7 +103,7 @@ namespace LoopListTest
                     if (((LoopListArgs) e).GetDirection() == Direction.Down)
                     {
                         MyTextLoopList.Anim(false);
-                        waitForTextList = true;
+                        _waitForTextList = true;
 
                     }
                 }
@@ -124,8 +129,11 @@ namespace LoopListTest
 
         private void myLoopList_MouseMove_1(object sender, MouseEventArgs e)
         {
-            if (!_doDrag && !waitForTextList)
+            if (!_doDrag)
             {
+                return;
+            }
+            if (_waitForTextList) {
                 myLoopList_MouseUp_1(null, null);
                 return;
             }
@@ -182,7 +190,7 @@ namespace LoopListTest
                 MyLoopList.AnimH(false);
 
             }
-            if (!waitForTextList)
+            if (!_waitForTextList)
             {
                 if (e.Key == Key.Up)
                 {

@@ -13,8 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoopList", "LoopList\LoopLi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoopListTest", "LoopListTest\LoopListTest.csproj", "{B658191C-9E09-44F6-A3A5-EB7A28E412D7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Antialiasing", "Antialiasing\Antialiasing.csproj", "{A1E039C4-0B91-46DC-A556-9A5575E173AB}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -85,16 +83,6 @@ Global
 		{B658191C-9E09-44F6-A3A5-EB7A28E412D7}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{B658191C-9E09-44F6-A3A5-EB7A28E412D7}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{B658191C-9E09-44F6-A3A5-EB7A28E412D7}.Release|x86.ActiveCfg = Release|Any CPU
-		{A1E039C4-0B91-46DC-A556-9A5575E173AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A1E039C4-0B91-46DC-A556-9A5575E173AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A1E039C4-0B91-46DC-A556-9A5575E173AB}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{A1E039C4-0B91-46DC-A556-9A5575E173AB}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{A1E039C4-0B91-46DC-A556-9A5575E173AB}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{A1E039C4-0B91-46DC-A556-9A5575E173AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A1E039C4-0B91-46DC-A556-9A5575E173AB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A1E039C4-0B91-46DC-A556-9A5575E173AB}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{A1E039C4-0B91-46DC-A556-9A5575E173AB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{A1E039C4-0B91-46DC-A556-9A5575E173AB}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
