@@ -1,4 +1,5 @@
-﻿using LoopList;
+﻿using System.Collections.Generic;
+using LoopList;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -23,6 +24,9 @@ namespace LoopListTest
         private bool _waitForTextList;
 
         private bool _kinectFocused;
+
+        private readonly List<int> savedDirections = new List<int>();
+        private bool _homogeneCollection;
 
         private readonly KinectSensor _kinectSensor;
         private Skeleton[] _skeletons;
@@ -56,11 +60,11 @@ namespace LoopListTest
                 _kinectSensor.AllFramesReady += OnAllReady;
 
                 _kinectSensor.Start();
-                _kinectSensor.ElevationAngle = 17;
+                _kinectSensor.ElevationAngle = 0;
             }
 
 
-            MyLoopList.SetAutoDragOffset(0.55);
+            MyLoopList.SetAutoDragOffset(0.20);
             MyLoopList.SetDuration(new Duration(new TimeSpan(3000000))); //300m
             MyLoopList.Scrolled += MyLoopListOnScrolled;
             MyTextLoopList.Scrolled += MyTextLoopList_Scrolled;
@@ -128,8 +132,30 @@ namespace LoopListTest
                     _skeletons = new Skeleton[_kinectSensor.SkeletonStream.FrameSkeletonArrayLength];
                 }
                 sFrame.CopySkeletonDataTo(_skeletons);
+                //CorrectRoomCoords();
                 Skeleton skeleton = GetFixedSkeleton();
                 ProcessSkeleton(skeleton);
+            }
+        }
+
+        private void CorrectRoomCoords()
+        {
+            if (!_kinectSensor.IsRunning) return;
+            int elevationAngle = _kinectSensor.ElevationAngle;
+            if (elevationAngle == 0) return;
+            elevationAngle *= -1;
+            foreach (Skeleton s in _skeletons)
+            {
+                if (s.TrackingState != SkeletonTrackingState.Tracked) continue;
+                foreach (JointType jt in Enum.GetValues(typeof(JointType)))
+                {
+                    var joint = s.Joints[jt];
+                    var position = joint.Position;
+                    position.Y = (float)(position.Y * Math.Cos(elevationAngle * Math.PI / 180.0) - position.Z * Math.Sin(elevationAngle * Math.PI / 180.0));
+                    position.Z = (float)(position.Y * Math.Sin(elevationAngle * Math.PI / 180.0) + position.Z * Math.Cos(elevationAngle * Math.PI / 180.0));
+                    joint.Position = position;
+                    s.Joints[jt] = joint;
+                }
             }
         }
 
@@ -137,33 +163,40 @@ namespace LoopListTest
         {
             if (skeleton == null)
             {
+                _kinectFocused = false;
                 return;
             }
             Joint handRight = skeleton.Joints[JointType.HandRight];
-            if (handRight.TrackingState != JointTrackingState.Tracked)
+            Joint shoulderCenter = skeleton.Joints[JointType.ShoulderCenter];
+            if (handRight.TrackingState != JointTrackingState.Tracked || shoulderCenter.TrackingState != JointTrackingState.Tracked)
             {
+                _kinectFocused = false;
                 return;
             }
             
-            if (handRight.Position.Z < 1.5)
+            if (Math.Abs(shoulderCenter.Position.Z - handRight.Position.Z) > 0.4)
             {
                 if (!_kinectFocused)
                 {
                     myLoopList_MouseDown_1(null, null);
                     _kinectFocused = true;
+                    KinectFocusedRectangle.Visibility = Visibility.Visible;
                 }
             }
             else
             {
                 if (_kinectFocused)
                 {
+                    
                     myLoopList_MouseUp_1(null, null);
                     _kinectFocused = false;
+                    KinectFocusedRectangle.Visibility = Visibility.Collapsed;
                 }
             }
+            Debug.WriteLine(handRight.Position.Z);
             ColorImagePoint cp = _kinectSensor.CoordinateMapper.MapSkeletonPointToColorPoint(handRight.Position, ColorImageFormat.RawBayerResolution640x480Fps30);
 
-            Point currentPoint = new Point(cp.X*5, cp.Y*5);
+            Point currentPoint = new Point(cp.X*8, cp.Y*8);
             Move(currentPoint);
         }
 
@@ -193,6 +226,7 @@ namespace LoopListTest
                         else
                         {
                             _id = -1;
+                            
                         }
                     }
                 }
@@ -218,6 +252,7 @@ namespace LoopListTest
                         _waitForTextList = MyTextLoopList.Anim(false);
                         break;
                 }
+                _homogeneCollection = false;
             }
         }
 
@@ -251,6 +286,23 @@ namespace LoopListTest
             int yDistance = (int)(currentPos.Y - _oldMovePoint.Value.Y);
 
             _dragDirection = Math.Abs(xDistance) >= Math.Abs(yDistance) ? 1 : 2;
+            if (!_homogeneCollection)
+            {
+                if (savedDirections.Count < 8)
+                {
+                    savedDirections.Add(_dragDirection);
+                    _oldMovePoint = currentPos;
+                    return;
+                }
+                _homogeneCollection = savedDirections.All(x => savedDirections.First() == x);
+                savedDirections.Clear();
+                if (!_homogeneCollection)
+                {
+                    _oldMovePoint = currentPos;
+                    return;
+                }
+            }
+
             bool mayDragOn = false;
             if (_dragDirection == 1)
             {
@@ -275,6 +327,7 @@ namespace LoopListTest
 
         private void myLoopList_MouseUp_1(object sender, MouseButtonEventArgs e)
         {
+            _homogeneCollection = false;
             _doDrag = false;
             _oldMovePoint = null;
             MyLoopList.AnimBack();
