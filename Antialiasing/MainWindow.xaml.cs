@@ -327,16 +327,11 @@ namespace Antialiasing
                             changeValueCounter++;
                         }
                     }
-                    if (changeValueCounter < changeValues.Length)
-                    {
-                        var y = 1;
-                    }
+                    
                     if (counter >= (3 / 4 * opaqueMatrix.Length) && changeValueCounter < changeValues.Length)
                     {
-                        for (int k = 0; k < changeValues.Length; k++)
-                        {
-                            this.greenScreenPixelData[opaqueMatrix[changeValues[k]]] = -2;
-                        }
+                        this.greenScreenPixelData[opaqueMatrix[0]] = -1;
+                       
                     }
                 }
 
