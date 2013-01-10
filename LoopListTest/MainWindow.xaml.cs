@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using LoopList;
 using System;
 using System.IO;
@@ -19,13 +20,12 @@ namespace LoopListTest
     {
         private Point? _oldMovePoint;
         private bool _doDrag;
-        private int _dragDirection;
         private bool _waitForTextList;
 
         private bool _kinectFocused;
 
         private readonly List<int> _savedDirections = new List<int>();
-        private bool _homogeneCollection;
+        private bool _dragDirectionIsObvious;
 
         private readonly KinectSensor _kinectSensor;
         private Skeleton[] _skeletons;
@@ -253,7 +253,7 @@ namespace LoopListTest
                         _waitForTextList = MyTextLoopList.Anim(false);
                         break;
                 }
-                _homogeneCollection = false;
+                _dragDirectionIsObvious = false;
             }
         }
 
@@ -280,26 +280,45 @@ namespace LoopListTest
                 int xDistance = (int) (currentPos.X - _oldMovePoint.Value.X);
                 int yDistance = (int) (currentPos.Y - _oldMovePoint.Value.Y);
 
-                _dragDirection = Math.Abs(xDistance) >= Math.Abs(yDistance) ? 1 : 2;
-                if (!_homogeneCollection)
+                int dragDirection = Math.Abs(xDistance) >= Math.Abs(yDistance) ? 1 : 2;
+                if (!_dragDirectionIsObvious)
                 {
-                    if (_savedDirections.Count < 8)
+                    if (_savedDirections.Count < 20)
                     {
-                        _savedDirections.Add(_dragDirection);
+                        _savedDirections.Add(dragDirection);
                         goto exit;
                     }
-                    _homogeneCollection = _savedDirections.All(x => _savedDirections.First() == x);
+                    int xCount = 0;
+                    int yCount = 0;
+                    foreach (int dir in _savedDirections)
+                    {
+                        if (dir == 1)
+                            xCount++;
+                        else if (dir == 2)
+                            yCount++;
+                    }
+                    int greater = Math.Max(xCount, yCount);
+                    int lower = Math.Min(xCount, yCount);
+                    if (lower/(double) greater < 0.15)
+                    {
+                        _dragDirectionIsObvious = true;
+                        dragDirection = greater == xCount ? 1 : 2;
+                        KinectVibratingRectangle.Visibility = Visibility.Collapsed;
+                    }
                     _savedDirections.Clear();
-                    if (!_homogeneCollection) goto exit;
-
+                    if (!_dragDirectionIsObvious)
+                    {
+                        KinectVibratingRectangle.Visibility = Visibility.Visible;
+                        goto exit;
+                    }
                 }
 
                 bool mayDragOn = false;
-                if (_dragDirection == 1)
+                if (dragDirection == 1)
                 {
                     mayDragOn = MyLoopList.HDrag(xDistance);
                 }
-                if (_dragDirection == 2)
+                if (dragDirection == 2)
                 {
                     if (!_waitForTextList)
                         mayDragOn = MyLoopList.VDrag(yDistance);
@@ -327,11 +346,12 @@ namespace LoopListTest
         {
             try
             {
-                _homogeneCollection = false;
+                _dragDirectionIsObvious = false;
+                KinectVibratingRectangle.Visibility = Visibility.Collapsed;
+                _savedDirections.Clear();
                 _doDrag = false;
                 _oldMovePoint = null;
                 MyLoopList.AnimBack();
-                _dragDirection = 0;
             }
             catch (Exception exc)
             {
