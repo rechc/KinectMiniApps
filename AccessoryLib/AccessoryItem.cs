@@ -12,7 +12,7 @@ namespace AccessoryLib
         public AccessoryItem(AccessoryPositon position, string imagePath)
         {
             Position = position;
-            Image = new BitmapImage(new Uri(imagePath, UriKind.Absolute));
+            Image = new BitmapImage(new Uri(imagePath, UriKind.RelativeOrAbsolute));
         }
 
         public AccessoryPositon Position { get; private set; }
