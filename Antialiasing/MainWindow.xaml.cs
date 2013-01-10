@@ -320,7 +320,7 @@ namespace Antialiasing
                             }
                             else
                             {
-                                counterFound++;
+                                counterNotFound++;
                             }
                             if (counterFound >= opaqueRange)
                             {
