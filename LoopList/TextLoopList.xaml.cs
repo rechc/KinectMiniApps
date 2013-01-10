@@ -53,6 +53,8 @@ namespace LoopList
             _center.Child = centerBlock;
             _bottom.Child = bottomBlock;
 
+            _top.Margin = new Thickness(20);
+
             SetFontSize(10);
             SetFontFamily("Verdana");
 

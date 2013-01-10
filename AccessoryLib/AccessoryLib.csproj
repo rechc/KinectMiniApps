@@ -46,7 +46,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Accessory.cs" />
+    <Compile Include="AccessoryControl.xaml.cs">
+      <DependentUpon>AccessoryControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AccessoryItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="AccessoryControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

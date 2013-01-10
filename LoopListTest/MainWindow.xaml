@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:stas="clr-namespace:LoopList;assembly=LoopList"
-        Title="MainWindow" Height="350" Width="525"
+        Title="MainWindow" Height="600" Width="800"
         >
     <Grid>
         <Grid.ColumnDefinitions>
@@ -10,8 +10,8 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <stas:LoopList x:Name="MyLoopList" MouseDown="myLoopList_MouseDown_1" MouseMove="myLoopList_MouseMove_1" MouseUp="myLoopList_MouseUp_1" MouseLeave="myLoopList_MouseLeave_1" Grid.Column="1" />
-        <stas:TextLoopList x:Name="MyTextLoopList" Background="BlueViolet" MinWidth="100"/>
-        
+        <stas:TextLoopList x:Name="MyTextLoopList" Background="BlueViolet"/>
+        <TextBlock x:Name="ExceptionTextBlock" Grid.ColumnSpan="2" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Foreground="Red"/>
 
         
 

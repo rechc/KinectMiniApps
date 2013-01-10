@@ -46,10 +46,10 @@ namespace LoopList
 
             _left.RowDefinitions[0].Height = new GridLength(10, GridUnitType.Pixel);
             _left.ColumnDefinitions[0].Width = new GridLength(10, GridUnitType.Pixel);
-            _left.RowDefinitions[1].Height = new GridLength(10, GridUnitType.Pixel);
-            _left.ColumnDefinitions[1].Width = new GridLength(10, GridUnitType.Pixel);
-            _left.RowDefinitions[3].Height = new GridLength(10, GridUnitType.Pixel);
-            _left.ColumnDefinitions[3].Width = new GridLength(10, GridUnitType.Pixel);
+            _left.RowDefinitions[1].Height = new GridLength(15, GridUnitType.Pixel);
+            _left.ColumnDefinitions[1].Width = new GridLength(15, GridUnitType.Pixel);
+            _left.RowDefinitions[3].Height = new GridLength(15, GridUnitType.Pixel);
+            _left.ColumnDefinitions[3].Width = new GridLength(15, GridUnitType.Pixel);
             _left.RowDefinitions[4].Height = new GridLength(10, GridUnitType.Pixel);
             _left.ColumnDefinitions[4].Width = new GridLength(10, GridUnitType.Pixel);
 
@@ -111,9 +111,9 @@ namespace LoopList
                 {
                     Margin = new Thickness(0, 0, 0, 2),
                     Child = vPolygon,
-                    Stretch = Stretch.Fill
+                    Stretch = Stretch.Fill,
+                    
                 };
-
             Viewbox bottomDirViewbox = new Viewbox {Margin = new Thickness(0, 2, 0, 0)};
             vPolygon = (Polygon)CloneElement(vPolygon);
             vPolygon.RenderTransform = new RotateTransform(180, 150, 10);
@@ -261,15 +261,23 @@ namespace LoopList
 
         private void SetChild(Grid grid, FrameworkElement frameworkElement)
         {
-            Grid.SetRow(frameworkElement, 2);
-            Grid.SetColumn(frameworkElement, 2);
-
-            if (grid.Children.Count == 9)
+            try
             {
-                grid.Children.RemoveAt(8);
+                Grid.SetRow(frameworkElement, 2);
+                Grid.SetColumn(frameworkElement, 2);
+
+                if (grid.Children.Count == 9)
+                {
+                    grid.Children.RemoveAt(8);
+                }
+                grid.Children.Add(frameworkElement);
+                MarkDirections(grid);
             }
-            grid.Children.Add(frameworkElement);
-            MarkDirections(grid);
+            catch (Exception)
+            {
+                //TODO logs
+                Console.WriteLine("Wrong mouse positon");
+            }
         }
 
         public Node AddToRight(Node anchor, FrameworkElement frameworkElement)
