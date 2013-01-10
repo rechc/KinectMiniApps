@@ -172,10 +172,12 @@ namespace LoopListTest
                     _kinectFocused = false;
                 }
             }
-            Point currentPoint = new Point(handRight.Position.X*1000, handRight.Position.Y*1000);
+            ColorImagePoint cp = _kinectSensor.CoordinateMapper.MapSkeletonPointToColorPoint(handRight.Position, ColorImageFormat.RawBayerResolution640x480Fps30);
+
+            Point currentPoint = new Point(cp.X*5, cp.Y*5);
             //if (currentPoint.X > 0 && currentPoint.Y > 0)
                 Move(currentPoint);
-            Debug.WriteLine("X: " + handRight.Position.X * 2000 + " Y: " + handRight.Position.Y * 2000 + " Z: " + handRight.Position.Z);
+            Debug.WriteLine("X: " + currentPoint.X + " Y: " + currentPoint.Y + " Z: " + handRight.Position.Z);
             //Debug.WriteLine("kinect focused: " + _kinectFocused);
             //Debug.WriteLine("_doDrag: " + _doDrag);
         }
@@ -264,7 +266,7 @@ namespace LoopListTest
                 _oldMovePoint = currentPos;
             if (Math.Abs(_oldMovePoint.Value.X - currentPos.X) < 0.000000001 && Math.Abs(_oldMovePoint.Value.Y - currentPos.Y) < 0.000000001)
             {
-                return;
+              //  return;
             }
 
             int xDistance = (int)(currentPos.X - _oldMovePoint.Value.X);
@@ -290,6 +292,8 @@ namespace LoopListTest
 
         private void myLoopList_MouseMove_1(object sender, MouseEventArgs e)
         {
+            Point point = e.GetPosition(MyLoopList);
+            Debug.WriteLine("X: " + point.X + " Y: " + point.Y );
             Move(e.GetPosition(MyLoopList));
         }
 

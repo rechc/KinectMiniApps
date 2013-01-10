@@ -261,15 +261,23 @@ namespace LoopList
 
         private void SetChild(Grid grid, FrameworkElement frameworkElement)
         {
-            Grid.SetRow(frameworkElement, 2);
-            Grid.SetColumn(frameworkElement, 2);
-
-            if (grid.Children.Count == 9)
+            try
             {
-                grid.Children.RemoveAt(8);
+                Grid.SetRow(frameworkElement, 2);
+                Grid.SetColumn(frameworkElement, 2);
+
+                if (grid.Children.Count == 9)
+                {
+                    grid.Children.RemoveAt(8);
+                }
+                grid.Children.Add(frameworkElement);
+                MarkDirections(grid);
             }
-            grid.Children.Add(frameworkElement);
-            MarkDirections(grid);
+            catch (Exception)
+            {
+                //TODO logs
+                Console.WriteLine("Wrong mouse positon");
+            }
         }
 
         public Node AddToRight(Node anchor, FrameworkElement frameworkElement)
