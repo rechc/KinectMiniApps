@@ -96,8 +96,8 @@ namespace Antialiasing
 
         private int[] opaqueMatrix = new int[16];
         private int opaqueMatrixLenghtSqrt;
-        private int[] changeValues;
         private int widthRange;
+        private double opaqueRange;
 
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
@@ -106,8 +106,8 @@ namespace Antialiasing
         {
             InitializeComponent();
             opaqueMatrixLenghtSqrt = Convert.ToInt32(Math.Sqrt(opaqueMatrix.Length));
-            changeValues = new int[opaqueMatrixLenghtSqrt];
             widthRange = opaqueMatrixLenghtSqrt - 1;
+            opaqueRange = 3.0 / 4.0 * opaqueMatrix.Length;
         }
 
         /// <summary>
@@ -307,7 +307,6 @@ namespace Antialiasing
                     }
 
                     int counter = 0;
-                    int changeValueCounter = 0;
 
                     for (int j = 0; j < opaqueMatrix.Length; j++)
                     {
@@ -316,24 +315,13 @@ namespace Antialiasing
                         {
                             counter++;
                         }
-                        else
+                        if (counter >= opaqueRange)
                         {
-
-                            if (changeValueCounter >= changeValues.Length)
-                            {
-                                break;
-                            }
-                            changeValues[changeValueCounter] = j;
-                            changeValueCounter++;
+                            this.greenScreenPixelData[opaqueMatrix[0]] = -1;
+                            break;
                         }
                     }
-                    
-                    if (counter >= (3 / 4 * opaqueMatrix.Length) && changeValueCounter < changeValues.Length)
-                    {
-                        this.greenScreenPixelData[opaqueMatrix[0]] = -1;
-                       
-                    }
-                }
+                 }
 
             }
 
