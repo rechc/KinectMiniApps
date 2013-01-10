@@ -291,38 +291,49 @@ namespace Antialiasing
                     }
                 }
 
-                
-                for (int i = 0; i < this.greenScreenPixelData.Length - (this.depthWidth * widthRange) - widthRange; i++)
+
+                if (this.checkBoxNearMode.IsChecked == true)
                 {
-
-                    //ToDo Werte können im Randbereich liegen
-
-                    for (int j = 0; j < opaqueMatrixLenghtSqrt; j++)
+                    for (int i = 0; i < this.greenScreenPixelData.Length - (this.depthWidth * widthRange) - widthRange; i++)
                     {
-                        for (int k = 0; k < opaqueMatrixLenghtSqrt; k++)
-                        {
-                            opaqueMatrix[j * opaqueMatrixLenghtSqrt + k] = i + k + this.depthWidth * j;
 
+                        //ToDo Werte können im Randbereich liegen
+
+                        for (int j = 0; j < opaqueMatrixLenghtSqrt; j++)
+                        {
+                            for (int k = 0; k < opaqueMatrixLenghtSqrt; k++)
+                            {
+                                opaqueMatrix[j * opaqueMatrixLenghtSqrt + k] = i + k + this.depthWidth * j;
+
+                            }
+                        }
+
+                        int counterFound = 0;
+                        int counterNotFound = 0;
+
+                        for (int j = 0; j < opaqueMatrix.Length; j++)
+                        {
+                            var p = this.greenScreenPixelData[opaqueMatrix[j]];
+                            if (p == -1)
+                            {
+                                counterFound++;
+                            }
+                            else
+                            {
+                                counterFound++;
+                            }
+                            if (counterFound >= opaqueRange)
+                            {
+                                this.greenScreenPixelData[opaqueMatrix[0]] = -1;
+                                break;
+                            }
+                            if (counterNotFound > opaqueMatrixLenghtSqrt)
+                            {
+                                break;
+                            }
                         }
                     }
-
-                    int counter = 0;
-
-                    for (int j = 0; j < opaqueMatrix.Length; j++)
-                    {
-                        var p = this.greenScreenPixelData[opaqueMatrix[j]];
-                        if (p == -1)
-                        {
-                            counter++;
-                        }
-                        if (counter >= opaqueRange)
-                        {
-                            this.greenScreenPixelData[opaqueMatrix[0]] = -1;
-                            break;
-                        }
-                    }
-                 }
-
+                }
             }
 
             // do our processing outside of the using block
@@ -423,26 +434,26 @@ namespace Antialiasing
         /// </summary>
         /// <param name="sender">object sending the event</param>
         /// <param name="e">event arguments</param>
-        private void CheckBoxNearModeChanged(object sender, RoutedEventArgs e)
-        {
-            if (this.sensor != null)
-            {
-                // will not function on non-Kinect for Windows devices
-                try
-                {
-                    if (this.checkBoxNearMode.IsChecked.GetValueOrDefault())
-                    {
-                        this.sensor.DepthStream.Range = DepthRange.Near;
-                    }
-                    else
-                    {
-                        this.sensor.DepthStream.Range = DepthRange.Default;
-                    }
-                }
-                catch (InvalidOperationException)
-                {
-                }
-            }
-        }
+        //private void CheckBoxNearModeChanged(object sender, RoutedEventArgs e)
+        //{
+        //    if (this.sensor != null)
+        //    {
+        //        // will not function on non-Kinect for Windows devices
+        //        try
+        //        {
+        //            if (this.checkBoxNearMode.IsChecked.GetValueOrDefault())
+        //            {
+        //                this.sensor.DepthStream.Range = DepthRange.Near;
+        //            }
+        //            else
+        //            {
+        //                this.sensor.DepthStream.Range = DepthRange.Default;
+        //            }
+        //        }
+        //        catch (InvalidOperationException)
+        //        {
+        //        }
+        //    }
+        //}
     }
 }
