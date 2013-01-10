@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using LoopList;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -25,7 +24,7 @@ namespace LoopListTest
 
         private bool _kinectFocused;
 
-        private readonly List<int> savedDirections = new List<int>();
+        private readonly List<int> _savedDirections = new List<int>();
         private bool _homogeneCollection;
 
         private readonly KinectSensor _kinectSensor;
@@ -271,14 +270,12 @@ namespace LoopListTest
         {
             try
             {
-                if (!_doDrag) return;
+                if (!_doDrag) goto exit;
                 if (!_oldMovePoint.HasValue)
                     _oldMovePoint = currentPos;
                 if (Math.Abs(_oldMovePoint.Value.X - currentPos.X) < 0.000000001 &&
-                    Math.Abs(_oldMovePoint.Value.Y - currentPos.Y) < 0.000000001)
-                {
-                    return;
-                }
+                    Math.Abs(_oldMovePoint.Value.Y - currentPos.Y) < 0.000000001) goto exit;
+
 
                 int xDistance = (int) (currentPos.X - _oldMovePoint.Value.X);
                 int yDistance = (int) (currentPos.Y - _oldMovePoint.Value.Y);
@@ -286,19 +283,15 @@ namespace LoopListTest
                 _dragDirection = Math.Abs(xDistance) >= Math.Abs(yDistance) ? 1 : 2;
                 if (!_homogeneCollection)
                 {
-                    if (savedDirections.Count < 8)
+                    if (_savedDirections.Count < 8)
                     {
-                        savedDirections.Add(_dragDirection);
-                        _oldMovePoint = currentPos;
-                        return;
+                        _savedDirections.Add(_dragDirection);
+                        goto exit;
                     }
-                    _homogeneCollection = savedDirections.All(x => savedDirections.First() == x);
-                    savedDirections.Clear();
-                    if (!_homogeneCollection)
-                    {
-                        _oldMovePoint = currentPos;
-                        return;
-                    }
+                    _homogeneCollection = _savedDirections.All(x => _savedDirections.First() == x);
+                    _savedDirections.Clear();
+                    if (!_homogeneCollection) goto exit;
+
                 }
 
                 bool mayDragOn = false;
@@ -315,6 +308,8 @@ namespace LoopListTest
                 {
                     _doDrag = false;
                 }
+                
+                exit:
                 _oldMovePoint = currentPos;
             }
             catch (Exception exc)

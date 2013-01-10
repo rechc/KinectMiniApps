@@ -87,7 +87,7 @@ namespace LoopList
                 {
                     Margin = new Thickness(0, 0, 2, 0),
                     Stretch = Stretch.Fill,
-                    Child = hPolygon
+                    Child = hPolygon,
                 };
 
             Viewbox rightDirViewbox = new Viewbox {Margin = new Thickness(2, 0, 0, 0)};
@@ -112,7 +112,6 @@ namespace LoopList
                     Margin = new Thickness(0, 0, 0, 2),
                     Child = vPolygon,
                     Stretch = Stretch.Fill,
-                    
                 };
             Viewbox bottomDirViewbox = new Viewbox {Margin = new Thickness(0, 2, 0, 0)};
             vPolygon = (Polygon)CloneElement(vPolygon);
@@ -209,25 +208,47 @@ namespace LoopList
 
         private void MarkDirections(Grid grid)
         {
+            DoubleAnimation doubleAnimationOpacity = new DoubleAnimation
+            {
+                From = 0,
+                To = 1,
+                Duration = _duration.TimeSpan.Subtract(new TimeSpan((int)(_duration.TimeSpan.Ticks * -2))),
+                AutoReverse = true,
+                RepeatBehavior = RepeatBehavior.Forever
+            };
+
             if (HNeighbourExists())
             {
                 grid.Children[4].Visibility = Visibility.Visible;
                 grid.Children[7].Visibility = Visibility.Visible;
+
+                grid.Children[7].BeginAnimation(OpacityProperty, doubleAnimationOpacity);
+                grid.Children[4].BeginAnimation(OpacityProperty, doubleAnimationOpacity);
+
             }
             else
             {
                 grid.Children[4].Visibility = Visibility.Collapsed;
                 grid.Children[7].Visibility = Visibility.Collapsed;
+
+                grid.Children[7].BeginAnimation(OpacityProperty, null);
+                grid.Children[4].BeginAnimation(OpacityProperty, null);
             }
             if (VNeighbourExists())
             {
                 grid.Children[5].Visibility = Visibility.Visible;
                 grid.Children[6].Visibility = Visibility.Visible;
+
+                grid.Children[5].BeginAnimation(OpacityProperty, doubleAnimationOpacity);
+                grid.Children[6].BeginAnimation(OpacityProperty, doubleAnimationOpacity);
             }
             else
             {
                 grid.Children[5].Visibility = Visibility.Collapsed;
                 grid.Children[6].Visibility = Visibility.Collapsed;
+
+                grid.Children[5].BeginAnimation(OpacityProperty, null);
+                grid.Children[6].BeginAnimation(OpacityProperty, null);
             }
         }
 
