@@ -98,6 +98,8 @@ namespace Antialiasing
         private int opaqueMatrixLenghtSqrt;
         private int widthRange;
         private double opaqueRange;
+        private int yHigh, yLow, xLeft, xRight;
+        private Boolean found;
 
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
@@ -249,6 +251,12 @@ namespace Antialiasing
 
                 Array.Clear(this.greenScreenPixelData, 0, this.greenScreenPixelData.Length);
 
+                yHigh = 640;
+                yLow = 0;
+                xLeft = 320;
+                xRight = 0;
+                found = false;
+
                 // loop over each row and column of the depth
                 for (int y = 0; y < this.depthHeight; ++y)
                 {
@@ -264,12 +272,27 @@ namespace Antialiasing
                         // if we're tracking a player for the current pixel, do green screen
                         if (player > 0)
                         {
+                            found = true;
+
                             // retrieve the depth to color mapping for the current depth pixel
                             ColorImagePoint colorImagePoint = this.colorCoordinates[depthIndex];
 
                             // scale color coordinates to depth resolution
                             int colorInDepthX = colorImagePoint.X / this.colorToDepthDivisor;
                             int colorInDepthY = colorImagePoint.Y / this.colorToDepthDivisor;
+
+							if (yHigh > colorInDepthY && colorInDepthY >=5) {	
+								yHigh = colorInDepthY;
+							}
+							if (yLow < colorInDepthY && colorInDepthY <= 635) {	
+								yLow = colorInDepthY;
+							}
+							if (xLeft > colorInDepthX && colorInDepthX >= 5) {	
+								xLeft = colorInDepthX;
+							}
+							if (xRight < colorInDepthX && colorInDepthX <= 315 ) {	
+								xRight = colorInDepthX;
+							}
 
                             // make sure the depth pixel maps to a valid point in color space
                             // check y > 0 and y < depthHeight to make sure we don't write outside of the array
@@ -294,42 +317,24 @@ namespace Antialiasing
 
                 if (this.checkBoxNearMode.IsChecked == true)
                 {
-                    for (int i = 0; i < this.greenScreenPixelData.Length - (this.depthWidth * widthRange) - widthRange; i++)
+                    if (found)
                     {
-
-                        //ToDo Werte können im Randbereich liegen
-
-                        for (int j = 0; j < opaqueMatrixLenghtSqrt; j++)
+                        int count = 0;
+                        for (int y = yHigh; y <= yLow; y++)
                         {
-                            for (int k = 0; k < opaqueMatrixLenghtSqrt; k++)
+                            for (int x = xLeft; x <= xRight; x++)
                             {
-                                opaqueMatrix[j * opaqueMatrixLenghtSqrt + k] = i + k + this.depthWidth * j;
-
+                                Test(y * x, 0);
+                                count++;
                             }
                         }
 
-                        int counterFound = 0;
-                        int counterNotFound = 0;
-
-                        for (int j = 0; j < opaqueMatrix.Length; j++)
+                        for (int y = yLow; y >= yHigh; y--)
                         {
-                            var p = this.greenScreenPixelData[opaqueMatrix[j]];
-                            if (p == -1)
+                            for (int x = xRight; x >= xLeft; x--)
                             {
-                                counterFound++;
-                            }
-                            else
-                            {
-                                counterNotFound++;
-                            }
-                            if (counterFound >= opaqueRange)
-                            {
-                                this.greenScreenPixelData[opaqueMatrix[0]] = -1;
-                                break;
-                            }
-                            if (counterNotFound > opaqueMatrixLenghtSqrt)
-                            {
-                                break;
+                                Test(y * x, 15);
+                                count++;
                             }
                         }
                     }
@@ -367,6 +372,44 @@ namespace Antialiasing
                     0);
             }
         }
+
+
+		private void Test(int i, int wert) 
+		{
+ //ToDo Werte können im Randbereich liegen
+
+                        for (int j = 0; j < opaqueMatrixLenghtSqrt; j++)
+                        {
+                            for (int k = 0; k < opaqueMatrixLenghtSqrt; k++)
+                            {
+                                opaqueMatrix[j * opaqueMatrixLenghtSqrt + k] = (i) + k + (this.depthWidth * j);
+                            }
+                        }
+
+                        int counterFound = 0;
+                        int counterNotFound = 0;
+                        for (int j = 0; j < opaqueMatrix.Length; j++)
+                        {
+                            var p = this.greenScreenPixelData[opaqueMatrix[j]];
+                            if (p == -1)
+                            {
+                                counterFound++;
+                            }
+                            else
+                            {
+                                counterNotFound++;
+                            }
+                            if (counterFound >= opaqueRange)
+                            {
+                                this.greenScreenPixelData[opaqueMatrix[wert]] = -1;
+                                break;
+                            }
+                            if (counterNotFound > opaqueMatrixLenghtSqrt)
+                            {
+                                break;
+                            }
+                        }
+		}
 
         /// <summary>
         /// Handles the user clicking on the screenshot button
@@ -428,32 +471,5 @@ namespace Antialiasing
                 this.statusBarText.Text = string.Format("{0} {1}", Properties.Resources.ScreenshotWriteFailed, path);
             }
         }
-
-        /// <summary>
-        /// Handles the checking or unchecking of the near mode combo box
-        /// </summary>
-        /// <param name="sender">object sending the event</param>
-        /// <param name="e">event arguments</param>
-        //private void CheckBoxNearModeChanged(object sender, RoutedEventArgs e)
-        //{
-        //    if (this.sensor != null)
-        //    {
-        //        // will not function on non-Kinect for Windows devices
-        //        try
-        //        {
-        //            if (this.checkBoxNearMode.IsChecked.GetValueOrDefault())
-        //            {
-        //                this.sensor.DepthStream.Range = DepthRange.Near;
-        //            }
-        //            else
-        //            {
-        //                this.sensor.DepthStream.Range = DepthRange.Default;
-        //            }
-        //        }
-        //        catch (InvalidOperationException)
-        //        {
-        //        }
-        //    }
-        //}
     }
 }
