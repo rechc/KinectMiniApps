@@ -35,106 +35,109 @@ namespace LoopListTest
         public MainWindow()
         {
             InitializeComponent();
-
-            _kinectSensor = KinectSensor.KinectSensors.FirstOrDefault(s => s.Status == KinectStatus.Connected);
-
-            if (_kinectSensor == null)
+            try
             {
-                ExceptionTextBlock.Text = "Kein Kinect-Sensor angeschloßen";
-            }
-            else
-            {
-                _kinectSensor.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
+                _kinectSensor = KinectSensor.KinectSensors.FirstOrDefault(s => s.Status == KinectStatus.Connected);
 
-                _kinectSensor.DepthStream.Enable(DepthImageFormat.Resolution640x480Fps30);
-
-                _kinectSensor.SkeletonStream.Enable(new TransformSmoothParameters
-                    {
-                    Smoothing = 0.8f,
-                    Correction = 0f,
-                    Prediction = 0.2f,
-                    JitterRadius = 0.1f,
-                    MaxDeviationRadius = 0.8f
-                });
-
-                _kinectSensor.AllFramesReady += OnAllReady;
-
-                _kinectSensor.Start();
-                _kinectSensor.ElevationAngle = 0;
-            }
-
-
-            MyLoopList.SetAutoDragOffset(0.20);
-            MyLoopList.SetDuration(new Duration(new TimeSpan(3000000))); //300m
-            MyLoopList.Scrolled += MyLoopListOnScrolled;
-            MyTextLoopList.Scrolled += MyTextLoopList_Scrolled;
-            MyTextLoopList.SetFontSize(36);
-            MyTextLoopList.SetFontFamily("Miriam Fixed");
-            MyTextLoopList.SetDuration(new Duration(new TimeSpan(2500000)));
-            string[] paths = Directory.GetFiles(Environment.CurrentDirectory + @"\images", "tele*");
-            Node anchor = null;
-            Node anchorForMokup = null;
-
-            for (int i = 0; i < paths.Count(); i++)
-            {
-                string path = paths[i];
-                Grid grid = new Grid();
-                Button button = new Button
-                    {
-                        Content = "button " + (i + 2)
-                    };
-                button.Click += PrintName;
-                button.MaxHeight = 50;
-
-                Image img = new Image
-                    {
-                        Stretch = Stretch.Fill, 
-                        Source = LoadImage(path)
-                    };
-                grid.Children.Add(img);
-                grid.Children.Add(button);
-                if (i != 3) {
-                    anchor = MyLoopList.AddToBelow(anchor, grid);
-                    if (i == 1)
-                    {
-                        anchorForMokup = anchor;
-                    }
+                if (_kinectSensor == null)
+                {
+                    ExceptionTextBlock.Text = "Kein Kinect-Sensor erkannt";
                 }
                 else
-                    anchor = MyLoopList.AddToLeft(anchor, grid);
-            }
-            Grid mokupGrid = new Grid();
-
-            Image mokuImg = new Image
                 {
-                    Stretch = Stretch.Fill,
-                    Source = LoadImage(Environment.CurrentDirectory + @"\images\mokup.jpg")
-                };
+                    _kinectSensor.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
 
-            mokupGrid.Children.Add(mokuImg);
+                    _kinectSensor.DepthStream.Enable(DepthImageFormat.Resolution640x480Fps30);
 
-            MyLoopList.AddToRight(anchorForMokup, mokupGrid);
-            
-            MyTextLoopList.Add("Ebene2");
-            MyTextLoopList.Add("Ebene1");
-            
+                    _kinectSensor.SkeletonStream.Enable(new TransformSmoothParameters
+                        {
+                            Smoothing = 0.8f,
+                            Correction = 0f,
+                            Prediction = 0.2f,
+                            JitterRadius = 0.1f,
+                            MaxDeviationRadius = 0.8f
+                        });
+
+                    _kinectSensor.AllFramesReady += OnAllReady;
+
+                    _kinectSensor.Start();
+                    _kinectSensor.ElevationAngle = 0;
+                }
 
 
+                MyLoopList.SetAutoDragOffset(0.20);
+                MyLoopList.SetDuration(new Duration(new TimeSpan(3000000))); //300m
+                MyLoopList.Scrolled += MyLoopListOnScrolled;
+                MyTextLoopList.Scrolled += MyTextLoopList_Scrolled;
+                MyTextLoopList.SetFontSize(36);
+                MyTextLoopList.SetFontFamily("Miriam Fixed");
+                MyTextLoopList.SetDuration(new Duration(new TimeSpan(2500000)));
+                string[] paths = Directory.GetFiles(Environment.CurrentDirectory + @"\images", "tele*");
+                Node anchor = null;
+                Node anchorForMokup = null;
+
+                for (int i = 0; i < paths.Count(); i++)
+                {
+                    string path = paths[i];
+                    Grid grid = new Grid();
+                    Image img = new Image
+                        {
+                            Stretch = Stretch.Fill,
+                            Source = LoadImage(path)
+                        };
+                    grid.Children.Add(img);
+                    if (i != 3)
+                    {
+                        anchor = MyLoopList.AddToBelow(anchor, grid);
+                        if (i == 1)
+                        {
+                            anchorForMokup = anchor;
+                        }
+                    }
+                    else
+                        anchor = MyLoopList.AddToLeft(anchor, grid);
+                }
+                Grid mokupGrid = new Grid();
+
+                Image mokuImg = new Image
+                    {
+                        Stretch = Stretch.Fill,
+                        Source = LoadImage(Environment.CurrentDirectory + @"\images\mokup.jpg")
+                    };
+
+                mokupGrid.Children.Add(mokuImg);
+
+                MyLoopList.AddToRight(anchorForMokup, mokupGrid);
+
+                MyTextLoopList.Add("Ebene2");
+                MyTextLoopList.Add("Ebene1");
+            }
+            catch (Exception exc)
+            {
+                ExceptionTextBlock.Text = exc.Message + "\n\r" + exc.InnerException;
+            }
         }
 
         private void OnAllReady(object sender, AllFramesReadyEventArgs e)
         {
-            using (SkeletonFrame sFrame = e.OpenSkeletonFrame())
+            try
             {
-                if (sFrame == null) return;
-                if (_skeletons == null)
+                using (SkeletonFrame sFrame = e.OpenSkeletonFrame())
                 {
-                    _skeletons = new Skeleton[_kinectSensor.SkeletonStream.FrameSkeletonArrayLength];
+                    if (sFrame == null) return;
+                    if (_skeletons == null)
+                    {
+                        _skeletons = new Skeleton[_kinectSensor.SkeletonStream.FrameSkeletonArrayLength];
+                    }
+                    sFrame.CopySkeletonDataTo(_skeletons);
+                    //CorrectRoomCoords();
+                    Skeleton skeleton = GetFixedSkeleton();
+                    ProcessSkeleton(skeleton);
                 }
-                sFrame.CopySkeletonDataTo(_skeletons);
-                //CorrectRoomCoords();
-                Skeleton skeleton = GetFixedSkeleton();
-                ProcessSkeleton(skeleton);
+            }
+            catch (Exception exc)
+            {
+                ExceptionTextBlock.Text = exc.Message + "\n\r" + exc.InnerException;
             }
         }
 
@@ -193,11 +196,10 @@ namespace LoopListTest
                     KinectFocusedRectangle.Visibility = Visibility.Collapsed;
                 }
             }
-            Debug.WriteLine(handRight.Position.Z);
             ColorImagePoint cp = _kinectSensor.CoordinateMapper.MapSkeletonPointToColorPoint(handRight.Position, ColorImageFormat.RawBayerResolution640x480Fps30);
 
             Point currentPoint = new Point(cp.X*8, cp.Y*8);
-            Move(currentPoint);
+            Drag(currentPoint);
         }
 
         private Skeleton GetFixedSkeleton()
@@ -256,11 +258,6 @@ namespace LoopListTest
             }
         }
 
-        static void PrintName(object sender, EventArgs e)
-        {
-            Debug.WriteLine(((Button)sender).Content);
-        }
-
         private static BitmapImage LoadImage(string path)
         {
             BitmapImage bi = new BitmapImage();
@@ -270,68 +267,81 @@ namespace LoopListTest
             return bi;
         }
 
-
-
-        private void Move(Point currentPos)
+        private void Drag(Point currentPos)
         {
-            if (!_doDrag) return;
-            if (!_oldMovePoint.HasValue)
-                _oldMovePoint = currentPos;
-            if (Math.Abs(_oldMovePoint.Value.X - currentPos.X) < 0.000000001 && Math.Abs(_oldMovePoint.Value.Y - currentPos.Y) < 0.000000001)
+            try
             {
-                return;
-            }
-
-            int xDistance = (int)(currentPos.X - _oldMovePoint.Value.X);
-            int yDistance = (int)(currentPos.Y - _oldMovePoint.Value.Y);
-
-            _dragDirection = Math.Abs(xDistance) >= Math.Abs(yDistance) ? 1 : 2;
-            if (!_homogeneCollection)
-            {
-                if (savedDirections.Count < 8)
-                {
-                    savedDirections.Add(_dragDirection);
+                if (!_doDrag) return;
+                if (!_oldMovePoint.HasValue)
                     _oldMovePoint = currentPos;
+                if (Math.Abs(_oldMovePoint.Value.X - currentPos.X) < 0.000000001 &&
+                    Math.Abs(_oldMovePoint.Value.Y - currentPos.Y) < 0.000000001)
+                {
                     return;
                 }
-                _homogeneCollection = savedDirections.All(x => savedDirections.First() == x);
-                savedDirections.Clear();
+
+                int xDistance = (int) (currentPos.X - _oldMovePoint.Value.X);
+                int yDistance = (int) (currentPos.Y - _oldMovePoint.Value.Y);
+
+                _dragDirection = Math.Abs(xDistance) >= Math.Abs(yDistance) ? 1 : 2;
                 if (!_homogeneCollection)
                 {
-                    _oldMovePoint = currentPos;
-                    return;
+                    if (savedDirections.Count < 8)
+                    {
+                        savedDirections.Add(_dragDirection);
+                        _oldMovePoint = currentPos;
+                        return;
+                    }
+                    _homogeneCollection = savedDirections.All(x => savedDirections.First() == x);
+                    savedDirections.Clear();
+                    if (!_homogeneCollection)
+                    {
+                        _oldMovePoint = currentPos;
+                        return;
+                    }
                 }
-            }
 
-            bool mayDragOn = false;
-            if (_dragDirection == 1)
-            {
-                mayDragOn = MyLoopList.HDrag(xDistance);
+                bool mayDragOn = false;
+                if (_dragDirection == 1)
+                {
+                    mayDragOn = MyLoopList.HDrag(xDistance);
+                }
+                if (_dragDirection == 2)
+                {
+                    if (!_waitForTextList)
+                        mayDragOn = MyLoopList.VDrag(yDistance);
+                }
+                if (!mayDragOn)
+                {
+                    _doDrag = false;
+                }
+                _oldMovePoint = currentPos;
             }
-            if (_dragDirection == 2)
+            catch (Exception exc)
             {
-                if (!_waitForTextList)
-                    mayDragOn = MyLoopList.VDrag(yDistance);
+                ExceptionTextBlock.Text = exc.Message + "\n\r" + exc.InnerException;
             }
-            if (!mayDragOn)
-            {
-                _doDrag = false;
-            }
-            _oldMovePoint = currentPos;
         }
 
         private void myLoopList_MouseMove_1(object sender, MouseEventArgs e)
         {
-            Move(e.GetPosition(MyLoopList));
+            Drag(e.GetPosition(MyLoopList));
         }
 
         private void myLoopList_MouseUp_1(object sender, MouseButtonEventArgs e)
         {
-            _homogeneCollection = false;
-            _doDrag = false;
-            _oldMovePoint = null;
-            MyLoopList.AnimBack();
-            _dragDirection = 0;
+            try
+            {
+                _homogeneCollection = false;
+                _doDrag = false;
+                _oldMovePoint = null;
+                MyLoopList.AnimBack();
+                _dragDirection = 0;
+            }
+            catch (Exception exc)
+            {
+                ExceptionTextBlock.Text = exc.Message + "\n\r" + exc.InnerException;
+            }
         }
 
         private void myLoopList_MouseDown_1(object sender, MouseButtonEventArgs e)
@@ -342,25 +352,32 @@ namespace LoopListTest
 
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            switch (e.Key)
+            try
             {
-                case Key.Left:
-                    MyLoopList.AnimH(true);
-                    break;
-                case Key.Right:
-                    MyLoopList.AnimH(false);
-                    break;
-                case Key.Up:
-                    if (!_waitForTextList)
-                        MyLoopList.AnimV(true);
-                    break;
-                case Key.Down:
-                    if (!_waitForTextList)
-                        MyLoopList.AnimV(false);
-                    break;
-            }
+                switch (e.Key)
+                {
+                    case Key.Left:
+                        MyLoopList.AnimH(true);
+                        break;
+                    case Key.Right:
+                        MyLoopList.AnimH(false);
+                        break;
+                    case Key.Up:
+                        if (!_waitForTextList)
+                            MyLoopList.AnimV(true);
+                        break;
+                    case Key.Down:
+                        if (!_waitForTextList)
+                            MyLoopList.AnimV(false);
+                        break;
+                }
 
-            e.Handled = true;
+                e.Handled = true;
+            }
+            catch (Exception exc)
+            {
+                ExceptionTextBlock.Text = exc.Message + "\n\r" + exc.InnerException;
+            }
         }
 
         private void myLoopList_MouseLeave_1(object sender, MouseEventArgs e)
