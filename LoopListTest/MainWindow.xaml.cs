@@ -21,7 +21,7 @@ namespace LoopListTest
         private Point? _oldMovePoint;
         private bool _doDrag;
         private bool _waitForTextList;
-
+        private bool _mouseIsUp;
         private bool _kinectFocused;
 
         private readonly List<int> _savedDirections = new List<int>();
@@ -238,6 +238,8 @@ namespace LoopListTest
         private void MyTextLoopList_Scrolled(object sender, EventArgs e)
         {
             _waitForTextList = false;
+            if (!_mouseIsUp)
+                _doDrag = true;
         }
 
         private void MyLoopListOnScrolled(object sender, EventArgs e)
@@ -254,6 +256,8 @@ namespace LoopListTest
                         break;
                 }
                 ResetDragDirectionObvious();
+                if (!_mouseIsUp)
+                    _doDrag = true;
             }
         }
 
@@ -323,11 +327,7 @@ namespace LoopListTest
                     if (!_waitForTextList)
                         mayDragOn = MyLoopList.VDrag(yDistance);
                 }
-                if (!mayDragOn)
-                {
-                    _doDrag = false;
-                }
-                
+                if (!mayDragOn) _doDrag = false;
                 exit:
                 _oldMovePoint = currentPos;
             }
@@ -346,11 +346,13 @@ namespace LoopListTest
         {
             try
             {
+                _mouseIsUp = true;
                 ResetDragDirectionObvious();
                 
                 _doDrag = false;
                 _oldMovePoint = null;
                 MyLoopList.AnimBack();
+                
             }
             catch (Exception exc)
             {
@@ -367,6 +369,7 @@ namespace LoopListTest
 
         private void myLoopList_MouseDown_1(object sender, MouseButtonEventArgs e)
         {
+            _mouseIsUp = false;
             _doDrag = true;
         }
 
@@ -403,7 +406,11 @@ namespace LoopListTest
 
         private void myLoopList_MouseLeave_1(object sender, MouseEventArgs e)
         {
-            myLoopList_MouseUp_1(null, null);
+            ResetDragDirectionObvious();
+            if (!MyLoopList.IsAnimating())
+                _doDrag = false;
+            _oldMovePoint = null;
+            MyLoopList.AnimBack();
         }
 
     }

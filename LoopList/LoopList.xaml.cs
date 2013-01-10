@@ -582,7 +582,33 @@ namespace LoopList
             return true;
         }
 
-        void AnimCompleted()
+        void AnimCompletedX()
+        {
+            _animating--;
+            if (_animating == 0)
+            {
+                if (_lastX != 0)
+                    FireScrolled(_lastX > 0
+                     ? new LoopListArgs(Direction.Left)
+                     : new LoopListArgs(Direction.Right));
+                _lastX = 0;
+            }
+        }
+
+        void AnimCompletedY()
+        {
+            _animating--;
+            if (_animating == 0)
+            {
+                if (_lastY != 0)
+                    FireScrolled(_lastY > 0
+                     ? new LoopListArgs(Direction.Down)
+                     : new LoopListArgs(Direction.Top));
+                _lastY = 0;
+            }
+        }
+
+        void AnimCompletedBack()
         {
             _animating--;
         }
@@ -612,7 +638,7 @@ namespace LoopList
             else
                 doubleAnimationCenter.To = _right.ActualWidth;
             doubleAnimationCenter.Duration = _duration;
-            doubleAnimationCenter.Completed += (s, _) => AnimCompleted();
+            doubleAnimationCenter.Completed += (s, _) => AnimCompletedX();
             ttRight.BeginAnimation(TranslateTransform.XProperty, doubleAnimationCenter);
 
             DoubleAnimation doubleAnimationLeft = new DoubleAnimation
@@ -621,18 +647,15 @@ namespace LoopList
                     To = 0,
                     Duration = _duration
                 };
-            doubleAnimationLeft.Completed += (s, _) => AnimCompleted();
+            doubleAnimationLeft.Completed += (s, _) => AnimCompletedX();
             ttLeft.BeginAnimation(TranslateTransform.XProperty, doubleAnimationLeft);
 
-            FireScrolled(_lastX > 0
-                             ? new LoopListArgs(Direction.Left)
-                             : new LoopListArgs(Direction.Right));
+
 
             Grid tmp = _right;
             _right = _left;
             _left = tmp;
-            _lastX = 0;
-            _lastY = 0;
+
         }
 
         public void AnimV(bool upDir)
@@ -660,21 +683,23 @@ namespace LoopList
             else
                 doubleAnimationCenter.To = _right.ActualHeight;
             doubleAnimationCenter.Duration = _duration;
-            doubleAnimationCenter.Completed += (s, _) => AnimCompleted();
+            doubleAnimationCenter.Completed += (s, _) => AnimCompletedY();
             ttRight.BeginAnimation(TranslateTransform.YProperty, doubleAnimationCenter);
 
             DoubleAnimation doubleAnimationLeft = new DoubleAnimation {From = ttAbove.Y, To = 0, Duration = _duration};
-            doubleAnimationLeft.Completed += (s, _) => AnimCompleted();
+            doubleAnimationLeft.Completed += (s, _) => AnimCompletedY();
             ttAbove.BeginAnimation(TranslateTransform.YProperty, doubleAnimationLeft);
 
-            FireScrolled(_lastY > 0
-             ? new LoopListArgs(Direction.Down)
-             : new LoopListArgs(Direction.Top));
+
 
             Grid tmp = _right;
             _right = _above;
             _above = tmp;
-            _lastY = 0;
+        }
+
+        public bool IsAnimating()
+        {
+            return _animating > 0;
         }
 
         public void AnimBack()
@@ -693,8 +718,8 @@ namespace LoopList
                         To = 0,
                         Duration = _duration
                     };
-                doubleAnimationCenter.Completed += (s, _) => AnimCompleted();
-                ttRight.BeginAnimation(TranslateTransform.XProperty, doubleAnimationCenter);
+                doubleAnimationCenter.Completed += (s, _) => AnimCompletedBack();
+                
 
                 DoubleAnimation doubleAnimationLeft = new DoubleAnimation {From = ttLeft.X};
                 if (_lastX < 0)
@@ -702,8 +727,8 @@ namespace LoopList
                 if (_lastX > 0)
                     doubleAnimationLeft.To = -_right.ActualWidth;
                 doubleAnimationLeft.Duration = _duration;
-                doubleAnimationLeft.Completed += (s, _) => AnimCompleted();
-                ttLeft.BeginAnimation(TranslateTransform.XProperty, doubleAnimationLeft);
+                doubleAnimationLeft.Completed += (s, _) => AnimCompletedBack();
+                
                 if (_lastX < 0)
                 {
                     _currentNode = _currentNode.GetLeft();
@@ -712,8 +737,9 @@ namespace LoopList
                 {
                     _currentNode = _currentNode.GetRight();
                 }
+                ttRight.BeginAnimation(TranslateTransform.XProperty, doubleAnimationCenter);
+                ttLeft.BeginAnimation(TranslateTransform.XProperty, doubleAnimationLeft);
                 _lastX = 0;
-                _lastY = 0;
             }
             else
             {
@@ -730,8 +756,8 @@ namespace LoopList
                             To = 0,
                             Duration = _duration
                         };
-                    doubleAnimationCenter.Completed += (s, _) => AnimCompleted();
-                    ttRight.BeginAnimation(TranslateTransform.YProperty, doubleAnimationCenter);
+                    doubleAnimationCenter.Completed += (s, _) => AnimCompletedBack();
+                    
 
                     DoubleAnimation doubleAnimationLeft = new DoubleAnimation {From = ttAbove.Y};
                     if (_lastY < 0)
@@ -739,8 +765,8 @@ namespace LoopList
                     if (_lastY > 0)
                         doubleAnimationLeft.To = -_right.ActualHeight;
                     doubleAnimationLeft.Duration = _duration;
-                    doubleAnimationLeft.Completed += (s, _) => AnimCompleted();
-                    ttAbove.BeginAnimation(TranslateTransform.YProperty, doubleAnimationLeft);
+                    doubleAnimationLeft.Completed += (s, _) => AnimCompletedBack();
+                    
                     if (_lastY < 0)
                     {
                         _currentNode = _currentNode.GetAbove();
@@ -749,8 +775,9 @@ namespace LoopList
                     {
                         _currentNode = _currentNode.GetBelow();
                     }
+                    ttRight.BeginAnimation(TranslateTransform.YProperty, doubleAnimationCenter);
+                    ttAbove.BeginAnimation(TranslateTransform.YProperty, doubleAnimationLeft);
                     _lastY = 0;
-                    _lastX = 0;
                 }
 
             }
