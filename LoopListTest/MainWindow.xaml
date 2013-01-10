@@ -12,7 +12,7 @@
         <stas:LoopList x:Name="MyLoopList" MouseDown="myLoopList_MouseDown_1" MouseMove="myLoopList_MouseMove_1" MouseUp="myLoopList_MouseUp_1" MouseLeave="myLoopList_MouseLeave_1" Grid.Column="1" />
         <stas:TextLoopList x:Name="MyTextLoopList" Background="BlueViolet"/>
         <TextBlock x:Name="ExceptionTextBlock" Grid.ColumnSpan="2" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Foreground="Red"/>
-
+        <Rectangle x:Name="KinectFocusedRectangle" Width="50" Height="50" Fill="Green" Stroke="Black" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="50,50,0,0" Visibility="Collapsed"/>
         
 
     </Grid>
