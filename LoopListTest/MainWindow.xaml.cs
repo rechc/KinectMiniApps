@@ -253,7 +253,7 @@ namespace LoopListTest
                         _waitForTextList = MyTextLoopList.Anim(false);
                         break;
                 }
-                _dragDirectionIsObvious = false;
+                ResetDragDirectionObvious();
             }
         }
 
@@ -346,9 +346,8 @@ namespace LoopListTest
         {
             try
             {
-                _dragDirectionIsObvious = false;
-                KinectVibratingRectangle.Visibility = Visibility.Collapsed;
-                _savedDirections.Clear();
+                ResetDragDirectionObvious();
+                
                 _doDrag = false;
                 _oldMovePoint = null;
                 MyLoopList.AnimBack();
@@ -357,6 +356,13 @@ namespace LoopListTest
             {
                 ExceptionTextBlock.Text = exc.Message + "\n\r" + exc.InnerException;
             }
+        }
+
+        private void ResetDragDirectionObvious()
+        {
+            _dragDirectionIsObvious = false;
+            KinectVibratingRectangle.Visibility = Visibility.Collapsed;
+            _savedDirections.Clear();
         }
 
         private void myLoopList_MouseDown_1(object sender, MouseButtonEventArgs e)
