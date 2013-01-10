@@ -137,24 +137,13 @@ namespace LoopListTest
         {
             if (skeleton == null)
             {
-                if (_kinectFocused)
-                {
-                    myLoopList_MouseUp_1(null, null);
-                    _kinectFocused = false;
-                }
                 return;
             }
             Joint handRight = skeleton.Joints[JointType.HandRight];
             if (handRight.TrackingState != JointTrackingState.Tracked)
             {
-                if (_kinectFocused)
-                {
-                    myLoopList_MouseUp_1(null, null);
-                    _kinectFocused = false;
-                }
                 return;
             }
-            
             
             if (handRight.Position.Z < 1.5)
             {
@@ -175,11 +164,7 @@ namespace LoopListTest
             ColorImagePoint cp = _kinectSensor.CoordinateMapper.MapSkeletonPointToColorPoint(handRight.Position, ColorImageFormat.RawBayerResolution640x480Fps30);
 
             Point currentPoint = new Point(cp.X*5, cp.Y*5);
-            //if (currentPoint.X > 0 && currentPoint.Y > 0)
-                Move(currentPoint);
-            Debug.WriteLine("X: " + currentPoint.X + " Y: " + currentPoint.Y + " Z: " + handRight.Position.Z);
-            //Debug.WriteLine("kinect focused: " + _kinectFocused);
-            //Debug.WriteLine("_doDrag: " + _doDrag);
+            Move(currentPoint);
         }
 
         private Skeleton GetFixedSkeleton()
@@ -233,19 +218,12 @@ namespace LoopListTest
                         _waitForTextList = MyTextLoopList.Anim(false);
                         break;
                 }
-                if (_kinectFocused)
-                {
-                    myLoopList_MouseUp_1(null, null);
-                    _kinectFocused = false;
-                }
             }
-
         }
 
         static void PrintName(object sender, EventArgs e)
         {
             Debug.WriteLine(((Button)sender).Content);
-
         }
 
         private static BitmapImage LoadImage(string path)
@@ -266,7 +244,7 @@ namespace LoopListTest
                 _oldMovePoint = currentPos;
             if (Math.Abs(_oldMovePoint.Value.X - currentPos.X) < 0.000000001 && Math.Abs(_oldMovePoint.Value.Y - currentPos.Y) < 0.000000001)
             {
-              //  return;
+                return;
             }
 
             int xDistance = (int)(currentPos.X - _oldMovePoint.Value.X);
@@ -292,8 +270,6 @@ namespace LoopListTest
 
         private void myLoopList_MouseMove_1(object sender, MouseEventArgs e)
         {
-            Point point = e.GetPosition(MyLoopList);
-            Debug.WriteLine("X: " + point.X + " Y: " + point.Y );
             Move(e.GetPosition(MyLoopList));
         }
 
