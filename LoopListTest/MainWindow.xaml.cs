@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using LoopList;
 using System;
 using System.IO;
@@ -65,7 +64,7 @@ namespace LoopListTest
 
 
                 MyLoopList.SetAutoDragOffset(0.20);
-                MyLoopList.SetDuration(new Duration(new TimeSpan(3000000))); //300m
+                MyLoopList.SetDuration(new Duration(new TimeSpan(30000000))); //300m
                 MyLoopList.Scrolled += MyLoopListOnScrolled;
                 MyTextLoopList.Scrolled += MyTextLoopList_Scrolled;
                 MyTextLoopList.SetFontSize(36);
@@ -406,11 +405,7 @@ namespace LoopListTest
 
         private void myLoopList_MouseLeave_1(object sender, MouseEventArgs e)
         {
-            ResetDragDirectionObvious();
-            if (!MyLoopList.IsAnimating())
-                _doDrag = false;
-            _oldMovePoint = null;
-            MyLoopList.AnimBack();
+            myLoopList_MouseUp_1(null, null);
         }
 
     }
