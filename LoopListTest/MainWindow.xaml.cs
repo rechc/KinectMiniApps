@@ -64,7 +64,7 @@ namespace LoopListTest
 
 
                 MyLoopList.SetAutoDragOffset(0.20);
-                MyLoopList.SetDuration(new Duration(new TimeSpan(30000000))); //300m
+                MyLoopList.SetDuration(new Duration(new TimeSpan(3000000))); //300m
                 MyLoopList.Scrolled += MyLoopListOnScrolled;
                 MyTextLoopList.Scrolled += MyTextLoopList_Scrolled;
                 MyTextLoopList.SetFontSize(36);
