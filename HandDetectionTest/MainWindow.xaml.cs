@@ -78,7 +78,7 @@ namespace HandDetectionTest
                 this.sensor.SkeletonStream.Enable();
                 this.sensor.SkeletonFrameReady += SensorDetectHandReady;
 
-                this.sensor.DepthStream.Enable(DepthImageFormat.Resolution320x240Fps30);
+                this.sensor.DepthStream.Enable(DepthImageFormat.Resolution640x480Fps30);
                 this.sensor.DepthFrameReady += SensorDepthFrameReady;
                 this.depthPixels = new DepthImagePixel[this.sensor.DepthStream.FramePixelDataLength];
 
@@ -194,17 +194,32 @@ namespace HandDetectionTest
                 {
                     if (depthFrame != null)
                     {
-                        int sldXmodify = -40;
-                        int sldYmodify = -30;
-                        int intRightX = (int) (HandRightX * 100 + (int) sldXmodify - 10);
-                        int intRightY = (int) (HandRightY *100 + (int) sldYmodify);
+                        int intRightX = (int) (HandRightX * depthFrame.Width);
+                        int intRightY = -1* (int) (HandRightY * depthFrame.Height);
+
+                        //if(HandRightX >= 0)
+                        //   intRightX = (int) HandRightX * depthFrame.Width;
+                        //else
+                        //{
+                        //    intRightX = (int) Math.Abs(HandRightX*depthFrame.Width - depthFrame.Width);
+                        //}
+
+                        //if (HandRightY >= 0)
+                        //    intRightY = (int)HandRightY * depthFrame.Height;
+                        //else
+                        //{
+                        //    intRightY = (int)Math.Abs(HandRightY * depthFrame.Height - depthFrame.Height);
+                        //}
+
+                        Console.WriteLine("HandX: {0} , HandY: {1}; calcX {2}, calcY{3} ; depH: {4} , depW {5}"
+                                        , HandRightX, HandRightY, intRightX, intRightY, depthFrame.Height, depthFrame.Width);
 
                         depthFrame.CopyDepthImagePixelDataTo(this.depthPixels);
 
                         //depthBitmap = new WriteableBitmap(sensor.DepthStream.FrameWidth, sensor.DepthStream.FrameHeight,
                                                                             //96.0, 96.0, PixelFormats.Bgr32, null);
                         this.DepthImage.Source = DepthToBitmapSource(depthFrame);
-                        ImageSource imgRightHandSource = new CroppedBitmap((BitmapSource) DepthImage.Source.CloneCurrentValue(), new Int32Rect(
+                        ImageSource imgRightHandSource = new CroppedBitmap((BitmapSource) DepthImage.Source.CloneCurrentValue(),  new Int32Rect(
                                                                                 (intRightX < 0) ? 0 : intRightX,
                                                                                 (intRightY < 0) ? 0 : intRightY,
                                                                                 (intRightX + 50 >= depthFrame.Width)
@@ -213,6 +228,7 @@ namespace HandDetectionTest
                                                                                             ? depthFrame.Height - intRightY : 50
                                                                             ));
 
+                        RightHandImage.Source = imgRightHandSource;
 
                         bool handClosed = handDection.IsMakingAFist(imgRightHandSource);
                         this.HandDescriptionTBox.Text = handClosed ? "Hand is closed" : "Hand is opened";
