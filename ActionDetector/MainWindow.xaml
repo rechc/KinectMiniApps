@@ -1,0 +1,18 @@
+﻿<Window x:Class="Microsoft.Samples.Kinect.SkeletonBasics.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Skeleton Basics" Height="350" Width="566" Loaded="WindowLoaded" Closing="WindowClosing">
+    <Grid>
+        <Label x:Name="LblErkannt" Content="Personen Erkannt:" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" FontSize="25"  Height="50" Width="320"/>
+        <Label x:Name="LblErkanntOutput" Content="" HorizontalAlignment="Left" Margin="415,10,0,0" VerticalAlignment="Top" Width="109" FontSize="25" RenderTransformOrigin="0.516,-0.243" Height="50"/>
+        <Label x:Name="LblTracked" Content="Personen Tracked:" HorizontalAlignment="Left" Margin="0,60,0,0" VerticalAlignment="Top" Height="50" Width="320" FontSize="25"/>
+        <Label x:Name="LblTrackedOutput" Content="" HorizontalAlignment="Left" Margin="415,60,0,0" VerticalAlignment="Top" Width="109" RenderTransformOrigin="-2.469,0.462" FontSize="25" Height="50"/>
+        <Label x:Name="LblLaufen" Content="Personen laufen vorbei:" HorizontalAlignment="Left" Margin="0,110,0,0" VerticalAlignment="Top" Height="50" FontSize="25"/>
+        <Label x:Name="LblLaufenOutput" HorizontalAlignment="Left" Margin="415,110,0,0" VerticalAlignment="Top" Width="109" Height="50" FontSize="25" RenderTransformOrigin="0.375,1.423"/>
+        <Label x:Name="LblStehen" Content="Personen stehen vor Kinect:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,160,0,109" Height="50" RenderTransformOrigin="-1.316,0.538" FontSize="25" Width="397"/>
+        <Label x:Name="LblStehenOutput" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Width="109" Margin="415,160,0,0" FontSize="25" Height="50"/>
+        <Label x:Name="LblSchauen" Content="Personen schauen auf Kinect:" HorizontalAlignment="Left" Margin="0,210,0,58" RenderTransformOrigin="-1.316,0.538" FontSize="25" Width="397"/>
+        <Label x:Name="LblSchauenOutput" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Width="109" Margin="415,210,0,0" FontSize="25" Height="50"/>
+        <CheckBox x:Name="checkBoxSeatedMode" Content="Seated Mode" HorizontalAlignment="Left" Margin="51,272,0,0" VerticalAlignment="Top" Checked="CheckBoxSeatedModeChanged" Unchecked="CheckBoxSeatedModeChanged"/>
+    </Grid>
+</Window>

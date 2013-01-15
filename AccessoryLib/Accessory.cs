@@ -83,39 +83,43 @@ namespace AccessoryLib
 
                     if (skeletons.Count(t => t.TrackingState == SkeletonTrackingState.Tracked) >= 1)
                     {
-                        var person = skeletons.First(p => p.TrackingState == SkeletonTrackingState.Tracked);
-                        SkeletonPoint Sloc = person.Joints[JointType.Head].Position;
-                        ColorImagePoint Cloc = sensor.CoordinateMapper.MapSkeletonPointToColorPoint(Sloc,
-                                                                                                    ColorImageFormat.RgbResolution640x480Fps30);
-
-                        ImageSource image =
-                            new BitmapImage(
-                                new Uri(imagePath, UriKind.Absolute));
-
-                        int positionCorection = 0;
-                        switch (accessoryPositon)
+                        //var person = skeletons.First(p => p.TrackingState == SkeletonTrackingState.Tracked);
+                        foreach (var person in skeletons.Where(p => p.TrackingState == SkeletonTrackingState.Tracked))
                         {
-                                case AccessoryPositon.Hat:
-                                    positionCorection = -100;
-                                    break;
-                                case AccessoryPositon.Beard:
-                                positionCorection = + 10;
-                                    break;
-                        }
 
-                        double headX = Cloc.X;
-                        double headY = Cloc.Y + positionCorection;
-                        int imgHeight = (int) (150 - (50 * Sloc.Z));
-                        int imgWidth = (int) (150 - (50 * Sloc.Z));
-                        //var img = CreateResizedImage(image, imgWidth, imgHeight);
+                            SkeletonPoint Sloc = person.Joints[JointType.Head].Position;
+                            ColorImagePoint Cloc = sensor.CoordinateMapper.MapSkeletonPointToColorPoint(Sloc,
+                                                                                                        ColorImageFormat.RgbResolution640x480Fps30);
+
+                            ImageSource image =
+                                new BitmapImage(
+                                    new Uri(imagePath, UriKind.Absolute));
+
+                            int positionCorection = 0;
+                            switch (accessoryPositon)
+                            {
+                                    case AccessoryPositon.Hat:
+                                        positionCorection = -100;
+                                        break;
+                                    case AccessoryPositon.Beard:
+                                    positionCorection = + 10;
+                                        break;
+                            }
+
+                            double headX = Cloc.X;
+                            double headY = Cloc.Y + positionCorection;
+                            int imgHeight = (int) (150 - (50 * Sloc.Z));
+                            int imgWidth = (int) (150 - (50 * Sloc.Z));
+                            //var img = CreateResizedImage(image, imgWidth, imgHeight);
                         
-                        Console.WriteLine("Z: {0}, imgW: {1} , imgH {2}", Sloc.Z, imgWidth, imgHeight);
+                            Console.WriteLine("Z: {0}, imgW: {1} , imgH {2}", Sloc.Z, imgWidth, imgHeight);
                         
-                        dc.DrawRectangle(Brushes.Transparent, null, new Rect(0, 0, renderWidth, renderHeight));
-                        dc.DrawImage(image, new Rect(headX - 35, headY, imgWidth, imgHeight));
-                        //Console.WriteLine("X: {0}, y {1}", headX, headY);
-                        //this.drawingGroup.ClipGeometry =
-                        //    new RectangleGeometry(new Rect(0.0, 0.0, this.renderWidth, this.renderHeight));
+                            dc.DrawRectangle(Brushes.Transparent, null, new Rect(0, 0, renderWidth, renderHeight));
+                            dc.DrawImage(image, new Rect(headX - 35, headY, imgWidth, imgHeight));
+                            //Console.WriteLine("X: {0}, y {1}", headX, headY);
+                            //this.drawingGroup.ClipGeometry =
+                            //    new RectangleGeometry(new Rect(0.0, 0.0, this.renderWidth, this.renderHeight));
+                        }
                     }
                 }
             }
