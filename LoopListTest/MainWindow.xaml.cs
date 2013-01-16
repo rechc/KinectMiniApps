@@ -196,7 +196,7 @@ namespace LoopListTest
             }
             ColorImagePoint cp = _kinectSensor.CoordinateMapper.MapSkeletonPointToColorPoint(handRight.Position, ColorImageFormat.RawBayerResolution640x480Fps30);
 
-            Point currentPoint = new Point(cp.X*8, cp.Y*8);
+            Point currentPoint = new Point(cp.X*2, cp.Y*2);
             Drag(currentPoint);
         }
 
@@ -286,7 +286,7 @@ namespace LoopListTest
                 int dragDirection = Math.Abs(xDistance) >= Math.Abs(yDistance) ? 1 : 2;
                 if (!_dragDirectionIsObvious)
                 {
-                    if (_savedDirections.Count < 20)
+                    if (_savedDirections.Count < 5)
                     {
                         _savedDirections.Add(dragDirection);
                         goto exit;
