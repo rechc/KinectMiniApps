@@ -7,6 +7,13 @@ using System.Windows.Media.Imaging;
 
 namespace AccessoryLib
 {
+    public enum AccessoryPositon
+    {
+        Hat,
+        Glasses,
+        Beard
+    }
+
     public class AccessoryItem
     {
         public AccessoryItem(AccessoryPositon position, string imagePath)

@@ -38,7 +38,8 @@ namespace AccessoryLib
         public Skeleton[] Skeletons
         {
             get { return _skeletons; }
-            
+
+            // Zeichnet das Control automatisch neu.
             set
             {
                 _skeletons = value;
@@ -46,6 +47,7 @@ namespace AccessoryLib
             }
         }
 
+        // Liste von Gegenstaenden, die gezeichnet werden sollen.
         public List<AccessoryItem> AccessoryItems { get; private set; }
 
         public void Start()
@@ -55,6 +57,7 @@ namespace AccessoryLib
             Sensor.SkeletonFrameReady += OnSkeletonFrameReady;
         }
 
+        // Event Handler liest alle Skeletons aus dem Skeleton Frame aus.
         private void OnSkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e)
         {
             using (SkeletonFrame skeletonFrame = e.OpenSkeletonFrame())
@@ -69,6 +72,7 @@ namespace AccessoryLib
 
         }
 
+        // Control neu zeichnen.
         protected override void OnRender(DrawingContext drawingContext)
         {
             base.OnRender(drawingContext);
@@ -76,9 +80,10 @@ namespace AccessoryLib
             if (Skeletons == null)
                 return;
 
+            // Nicht ueber den Rand des Controls hinaus zeichnen.
             drawingContext.PushClip(new RectangleGeometry(new Rect(0, 0, Width, Height)));
 
-            //Skeleton person = Skeletons.First(p => p.TrackingState == SkeletonTrackingState.Tracked);
+            // Items fuer alle Personen zeichnen.
             foreach (Skeleton person in Skeletons)
             {
                 if (person.TrackingState == SkeletonTrackingState.Tracked)
@@ -88,6 +93,7 @@ namespace AccessoryLib
             }
         }
 
+        // Zeichnet alle Items fuer eine einzelne Person.
         private void RenderAccessories(DrawingContext drawingContext, Skeleton person)
         {
             foreach (var item in AccessoryItems)
@@ -96,32 +102,35 @@ namespace AccessoryLib
             }
         }
 
+        // Zeichnet ein Item.
         private void RenderAccessoryItem(DrawingContext drawingContext, Skeleton person, AccessoryItem item)
         {
-            SkeletonPoint sloc = person.Joints[JointType.Head].Position;
+            SkeletonPoint headPos = person.Joints[JointType.Head].Position;
             ColorImagePoint cloc = _sensor.CoordinateMapper.MapSkeletonPointToColorPoint(
-                sloc, _sensor.ColorStream.Format);
+                headPos, _sensor.ColorStream.Format);
 
-            int positionCorrection = 0;
+            // Groesse evtl. ueber Entfernung von Shoulder Left/Right zu Shoulder Center bestimmen?
+            double imgHeight = Math.Max(120 - (60 * (headPos.Z - 1)), 10);
+            double imgWidth = imgHeight; // 150 - (50 * headPos.Z);
+
+            double offsetY = 0;
             switch (item.Position)
             {
                 case AccessoryPositon.Hat:
-                    positionCorrection = -100;
+                    offsetY = -imgHeight/2;
                     break;
 
                 case AccessoryPositon.Beard:
-                    positionCorrection = 10;
+                    offsetY = imgHeight/4;
                     break;
             }
 
             double headX = cloc.X;
-            double headY = cloc.Y + positionCorrection;
-            double imgHeight = 80;// 150 - (50 * sloc.Z);
-            double imgWidth = 80;// 150 - (50 * sloc.Z);
+            double headY = cloc.Y + offsetY;
 
-            Console.WriteLine("Z: {0}, imgW: {1} , imgH {2}", sloc.Z, imgWidth, imgHeight);
+            Console.WriteLine("Z: {0}, imgW: {1} , imgH {2}", headPos.Z, imgWidth, imgHeight);
 
-            drawingContext.DrawImage(item.Image, new Rect(headX - 35, headY, imgWidth, imgHeight));
+            drawingContext.DrawImage(item.Image, new Rect(headX - imgWidth/2, headY, imgWidth, imgHeight));
         }
     }
 }
