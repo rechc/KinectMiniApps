@@ -34,6 +34,8 @@ namespace HandDetectionTest
         /// </summary>
         private KinectSensor sensor;
 
+        private bool handtracked;
+
         /// <summary>
         /// Bitmap that will hold color information
         /// </summary>
@@ -169,20 +171,17 @@ namespace HandDetectionTest
                      skeletonFrame.CopySkeletonDataTo(skeletons);
                  }
 
-                if (skeletons.Count(t => t.TrackingState == SkeletonTrackingState.Tracked) >= 1)
-                {
-                    var person = skeletons.First(p => p.TrackingState == SkeletonTrackingState.Tracked);
-                    RightHand = person.Joints[JointType.HandRight].Position;
+                 if (skeletons.Count(t => t.TrackingState == SkeletonTrackingState.Tracked) >= 1)
+                 {
+                     var person = skeletons.First(p => p.TrackingState == SkeletonTrackingState.Tracked);
+                     RightHand = person.Joints[JointType.HandRight].Position;
 
-
-                    //Graphics g = Graphics.FromImage(bmap);
-
-                    //System.Drawing.Point? p3 = GetJoint2DPoint(JointType.HandRight, person);
-                    //System.Drawing.Pen pen3 = new System.Drawing.Pen(System.Drawing.Color.Red);
-
-                    //if (p3 != null)
-                    //    g.DrawEllipse(pen3, p3.Value.X - 25, p3.Value.Y - 25, 500, 500);
-                }
+                     handtracked = true;
+                 }
+                 else 
+                 {
+                     handtracked = false;
+                 }
 
              }
         }
@@ -194,7 +193,7 @@ namespace HandDetectionTest
             {
                 using (DepthImageFrame depthFrame = e.OpenDepthImageFrame())
                 {
-                    if (depthFrame != null) // && HandRightX != 0 && HandRightY != 0 
+                    if (depthFrame != null) 
                     {
                         int intRightX = (int) (RightHand.X * depthFrame.Width);
                         int intRightY = -1* (int) (RightHand.Y * depthFrame.Height);
@@ -206,30 +205,32 @@ namespace HandDetectionTest
                                                                                            DepthImageFormat.
                                                                                                Resolution320x240Fps30);
 
-
-                        Console.WriteLine("HandX: {0} , HandY: {1}; calcX {2}, calcY{3} ; handPosX: {4} , handPosY {5}"
-                                        , RightHand.X, RightHand.Y, intRightX, intRightY, handPos.X, handPos.Y);
-
                         depthFrame.CopyDepthImagePixelDataTo(this.depthPixels);
 
                         //depthBitmap = new WriteableBitmap(sensor.DepthStream.FrameWidth, sensor.DepthStream.FrameHeight,
                                                                             //96.0, 96.0, PixelFormats.Bgr32, null);
                         this.DepthImage.Source = DepthToBitmapSource(depthFrame);
-                        ImageSource imgRightHandSource =
-                            new CroppedBitmap((BitmapSource) DepthImage.Source.CloneCurrentValue(), new Int32Rect(
-                                                                                                        handPos.X,
-                                                                                                        handPos.Y,
-                                                                                (intRightX + 50 >= depthFrame.Width)
-                                                                                           ? depthFrame.Width - intRightX : 50,
-                                                                                (intRightY + 50 >= depthFrame.Height)
-                                                                                            ? depthFrame.Height - intRightY : 50
-                                                                            ));
+                        if (handtracked)
+                        {
+                            Console.WriteLine("HandX: {0} , HandY: {1}; calcX {2}, calcY{3} ; handPosX: {4} , handPosY {5}"
+                                       , RightHand.X, RightHand.Y, intRightX, intRightY, handPos.X, handPos.Y);
 
-                        RightHandImage.Source = imgRightHandSource; //paints
+                            if ((handPos.X + 60) > 320 || handPos.X <= 0) return;
+                            if ((handPos.Y + 60) > 240 || handPos.Y <= 0) return;
+
+                            ImageSource imgRightHandSource =
+                                new CroppedBitmap((BitmapSource)DepthImage.Source.CloneCurrentValue(), new Int32Rect(
+                                                                                                            handPos.X,
+                                                                                                            handPos.Y,
+                                                                                                            30, 30
+                                                                                ));
+
+                            RightHandImage.Source = imgRightHandSource; //paints
 
 
                             bool handClosed = handDection.IsMakingAFist(imgRightHandSource);
                             this.HandDescriptionTBox.Text = handClosed ? "Hand is closed" : "Hand is opened";
+                        }
                         } catch { }
                     }
                 }
