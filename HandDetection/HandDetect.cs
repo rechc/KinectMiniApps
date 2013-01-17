@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Kinect;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,18 +23,25 @@ namespace HandDetection
             return Color.FromRgb(pix[2], pix[1], pix[0]);
         }
 
-        public bool IsMakingAFist(ImageSource imgHand)
+        public bool IsMakingAFist(DepthImagePixel[] imgHand, DepthImagePoint handPos)
         {
             //Console.WriteLine(Colors.Gray.ToString());
             bool wasBlack = false;
             int blackWidth = 0;
             int blackTimes = 0;
+            int ystart = handPos.Y-20;
+            int yend = handPos.Y + 20;
+            int xstart = handPos.X - 20;
+            int xend = handPos.X + 20;
 
-            for (int yy = 10; yy < imgHand.Height - 10; yy += 10)
+            for (int yy = ystart; yy < yend - 10; yy += 10)
             {
-                for (int xx = 3; xx </*MaxX*/ imgHand.Width; xx++)
+                for (int xx = xstart; xx < xend; xx++)
                 {
-                    if (PixelColor(imgHand, xx, yy) == Colors.Black)
+                    int depthIndex = xx + (yy * 320);
+                    DepthImagePixel depthPixel = imgHand[depthIndex];
+                    int player = depthPixel.PlayerIndex;
+                    if (player > 0)
                     {
                         if (!wasBlack)
                         {

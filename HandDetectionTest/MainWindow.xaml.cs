@@ -220,15 +220,18 @@ namespace HandDetectionTest
 
                             ImageSource imgRightHandSource =
                                 new CroppedBitmap((BitmapSource)DepthImage.Source.CloneCurrentValue(), new Int32Rect(
-                                                                                                            handPos.X-20,
-                                                                                                            handPos.Y-20,
+                                                                                                            handPos.X - 20,
+                                                                                                            handPos.Y - 20,
                                                                                                             40, 40
                                                                                 ));
 
                             RightHandImage.Source = imgRightHandSource; //paints
 
+                            DepthImagePixel[] depthPixels = new DepthImagePixel[sensor.DepthStream.FramePixelDataLength];
+                            depthFrame.CopyDepthImagePixelDataTo(depthPixels);
 
-                            bool handClosed = handDection.IsMakingAFist(imgRightHandSource);
+
+                            bool handClosed = handDection.IsMakingAFist(depthPixels, handPos);
                             this.HandDescriptionTBox.Text = handClosed ? "Hand is closed" : "Hand is opened";
                         }
                         } catch { }
