@@ -83,7 +83,7 @@ namespace HandDetectionTest
                 this.sensor.SkeletonStream.Enable();
                 this.sensor.SkeletonFrameReady += SensorDetectHandReady;
 
-                this.sensor.DepthStream.Enable(DepthImageFormat.Resolution320x240Fps30);
+                this.sensor.DepthStream.Enable(DepthImageFormat.Resolution640x480Fps30);
                 this.sensor.DepthFrameReady += SensorDepthFrameReady;
               //  this.depthPixels = new DepthImagePixel[this.sensor.DepthStream.FramePixelDataLength];
 
@@ -203,7 +203,7 @@ namespace HandDetectionTest
                         {
                             handPos = sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(RightHand,
                                                                                            DepthImageFormat.
-                                                                                               Resolution320x240Fps30);
+                                                                                               Resolution640x480Fps30);
 
                         //depthFrame.CopyDepthImagePixelDataTo(this.depthPixels);
 
@@ -212,20 +212,22 @@ namespace HandDetectionTest
                         this.DepthImage.Source = DepthToBitmapSource(depthFrame);
                         if (handtracked)
                         {
-                            Console.WriteLine("HandX: {0} , HandY: {1}; calcX {2}, calcY{3} ; handPosX: {4} , handPosY {5}"
-                                       , RightHand.X, RightHand.Y, intRightX, intRightY, handPos.X, handPos.Y);
+                         //   Console.WriteLine("HandX: {0} , HandY: {1}; calcX {2}, calcY{3} ; handPosX: {4} , handPosY {5}"
+                         //              , RightHand.X, RightHand.Y, intRightX, intRightY, handPos.X, handPos.Y);
 
-                            if ((handPos.X-25 + 60) > 320 || handPos.X-25 <= 0) return;
-                            if ((handPos.Y-25 + 60) > 240 || handPos.Y-25 <= 0) return;
+                            if ((handPos.X+42 ) > 640 || handPos.X-42 <= 0) return; // epsilon +2 wegen möglichem -1  von handPosX/Y
+                            if ((handPos.Y+42 ) > 480 || handPos.Y-42 <= 0) return; // TODO die 40 und epsilon als static in HAndDetect
 
                             ImageSource imgRightHandSource =
                                 new CroppedBitmap((BitmapSource)DepthImage.Source.CloneCurrentValue(), new Int32Rect(
-                                                                                                            handPos.X - 20,
-                                                                                                            handPos.Y - 20,
-                                                                                                            40, 40
+                                                                                                            handPos.X - 40,
+                                                                                                            handPos.Y - 40,
+                                                                                                            80, 80
                                                                                 ));
 
                             RightHandImage.Source = imgRightHandSource; //paints
+
+                           
 
                             DepthImagePixel[] depthPixels = new DepthImagePixel[sensor.DepthStream.FramePixelDataLength];
                             depthFrame.CopyDepthImagePixelDataTo(depthPixels);

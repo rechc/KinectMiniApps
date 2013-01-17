@@ -29,18 +29,19 @@ namespace HandDetection
             bool wasBlack = false;
             int blackWidth = 0;
             int blackTimes = 0;
-            int ystart = handPos.Y-20;
-            int yend = handPos.Y + 20;
-            int xstart = handPos.X - 20;
-            int xend = handPos.X + 20;
+            int ystart = handPos.Y-40;
+            int yend = handPos.Y + 40;
+            int xstart = handPos.X - 40;
+            int xend = handPos.X + 40;
 
             for (int yy = ystart; yy < yend - 10; yy += 10)
             {
                 for (int xx = xstart; xx < xend; xx++)
                 {
-                    int depthIndex = xx + (yy * 320);
+                    int depthIndex = xx + (yy * 640);
                     DepthImagePixel depthPixel = imgHand[depthIndex];
                     int player = depthPixel.PlayerIndex;
+                    
                     if (player > 0)
                     {
                         if (!wasBlack)
