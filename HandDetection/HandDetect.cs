@@ -17,11 +17,14 @@ namespace HandDetection
             CroppedBitmap cb = new CroppedBitmap((BitmapSource)img, new Int32Rect(pixelX, pixelY, 1, 1));
             byte[] pix = new byte[4];
             cb.CopyPixels(pix, 4, 0);
+           // Color farbe = Color.FromRgb(pix[2], pix[1], pix[0]);
+           // Console.WriteLine(farbe.ToString());
             return Color.FromRgb(pix[2], pix[1], pix[0]);
         }
 
         public bool IsMakingAFist(ImageSource imgHand)
         {
+            //Console.WriteLine(Colors.Gray.ToString());
             bool wasBlack = false;
             int blackWidth = 0;
             int blackTimes = 0;

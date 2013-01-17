@@ -45,7 +45,7 @@ namespace HandDetectionTest
         /// Intermediate storage for the color data received from the camera
         /// </summary>
         private byte[] colorPixels;
-        private DepthImagePixel[] depthPixels;
+       // private DepthImagePixel[] depthPixels;
 
         private HandDetection.HandDetect handDection;
 
@@ -85,7 +85,7 @@ namespace HandDetectionTest
 
                 this.sensor.DepthStream.Enable(DepthImageFormat.Resolution320x240Fps30);
                 this.sensor.DepthFrameReady += SensorDepthFrameReady;
-                this.depthPixels = new DepthImagePixel[this.sensor.DepthStream.FramePixelDataLength];
+              //  this.depthPixels = new DepthImagePixel[this.sensor.DepthStream.FramePixelDataLength];
 
                 // Turn on the color stream to receive color frames
                 this.sensor.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
@@ -205,7 +205,7 @@ namespace HandDetectionTest
                                                                                            DepthImageFormat.
                                                                                                Resolution320x240Fps30);
 
-                        depthFrame.CopyDepthImagePixelDataTo(this.depthPixels);
+                        //depthFrame.CopyDepthImagePixelDataTo(this.depthPixels);
 
                         //depthBitmap = new WriteableBitmap(sensor.DepthStream.FrameWidth, sensor.DepthStream.FrameHeight,
                                                                             //96.0, 96.0, PixelFormats.Bgr32, null);
@@ -215,14 +215,14 @@ namespace HandDetectionTest
                             Console.WriteLine("HandX: {0} , HandY: {1}; calcX {2}, calcY{3} ; handPosX: {4} , handPosY {5}"
                                        , RightHand.X, RightHand.Y, intRightX, intRightY, handPos.X, handPos.Y);
 
-                            if ((handPos.X + 60) > 320 || handPos.X <= 0) return;
-                            if ((handPos.Y + 60) > 240 || handPos.Y <= 0) return;
+                            if ((handPos.X-25 + 60) > 320 || handPos.X-25 <= 0) return;
+                            if ((handPos.Y-25 + 60) > 240 || handPos.Y-25 <= 0) return;
 
                             ImageSource imgRightHandSource =
                                 new CroppedBitmap((BitmapSource)DepthImage.Source.CloneCurrentValue(), new Int32Rect(
-                                                                                                            handPos.X,
-                                                                                                            handPos.Y,
-                                                                                                            30, 30
+                                                                                                            handPos.X-20,
+                                                                                                            handPos.Y-20,
+                                                                                                            40, 40
                                                                                 ));
 
                             RightHandImage.Source = imgRightHandSource; //paints
