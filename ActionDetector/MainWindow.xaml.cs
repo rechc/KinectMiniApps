@@ -111,13 +111,9 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
 
             this.LblErkanntOutput.Content = actionDetector.GetPositionOnlyPeople().Count;
             this.LblTrackedOutput.Content = actionDetector.GetTrackedPeople().Count;
-            this.LblLaufenOutput.Content = actionDetector.GetPeoplePassKinect().Count;
-            this.LblStehenOutput.Content = actionDetector.GetPeopleStayAtKinect().Count;
-
-            this.LblSchauenOutput.Content = "Maxi";
-            // Erst Maxi implementieren
-            //this.LblSchauenOutput.Content = actionDetector.GetPeopleLookAtKinect().Count;
-
+            this.LblLaufenOutput.Content = actionDetector.GetPassingPeople().Count;
+            this.LblStehenOutput.Content = actionDetector.GetStayingPeople().Count;
+            this.LblSchauenOutput.Content = actionDetector.GetLookingPeople().Count;
         }
 
         /// <summary>

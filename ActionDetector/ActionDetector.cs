@@ -8,9 +8,10 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
 {
     class ActionDetector
     {
-        private List<Skeleton[]> skeletonsList = new List<Skeleton[]>();
         private const int storeElementsInList = 10;
         private const double passingKinectEpsilon = 0.01;
+
+        private List<Skeleton[]> skeletonsList = new List<Skeleton[]>();
 
         public ActionDetector()
         {
@@ -18,16 +19,16 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
 
         public ActionDetector(Skeleton[] skeletons)
         {
-            addSkeleton(skeletons);
+            AddSkeleton(skeletons);
         }
 
-        /*
-         *   returns a Skeleton-List of PositionOnly People
-         */
+        /// <summary>
+        /// Returns a Skeleton-List of PositionOnly People.
+        /// </summary>
         public List<Skeleton> GetPositionOnlyPeople()
         {
             List<Skeleton> positionOnlyPeople = new List<Skeleton>();
-            foreach (Skeleton skeleton in skeletonsList[0])
+            foreach (Skeleton skeleton in Skeletons)
             {
                 if (skeleton.TrackingState == SkeletonTrackingState.PositionOnly)
                 {
@@ -37,13 +38,13 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             return positionOnlyPeople;
         }
 
-        /*
-         *   returns a Skeleton-List of Tracked People
-         */
+        /// <summary>
+        /// Returns a Skeleton-List of Tracked People.
+        /// </summary>
         public List<Skeleton> GetTrackedPeople()
         {
             List<Skeleton> trackedPeople = new List<Skeleton>();
-            foreach (Skeleton skeleton in skeletonsList[0])
+            foreach (Skeleton skeleton in Skeletons)
             {
                 if (skeleton.TrackingState == SkeletonTrackingState.Tracked)
                 {
@@ -53,15 +54,15 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             return trackedPeople;
         }
 
-        /*
-         *   returns a Skeleton-List of all recognized People
-         */
+        /// <summary>
+        /// Returns a Skeleton-List of all recognized People.
+        /// </summary>
         public List<Skeleton> GetAllRecognizedPeople()
         {
             List<Skeleton> recognizedPeople = new List<Skeleton>();
-            foreach (Skeleton skeleton in skeletonsList[0])
+            foreach (Skeleton skeleton in Skeletons)
             {
-                if (skeleton.TrackingState == SkeletonTrackingState.PositionOnly || skeleton.TrackingState == SkeletonTrackingState.Tracked)
+                if (skeleton.TrackingState != SkeletonTrackingState.NotTracked)
                 {
                     recognizedPeople.Add(skeleton);
                 }
@@ -69,16 +70,16 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             return recognizedPeople;
         }
 
-        /**
-         *  returns a Skeleton-List of People which are currently passing the kinect
-         */
-        public List<Skeleton> GetPeoplePassKinect()
+        /// <summary>
+        /// Returns a Skeleton-List of People which are currently passing the Kinect.
+        /// </summary>
+        public List<Skeleton> GetPassingPeople()
         {
             List<Skeleton> passingPeople = new List<Skeleton>();
 
-            foreach (Skeleton currentSkeleton in skeletonsList[0])
+            foreach (Skeleton currentSkeleton in Skeletons)
             {
-                if (currentSkeleton.TrackingState == SkeletonTrackingState.PositionOnly || currentSkeleton.TrackingState == SkeletonTrackingState.Tracked)
+                if (currentSkeleton.TrackingState != SkeletonTrackingState.NotTracked)
                 {
                     foreach (Skeleton previousSkeleton in skeletonsList[1])
                     {
@@ -95,15 +96,15 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             return passingPeople;
         }
 
-        /*
-         *  returns a Skeleton-List of People which are currently staying at the kinect
-         */
-        public List<Skeleton> GetPeopleStayAtKinect()
+        /// <summary>
+        /// Returns a Skeleton-List of People which are currently staying at the Kinect.
+        /// </summary>
+        public List<Skeleton> GetStayingPeople()
         {
             List<Skeleton> stayingPeople = new List<Skeleton>();
             foreach (Skeleton skeleton in GetAllRecognizedPeople())
             {
-                if (!GetPeoplePassKinect().Contains(skeleton))
+                if (!GetPassingPeople().Contains(skeleton))
                 {
                     stayingPeople.Add(skeleton);
                 }
@@ -111,29 +112,53 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             return stayingPeople;
         }
 
-        /*
-        *  returns a Skeleton-List of People which are currently looking at the kinect
-        */
-        public List<Skeleton> GetPeopleLookAtKinect()
+        /// <summary>
+        /// Returns a List of Skeletons which are currently looking at the Kinect.
+        /// </summary>
+        public List<Skeleton> GetLookingPeople()
         {
-            // todo: Maxi algorithmus einbauen
-            return null;
+            List<Skeleton> lookingPeople = new List<Skeleton>();
+            foreach (Skeleton skeleton in Skeletons)
+            {
+                if (skeleton.TrackingState != SkeletonTrackingState.Tracked)
+                    continue;
+
+                Joint head = skeleton.Joints[JointType.Head];
+                if (head.TrackingState == JointTrackingState.NotTracked)
+                    continue;
+
+                BoneOrientation headOrientation = skeleton.BoneOrientations[JointType.Head];
+
+                // Defines a four-dimensional vector (x,y,z,w), which is used to efficiently rotate an
+                // object about the (x, y, z) vector by the angle theta, where w = cos(theta/2).
+                var rot = headOrientation.AbsoluteRotation.Quaternion;
+                double angle = Math.Acos(rot.W) * 2 * 180 / Math.PI;
+                //Console.WriteLine("[{0} {1} {2} {3}", rot.X, rot.Y, rot.Z, angle);
+                // I don't care about the vector, for now.
+                if (Math.Abs(180 - angle) < 30)
+                {
+                    lookingPeople.Add(skeleton);
+                }
+            }
+            return lookingPeople;
         }
 
-        /**
-         *  Setter-Method. Must be called each skeleton-frame
-         */
+        /// <summary>
+        /// The Skeletons property must be set each skeleton frame.
+        /// </summary>
         public Skeleton[] Skeletons
         {
             get { return skeletonsList[0]; }
             set
             {
-                addSkeleton(value);
+                AddSkeleton(value);
             }
         }
 
-        // Store Skeleton from last 10 Frames in a List. Skeleton from newest Frame is always at index 0
-        private void addSkeleton(Skeleton[] skeleton)
+        /// <summary>
+        /// Store Skeleton from last 10 Frames in a List. Skeleton from newest Frame is always at index 0.
+        /// </summary>
+        private void AddSkeleton(Skeleton[] skeleton)
         {
             if (skeletonsList.Count >= storeElementsInList)
             {
