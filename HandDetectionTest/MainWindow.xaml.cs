@@ -27,10 +27,7 @@ namespace HandDetectionTest
     public partial class MainWindow : Window
     {
 
-        public float HandRightX { get; set; }
-        public float HandRightY { get; set; }
-
-        private WriteableBitmap depthBitmap;
+        public SkeletonPoint RightHand { get; set; }
 
         /// <summary>
         /// Active Kinect sensor
@@ -78,7 +75,7 @@ namespace HandDetectionTest
                 this.sensor.SkeletonStream.Enable();
                 this.sensor.SkeletonFrameReady += SensorDetectHandReady;
 
-                this.sensor.DepthStream.Enable(DepthImageFormat.Resolution640x480Fps30);
+                this.sensor.DepthStream.Enable(DepthImageFormat.Resolution320x240Fps30);
                 this.sensor.DepthFrameReady += SensorDepthFrameReady;
                 this.depthPixels = new DepthImagePixel[this.sensor.DepthStream.FramePixelDataLength];
 
@@ -93,7 +90,7 @@ namespace HandDetectionTest
                 this.colorBitmap = new WriteableBitmap(this.sensor.ColorStream.FrameWidth, this.sensor.ColorStream.FrameHeight, 96.0, 96.0, PixelFormats.Bgr32, null);
 
                 // Set the image we display to point to the bitmap where we'll put the image data
-                //this.ColorImage.Source = this.colorBitmap;
+                this.ColorImage.Source = this.colorBitmap;
 
                 // Add an event handler to be called whenever there is new color frame data
                 this.sensor.ColorFrameReady += this.SensorColorFrameReady;
@@ -169,18 +166,16 @@ namespace HandDetectionTest
                 if (skeletons.Count(t => t.TrackingState == SkeletonTrackingState.Tracked) >= 1)
                 {
                     var person = skeletons.First(p => p.TrackingState == SkeletonTrackingState.Tracked);
-                    var rightHand = person.Joints[JointType.HandRight].Position;
-                    HandRightX = rightHand.X;
-                    HandRightY = rightHand.Y;
+                    RightHand = person.Joints[JointType.HandRight].Position;
 
 
-                    Graphics g = Graphics.FromImage(bmap);
+                    //Graphics g = Graphics.FromImage(bmap);
 
-                    System.Drawing.Point? p3 = GetJoint2DPoint(JointType.HandRight, person);
-                    System.Drawing.Pen pen3 = new System.Drawing.Pen(System.Drawing.Color.Red);
+                    //System.Drawing.Point? p3 = GetJoint2DPoint(JointType.HandRight, person);
+                    //System.Drawing.Pen pen3 = new System.Drawing.Pen(System.Drawing.Color.Red);
 
-                    if (p3 != null)
-                        g.DrawEllipse(pen3, p3.Value.X - 25, p3.Value.Y - 25, 500, 500);
+                    //if (p3 != null)
+                    //    g.DrawEllipse(pen3, p3.Value.X - 25, p3.Value.Y - 25, 500, 500);
                 }
 
              }
@@ -194,44 +189,40 @@ namespace HandDetectionTest
                 {
                     if (depthFrame != null)
                     {
-                        int intRightX = (int) (HandRightX * depthFrame.Width);
-                        int intRightY = -1* (int) (HandRightY * depthFrame.Height);
+                        int intRightX = (int) (RightHand.X * depthFrame.Width);
+                        int intRightY = -1* (int) (RightHand.Y * depthFrame.Height);
 
-                        //if(HandRightX >= 0)
-                        //   intRightX = (int) HandRightX * depthFrame.Width;
-                        //else
-                        //{
-                        //    intRightX = (int) Math.Abs(HandRightX*depthFrame.Width - depthFrame.Width);
-                        //}
+                        DepthImagePoint handPos = new DepthImagePoint();
+                        try
+                        {
+                            handPos = sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(RightHand,
+                                                                                           DepthImageFormat.
+                                                                                               Resolution320x240Fps30);
 
-                        //if (HandRightY >= 0)
-                        //    intRightY = (int)HandRightY * depthFrame.Height;
-                        //else
-                        //{
-                        //    intRightY = (int)Math.Abs(HandRightY * depthFrame.Height - depthFrame.Height);
-                        //}
 
-                        Console.WriteLine("HandX: {0} , HandY: {1}; calcX {2}, calcY{3} ; depH: {4} , depW {5}"
-                                        , HandRightX, HandRightY, intRightX, intRightY, depthFrame.Height, depthFrame.Width);
+                        Console.WriteLine("HandX: {0} , HandY: {1}; calcX {2}, calcY{3} ; handPosX: {4} , handPosY {5}"
+                                        , RightHand.X, RightHand.Y, intRightX, intRightY, handPos.X, handPos.Y);
 
                         depthFrame.CopyDepthImagePixelDataTo(this.depthPixels);
 
                         //depthBitmap = new WriteableBitmap(sensor.DepthStream.FrameWidth, sensor.DepthStream.FrameHeight,
                                                                             //96.0, 96.0, PixelFormats.Bgr32, null);
                         this.DepthImage.Source = DepthToBitmapSource(depthFrame);
-                        ImageSource imgRightHandSource = new CroppedBitmap((BitmapSource) DepthImage.Source.CloneCurrentValue(),  new Int32Rect(
-                                                                                (intRightX < 0) ? 0 : intRightX,
-                                                                                (intRightY < 0) ? 0 : intRightY,
+                        ImageSource imgRightHandSource =
+                            new CroppedBitmap((BitmapSource) DepthImage.Source.CloneCurrentValue(), new Int32Rect(
+                                                                                                        handPos.X,
+                                                                                                        handPos.Y,
                                                                                 (intRightX + 50 >= depthFrame.Width)
                                                                                            ? depthFrame.Width - intRightX : 50,
                                                                                 (intRightY + 50 >= depthFrame.Height)
                                                                                             ? depthFrame.Height - intRightY : 50
                                                                             ));
 
-                        RightHandImage.Source = imgRightHandSource;
+                            RightHandImage.Source = imgRightHandSource;
 
-                        bool handClosed = handDection.IsMakingAFist(imgRightHandSource);
-                        this.HandDescriptionTBox.Text = handClosed ? "Hand is closed" : "Hand is opened";
+                            bool handClosed = handDection.IsMakingAFist(imgRightHandSource);
+                            this.HandDescriptionTBox.Text = handClosed ? "Hand is closed" : "Hand is opened";
+                        } catch { }
                     }
                 }
             }
@@ -283,18 +274,28 @@ namespace HandDetectionTest
          private BitmapSource DrawEllipses(ColorImageFrame CFrame)
          {
              Bitmap bmap = ImageToBitmap(CFrame);
-             foreach (Skeleton s in skeletons)
-             {
-                 if (s.TrackingState == SkeletonTrackingState.Tracked)
-                 {
-                     Graphics g = Graphics.FromImage(bmap);
 
-                     System.Drawing.Point? p3 = GetJoint2DPoint(JointType.HandRight, s);
-                     System.Drawing.Pen pen3 = new System.Drawing.Pen(System.Drawing.Color.Red);
-                     pen3.Width = 10;
-                     if (p3 != null)
-                         g.DrawEllipse(pen3, p3.Value.X - 25, p3.Value.Y - 25, 50, 50);
+             try
+             {
+                 foreach (Skeleton s in skeletons)
+                 {
+                     if (s.TrackingState == SkeletonTrackingState.Tracked)
+                     {
+                         Graphics g = Graphics.FromImage(bmap);
+
+                         System.Drawing.Point? p3 = GetJoint2DPoint(JointType.HandRight, s);
+                         System.Drawing.Pen pen3 = new System.Drawing.Pen(System.Drawing.Color.Purple);
+                         pen3.Width = 10;
+                         if (p3 != null)
+                             g.DrawEllipse(pen3, p3.Value.X - 25, p3.Value.Y - 25, 50, 50);
+                     }
                  }
+
+             }
+             catch (Exception)
+             {
+
+                 throw;
              }
              return BitmapToBitmapSource(bmap);
          }
