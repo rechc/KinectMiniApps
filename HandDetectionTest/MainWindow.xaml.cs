@@ -50,11 +50,17 @@ namespace HandDetectionTest
 
         private HandDetection.HandDetect handDection;
 
+        private Bitmap bmap;
+
+        private Skeleton[] skeletons = new Skeleton[0];
+
+        //init gui
         public MainWindow()
         {
             InitializeComponent();
         }
 
+        //init sensors
         private void WindowLoaded(object sender, RoutedEventArgs e)
         {
             handDection = new HandDetect();
@@ -116,6 +122,7 @@ namespace HandDetectionTest
             }
         }
 
+        //stop sensors
         private void WindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (null != this.sensor)
@@ -124,7 +131,6 @@ namespace HandDetectionTest
             }
         }
 
-        private Bitmap bmap;
 
         /// <summary>
         /// Event handler for Kinect sensor's ColorFrameReady event
@@ -152,7 +158,7 @@ namespace HandDetectionTest
             }
         }
 
-        private Skeleton[] skeletons = new Skeleton[0];
+
 
         private void SensorDetectHandReady(object sender, SkeletonFrameReadyEventArgs e)
         {
@@ -186,13 +192,14 @@ namespace HandDetectionTest
              }
         }
 
+        // cut hand image  get bool
         private void SensorDepthFrameReady(object sender, DepthImageFrameReadyEventArgs e)
         {
             try
             {
                 using (DepthImageFrame depthFrame = e.OpenDepthImageFrame())
                 {
-                    if (depthFrame != null)
+                    if (depthFrame != null) // && HandRightX != 0 && HandRightY != 0 
                     {
                         int intRightX = (int) (HandRightX * depthFrame.Width);
                         int intRightY = -1* (int) (HandRightY * depthFrame.Height);
@@ -228,7 +235,7 @@ namespace HandDetectionTest
                                                                                             ? depthFrame.Height - intRightY : 50
                                                                             ));
 
-                        RightHandImage.Source = imgRightHandSource;
+                        RightHandImage.Source = imgRightHandSource; //paints
 
                         bool handClosed = handDection.IsMakingAFist(imgRightHandSource);
                         this.HandDescriptionTBox.Text = handClosed ? "Hand is closed" : "Hand is opened";
@@ -240,6 +247,7 @@ namespace HandDetectionTest
             }
         }
 
+   
         BitmapSource DepthToBitmapSource(DepthImageFrame imageFrame)
         {
             short[] pixelData = new short[imageFrame.PixelDataLength];
@@ -248,6 +256,8 @@ namespace HandDetectionTest
             return bmap;
         }
 
+
+        // get hand pos
         System.Drawing.Point? GetJoint2DPoint(JointType j, Skeleton S)
         {
             if (S.Joints[j].TrackingState != JointTrackingState.Tracked) return null;
@@ -262,6 +272,7 @@ namespace HandDetectionTest
             return new System.Drawing.Point(0, 0);
         }
 
+        // get bitmap of colorstream
          Bitmap ImageToBitmap(ColorImageFrame Image)
         {
             if (colorPixels == null)
@@ -280,6 +291,7 @@ namespace HandDetectionTest
             return bmap;
         }
 
+        // get hand cyrcle
          private BitmapSource DrawEllipses(ColorImageFrame CFrame)
          {
              Bitmap bmap = ImageToBitmap(CFrame);
