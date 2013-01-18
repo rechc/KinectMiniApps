@@ -76,7 +76,10 @@ namespace HandDetection
                     handtracked = (person.Joints[JointType.HandRight].TrackingState == JointTrackingState.Tracked);
 
                     if (handtracked)
+                    {
                         rightHandPos = person.Joints[JointType.HandRight].Position;
+                        handPos = sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(rightHandPos, depthImageFormate);
+                    }
                 }
             }
         }
@@ -87,14 +90,7 @@ namespace HandDetection
             {
                 if (depthFrame != null)
                 {
-                    int intRightX = (int)(rightHandPos.X * depthFrame.Width);
-                    int intRightY = -1 * (int)(rightHandPos.Y * depthFrame.Height);
-
-                    if (handtracked)
-                    {
-                        handPos = sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(rightHandPos, depthImageFormate);
-                        depthFrame.CopyDepthImagePixelDataTo(depthPixels);
-                    }
+                    depthFrame.CopyDepthImagePixelDataTo(depthPixels);
                 }
             }
         }
