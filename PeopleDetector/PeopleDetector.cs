@@ -6,18 +6,18 @@ using System.Text;
 
 namespace Microsoft.Samples.Kinect.SkeletonBasics
 {
-    class ActionDetector
+    class PeopleDetector
     {
         private const int storeElementsInList = 10;
         private const double passingKinectEpsilon = 0.01;
 
         private List<Skeleton[]> skeletonsList = new List<Skeleton[]>();
 
-        public ActionDetector()
+        public PeopleDetector()
         {
         }
 
-        public ActionDetector(Skeleton[] skeletons)
+        public PeopleDetector(Skeleton[] skeletons)
         {
             AddSkeleton(skeletons);
         }
@@ -141,6 +141,57 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                 }
             }
             return lookingPeople;
+        }
+
+        /// <summary>
+        /// returns true if people with transfered TrackingId is currently passing the Kinect
+        /// </summary>
+        /// <param name="TrackingId"></param>
+        /// <returns></returns>
+        public bool IsPeoplePassingTheKinect(int TrackingId)
+        {
+            foreach(Skeleton s in GetPassingPeople())
+            {
+                if (s.TrackingId == TrackingId)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// returns true if people with transfered TrackingId is currently staying at the Kinect
+        /// </summary>
+        /// <param name="TrackingId"></param>
+        /// <returns></returns>
+        public bool IsPeopleStayingAtKinect(int TrackingId)
+        {
+            foreach (Skeleton s in GetStayingPeople())
+            {
+                if (s.TrackingId == TrackingId)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// returns true if people with transfered TrackingId is currently looking at the Kinect
+        /// </summary>
+        /// <param name="TrackingId"></param>
+        /// <returns></returns>
+        public bool IsPeopleLookingAtKinect(int TrackingId)
+        {
+            foreach (Skeleton s in GetLookingPeople())
+            {
+                if (s.TrackingId == TrackingId)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>
