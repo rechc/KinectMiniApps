@@ -149,5 +149,27 @@ namespace HandDetection
             }
             return HandStatus.Closed;
         }
+
+        //only proof of concept
+
+        private List<HandStatus> handStatusList = new List<HandStatus>();
+        private HandStatus lastHandStatus;
+
+        public HandStatus GetHandOpenedClosedStatusBuffered()
+        {
+            HandStatus currentHandStatus = GetHandOpenedClosedStatus();
+            handStatusList.Add(currentHandStatus);
+
+            if (handStatusList.Count() == 3)
+            {
+                if(handStatusList.All(x => x == handStatusList.First()))
+                {
+                    lastHandStatus = currentHandStatus;
+                }
+                handStatusList.Clear();   
+            }
+
+            return lastHandStatus;
+        }
     }
 }
