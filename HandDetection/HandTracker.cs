@@ -68,17 +68,17 @@ namespace HandDetection
                 {
                     skeletons = new Skeleton[skeletonFrame.SkeletonArrayLength];
                     skeletonFrame.CopySkeletonDataTo(skeletons);
-                }
-
-                var person = skeletons.FirstOrDefault(p => p.TrackingState == SkeletonTrackingState.Tracked);
-                if (person != null)
-                {
-                    handtracked = (person.Joints[JointType.HandRight].TrackingState == JointTrackingState.Tracked);
-
-                    if (handtracked)
+                
+                    var person = skeletons.FirstOrDefault(p => p.TrackingState == SkeletonTrackingState.Tracked);
+                    if (person != null)
                     {
-                        rightHandPos = person.Joints[JointType.HandRight].Position;
-                        handPos = sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(rightHandPos, depthImageFormate);
+                        handtracked = (person.Joints[JointType.HandRight].TrackingState == JointTrackingState.Tracked);
+
+                        if (handtracked)
+                        {
+                            rightHandPos = person.Joints[JointType.HandRight].Position;
+                            handPos = sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(rightHandPos, depthImageFormate);
+                        }
                     }
                 }
             }
@@ -114,11 +114,19 @@ namespace HandDetection
                 for (int xx = xstart; xx < xend; xx++)
                 {
                     int depthIndex = xx + (yy * 640);
+                    short depth = depthPixels[depthIndex].Depth;
                     DepthImagePixel depthPixel = depthPixels[depthIndex];
                     int player = depthPixel.PlayerIndex;
-                    
+
                     if (player > 0)
                     {
+                        //need to detect if the hand is before the body
+                        if (Math.Abs(handPos.Depth - depth) > 80)
+                        {
+                            wasBlack = false;
+                            continue;
+                        }
+
                         if (!wasBlack)
                         {
                             if (blackWidth > 1 && blackWidth < 15)
