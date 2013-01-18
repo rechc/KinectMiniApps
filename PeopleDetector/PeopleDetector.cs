@@ -6,18 +6,18 @@ using System.Text;
 
 namespace Microsoft.Samples.Kinect.SkeletonBasics
 {
-    class ActionDetector
+    class PeopleDetector
     {
         private const int storeElementsInList = 10;
         private const double passingKinectEpsilon = 0.01;
 
         private List<Skeleton[]> skeletonsList = new List<Skeleton[]>();
 
-        public ActionDetector()
+        public PeopleDetector()
         {
         }
 
-        public ActionDetector(Skeleton[] skeletons)
+        public PeopleDetector(Skeleton[] skeletons)
         {
             AddSkeleton(skeletons);
         }

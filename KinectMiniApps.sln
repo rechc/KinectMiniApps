@@ -21,7 +21,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HandDetection", "HandDetect
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HandDetectionTest", "HandDetectionTest\HandDetectionTest.csproj", "{26B8EC8B-D54C-46B9-A723-504B7E4E40D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActionDetector", "ActionDetector\ActionDetector.csproj", "{EE5F5E25-6326-4371-A4BC-D2CCF1ECC40B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PeopleDetector", "PeopleDetector\PeopleDetector.csproj", "{EE5F5E25-6326-4371-A4BC-D2CCF1ECC40B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
