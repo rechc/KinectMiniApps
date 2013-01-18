@@ -47,7 +47,7 @@ namespace HandDetectionTest
         private byte[] colorPixels;
        // private DepthImagePixel[] depthPixels;
 
-        private HandDetection.HandDetect handDection;
+        private HandDetection.HandTracker handDection;
 
         private Bitmap bmap;
 
@@ -62,7 +62,7 @@ namespace HandDetectionTest
         //init sensors
         private void WindowLoaded(object sender, RoutedEventArgs e)
         {
-            handDection = new HandDetect();
+            handDection = new HandDetection.HandTracker();
 
             // Look through all sensors and start the first connected one.
             // This requires that a Kinect is connected at the time of app startup.
@@ -85,7 +85,6 @@ namespace HandDetectionTest
 
                 this.sensor.DepthStream.Enable(DepthImageFormat.Resolution640x480Fps30);
                 this.sensor.DepthFrameReady += SensorDepthFrameReady;
-              //  this.depthPixels = new DepthImagePixel[this.sensor.DepthStream.FramePixelDataLength];
 
                 // Turn on the color stream to receive color frames
                 this.sensor.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
@@ -161,29 +160,29 @@ namespace HandDetectionTest
 
         private void SensorDetectHandReady(object sender, SkeletonFrameReadyEventArgs e)
         {
-             
 
-             using (SkeletonFrame skeletonFrame = e.OpenSkeletonFrame())
-             {
-                 if (skeletonFrame != null)
-                 {
-                     skeletons = new Skeleton[skeletonFrame.SkeletonArrayLength];
-                     skeletonFrame.CopySkeletonDataTo(skeletons);
-                 }
 
-                 if (skeletons.Count(t => t.TrackingState == SkeletonTrackingState.Tracked) >= 1)
-                 {
-                     var person = skeletons.First(p => p.TrackingState == SkeletonTrackingState.Tracked);
-                     RightHand = person.Joints[JointType.HandRight].Position;
+            using (SkeletonFrame skeletonFrame = e.OpenSkeletonFrame())
+            {
+                if (skeletonFrame != null)
+                {
+                    skeletons = new Skeleton[skeletonFrame.SkeletonArrayLength];
+                    skeletonFrame.CopySkeletonDataTo(skeletons);
+                }
 
-                     handtracked = true;
-                 }
-                 else 
-                 {
-                     handtracked = false;
-                 }
+                if (skeletons.Count(t => t.TrackingState == SkeletonTrackingState.Tracked) >= 1)
+                {
+                    var person = skeletons.First(p => p.TrackingState == SkeletonTrackingState.Tracked);
+                    RightHand = person.Joints[JointType.HandRight].Position;
 
-             }
+                    handtracked = true;
+                }
+                else
+                {
+                    handtracked = false;
+                }
+
+            }
         }
 
         // cut hand image  get bool
@@ -193,10 +192,10 @@ namespace HandDetectionTest
             {
                 using (DepthImageFrame depthFrame = e.OpenDepthImageFrame())
                 {
-                    if (depthFrame != null) 
+                    if (depthFrame != null)
                     {
-                        int intRightX = (int) (RightHand.X * depthFrame.Width);
-                        int intRightY = -1* (int) (RightHand.Y * depthFrame.Height);
+                        int intRightX = (int)(RightHand.X * depthFrame.Width);
+                        int intRightY = -1 * (int)(RightHand.Y * depthFrame.Height);
 
                         DepthImagePoint handPos = new DepthImagePoint();
                         try
@@ -205,38 +204,34 @@ namespace HandDetectionTest
                                                                                            DepthImageFormat.
                                                                                                Resolution640x480Fps30);
 
-                        //depthFrame.CopyDepthImagePixelDataTo(this.depthPixels);
+                            //depthFrame.CopyDepthImagePixelDataTo(this.depthPixels);
 
-                        //depthBitmap = new WriteableBitmap(sensor.DepthStream.FrameWidth, sensor.DepthStream.FrameHeight,
-                                                                            //96.0, 96.0, PixelFormats.Bgr32, null);
-                        this.DepthImage.Source = DepthToBitmapSource(depthFrame);
-                        if (handtracked)
-                        {
-                         //   Console.WriteLine("HandX: {0} , HandY: {1}; calcX {2}, calcY{3} ; handPosX: {4} , handPosY {5}"
-                         //              , RightHand.X, RightHand.Y, intRightX, intRightY, handPos.X, handPos.Y);
+                            //depthBitmap = new WriteableBitmap(sensor.DepthStream.FrameWidth, sensor.DepthStream.FrameHeight,
+                            //96.0, 96.0, PixelFormats.Bgr32, null);
+                            this.DepthImage.Source = DepthToBitmapSource(depthFrame);
+                            if (handtracked)
+                            {
+                                if ((handPos.X + 42) > 640 || handPos.X - 42 <= 0) return; // epsilon +2 wegen möglichem -1  von handPosX/Y
+                                if ((handPos.Y + 42) > 480 || handPos.Y - 42 <= 0) return; // TODO die 40 und epsilon als static in HAndDetect
 
-                            if ((handPos.X+42 ) > 640 || handPos.X-42 <= 0) return; // epsilon +2 wegen möglichem -1  von handPosX/Y
-                            if ((handPos.Y+42 ) > 480 || handPos.Y-42 <= 0) return; // TODO die 40 und epsilon als static in HAndDetect
+                                ImageSource imgRightHandSource =
+                                    new CroppedBitmap((BitmapSource)DepthImage.Source.CloneCurrentValue(), new Int32Rect(
+                                                                                                                handPos.X - 40,
+                                                                                                                handPos.Y - 40,
+                                                                                                                80, 80));
+                                RightHandImage.Source = imgRightHandSource; //paints
 
-                            ImageSource imgRightHandSource =
-                                new CroppedBitmap((BitmapSource)DepthImage.Source.CloneCurrentValue(), new Int32Rect(
-                                                                                                            handPos.X - 40,
-                                                                                                            handPos.Y - 40,
-                                                                                                            80, 80
-                                                                                ));
+                                DepthImagePixel[] depthPixels = new DepthImagePixel[sensor.DepthStream.FramePixelDataLength];
+                                depthFrame.CopyDepthImagePixelDataTo(depthPixels);
 
-                            RightHandImage.Source = imgRightHandSource; //paints
-
-                           
-
-                            DepthImagePixel[] depthPixels = new DepthImagePixel[sensor.DepthStream.FramePixelDataLength];
-                            depthFrame.CopyDepthImagePixelDataTo(depthPixels);
-
-
-                            bool handClosed = handDection.IsMakingAFist(depthPixels, handPos);
-                            this.HandDescriptionTBox.Text = handClosed ? "Hand is closed" : "Hand is opened";
+                                var handStatus = handDection.GetHandOpenedClosedStatus();
+                                this.HandDescriptionTBox.Text = "Hand is " + handStatus.ToString();
+                            }
                         }
-                        } catch { }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.ToString());
+                        }
                     }
                 }
             }
