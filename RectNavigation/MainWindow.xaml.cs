@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Media;
 using Microsoft.Kinect;
 using System.Linq;
@@ -8,8 +7,10 @@ using System.Windows.Media.Animation;
 
 namespace Microsoft.Samples.Kinect.SkeletonBasics
 {
-
-
+    public class SwipeArgs : EventArgs
+    {
+        public double Progress { get; set; }
+    }
     public partial class MainWindow
     {
         /// <summary>
@@ -36,15 +37,54 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         // Rectangle Fade out variables
         private const int RectFadeOutTimer = 2000; // Miliseconds   -> Time when Fade-out animation starts
         private long _enterInnerRectTimestamp;
-        private bool _isAnimating;
 
+        public event EventHandler SwipeLeftEvent;
+        public event EventHandler SwipeRightEvent;
+        public event EventHandler SwipeUpEvent;
+        public event EventHandler SwipeDownEvent;
+
+        private void FireSwipeLeft(double progress)
+        {
+            if (SwipeLeftEvent != null)
+            {
+                SwipeArgs e = new SwipeArgs {Progress = progress};
+                SwipeLeftEvent(this, e);
+            }
+        }
+
+        private void FireSwipeRight(double progress)
+        {
+            if (SwipeLeftEvent != null)
+            {
+                SwipeArgs e = new SwipeArgs { Progress = progress };
+                SwipeRightEvent(this, e);
+            }
+        }
+
+        private void FireSwipeUp(double progress)
+        {
+            if (SwipeLeftEvent != null)
+            {
+                SwipeArgs e = new SwipeArgs { Progress = progress };
+                SwipeUpEvent(this, e);
+            }
+        }
+
+        private void FireSwipeDown(double progress)
+        {
+            if (SwipeLeftEvent != null)
+            {
+                SwipeArgs e = new SwipeArgs { Progress = progress };
+                SwipeDownEvent(this, e);
+            }
+        }
 
         public void Start(KinectSensor sensor)
         {
             _sensor = sensor;
         }
 
-        private void GestureRecognition(Skeleton[] skeletons)
+        public void GestureRecognition(Skeleton[] skeletons)
         {
             if (skeletons.Count(t => t.TrackingState == SkeletonTrackingState.Tracked) >= 1)
             {
@@ -70,11 +110,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                         _enterInnerRectTimestamp = getTimeStamp();
                         _wasInInnerRect = true;
                     }
-                    // Inneres Rechteck wurde verlassen
-                    else
-                    {
-                        
-                    }
+                    
                     _wasInLastFrameInInnerRect = _isInInnerRect;
                 }
 
@@ -92,19 +128,19 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                         {
                             if (_handRightPoint.X > _outerRect.TopRight.X) //leave right
                             {
-                                SwipeRight();
+                                FireSwipeLeft(1);
                             }
                             else if (_handRightPoint.X < _outerRect.TopLeft.X) //leave left
                             {
-                                SwipeLeft();
+                                FireSwipeRight(1);
                             }
                             else if (_handRightPoint.Y > _outerRect.BottomLeft.Y) //leave bottom
                             {
-                                SwipeDown();
+                                FireSwipeDown(1);
                             }
                             else if (_handRightPoint.Y < _outerRect.TopLeft.Y) //leave top
                             {
-                                SwipeUp();
+                                FireSwipeUp(1);
                             }
                             _wasInInnerRect = false;
                         }
@@ -116,19 +152,23 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                 {
                     double swipeLeft = GetPercentageSwipeLeft(_handRightPoint);
                     double swipeRight = GetPercentageSwipeRight(_handRightPoint);
-                    double swipeTop = GetPercentageSwipeTop(_handRightPoint);
-                    double swipeBottom = GetPercentageSwipeBottom(_handRightPoint);
+                    double swipeUp = GetPercentageSwipeTop(_handRightPoint);
+                    double swipeDown = GetPercentageSwipeBottom(_handRightPoint);
                     if(swipeLeft >= 0)
                     {
+                        FireSwipeLeft(swipeLeft);
                     }
                     if (swipeRight >= 0)
                     {
+                        FireSwipeRight(swipeRight);
                     }
-                    if (swipeTop >= 0)
+                    if (swipeUp >= 0)
                     {
+                        FireSwipeUp(swipeUp);
                     }
-                    if (swipeBottom >= 0)
+                    if (swipeDown >= 0)
                     {
+                        FireSwipeDown(swipeDown);
                     }
                 }
 
@@ -215,13 +255,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             OuterRect.Height = _outerRect.Height;
         }
 
-        private void SwipeRight()
-        {
-        }
-
-        private void SwipeLeft()
-        {
-        }
+  
 
         private double GetPercentageSwipeLeft(Point hand)
         {
@@ -255,15 +289,6 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             return handDistance / rectDistance;
         }
 
-        private void SwipeUp()
-        {
-        }
-
-        private void SwipeDown()
-        {
-        }
-
-        
         /// <summary>
         /// Maps a SkeletonPoint to lie within our render space and converts to Point
         /// </summary>
