@@ -109,18 +109,17 @@ namespace AccessoryLib
             ColorImagePoint cloc = _sensor.CoordinateMapper.MapSkeletonPointToColorPoint(
                 headPos, _sensor.ColorStream.Format);
 
-            // 120 px bei 1m Entfernung.
-            const double g = 0.15; // Objektgroesse: 15 cm.
-            const double px = 120; // Objektgroesse: 120 px bei 1 m Abstand.
+            //const double px = 120; // Objektgroesse: 120 px bei 1 m Abstand.
+            double g = item.Width; // Objektgroesse in m.
             double r = headPos.Z;  // Entfernung in m.
-            double imgHeight = 2 * Math.Atan(g / (2 * r)) * (px / g);
-            double imgWidth = imgHeight;
+            double imgWidth = 2 * Math.Atan(g / (2 * r)) * 600/*(px / g)*/;
+            double aspectRatio = item.Image.Width / item.Image.Height;
+            double imgHeight = imgWidth / aspectRatio;
 
             double offsetX = 0, offsetY = 0;
             switch (item.Position)
             {
                 case AccessoryPositon.Hat:
-                    offsetX = 0.11 * imgWidth;
                     offsetY = -imgHeight;
                     break;
 
