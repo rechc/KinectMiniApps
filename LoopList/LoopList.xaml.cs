@@ -471,7 +471,6 @@ namespace LoopList
 
         public bool HDragPercent(double xPercent)
         {
-            TranslateTransform ttRight = (TranslateTransform)_right.RenderTransform;
             double way = _right.ActualWidth * _autoDrag;
             return HDrag(way * xPercent);
 
@@ -479,7 +478,6 @@ namespace LoopList
 
         public bool VDragPercent(double yPercent)
         {
-            TranslateTransform ttRight = (TranslateTransform)_right.RenderTransform;
             double way = _right.ActualHeight * _autoDrag;
             return VDrag(way * yPercent);
 
@@ -579,7 +577,7 @@ namespace LoopList
             }
             if (reset)
             {
-                if (xDistance != 0)
+                if ((int)xDistance != 0)
                 {
                     if (!_currentNode.HasRightNeighbour() && (int)ttRight.X < 0)
                     {
@@ -709,7 +707,7 @@ namespace LoopList
                 reset = true;
             }
             if (reset) {
-                if (yDistance != 0)
+                if ((int)yDistance != 0)
                 {
                     if (!_currentNode.HasBelowNeighbour() && ttRight.Y < 0)
                     {

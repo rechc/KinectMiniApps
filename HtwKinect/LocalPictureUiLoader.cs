@@ -26,7 +26,7 @@ namespace HtwKinect
                 BuildInfoBox(grid, i);
                 list.Add(grid);
             }
-            kinectProjectUiBuilder.AddRow("Top", list);
+            kinectProjectUiBuilder.AddRow("b", list);
 
             list = new List<FrameworkElement>();
             paths = Directory.GetFiles(Environment.CurrentDirectory + @"\images\Beach");
