@@ -9,6 +9,13 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
+/**
+ * Mögliche Erweiterungen/ Verbesserungen
+ * Handausschnitt über z achse anpassen und variabel halten.
+ * Abweichungswerte nicht Hardcodieren, sondern über static
+ * das proof of concept als queue mit variabler stabilität/länge einbinden
+ */
+
 namespace HandDetection
 {
     public enum HandStatus
