@@ -27,88 +27,28 @@ namespace HandDetection
 
     public class HandTracker
     {
-        private KinectSensor sensor;
-        private bool handtracked = false;
-        private SkeletonPoint rightHandPos;
-        private Skeleton[] skeletons = new Skeleton[0];
-        private DepthImagePixel[] depthPixels;
-        private DepthImagePoint handPos = new DepthImagePoint();
-        private DepthImageFormat depthImageFormate = DepthImageFormat.Resolution640x480Fps30;
 
-        public HandTracker()
+        private bool IsHandTracked(Joint hand)
         {
-            foreach (var potentialSensor in KinectSensor.KinectSensors)
-            {
-                if (potentialSensor.Status == KinectStatus.Connected)
-                {
-                    this.sensor = potentialSensor;
-                    break;
-                }
-            }
-
-            if (sensor == null)
-                throw new Exception("No Kinect ready");
-
-            depthPixels = new DepthImagePixel[sensor.DepthStream.FramePixelDataLength];
-
-            this.sensor.SkeletonStream.Enable();
-            this.sensor.SkeletonFrameReady += SensorDetectHandReady;
-
-            this.sensor.DepthStream.Enable(depthImageFormate);
-            this.sensor.DepthFrameReady += SensorDepthFrameReady;
-
-            try
-            {
-                this.sensor.Start();
-            }
-            catch (IOException)
-            {
-                this.sensor = null;
-            }
+            return (hand.TrackingState == JointTrackingState.Tracked);
         }
 
-        private void SensorDetectHandReady(object sender, SkeletonFrameReadyEventArgs e)
+        private DepthImagePoint GetHandPos(KinectSensor sensor, Joint handJoint, DepthImageFormat depthImageFormate)
         {
-            using (SkeletonFrame skeletonFrame = e.OpenSkeletonFrame())
-            {
-                if (skeletonFrame != null)
-                {
-                    skeletons = new Skeleton[skeletonFrame.SkeletonArrayLength];
-                    skeletonFrame.CopySkeletonDataTo(skeletons);
-                
-                    var person = skeletons.FirstOrDefault(p => p.TrackingState == SkeletonTrackingState.Tracked);
-                    if (person != null)
-                    {
-                        handtracked = (person.Joints[JointType.HandRight].TrackingState == JointTrackingState.Tracked);
-
-                        if (handtracked)
-                        {
-                            rightHandPos = person.Joints[JointType.HandRight].Position;
-                            handPos = sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(rightHandPos, depthImageFormate);
-                        }
-                    }
-                }
-            }
+            return sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(handJoint.Position, depthImageFormate);
         }
 
-        private void SensorDepthFrameReady(object sender, DepthImageFrameReadyEventArgs e)
+        public HandStatus GetHandOpenedClosedStatus(DepthImagePixel[] depthPixels, Joint handJoint, KinectSensor sensor, 
+                                                                                        DepthImageFormat depthImageFormate)
         {
-            using (DepthImageFrame depthFrame = e.OpenDepthImageFrame())
-            {
-                if (depthFrame != null)
-                {
-                    depthFrame.CopyDepthImagePixelDataTo(depthPixels);
-                }
-            }
-        }
+            if (!IsHandTracked(handJoint)) return HandStatus.Unknown;
 
-        public HandStatus GetHandOpenedClosedStatus()
-        {
-            if (!handtracked) return HandStatus.Unknown;
+            DepthImagePoint handPos = GetHandPos(sensor, handJoint, depthImageFormate);
+
             if (((handPos.X + 42) > 640 || handPos.X - 42 <= 0)      // epsilon +2 wegen möglichem -1  von handPosX/Y
                || ((handPos.Y + 42) > 480 || handPos.Y - 42 <= 0))  // TODO die 40 und epsilon als static in HAndDetect
                     return HandStatus.Unknown;
-
+           
             bool wasBlack = false;
             int blackWidth = 0, blackTimes = 0;
             int ystart = handPos.Y-40;
@@ -162,9 +102,9 @@ namespace HandDetection
         private List<HandStatus> handStatusList = new List<HandStatus>();
         private HandStatus lastHandStatus;
 
-        public HandStatus GetHandOpenedClosedStatusBuffered()
+        public HandStatus GetHandOpenedClosedStatusBuffered(DepthImagePixel[] depthPixels, Joint handJoint, KinectSensor sensor, SkeletonPoint handSkeletonPoint, DepthImageFormat depthImageFormate)
         {
-            HandStatus currentHandStatus = GetHandOpenedClosedStatus();
+            HandStatus currentHandStatus = GetHandOpenedClosedStatus(depthPixels, handJoint, sensor, depthImageFormate);
             handStatusList.Add(currentHandStatus);
 
             if (handStatusList.Count() == 3)
