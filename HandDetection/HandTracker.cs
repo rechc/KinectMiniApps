@@ -28,6 +28,15 @@ namespace HandDetection
     public class HandTracker
     {
 
+        // vars for Buffer
+        private int[] handstatusarray;
+        private int bufferIterator = 0;
+
+        public HandTracker(int bufferSize = 15)
+        {
+            handstatusarray = new int[bufferSize];
+        }
+
         private bool IsHandTracked(Joint hand)
         {
             return (hand.TrackingState == JointTrackingState.Tracked);
@@ -38,7 +47,7 @@ namespace HandDetection
             return sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(handJoint.Position, depthImageFormate);
         }
 
-        public HandStatus GetHandOpenedClosedStatus(DepthImagePixel[] depthPixels, Joint handJoint, KinectSensor sensor, 
+        public HandStatus GetHandOpenedClosedStatus(DepthImagePixel[] depthPixels, Joint handJoint, KinectSensor sensor,
                                                                                         DepthImageFormat depthImageFormate)
         {
             if (!IsHandTracked(handJoint)) return HandStatus.Unknown;
@@ -47,11 +56,11 @@ namespace HandDetection
 
             if (((handPos.X + 42) > 640 || handPos.X - 42 <= 0)      // epsilon +2 wegen möglichem -1  von handPosX/Y
                || ((handPos.Y + 42) > 480 || handPos.Y - 42 <= 0))  // TODO die 40 und epsilon als static in HAndDetect
-                    return HandStatus.Unknown;
-           
+                return HandStatus.Unknown;
+
             bool wasBlack = false;
             int blackWidth = 0, blackTimes = 0;
-            int ystart = handPos.Y-40;
+            int ystart = handPos.Y - 40;
             int yend = handPos.Y + 40;
             int xstart = handPos.X - 40;
             int xend = handPos.X + 40;
@@ -91,7 +100,7 @@ namespace HandDetection
                         wasBlack = false;
                     }
                 }
-                if (blackTimes > 1) 
+                if (blackTimes > 1)
                     return HandStatus.Opened;
             }
             return HandStatus.Closed;
@@ -109,14 +118,74 @@ namespace HandDetection
 
             if (handStatusList.Count() == 3)
             {
-                if(handStatusList.All(x => x == handStatusList.First()))
+                if (handStatusList.All(x => x == handStatusList.First()))
                 {
                     lastHandStatus = currentHandStatus;
                 }
-                handStatusList.Clear();   
+                handStatusList.Clear();
             }
 
             return lastHandStatus;
+        }
+
+        // V2 
+        //   private Queue<HandStatus> handStatusQueue = new Queue<HandStatus>(4);
+
+
+        public HandStatus GetBufferedHandStatus(DepthImagePixel[] depthPixels, Joint handJoint, KinectSensor sensor, DepthImageFormat depthImageFormate)
+        {
+            HandStatus currentHandStatusEnum = GetHandOpenedClosedStatus(depthPixels, handJoint, sensor, depthImageFormate);
+
+            //enum to int
+            int currentHandStatus = 0;
+            if (currentHandStatusEnum == HandStatus.Closed)
+            {
+                currentHandStatus = 1;
+            }
+            else if (currentHandStatusEnum == HandStatus.Opened)
+            {
+                currentHandStatus = 2;
+            }
+
+            //loop overwrite
+            bufferIterator = (bufferIterator == handstatusarray.Length) ? 0 : bufferIterator;
+
+            handstatusarray[bufferIterator] = currentHandStatus;
+            bufferIterator++;
+
+            // double Counter
+            int openCounter = 0;
+            int closedCounter = 0;
+            foreach (int currentEntry in handstatusarray)
+            {
+                if (currentEntry == 1)
+                {
+                    closedCounter++;
+                }
+                else if (currentEntry == 2)
+                {
+                    openCounter++;
+                }
+            }
+
+            //output
+            foreach (int obj in handstatusarray)
+                Console.Write("    {0}", obj);
+            Console.WriteLine();
+
+
+            if (closedCounter > handstatusarray.Length/2)
+            {
+                return HandStatus.Closed;
+            }
+            else if (openCounter > handstatusarray.Length / 2)
+            {
+                return HandStatus.Opened;
+            }
+            else
+            {
+                return HandStatus.Unknown;
+            }
         }
     }
 }
