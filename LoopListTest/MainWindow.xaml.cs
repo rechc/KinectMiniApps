@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using HandDetection;
 using LoopList;
 using System;
 using System.IO;
@@ -21,20 +22,22 @@ namespace LoopListTest
         private bool _doDrag;
         private bool _waitForTextList;
         private bool _mouseIsUp;
-        private bool _kinectFocused;
 
         private readonly List<int> _savedDirections = new List<int>();
         private bool _dragDirectionIsObvious;
 
         private readonly KinectSensor _kinectSensor;
         private Skeleton[] _skeletons;
+        private DepthImagePixel[] _depthPixels;
         private int _id = -1;
+        private readonly HandTracker _handTracker;
 
         public MainWindow()
         {
             InitializeComponent();
             try
             {
+                _handTracker = new HandTracker();
                 _kinectSensor = KinectSensor.KinectSensors.FirstOrDefault(s => s.Status == KinectStatus.Connected);
 
                 if (_kinectSensor == null)
@@ -120,17 +123,22 @@ namespace LoopListTest
         {
             try
             {
-                using (SkeletonFrame sFrame = e.OpenSkeletonFrame())
+                using (DepthImageFrame dFrame = e.OpenDepthImageFrame())
                 {
-                    if (sFrame == null) return;
-                    if (_skeletons == null)
+                    if (_depthPixels == null) 
+                        _depthPixels = new DepthImagePixel[dFrame.PixelDataLength];
+                    dFrame.CopyDepthImagePixelDataTo(_depthPixels);
+                    using (SkeletonFrame sFrame = e.OpenSkeletonFrame())
                     {
-                        _skeletons = new Skeleton[_kinectSensor.SkeletonStream.FrameSkeletonArrayLength];
+                        if (sFrame == null) return;
+                        if (_skeletons == null)
+                        {
+                            _skeletons = new Skeleton[_kinectSensor.SkeletonStream.FrameSkeletonArrayLength];
+                        }
+                        sFrame.CopySkeletonDataTo(_skeletons);
+                        Skeleton skeleton = GetFixedSkeleton();
+                        ProcessSkeleton(skeleton);
                     }
-                    sFrame.CopySkeletonDataTo(_skeletons);
-                    //CorrectRoomCoords();
-                    Skeleton skeleton = GetFixedSkeleton();
-                    ProcessSkeleton(skeleton);
                 }
             }
             catch (Exception exc)
@@ -139,62 +147,29 @@ namespace LoopListTest
             }
         }
 
-        private void CorrectRoomCoords()
-        {
-            if (!_kinectSensor.IsRunning) return;
-            int elevationAngle = _kinectSensor.ElevationAngle;
-            if (elevationAngle == 0) return;
-            elevationAngle *= -1;
-            foreach (Skeleton s in _skeletons)
-            {
-                if (s.TrackingState != SkeletonTrackingState.Tracked) continue;
-                foreach (JointType jt in Enum.GetValues(typeof(JointType)))
-                {
-                    var joint = s.Joints[jt];
-                    var position = joint.Position;
-                    position.Y = (float)(position.Y * Math.Cos(elevationAngle * Math.PI / 180.0) - position.Z * Math.Sin(elevationAngle * Math.PI / 180.0));
-                    position.Z = (float)(position.Y * Math.Sin(elevationAngle * Math.PI / 180.0) + position.Z * Math.Cos(elevationAngle * Math.PI / 180.0));
-                    joint.Position = position;
-                    s.Joints[jt] = joint;
-                }
-            }
-        }
-
         private void ProcessSkeleton(Skeleton skeleton)
         {
             if (skeleton == null)
             {
-                _kinectFocused = false;
                 return;
             }
-            Joint handRight = skeleton.Joints[JointType.HandRight];
-            Joint shoulderCenter = skeleton.Joints[JointType.ShoulderCenter];
-            if (handRight.TrackingState != JointTrackingState.Tracked || shoulderCenter.TrackingState != JointTrackingState.Tracked)
-            {
-                _kinectFocused = false;
-                return;
-            }
+
+            HandStatus handStatus = _handTracker.GetBufferedHandStatus(_depthPixels,
+                                                                       skeleton.Joints[JointType.HandRight],
+                                                                       _kinectSensor,
+                                                                       DepthImageFormat.Resolution640x480Fps30);
             
-            if (Math.Abs(shoulderCenter.Position.Z - handRight.Position.Z) > 0.4)
+            if (handStatus == HandStatus.Closed)
             {
-                if (!_kinectFocused)
-                {
-                    myLoopList_MouseDown_1(null, null);
-                    _kinectFocused = true;
-                    KinectFocusedRectangle.Visibility = Visibility.Visible;
-                }
+                myLoopList_MouseDown_1(null, null);
+                KinectFocusedRectangle.Visibility = Visibility.Visible;
             }
             else
             {
-                if (_kinectFocused)
-                {
-                    
-                    myLoopList_MouseUp_1(null, null);
-                    _kinectFocused = false;
-                    KinectFocusedRectangle.Visibility = Visibility.Collapsed;
-                }
+                myLoopList_MouseUp_1(null, null);
+                KinectFocusedRectangle.Visibility = Visibility.Collapsed;
             }
-            ColorImagePoint cp = _kinectSensor.CoordinateMapper.MapSkeletonPointToColorPoint(handRight.Position, ColorImageFormat.RawBayerResolution640x480Fps30);
+            ColorImagePoint cp = _kinectSensor.CoordinateMapper.MapSkeletonPointToColorPoint(skeleton.Joints[JointType.HandRight].Position, ColorImageFormat.RawBayerResolution640x480Fps30);
 
             Point currentPoint = new Point(cp.X*2, cp.Y*2);
             Drag(currentPoint);
