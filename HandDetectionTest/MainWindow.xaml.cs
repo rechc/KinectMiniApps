@@ -228,7 +228,9 @@ namespace HandDetectionTest
 
                                 Joint handJoint = person.Joints[JointType.HandRight];
 
-                                var handStatus = handDection.GetHandOpenedClosedStatus(depthPixels, handJoint, sensor, DepthImageFormat.Resolution640x480Fps30);
+                                //var handStatus = handDection.GetHandOpenedClosedStatus(depthPixels, handJoint, sensor, DepthImageFormat.Resolution640x480Fps30);
+                                var handStatus = handDection.GetBufferedHandStatus(depthPixels, handJoint, sensor, DepthImageFormat.Resolution640x480Fps30);
+
                                 this.HandDescriptionTBox.Text = "Hand is " + handStatus.ToString();
                             }
                         }
