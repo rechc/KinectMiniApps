@@ -162,12 +162,12 @@ namespace LoopListTest
             if (handStatus == HandStatus.Closed)
             {
                 myLoopList_MouseDown_1(null, null);
-                KinectFocusedRectangle.Visibility = Visibility.Visible;
+                
             }
             else
             {
                 myLoopList_MouseUp_1(null, null);
-                KinectFocusedRectangle.Visibility = Visibility.Collapsed;
+                
             }
             ColorImagePoint cp = _kinectSensor.CoordinateMapper.MapSkeletonPointToColorPoint(skeleton.Joints[JointType.HandRight].Position, ColorImageFormat.RawBayerResolution640x480Fps30);
 
@@ -320,6 +320,7 @@ namespace LoopListTest
         {
             try
             {
+                KinectFocusedRectangle.Visibility = Visibility.Collapsed;
                 _mouseIsUp = true;
                 ResetDragDirectionObvious();
                 
@@ -345,6 +346,7 @@ namespace LoopListTest
         {
             _mouseIsUp = false;
             _doDrag = true;
+            KinectFocusedRectangle.Visibility = Visibility.Visible;
         }
 
 
