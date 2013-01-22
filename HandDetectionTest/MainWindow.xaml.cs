@@ -224,7 +224,11 @@ namespace HandDetectionTest
                                 DepthImagePixel[] depthPixels = new DepthImagePixel[sensor.DepthStream.FramePixelDataLength];
                                 depthFrame.CopyDepthImagePixelDataTo(depthPixels);
 
-                                var handStatus = handDection.GetHandOpenedClosedStatus();
+                                var person = skeletons.First(p => p.TrackingState == SkeletonTrackingState.Tracked);
+
+                                Joint handJoint = person.Joints[JointType.HandRight];
+
+                                var handStatus = handDection.GetHandOpenedClosedStatus(depthPixels, handJoint, sensor, DepthImageFormat.Resolution640x480Fps30);
                                 this.HandDescriptionTBox.Text = "Hand is " + handStatus.ToString();
                             }
                         }
