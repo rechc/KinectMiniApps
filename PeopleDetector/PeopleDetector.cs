@@ -208,6 +208,19 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         }
 
         /// <summary>
+        /// returns a Dictionary with
+        /// Key: SkeletonTrackingId
+        /// Value: A list of Skeletons of the last x frames
+        /// </summary>
+        public Dictionary<int, List<Skeleton>> SkeletonsDict
+        {
+            get
+            {
+                return skeletonsDict;
+            }
+        }
+
+        /// <summary>
         /// Store valid Skeletons with TrackingId as Key from last 30 Frames in a Dictionary. Newest Frame from a Skeleton is at Index 0
         /// </summary>
         private void AddSkeletonsToDictionary(Skeleton[] skeletons)
