@@ -588,10 +588,15 @@ namespace LoopList
             if (_animating == 0)
             {
                 if (_lastX != 0)
-                    FireScrolled(_lastX > 0
-                     ? new LoopListArgs(Direction.Left)
-                     : new LoopListArgs(Direction.Right));
-                _lastX = 0;
+                {
+                    
+                    LoopListArgs lla = _lastX > 0
+                                           ? new LoopListArgs(Direction.Left)
+                                           : new LoopListArgs(Direction.Right);
+                    _lastX = 0;
+                    FireScrolled(lla);
+                }
+                
             }
         }
 
@@ -601,10 +606,13 @@ namespace LoopList
             if (_animating == 0)
             {
                 if (_lastY != 0)
-                    FireScrolled(_lastY > 0
-                     ? new LoopListArgs(Direction.Down)
-                     : new LoopListArgs(Direction.Top));
-                _lastY = 0;
+                {
+                    _lastY = 0;
+                    LoopListArgs lla = _lastY > 0
+                                           ? new LoopListArgs(Direction.Down)
+                                           : new LoopListArgs(Direction.Top);
+                    FireScrolled(lla);
+                }
             }
         }
 
@@ -779,7 +787,6 @@ namespace LoopList
                     ttAbove.BeginAnimation(TranslateTransform.YProperty, doubleAnimationLeft);
                     _lastY = 0;
                 }
-
             }
         }
     }
