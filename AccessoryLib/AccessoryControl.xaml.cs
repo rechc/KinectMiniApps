@@ -109,15 +109,18 @@ namespace AccessoryLib
             ColorImagePoint cloc = _sensor.CoordinateMapper.MapSkeletonPointToColorPoint(
                 headPos, _sensor.ColorStream.Format);
 
-            // Groesse evtl. ueber Entfernung von Shoulder Left/Right zu Shoulder Center bestimmen?
-            double imgHeight = Math.Max(120 - (60 * (headPos.Z - 1)), 10);
-            double imgWidth = imgHeight; // 150 - (50 * headPos.Z);
+            //const double px = 120; // Objektgroesse: 120 px bei 1 m Abstand.
+            double g = item.Width; // Objektgroesse in m.
+            double r = headPos.Z;  // Entfernung in m.
+            double imgWidth = 2 * Math.Atan(g / (2 * r)) * 600/*(px / g)*/;
+            double aspectRatio = item.Image.Width / item.Image.Height;
+            double imgHeight = imgWidth / aspectRatio;
 
-            double offsetY = 0;
+            double offsetX = 0, offsetY = 0;
             switch (item.Position)
             {
                 case AccessoryPositon.Hat:
-                    offsetY = -imgHeight/2;
+                    offsetY = -imgHeight;
                     break;
 
                 case AccessoryPositon.Beard:
@@ -125,10 +128,10 @@ namespace AccessoryLib
                     break;
             }
 
-            double headX = cloc.X;
+            double headX = cloc.X + offsetX;
             double headY = cloc.Y + offsetY;
 
-            Console.WriteLine("Z: {0}, imgW: {1} , imgH {2}", headPos.Z, imgWidth, imgHeight);
+            //Console.WriteLine("Z: {0}, imgW: {1} , imgH {2}", headPos.Z, imgWidth, imgHeight);
 
             drawingContext.DrawImage(item.Image, new Rect(headX - imgWidth/2, headY, imgWidth, imgHeight));
         }
