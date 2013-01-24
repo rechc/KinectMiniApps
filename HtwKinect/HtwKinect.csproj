@@ -34,6 +34,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Kinect, Version=1.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -92,6 +93,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AccessoryLib\AccessoryLib.csproj">
+      <Project>{E7CEE4BD-1956-4199-9525-4B5583557D56}</Project>
+      <Name>AccessoryLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LoopList\LoopList.csproj">
+      <Project>{0EF01833-063F-498F-B8AC-7744902A2EFD}</Project>
+      <Name>LoopList</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
