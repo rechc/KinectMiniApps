@@ -42,8 +42,11 @@ namespace GreenScreenControl
         public GreenScreenControl()
         {
             InitializeComponent();
-            greenScreenPixelData = new int[Sensor.DepthStream.FramePixelDataLength];
-            colorCoordinates  = new ColorImagePoint[Sensor.DepthStream.FramePixelDataLength];
+        }
+
+        public void Start()
+        {
+
             opaqueMatrixLenghtSqrt = Convert.ToInt32(Math.Sqrt(opaqueMatrix.Length));
             widthRange = opaqueMatrixLenghtSqrt - 1;
             opaqueRange = 3.0 / 4.0 * opaqueMatrix.Length;
@@ -57,6 +60,9 @@ namespace GreenScreenControl
             this.colorToDepthDivisor = colorWidth / this.depthWidth;
 
             this.colorBitmap = new WriteableBitmap(colorWidth, colorHeight, 96.0, 96.0, PixelFormats.Bgr32, null);
+
+            greenScreenPixelData = new int[Sensor.DepthStream.FramePixelDataLength];
+            colorCoordinates = new ColorImagePoint[Sensor.DepthStream.FramePixelDataLength];
         }
 
         protected override void OnRender(DrawingContext drawingContext)
