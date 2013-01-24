@@ -16,13 +16,16 @@ namespace AccessoryLib
 
     public class AccessoryItem
     {
-        public AccessoryItem(AccessoryPositon position, string imagePath)
+        /// <param name="width">Breite in m.</param>
+        public AccessoryItem(AccessoryPositon position, string imagePath, double width)
         {
             Position = position;
             Image = new BitmapImage(new Uri(imagePath, UriKind.RelativeOrAbsolute));
+            Width = width;
         }
 
         public AccessoryPositon Position { get; private set; }
         public ImageSource Image { get; private set; }
+        public double Width { get; private set; }
     }
 }

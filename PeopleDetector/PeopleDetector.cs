@@ -8,10 +8,13 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
 {
     class PeopleDetector
     {
-        private const int storeElementsInList = 10;
-        private const double passingKinectEpsilon = 0.01;
+        private Dictionary<int, List<Skeleton>> skeletonsDict = new Dictionary<int, List<Skeleton>>();
+        private const int maxNumberOfFramesInSkeletonList = 30;
 
-        private List<Skeleton[]> skeletonsList = new List<Skeleton[]>();
+        // passing People constants
+        private const double positionXEpsilon = 0.015;
+        private const int compareLastFrames = 16;
+        private const int numberOfFramesOK = 6;
 
         public PeopleDetector()
         {
@@ -19,7 +22,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
 
         public PeopleDetector(Skeleton[] skeletons)
         {
-            AddSkeleton(skeletons);
+            AddSkeletonsToDictionary(skeletons);
         }
 
         /// <summary>
@@ -28,11 +31,13 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         public List<Skeleton> GetPositionOnlyPeople()
         {
             List<Skeleton> positionOnlyPeople = new List<Skeleton>();
-            foreach (Skeleton skeleton in Skeletons)
+
+            foreach (List<Skeleton> skeletonList in skeletonsDict.Values)
             {
-                if (skeleton.TrackingState == SkeletonTrackingState.PositionOnly)
+                // check last frame in list
+                if (skeletonList[0].TrackingState == SkeletonTrackingState.PositionOnly)
                 {
-                    positionOnlyPeople.Add(skeleton);
+                    positionOnlyPeople.Add(skeletonList[0]);
                 }
             }
             return positionOnlyPeople;
@@ -44,11 +49,12 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         public List<Skeleton> GetTrackedPeople()
         {
             List<Skeleton> trackedPeople = new List<Skeleton>();
-            foreach (Skeleton skeleton in Skeletons)
+            foreach (List<Skeleton> skeletonList in skeletonsDict.Values)
             {
-                if (skeleton.TrackingState == SkeletonTrackingState.Tracked)
+                // check last frame in list
+                if (skeletonList[0].TrackingState == SkeletonTrackingState.Tracked)
                 {
-                    trackedPeople.Add(skeleton);
+                    trackedPeople.Add(skeletonList[0]);
                 }
             }
             return trackedPeople;
@@ -60,13 +66,8 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         public List<Skeleton> GetAllRecognizedPeople()
         {
             List<Skeleton> recognizedPeople = new List<Skeleton>();
-            foreach (Skeleton skeleton in Skeletons)
-            {
-                if (skeleton.TrackingState != SkeletonTrackingState.NotTracked)
-                {
-                    recognizedPeople.Add(skeleton);
-                }
-            }
+            recognizedPeople.AddRange(GetPositionOnlyPeople());
+            recognizedPeople.AddRange(GetTrackedPeople());
             return recognizedPeople;
         }
 
@@ -76,21 +77,19 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         public List<Skeleton> GetPassingPeople()
         {
             List<Skeleton> passingPeople = new List<Skeleton>();
-
-            foreach (Skeleton currentSkeleton in Skeletons)
+            foreach (List<Skeleton> skeletonList in skeletonsDict.Values)
             {
-                if (currentSkeleton.TrackingState != SkeletonTrackingState.NotTracked)
+                int passing = 0;
+                for (int i = 0; i < (skeletonList.Count < compareLastFrames ? skeletonList.Count : compareLastFrames) - 1; i++)
                 {
-                    foreach (Skeleton previousSkeleton in skeletonsList[1])
+                    if (Math.Abs(skeletonList[i].Position.X - skeletonList[i + 1].Position.X) > positionXEpsilon)
                     {
-                        if (currentSkeleton.TrackingId == previousSkeleton.TrackingId)
-                        {
-                            if (Math.Abs(currentSkeleton.Position.X - previousSkeleton.Position.X) > passingKinectEpsilon)
-                            {
-                                passingPeople.Add(currentSkeleton);
-                            }
-                        }
+                        passing++;
                     }
+                }
+                if (passing >= numberOfFramesOK)
+                {
+                    passingPeople.Add(skeletonList[0]);
                 }
             }
             return passingPeople;
@@ -118,8 +117,11 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         public List<Skeleton> GetLookingPeople()
         {
             List<Skeleton> lookingPeople = new List<Skeleton>();
-            foreach (Skeleton skeleton in Skeletons)
+            foreach (List<Skeleton> skeletonList in skeletonsDict.Values)
             {
+                // newest Skeleton
+                Skeleton skeleton = skeletonList[0];
+
                 if (skeleton.TrackingState != SkeletonTrackingState.Tracked)
                     continue;
 
@@ -199,23 +201,71 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         /// </summary>
         public Skeleton[] Skeletons
         {
-            get { return skeletonsList[0]; }
             set
             {
-                AddSkeleton(value);
+                AddSkeletonsToDictionary(value);
             }
         }
 
         /// <summary>
-        /// Store Skeleton from last 10 Frames in a List. Skeleton from newest Frame is always at index 0.
+        /// returns a Dictionary with
+        /// Key: SkeletonTrackingId
+        /// Value: A list of Skeletons of the last x frames
         /// </summary>
-        private void AddSkeleton(Skeleton[] skeleton)
+        public Dictionary<int, List<Skeleton>> SkeletonsDict
         {
-            if (skeletonsList.Count >= storeElementsInList)
+            get
             {
-                skeletonsList.RemoveAt(skeletonsList.Count - 1);
+                return skeletonsDict;
             }
-            skeletonsList.Insert(0, skeleton);
+        }
+
+        /// <summary>
+        /// Store valid Skeletons with TrackingId as Key from last 30 Frames in a Dictionary. Newest Frame from a Skeleton is at Index 0
+        /// </summary>
+        private void AddSkeletonsToDictionary(Skeleton[] skeletons)
+        {
+            foreach (Skeleton skeleton in skeletons)
+            {
+                if (skeleton.TrackingState != SkeletonTrackingState.NotTracked)
+                {
+                    if (skeletonsDict.ContainsKey(skeleton.TrackingId))
+                    {
+                        List<Skeleton> skeletonList = skeletonsDict[skeleton.TrackingId];
+                        if (skeletonList.Count >= maxNumberOfFramesInSkeletonList)
+                        {
+                            skeletonList.RemoveAt(skeletonList.Count - 1);
+                        }
+                        skeletonList.Insert(0, skeleton);
+                        skeletonsDict[skeleton.TrackingId] = skeletonList;
+
+                    }
+                    else
+                    {
+                        List<Skeleton> skeletonList = new List<Skeleton>();
+                        skeletonList.Add(skeleton);
+                        skeletonsDict.Add(skeleton.TrackingId, skeletonList);
+                    }
+                }
+            }
+
+            // remove deprecated TrackingIds from Dictionary
+            if (skeletonsDict.Count > 0)
+            {
+                List<int> removeSkeletonList = new List<int>();
+                foreach (KeyValuePair<int, List<Skeleton>> dictEntry in skeletonsDict)
+                {
+                    Skeleton s = skeletons.FirstOrDefault((skeleton) => skeleton.TrackingId == dictEntry.Key);
+                    if (s == null)
+                    {
+                        removeSkeletonList.Add(dictEntry.Key);
+                    }
+                }
+                foreach (int index in removeSkeletonList)
+                {
+                    skeletonsDict.Remove(index);
+                }
+            }
         }
     }
 }
