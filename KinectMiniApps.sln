@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HandDetectionTest", "HandDe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActionDetector", "ActionDetector\ActionDetector.csproj", "{EE5F5E25-6326-4371-A4BC-D2CCF1ECC40B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mimik", "Mimik\Mimik.csproj", "{27ED6C67-43F9-4826-BE04-1A18224CF2BB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -143,6 +145,16 @@ Global
 		{EE5F5E25-6326-4371-A4BC-D2CCF1ECC40B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{EE5F5E25-6326-4371-A4BC-D2CCF1ECC40B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{EE5F5E25-6326-4371-A4BC-D2CCF1ECC40B}.Release|x86.ActiveCfg = Release|Any CPU
+		{27ED6C67-43F9-4826-BE04-1A18224CF2BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27ED6C67-43F9-4826-BE04-1A18224CF2BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27ED6C67-43F9-4826-BE04-1A18224CF2BB}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{27ED6C67-43F9-4826-BE04-1A18224CF2BB}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{27ED6C67-43F9-4826-BE04-1A18224CF2BB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{27ED6C67-43F9-4826-BE04-1A18224CF2BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27ED6C67-43F9-4826-BE04-1A18224CF2BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27ED6C67-43F9-4826-BE04-1A18224CF2BB}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{27ED6C67-43F9-4826-BE04-1A18224CF2BB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{27ED6C67-43F9-4826-BE04-1A18224CF2BB}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
