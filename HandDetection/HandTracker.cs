@@ -56,18 +56,18 @@ namespace HandDetection
             if (!IsHandTracked(handJoint)) return HandStatus.Unknown;
 
             DepthImagePoint handPos = GetHandPos(sensor, handJoint, depthImageFormate);
-            int handCutSize = ComputeHandSize(handJoint);
+            int halfhandCutSize = ComputeHandSize(handJoint)/2;
 
-            if (((handPos.X + epsilonTolerance + handCutSize) > 640 || handPos.X - handCutSize - epsilonTolerance <= 0)      // epsilon +2 wegen möglichem -1  von handPosX/Y
-               || ((handPos.Y + handCutSize + epsilonTolerance) > 480 || handPos.Y - handCutSize - epsilonTolerance <= 0))
+            if (((handPos.X + epsilonTolerance + halfhandCutSize) > 640 || handPos.X - halfhandCutSize - epsilonTolerance <= 0)      // epsilon +2 wegen möglichem -1  von handPosX/Y
+               || ((handPos.Y + halfhandCutSize + epsilonTolerance) > 480 || handPos.Y - halfhandCutSize - epsilonTolerance <= 0))
                 return HandStatus.Unknown;
 
             bool wasBlack = false;
             int blackWidth = 0, blackTimes = 0;
-            int ystart = handPos.Y - handCutSize;
-            int yend = handPos.Y + handCutSize;
-            int xstart = handPos.X - handCutSize;
-            int xend = handPos.X + handCutSize;
+            int ystart = handPos.Y - halfhandCutSize;
+            int yend = handPos.Y + halfhandCutSize;
+            int xstart = handPos.X - halfhandCutSize;
+            int xend = handPos.X + halfhandCutSize;
 
             for (int yy = ystart; yy < yend - 10; yy += 10)
             {
