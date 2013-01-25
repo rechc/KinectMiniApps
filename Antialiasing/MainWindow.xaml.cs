@@ -135,8 +135,6 @@ namespace Antialiasing
 
             if (null != this.sensor)
             {
-                gsc = new GreenScreenControl.GreenScreenControl {Sensor = sensor};
-                gsc.Start();
 
                 // Turn on the depth stream to receive depth frames
                 this.sensor.DepthStream.Enable(DepthFormat);
@@ -173,6 +171,9 @@ namespace Antialiasing
 
                 // Add an event handler to be called whenever there is new depth frame data
                 this.sensor.AllFramesReady += this.SensorAllFramesReady;
+
+                gsc = new GreenScreenControl.GreenScreenControl();
+                gsc.Start(sensor);
 
                 // Start the sensor!
                 try
@@ -364,7 +365,6 @@ namespace Antialiasing
                         null);
 
                     //MaskedColor.OpacityMask = new ImageBrush { ImageSource = this.playerOpacityMaskImage };
-                    gsc.Antialiasing(depthPixels, colorPixels, colorCoordinates, DepthFormat, ColorFormat);
                 }
 
                 this.playerOpacityMaskImage.WritePixels(
@@ -373,6 +373,7 @@ namespace Antialiasing
                     this.depthWidth * ((this.playerOpacityMaskImage.Format.BitsPerPixel + 7) / 8),
                     0);
             }
+            gsc.Antialiasing(depthPixels, colorPixels, colorCoordinates, DepthFormat, ColorFormat);
         }
 
         /// <summary>

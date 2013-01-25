@@ -44,9 +44,9 @@ namespace GreenScreenControl
             InitializeComponent();
         }
 
-        public void Start()
+        public void Start(KinectSensor sensor)
         {
-
+            this.Sensor = sensor;
             opaqueMatrixLenghtSqrt = Convert.ToInt32(Math.Sqrt(opaqueMatrix.Length));
             widthRange = opaqueMatrixLenghtSqrt - 1;
             opaqueRange = 3.0 / 4.0 * opaqueMatrix.Length;
@@ -69,6 +69,7 @@ namespace GreenScreenControl
 
         protected override void OnRender(DrawingContext drawingContext)
         {
+            base.OnRender(drawingContext);
             drawingContext.DrawImage(playerOpacityMaskImage, new Rect(0, 0, depthWidth, depthHeight)); //todo set size
         }
 
