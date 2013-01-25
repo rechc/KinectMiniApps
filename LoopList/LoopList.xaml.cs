@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -22,6 +23,7 @@ namespace LoopList
         private int _lastX, _lastY;
         private double _autoDrag;
         private Duration _duration;
+        private bool _firstAdded;
 
         public event EventHandler Scrolled;
 
@@ -275,13 +277,32 @@ namespace LoopList
                 first.SetRight(newNode);
                 _currentNode = newNode;
             }
-            SetChild(_right, _currentNode.GetFrameworkElement());
-            
+            if (!_firstAdded)
+            {
+                _firstAdded = true;
+                SetChild(_right, _currentNode.GetFrameworkElement());
+            }
+
             return _currentNode;
         }
 
         private void SetChild(Grid grid, FrameworkElement frameworkElement)
         {
+            if (grid == _above) //es kann sein, dass ein einzufügendes element noch in _left unnötig geladen ist.
+            {
+                if (_left.Children.Count == 9)
+                {
+                    _left.Children.RemoveAt(8);
+                }
+            }
+            else if (grid == _left)
+            {
+                if (_above.Children.Count == 9)
+                {
+                    _above.Children.RemoveAt(8);
+                        
+                }
+            }
             Grid.SetRow(frameworkElement, 2);
             Grid.SetColumn(frameworkElement, 2);
 
@@ -295,83 +316,98 @@ namespace LoopList
 
         public Node AddToRight(Node anchor, FrameworkElement frameworkElement)
         {
-            _currentNode = anchor;
-            if (_currentNode == null)
+            if (anchor == null)
             {
-                _currentNode = new Node(frameworkElement);
+                anchor = new Node(frameworkElement);
             }
             else
             {
-                if (!_currentNode.IsMarkedRight())
+                if (!anchor.IsMarkedRight())
                 {
                     throw new Exception("why you no add to marked anchor???");
                 }
                 Node newNode = new Node(frameworkElement);
-                Node first = _currentNode.GetRight();
-                _currentNode.SetRight(newNode);
-                _currentNode.UnmarkRight();
-                newNode.SetLeft(_currentNode);
+                Node first = anchor.GetRight();
+                anchor.SetRight(newNode);
+                anchor.UnmarkRight();
+                newNode.SetLeft(anchor);
                 newNode.UnmarkLeft();
                 newNode.SetRight(first);
                 first.SetLeft(newNode);
-                _currentNode = newNode;
+                anchor = newNode;
             }
-            SetChild(_right, _currentNode.GetFrameworkElement());
-
-            return _currentNode;
+            if (!_firstAdded)
+            {
+                _firstAdded = true;
+                _currentNode = anchor;
+                SetChild(_right, anchor.GetFrameworkElement());
+                
+            }
+            MarkDirections(_right);
+            return anchor;
         }
 
         public Node AddToAbove(Node anchor, FrameworkElement frameworkElement)
         {
-            _currentNode = anchor;
-            if (_currentNode == null)
+            if (anchor == null)
             {
-                _currentNode = new Node(frameworkElement);
+                anchor = new Node(frameworkElement);
             }
             else
             {
-                if (!_currentNode.IsMarkedAbove())
+                if (!anchor.IsMarkedAbove())
                 {
                     throw new Exception("why you no add to marked anchor???");
                 }
                 Node newNode = new Node(frameworkElement);
-                Node first = _currentNode.GetAbove();
-                _currentNode.SetAbove(newNode);
-                _currentNode.UnmarkAbove();
-                newNode.SetBelow(_currentNode);
+                Node first = anchor.GetAbove();
+                anchor.SetAbove(newNode);
+                anchor.UnmarkAbove();
+                newNode.SetBelow(anchor);
                 newNode.UnmarkBelow();
                 newNode.SetAbove(first);
                 first.SetBelow(newNode);
-                _currentNode = newNode;
+                anchor = newNode;
             }
-            SetChild(_right, _currentNode.GetFrameworkElement());
+            if (!_firstAdded)
+            {
+                _firstAdded = true;
+                _currentNode = anchor;
+                SetChild(_right, _currentNode.GetFrameworkElement());
+            }
+            MarkDirections(_right);
             return _currentNode;
         }
 
         public Node AddToBelow(Node anchor, FrameworkElement frameworkElement)
         {
-            _currentNode = anchor;
-            if (_currentNode == null)
+            if (anchor == null)
             {
-                _currentNode = new Node(frameworkElement);
+                anchor = new Node(frameworkElement);
             }
             else
             {
-                if (!_currentNode.IsMarkedBelow())
+                if (!anchor.IsMarkedBelow())
                 {
                     throw new Exception("why you no add to marked anchor???");
                 }
                 Node newNode = new Node(frameworkElement);
-                Node first = _currentNode.GetBelow();
-                _currentNode.SetBelow(newNode);
-                _currentNode.UnmarkBelow();
-                newNode.SetAbove(_currentNode);
+                Node first = anchor.GetBelow();
+                anchor.SetBelow(newNode);
+                anchor.UnmarkBelow();
+                newNode.SetAbove(anchor);
                 newNode.UnmarkAbove();
                 newNode.SetBelow(first);
                 first.SetAbove(newNode);
-                _currentNode = newNode;
+                anchor = newNode;
             }
-            SetChild(_right, _currentNode.GetFrameworkElement());
+            if (!_firstAdded)
+            {
+                _firstAdded = true;
+                _currentNode = anchor;
+                SetChild(_right, _currentNode.GetFrameworkElement());
+            }
+            MarkDirections(_right);
             return _currentNode;
         }
 
@@ -399,6 +435,8 @@ namespace LoopList
             {
                 _right.Children[i].Visibility = Visibility.Visible;
             }
+            ((TranslateTransform) _right.RenderTransform).X = 0;
+            ((TranslateTransform)_right.RenderTransform).Y = 0;
         }
 
         private void UnmarkCentered()
@@ -414,7 +452,7 @@ namespace LoopList
             if (_animating != 0) return false;
             TranslateTransform ttRight = (TranslateTransform)_right.RenderTransform;
             TranslateTransform ttLeft = (TranslateTransform)_left.RenderTransform;
-            if (Math.Abs(ttRight.Y - 0) > 0.000000001) return true; // diagonales scrollen gibts nicht
+            if ((int)Math.Abs(ttRight.Y) != 0) return true; // diagonales scrollen gibts nicht
             if (HNeighbourExists())
             {
                 ttLeft.X = (double)ttLeft.GetValue(TranslateTransform.XProperty);
@@ -432,49 +470,35 @@ namespace LoopList
                     Grid tmp = _right;
                     _right = _left;
                     _left = tmp;
+                    _currentNode = _lastX < 0 ? _currentNode.GetRight() : _currentNode.GetLeft();
                     FireScrolled(ttRight.X >= _right.ActualWidth
                                      ? new LoopListArgs(Direction.Left)
                                      : new LoopListArgs(Direction.Right));
                     ttRight = (TranslateTransform) _right.RenderTransform;
                     ttLeft = (TranslateTransform) _left.RenderTransform;
-                    _lastX = 0;
-
                 }
 
-                if (Math.Abs(ttRight.X) < 1)
+                if ((int)Math.Abs(ttRight.X) == 0)
                 {
                     MarkCentered();
                 }
                 else
                 {
                     UnmarkCentered();
-                }
-
-                if (ttRight.X >= 0 && _lastX < 0)
-                {
-                    _currentNode = _currentNode.GetLeft();
-                    _lastX = 0;
-                }
-                if (ttRight.X <= 0 && _lastX > 0)
-                {
-                    _currentNode = _currentNode.GetRight();
-                    _lastX = 0;
-                }
-                if (ttRight.X < 0 && _lastX == 0)
-                {
-                    ttLeft.X = _right.ActualWidth + ttRight.X;
-                    _currentNode = _currentNode.GetRight();
-                    SetChild(_left, _currentNode.GetFrameworkElement());
-                    _lastX = -1;
-                }
-                else
-                {
-                    if (ttRight.X > 0 && _lastX == 0)
+                    if (ttRight.X < 0)
                     {
-                        ttLeft.X = -_right.ActualWidth + ttRight.X;
-                        _currentNode = _currentNode.GetLeft();
-                        SetChild(_left, _currentNode.GetFrameworkElement());
-                        _lastX = 1;
+                        ttLeft.X = _right.ActualWidth + ttRight.X;
+                        SetChild(_left, _currentNode.GetRight().GetFrameworkElement());
+                        _lastX = -1;
+                    }
+                    else
+                    {
+                        if (ttRight.X > 0)
+                        {
+                            ttLeft.X = -_right.ActualWidth + ttRight.X;
+                            SetChild(_left, _currentNode.GetLeft().GetFrameworkElement());
+                            _lastX = 1;
+                        }
                     }
                 }
             }
@@ -485,7 +509,7 @@ namespace LoopList
                     AnimH(false);
                     return false;
                 }
-                if (ttRight.X <= -_right.ActualWidth * (_autoDrag))
+                if (ttRight.X < -_right.ActualWidth * (_autoDrag))
                 {
                     AnimH(true);
                     return false;
@@ -499,7 +523,7 @@ namespace LoopList
             if (_animating != 0) return false;
             TranslateTransform ttRight = (TranslateTransform)_right.RenderTransform;
             TranslateTransform ttAbove = (TranslateTransform)_above.RenderTransform;
-            if (Math.Abs(ttRight.X - 0) > 0.00000001)
+            if ((int)Math.Abs(ttRight.X) != 0)
             {
                 return true;
             }
@@ -519,52 +543,39 @@ namespace LoopList
                     Grid tmp = _right;
                     _right = _above;
                     _above = tmp;
+                    _currentNode = _lastY < 0 ? _currentNode.GetBelow() : _currentNode.GetAbove();
                     FireScrolled(ttRight.Y >= _right.ActualHeight
                                      ? new LoopListArgs(Direction.Top)
                                      : new LoopListArgs(Direction.Down));
                     ttRight = (TranslateTransform)_right.RenderTransform;
                     ttAbove = (TranslateTransform)_above.RenderTransform;
-                    _lastY = 0;
-
+                    
                 }
-
-                if (Math.Abs(ttRight.Y) < 1)
+                if ((int)Math.Abs(ttRight.Y) == 0)
                 {
                     MarkCentered();
                 }
                 else
                 {
                     UnmarkCentered();
-                }
 
-                if (ttRight.Y >= 0 && _lastY < 0)
-                {
-                    _currentNode = _currentNode.GetAbove();
-                    _lastY = 0;
-                }
-                if (ttRight.Y <= 0 && _lastY > 0)
-                {
-                    _currentNode = _currentNode.GetBelow();
-                    _lastY = 0;
-                }
-
-                if (ttRight.Y < 0 && _lastY == 0)
-                {
-                    ttAbove.Y = _right.ActualHeight + ttRight.Y;
-                    _currentNode = _currentNode.GetBelow();
-                    SetChild(_above, _currentNode.GetFrameworkElement());
-                    _lastY = -1;
-                }
-                else
-                {
-                    if (ttRight.Y > 0 && _lastY == 0)
+                    if (ttRight.Y < 0)
                     {
-                        ttAbove.Y = -_right.ActualHeight + ttRight.Y;
-                        _currentNode = _currentNode.GetAbove();
-                        SetChild(_above, _currentNode.GetFrameworkElement());
-                        _lastY = 1;
+                        ttAbove.Y = _right.ActualHeight + ttRight.Y;
+                        SetChild(_above, _currentNode.GetBelow().GetFrameworkElement());
+                        _lastY = -1;
+                    }
+                    else
+                    {
+                        if (ttRight.Y > 0)
+                        {
+                            ttAbove.Y = -_right.ActualHeight + ttRight.Y;
+                            SetChild(_above, _currentNode.GetAbove().GetFrameworkElement());
+                            _lastY = 1;
+                        }
                     }
                 }
+
             }
             if (_autoDrag > 0 && _autoDrag < 1)
             {
@@ -587,16 +598,10 @@ namespace LoopList
             _animating--;
             if (_animating == 0)
             {
-                if (_lastX != 0)
-                {
-                    
-                    LoopListArgs lla = _lastX > 0
-                                           ? new LoopListArgs(Direction.Left)
-                                           : new LoopListArgs(Direction.Right);
-                    _lastX = 0;
-                    FireScrolled(lla);
-                }
-                
+                LoopListArgs lla = _lastX > 0
+                                        ? new LoopListArgs(Direction.Left)
+                                        : new LoopListArgs(Direction.Right);
+                FireScrolled(lla);
             }
         }
 
@@ -605,14 +610,10 @@ namespace LoopList
             _animating--;
             if (_animating == 0)
             {
-                if (_lastY != 0)
-                {
-                    _lastY = 0;
-                    LoopListArgs lla = _lastY > 0
-                                           ? new LoopListArgs(Direction.Down)
-                                           : new LoopListArgs(Direction.Top);
-                    FireScrolled(lla);
-                }
+                LoopListArgs lla = _lastY > 0
+                                        ? new LoopListArgs(Direction.Down)
+                                        : new LoopListArgs(Direction.Top);
+                FireScrolled(lla);
             }
         }
 
@@ -626,8 +627,12 @@ namespace LoopList
             if (_animating != 0 || !HNeighbourExists()) return;
             TranslateTransform ttRight = (TranslateTransform)_right.RenderTransform;
             TranslateTransform ttLeft = (TranslateTransform)_left.RenderTransform;
-
-            if (Math.Abs(ttRight.X - 0) < 0.00000001)
+            
+            if ((int)Math.Abs(ttRight.Y) != 0)
+            {
+                return;
+            }
+            if ((int)Math.Abs(ttRight.X) == 0)
             {
                 if (leftDir)
                 {
@@ -664,6 +669,8 @@ namespace LoopList
             _right = _left;
             _left = tmp;
 
+            _currentNode = _lastX < 0 ? _currentNode.GetRight() : _currentNode.GetLeft();
+            _lastX = 0;
         }
 
         public void AnimV(bool upDir)
@@ -672,7 +679,12 @@ namespace LoopList
             TranslateTransform ttRight = (TranslateTransform)_right.RenderTransform;
             TranslateTransform ttAbove = (TranslateTransform)_above.RenderTransform;
 
-            if (Math.Abs(ttRight.Y) < 0.0000000001)
+            if ((int)Math.Abs(ttRight.X) != 0)
+            {
+                return;
+            }
+
+            if ((int)Math.Abs(ttRight.Y) == 0)
             {
                 if (upDir)
                 {
@@ -703,6 +715,9 @@ namespace LoopList
             Grid tmp = _right;
             _right = _above;
             _above = tmp;
+
+            _currentNode = _lastY < 0 ? _currentNode.GetBelow() : _currentNode.GetAbove();
+            _lastY = 0;
         }
 
         public bool IsAnimating()
@@ -737,14 +752,7 @@ namespace LoopList
                 doubleAnimationLeft.Duration = _duration;
                 doubleAnimationLeft.Completed += (s, _) => AnimCompletedBack();
                 
-                if (_lastX < 0)
-                {
-                    _currentNode = _currentNode.GetLeft();
-                }
-                if (_lastX > 0)
-                {
-                    _currentNode = _currentNode.GetRight();
-                }
+               
                 ttRight.BeginAnimation(TranslateTransform.XProperty, doubleAnimationCenter);
                 ttLeft.BeginAnimation(TranslateTransform.XProperty, doubleAnimationLeft);
                 _lastX = 0;
@@ -775,14 +783,7 @@ namespace LoopList
                     doubleAnimationLeft.Duration = _duration;
                     doubleAnimationLeft.Completed += (s, _) => AnimCompletedBack();
                     
-                    if (_lastY < 0)
-                    {
-                        _currentNode = _currentNode.GetAbove();
-                    }
-                    if (_lastY > 0)
-                    {
-                        _currentNode = _currentNode.GetBelow();
-                    }
+                   
                     ttRight.BeginAnimation(TranslateTransform.YProperty, doubleAnimationCenter);
                     ttAbove.BeginAnimation(TranslateTransform.YProperty, doubleAnimationLeft);
                     _lastY = 0;

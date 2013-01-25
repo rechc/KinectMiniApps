@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 
 namespace LoopList
 {
@@ -28,22 +29,22 @@ namespace LoopList
             _markedRight = true;
         }
 
-        internal void UnmarkBelow()
+        public void UnmarkBelow()
         {
             _markedBelow = false;
         }
 
-        internal void UnmarkAbove()
+        public void UnmarkAbove()
         {
             _markedAbove = false;
         }
 
-        internal void UnmarkLeft()
+        public void UnmarkLeft()
         {
             _markedLeft = false;
         }
 
-        internal void UnmarkRight()
+        public void UnmarkRight()
         {
             _markedRight = false;
         }
@@ -63,7 +64,7 @@ namespace LoopList
             return _markedLeft;
         }
 
-        internal bool IsMarkedRight()
+        public bool IsMarkedRight()
         {
             return _markedRight;
         }
@@ -96,7 +97,7 @@ namespace LoopList
             return _frameworkElement;
         }
 
-        internal Node GetRight()
+        public Node GetRight()
         {
             return _right;
         }
@@ -111,17 +112,17 @@ namespace LoopList
             return _above;
         }
 
-        internal Node GetBelow()
+        public Node GetBelow()
         {
             return _below;
         }
 
-        internal void SetBelow(Node below)
+        public void SetBelow(Node below)
         {
             _below = below;
         }
 
-        internal void SetAbove(Node above)
+        public void SetAbove(Node above)
         {
             _above = above;
         }

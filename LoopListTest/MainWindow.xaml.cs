@@ -26,97 +26,100 @@ namespace LoopListTest
         private readonly List<int> _savedDirections = new List<int>();
         private bool _dragDirectionIsObvious;
 
-        private readonly KinectSensor _kinectSensor;
+        private KinectSensor _kinectSensor;
         private Skeleton[] _skeletons;
         private DepthImagePixel[] _depthPixels;
         private int _id = -1;
-        private readonly HandTracker _handTracker;
+        private HandTracker _handTracker;
 
         public MainWindow()
         {
             InitializeComponent();
             try
             {
-                _handTracker = new HandTracker();
-                _kinectSensor = KinectSensor.KinectSensors.FirstOrDefault(s => s.Status == KinectStatus.Connected);
-
-                if (_kinectSensor == null)
-                {
-                    ExceptionTextBlock.Text = "Kein Kinect-Sensor erkannt";
-                }
-                else
-                {
-                    _kinectSensor.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
-
-                    _kinectSensor.DepthStream.Enable(DepthImageFormat.Resolution640x480Fps30);
-
-                    _kinectSensor.SkeletonStream.Enable(new TransformSmoothParameters
-                        {
-                            Smoothing = 0.8f,
-                            Correction = 0f,
-                            Prediction = 0.2f,
-                            JitterRadius = 0.1f,
-                            MaxDeviationRadius = 0.8f
-                        });
-
-                    _kinectSensor.AllFramesReady += OnAllReady;
-
-                    _kinectSensor.Start();
-                    _kinectSensor.ElevationAngle = 0;
-                }
-
-
-                MyLoopList.SetAutoDragOffset(0.20);
-                MyLoopList.SetDuration(new Duration(new TimeSpan(3000000))); //300m
-                MyLoopList.Scrolled += MyLoopListOnScrolled;
-                MyTextLoopList.Scrolled += MyTextLoopList_Scrolled;
-                MyTextLoopList.SetFontSize(36);
-                MyTextLoopList.SetFontFamily("Miriam Fixed");
-                MyTextLoopList.SetDuration(new Duration(new TimeSpan(2500000)));
-                string[] paths = Directory.GetFiles(Environment.CurrentDirectory + @"\images", "tele*");
-                Node anchor = null;
-                Node anchorForMokup = null;
-
-                for (int i = 0; i < paths.Count(); i++)
-                {
-                    string path = paths[i];
-                    Grid grid = new Grid();
-                    Image img = new Image
-                        {
-                            Stretch = Stretch.Fill,
-                            Source = LoadImage(path)
-                        };
-                    grid.Children.Add(img);
-                    if (i != 3)
-                    {
-                        anchor = MyLoopList.AddToBelow(anchor, grid);
-                        if (i == 1)
-                        {
-                            anchorForMokup = anchor;
-                        }
-                    }
-                    else
-                        anchor = MyLoopList.AddToLeft(anchor, grid);
-                }
-                Grid mokupGrid = new Grid();
-
-                Image mokuImg = new Image
-                    {
-                        Stretch = Stretch.Fill,
-                        Source = LoadImage(Environment.CurrentDirectory + @"\images\mokup.jpg")
-                    };
-
-                mokupGrid.Children.Add(mokuImg);
-
-                MyLoopList.AddToRight(anchorForMokup, mokupGrid);
-
-                MyTextLoopList.Add("Ebene2");
-                MyTextLoopList.Add("Ebene1");
+                InitKinect();
+                InitList();
             }
             catch (Exception exc)
             {
                 ExceptionTextBlock.Text = exc.Message + "\n\r" + exc.InnerException;
             }
+        }
+
+        private void InitList()
+        {
+            MyLoopList.SetAutoDragOffset(0.20);
+            MyLoopList.SetDuration(new Duration(new TimeSpan(3000000))); //300m
+            MyLoopList.Scrolled += MyLoopListOnScrolled;
+            MyTextLoopList.Scrolled += MyTextLoopList_Scrolled;
+            MyTextLoopList.SetFontSize(36);
+            MyTextLoopList.SetFontFamily("Miriam Fixed");
+            MyTextLoopList.SetDuration(new Duration(new TimeSpan(2500000)));
+            KinectProjectUiBuilder kpub = new KinectProjectUiBuilder(MyLoopList, MyTextLoopList);
+            string[] paths = Directory.GetFiles(Environment.CurrentDirectory + @"\images", "tele*");
+
+            List<FrameworkElement> list = new List<FrameworkElement>
+                    {
+                        BuildGrid(paths[0]),
+                        BuildGrid(paths[1]),
+                    };
+            kpub.AddRow("Ebene1", list);
+            list = new List<FrameworkElement>
+                    {
+                        BuildGrid(paths[2]),
+                        BuildGrid(paths[3]),
+                        BuildGrid(paths[4]),
+                    };
+            kpub.AddRow("Ebene2", list);
+            list = new List<FrameworkElement>
+                    {
+                        BuildGrid(paths[4]),
+                        BuildGrid(Environment.CurrentDirectory + @"\images\mokup.jpg"),
+                    };
+            kpub.AddRow("Ebene3", list);
+        }
+
+        private void InitKinect()
+        {
+            _handTracker = new HandTracker();
+            _kinectSensor = KinectSensor.KinectSensors.FirstOrDefault(s => s.Status == KinectStatus.Connected);
+
+            if (_kinectSensor == null)
+            {
+                ExceptionTextBlock.Text = "Kein Kinect-Sensor erkannt";
+            }
+            else
+            {
+                _kinectSensor.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
+
+                _kinectSensor.DepthStream.Enable(DepthImageFormat.Resolution640x480Fps30);
+
+                _kinectSensor.SkeletonStream.Enable(new TransformSmoothParameters
+                {
+                    Smoothing = 0.8f,
+                    Correction = 0f,
+                    Prediction = 0.2f,
+                    JitterRadius = 0.1f,
+                    MaxDeviationRadius = 0.8f
+                });
+
+                _kinectSensor.AllFramesReady += OnAllReady;
+
+                _kinectSensor.Start();
+                _kinectSensor.ElevationAngle = 0;
+            }
+        }
+
+        private FrameworkElement BuildGrid(string path)
+        {
+            Grid grid = new Grid();
+            Image img = new Image
+            {
+                Stretch = Stretch.Fill,
+                Source = LoadImage(path)
+            };
+            grid.Children.Add(img);
+            return grid;
         }
 
         private void OnAllReady(object sender, AllFramesReadyEventArgs e)
@@ -159,19 +162,20 @@ namespace LoopListTest
                                                                        _kinectSensor,
                                                                        DepthImageFormat.Resolution640x480Fps30);
             
-            if (handStatus == HandStatus.Closed)
+            switch (handStatus)
             {
-                myLoopList_MouseDown_1(null, null);
-                
-            }
-            else
-            {
-                myLoopList_MouseUp_1(null, null);
-                
+                case HandStatus.Closed:
+                    myLoopList_MouseUp_1(null, null);
+                    break;
+                case HandStatus.Opened:
+                    myLoopList_MouseDown_1(null, null);
+                    break;
+                default:
+                    return;
             }
             ColorImagePoint cp = _kinectSensor.CoordinateMapper.MapSkeletonPointToColorPoint(skeleton.Joints[JointType.HandRight].Position, ColorImageFormat.RawBayerResolution640x480Fps30);
 
-            Point currentPoint = new Point(cp.X*2, cp.Y*2);
+            Point currentPoint = new Point(cp.X*6, cp.Y*6);
             Drag(currentPoint);
         }
 
@@ -261,7 +265,7 @@ namespace LoopListTest
                 int dragDirection = Math.Abs(xDistance) >= Math.Abs(yDistance) ? 1 : 2;
                 if (!_dragDirectionIsObvious)
                 {
-                    if (_savedDirections.Count < 5)
+                    if (_savedDirections.Count < 4)
                     {
                         _savedDirections.Add(dragDirection);
                         goto exit;

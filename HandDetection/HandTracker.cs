@@ -76,7 +76,7 @@ namespace HandDetection
 
                     if (player > 0)
                     {
-                        //need to detect if the hand is before the body
+                        //need to detect if the hand is in front of the body
                         if (Math.Abs(handPos.Depth - depth) > 80)
                         {
                             wasBlack = false;
