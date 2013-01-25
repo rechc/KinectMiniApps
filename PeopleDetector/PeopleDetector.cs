@@ -2,19 +2,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
-namespace Microsoft.Samples.Kinect.SkeletonBasics
+namespace PeopleDetector
 {
-    class PeopleDetector
+    public class PeopleDetector
     {
         private Dictionary<int, List<Skeleton>> skeletonsDict = new Dictionary<int, List<Skeleton>>();
         private const int maxNumberOfFramesInSkeletonList = 30;
 
-        // passing People constants
-        private const double positionXEpsilon = 0.015;
-        private const int compareLastFrames = 16;
-        private const int numberOfFramesOK = 6;
+        // walking People constants
+        private const double walkingDistance = 0.22;
+        private const int compareLastFrames = 16; // nice to have: duration of gesture in milis instead of frames
 
         public PeopleDetector()
         {
@@ -30,17 +28,9 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         /// </summary>
         public List<Skeleton> GetPositionOnlyPeople()
         {
-            List<Skeleton> positionOnlyPeople = new List<Skeleton>();
-
-            foreach (List<Skeleton> skeletonList in skeletonsDict.Values)
-            {
-                // check last frame in list
-                if (skeletonList[0].TrackingState == SkeletonTrackingState.PositionOnly)
-                {
-                    positionOnlyPeople.Add(skeletonList[0]);
-                }
-            }
-            return positionOnlyPeople;
+            return skeletonsDict.Values
+                    .Select(list => list[0])
+                    .Where(le => le.TrackingState == SkeletonTrackingState.PositionOnly).ToList();
         }
 
         /// <summary>
@@ -48,51 +38,49 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         /// </summary>
         public List<Skeleton> GetTrackedPeople()
         {
-            List<Skeleton> trackedPeople = new List<Skeleton>();
-            foreach (List<Skeleton> skeletonList in skeletonsDict.Values)
-            {
-                // check last frame in list
-                if (skeletonList[0].TrackingState == SkeletonTrackingState.Tracked)
-                {
-                    trackedPeople.Add(skeletonList[0]);
-                }
-            }
-            return trackedPeople;
+            return skeletonsDict.Values
+                .Select(list => list[0])
+                .Where(le => le.TrackingState == SkeletonTrackingState.Tracked).ToList();
+
+            // alternativ mit LINQ
+
+            //return (from le in skeletonsDict.Values
+            //          where le[0].TrackingState == SkeletonTrackingState.Tracked
+            //          select le[0]).ToList();
         }
 
         /// <summary>
         /// Returns a Skeleton-List of all recognized People.
         /// </summary>
-        public List<Skeleton> GetAllRecognizedPeople()
+        public List<Skeleton> GetAllPeople()
         {
-            List<Skeleton> recognizedPeople = new List<Skeleton>();
-            recognizedPeople.AddRange(GetPositionOnlyPeople());
+            List<Skeleton> recognizedPeople = GetPositionOnlyPeople();
             recognizedPeople.AddRange(GetTrackedPeople());
             return recognizedPeople;
         }
 
         /// <summary>
-        /// Returns a Skeleton-List of People which are currently passing the Kinect.
+        /// Returns a Skeleton-List of People which are currently walkting in front of the Kinect.
         /// </summary>
-        public List<Skeleton> GetPassingPeople()
+        public List<Skeleton> GetWalkingPeople()
         {
-            List<Skeleton> passingPeople = new List<Skeleton>();
+            List<Skeleton> walkingPeople = new List<Skeleton>();
+
             foreach (List<Skeleton> skeletonList in skeletonsDict.Values)
             {
-                int passing = 0;
+                double distance = 0.0;
+
                 for (int i = 0; i < (skeletonList.Count < compareLastFrames ? skeletonList.Count : compareLastFrames) - 1; i++)
                 {
-                    if (Math.Abs(skeletonList[i].Position.X - skeletonList[i + 1].Position.X) > positionXEpsilon)
-                    {
-                        passing++;
-                    }
+                    distance += Math.Abs(skeletonList[i].Position.X - skeletonList[i + 1].Position.X);
                 }
-                if (passing >= numberOfFramesOK)
+
+                if (distance > walkingDistance)
                 {
-                    passingPeople.Add(skeletonList[0]);
+                    walkingPeople.Add(skeletonList[0]);
                 }
             }
-            return passingPeople;
+            return walkingPeople;
         }
 
         /// <summary>
@@ -100,12 +88,12 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         /// </summary>
         public List<Skeleton> GetStayingPeople()
         {
-            List<Skeleton> stayingPeople = new List<Skeleton>();
-            foreach (Skeleton skeleton in GetAllRecognizedPeople())
+            List<Skeleton> stayingPeople = GetAllPeople();
+            foreach (Skeleton skeleton in GetAllPeople())
             {
-                if (!GetPassingPeople().Contains(skeleton))
+                if (GetWalkingPeople().Contains(skeleton))
                 {
-                    stayingPeople.Add(skeleton);
+                    stayingPeople.Remove(skeleton);
                 }
             }
             return stayingPeople;
@@ -146,20 +134,13 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         }
 
         /// <summary>
-        /// returns true if people with transfered TrackingId is currently passing the Kinect
+        /// returns true if people with transfered TrackingId is currently walking
         /// </summary>
         /// <param name="TrackingId"></param>
         /// <returns></returns>
-        public bool IsPeoplePassingTheKinect(int TrackingId)
+        public bool IsPeopleWalking(int TrackingId)
         {
-            foreach(Skeleton s in GetPassingPeople())
-            {
-                if (s.TrackingId == TrackingId)
-                {
-                    return true;
-                }
-            }
-            return false;
+            return GetWalkingPeople().Any(skel => skel.TrackingId == TrackingId);
         }
 
         /// <summary>
@@ -167,16 +148,9 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         /// </summary>
         /// <param name="TrackingId"></param>
         /// <returns></returns>
-        public bool IsPeopleStayingAtKinect(int TrackingId)
+        public bool IsPeopleStaying(int TrackingId)
         {
-            foreach (Skeleton s in GetStayingPeople())
-            {
-                if (s.TrackingId == TrackingId)
-                {
-                    return true;
-                }
-            }
-            return false;
+            return GetStayingPeople().Any(skel => skel.TrackingId == TrackingId);
         }
 
         /// <summary>
@@ -184,16 +158,9 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         /// </summary>
         /// <param name="TrackingId"></param>
         /// <returns></returns>
-        public bool IsPeopleLookingAtKinect(int TrackingId)
+        public bool IsPeopleLooking(int TrackingId)
         {
-            foreach (Skeleton s in GetLookingPeople())
-            {
-                if (s.TrackingId == TrackingId)
-                {
-                    return true;
-                }
-            }
-            return false;
+            return GetLookingPeople().Any(skel => skel.TrackingId == TrackingId);
         }
 
         /// <summary>
