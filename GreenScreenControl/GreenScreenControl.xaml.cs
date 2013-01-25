@@ -70,17 +70,22 @@ namespace GreenScreenControl
         protected override void OnRender(DrawingContext drawingContext)
         {
             base.OnRender(drawingContext);
-            drawingContext.DrawImage(playerOpacityMaskImage, new Rect(0, 0, depthWidth, depthHeight)); //todo set size
+            // Nicht ueber den Rand des Controls hinaus zeichnen.
+            drawingContext.PushClip(new RectangleGeometry(new Rect(0, 0, Width, Height)));
+            if(depthPixels != null && colorPixels != null)
+                Antialiasing(drawingContext);
         }
 
-        public void Antialiasing(DepthImagePixel[] depthPixels, 
-                                    byte[] colorPixels,ColorImagePoint[] colorCoordinates2,DepthImageFormat depthFormat, ColorImageFormat colorFormat)
+        public DepthImagePixel[] depthPixels { get; set; }
+        public byte[] colorPixels { get; set; }
+
+        public void Antialiasing(DrawingContext drawingContext) //DepthImagePixel[] depthPixels, byte[] colorPixels,DepthImageFormat depthFormat, ColorImageFormat colorFormat)
         {
                 Sensor.CoordinateMapper.MapDepthFrameToColorFrame(
-                    depthFormat,
+                    DepthImageFormat.Resolution320x240Fps30,
                     depthPixels,
-                    colorFormat,
-                    colorCoordinates2);
+                    ColorImageFormat.RgbResolution640x480Fps30,
+                    colorCoordinates);
 
             Array.Clear(greenScreenPixelData, 0, greenScreenPixelData.Length);
 
@@ -183,6 +188,7 @@ namespace GreenScreenControl
                         PixelFormats.Bgra32,
                         null);
 
+                    drawingContext.DrawImage(playerOpacityMaskImage, new Rect(0, 0, depthWidth, depthHeight));
                     //var img = new ImageBrush { ImageSource = this.playerOpacityMaskImage };
                 }
 

@@ -246,134 +246,16 @@ namespace Antialiasing
 
             // do our processing outside of the using block
             // so that we return resources to the kinect as soon as possible
-            if (true == depthReceived)
-            {
-                this.sensor.CoordinateMapper.MapDepthFrameToColorFrame(
-                    DepthFormat,
-                    this.depthPixels,
-                    ColorFormat,
-                    this.colorCoordinates);
 
-                Array.Clear(this.greenScreenPixelData, 0, this.greenScreenPixelData.Length);
-
-                // loop over each row and column of the depth
-                for (int y = 0; y < this.depthHeight; ++y)
-                {
-                    for (int x = 0; x < this.depthWidth; ++x)
-                    {
-                        // calculate index into depth array
-                        int depthIndex = x + (y * this.depthWidth);
-
-                        DepthImagePixel depthPixel = this.depthPixels[depthIndex];
-
-                        int player = depthPixel.PlayerIndex;
-
-                        // if we're tracking a player for the current pixel, do green screen
-                        if (player > 0)
-                        {
-                            // retrieve the depth to color mapping for the current depth pixel
-                            ColorImagePoint colorImagePoint = this.colorCoordinates[depthIndex];
-
-                            // scale color coordinates to depth resolution
-                            int colorInDepthX = colorImagePoint.X / this.colorToDepthDivisor;
-                            int colorInDepthY = colorImagePoint.Y / this.colorToDepthDivisor;
-
-                            // make sure the depth pixel maps to a valid point in color space
-                            // check y > 0 and y < depthHeight to make sure we don't write outside of the array
-                            // check x > 0 instead of >= 0 since to fill gaps we set opaque current pixel plus the one to the left
-                            // because of how the sensor works it is more correct to do it this way than to set to the right
-                            if (colorInDepthX > 0 && colorInDepthX < this.depthWidth && colorInDepthY >= 0 && colorInDepthY < this.depthHeight)
-                            {
-                                // calculate index into the green screen pixel array
-                                int greenScreenIndex = colorInDepthX + (colorInDepthY * this.depthWidth);
-
-                                // set opaque
-                                this.greenScreenPixelData[greenScreenIndex] = opaquePixelValue;
-
-                                // compensate for depth/color not corresponding exactly by setting the pixel 
-                                // to the left to opaque as well
-                                this.greenScreenPixelData[greenScreenIndex - 1] = opaquePixelValue;
-                            }
-                        }
-                    }
-                }
-
-
-                if (this.checkBoxNearMode.IsChecked == true)
-                {
-                    for (int i = 0; i < this.greenScreenPixelData.Length - (this.depthWidth * widthRange) - widthRange; i++)
-                    {
-
-                        //ToDo Werte können im Randbereich liegen
-
-                        for (int j = 0; j < opaqueMatrixLenghtSqrt; j++)
-                        {
-                            for (int k = 0; k < opaqueMatrixLenghtSqrt; k++)
-                            {
-                                opaqueMatrix[j * opaqueMatrixLenghtSqrt + k] = i + k + this.depthWidth * j;
-
-                            }
-                        }
-
-                        int counterFound = 0;
-                        int counterNotFound = 0;
-
-                        for (int j = 0; j < opaqueMatrix.Length; j++)
-                        {
-                            var p = this.greenScreenPixelData[opaqueMatrix[j]];
-                            if (p == -1)
-                            {
-                                counterFound++;
-                            }
-                            else
-                            {
-                                counterNotFound++;
-                            }
-                            if (counterFound >= opaqueRange)
-                            {
-                                this.greenScreenPixelData[opaqueMatrix[0]] = -1;
-                                break;
-                            }
-                            if (counterNotFound > opaqueMatrixLenghtSqrt)
-                            {
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
 
             // do our processing outside of the using block
             // so that we return resources to the kinect as soon as possible
-            if (true == colorReceived)
+            if (depthReceived && colorReceived)
             {
-                // Write the pixel data into our bitmap
-                this.colorBitmap.WritePixels(
-                    new Int32Rect(0, 0, this.colorBitmap.PixelWidth, this.colorBitmap.PixelHeight),
-                    this.colorPixels,
-                    this.colorBitmap.PixelWidth * sizeof(int),
-                    0);
-
-                if (this.playerOpacityMaskImage == null)
-                {
-                    this.playerOpacityMaskImage = new WriteableBitmap(
-                        this.depthWidth,
-                        this.depthHeight,
-                        96,
-                        96,
-                        PixelFormats.Bgra32,
-                        null);
-
-                    //MaskedColor.OpacityMask = new ImageBrush { ImageSource = this.playerOpacityMaskImage };
-                }
-
-                this.playerOpacityMaskImage.WritePixels(
-                    new Int32Rect(0, 0, this.depthWidth, this.depthHeight),
-                    this.greenScreenPixelData,
-                    this.depthWidth * ((this.playerOpacityMaskImage.Format.BitsPerPixel + 7) / 8),
-                    0);
+                //gsc.Antialiasing(depthPixels, colorPixels, DepthFormat, ColorFormat);
+                gsc.depthPixels = depthPixels;
+                gsc.colorPixels = colorPixels;
             }
-            gsc.Antialiasing(depthPixels, colorPixels, colorCoordinates, DepthFormat, ColorFormat);
         }
 
         /// <summary>
