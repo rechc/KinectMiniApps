@@ -10,6 +10,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
     using System.Windows;
     using System.Windows.Media;
     using Microsoft.Kinect;
+    using PeopleDetector;
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -111,7 +112,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
 
             this.LblErkanntOutput.Content = peopleDetector.GetPositionOnlyPeople().Count;
             this.LblTrackedOutput.Content = peopleDetector.GetTrackedPeople().Count;
-            this.LblLaufenOutput.Content = peopleDetector.GetPassingPeople().Count;
+            this.LblLaufenOutput.Content = peopleDetector.GetWalkingPeople().Count;
             this.LblStehenOutput.Content = peopleDetector.GetStayingPeople().Count;
             this.LblSchauenOutput.Content = peopleDetector.GetLookingPeople().Count;
         }
