@@ -111,12 +111,12 @@ namespace HandDetection
         private List<HandStatus> handStatusList = new List<HandStatus>();
         private HandStatus lastHandStatus;
 
-        public HandStatus GetHandOpenedClosedStatusBuffered(DepthImagePixel[] depthPixels, Joint handJoint, KinectSensor sensor, SkeletonPoint handSkeletonPoint, DepthImageFormat depthImageFormate)
+        public HandStatus GetHandOpenedClosedStatusBuffered(DepthImagePixel[] depthPixels, Joint handJoint, KinectSensor sensor, DepthImageFormat depthImageFormate)
         {
             HandStatus currentHandStatus = GetHandOpenedClosedStatus(depthPixels, handJoint, sensor, depthImageFormate);
             handStatusList.Add(currentHandStatus);
 
-            if (handStatusList.Count() == 3)
+            if (handStatusList.Count() == 4)
             {
                 if (handStatusList.All(x => x == handStatusList.First()))
                 {
