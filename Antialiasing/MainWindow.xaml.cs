@@ -99,6 +99,8 @@ namespace Antialiasing
         private int widthRange;
         private double opaqueRange;
 
+        private GreenScreenControl.GreenScreenControl gsc;
+
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
         /// </summary>
@@ -117,6 +119,7 @@ namespace Antialiasing
         /// <param name="e">event arguments</param>
         private void WindowLoaded(object sender, RoutedEventArgs e)
         {
+
             // Look through all sensors and start the first connected one.
             // This requires that a Kinect is connected at the time of app startup.
             // To make your app robust against plug/unplug, 
@@ -132,6 +135,9 @@ namespace Antialiasing
 
             if (null != this.sensor)
             {
+                gsc = new GreenScreenControl.GreenScreenControl {Sensor = sensor};
+                gsc.Start();
+
                 // Turn on the depth stream to receive depth frames
                 this.sensor.DepthStream.Enable(DepthFormat);
 
@@ -163,7 +169,7 @@ namespace Antialiasing
                 this.colorBitmap = new WriteableBitmap(colorWidth, colorHeight, 96.0, 96.0, PixelFormats.Bgr32, null);
 
                 // Set the image we display to point to the bitmap where we'll put the image data
-                this.MaskedColor.Source = this.colorBitmap;
+                //this.MaskedColor.Source = this.colorBitmap;
 
                 // Add an event handler to be called whenever there is new depth frame data
                 this.sensor.AllFramesReady += this.SensorAllFramesReady;
@@ -357,7 +363,8 @@ namespace Antialiasing
                         PixelFormats.Bgra32,
                         null);
 
-                    MaskedColor.OpacityMask = new ImageBrush { ImageSource = this.playerOpacityMaskImage };
+                    //MaskedColor.OpacityMask = new ImageBrush { ImageSource = this.playerOpacityMaskImage };
+                    gsc.Antialiasing(depthPixels, colorPixels, colorCoordinates, DepthFormat, ColorFormat);
                 }
 
                 this.playerOpacityMaskImage.WritePixels(
@@ -390,13 +397,13 @@ namespace Antialiasing
             DrawingVisual dv = new DrawingVisual();
             using (DrawingContext dc = dv.RenderOpen())
             {
-                // render the backdrop
-                VisualBrush backdropBrush = new VisualBrush(Backdrop);
-                dc.DrawRectangle(backdropBrush, null, new Rect(new Point(), new Size(colorWidth, colorHeight)));
+                //// render the backdrop
+                //VisualBrush backdropBrush = new VisualBrush(Backdrop);
+                //dc.DrawRectangle(backdropBrush, null, new Rect(new Point(), new Size(colorWidth, colorHeight)));
 
-                // render the color image masked out by players
-                VisualBrush colorBrush = new VisualBrush(MaskedColor);
-                dc.DrawRectangle(colorBrush, null, new Rect(new Point(), new Size(colorWidth, colorHeight)));
+                //// render the color image masked out by players
+                //VisualBrush colorBrush = new VisualBrush(MaskedColor);
+                //dc.DrawRectangle(colorBrush, null, new Rect(new Point(), new Size(colorWidth, colorHeight)));
             }
 
             renderBitmap.Render(dv);

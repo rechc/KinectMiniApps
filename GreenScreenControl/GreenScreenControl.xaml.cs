@@ -57,6 +57,8 @@ namespace GreenScreenControl
             int colorWidth = Sensor.ColorStream.FrameWidth;
             int colorHeight = Sensor.ColorStream.FrameHeight;
 
+            this.greenScreenPixelData = new int[Sensor.DepthStream.FramePixelDataLength];
+
             this.colorToDepthDivisor = colorWidth / this.depthWidth;
 
             this.colorBitmap = new WriteableBitmap(colorWidth, colorHeight, 96.0, 96.0, PixelFormats.Bgr32, null);
@@ -67,19 +69,18 @@ namespace GreenScreenControl
 
         protected override void OnRender(DrawingContext drawingContext)
         {
-            drawingContext.DrawImage(playerOpacityMaskImage, new Rect(0, 0, 0, 0)); //todo set size
+            drawingContext.DrawImage(playerOpacityMaskImage, new Rect(0, 0, depthWidth, depthHeight)); //todo set size
         }
 
         public void Antialiasing(DepthImagePixel[] depthPixels, 
-                                    byte[] colorPixels, DepthImageFormat depthFormat, ColorImageFormat colorFormat)
+                                    byte[] colorPixels,ColorImagePoint[] colorCoordinates2,DepthImageFormat depthFormat, ColorImageFormat colorFormat)
         {
                 Sensor.CoordinateMapper.MapDepthFrameToColorFrame(
                     depthFormat,
                     depthPixels,
                     colorFormat,
-                    colorCoordinates);
+                    colorCoordinates2);
 
-            Array greenScreenPixelData = null;
             Array.Clear(greenScreenPixelData, 0, greenScreenPixelData.Length);
 
                 // loop over each row and column of the depth
