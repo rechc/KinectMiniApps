@@ -11,9 +11,11 @@ using System.Windows.Media.Imaging;
 
 /**
  * Mögliche Erweiterungen/ Verbesserungen
- * Handausschnitt über z achse anpassen und variabel halten.
- * Abweichungswerte nicht Hardcodieren, sondern über static
- * das proof of concept als queue mit variabler stabilität/länge einbinden
+ * Handausschnitt über z achse anpassen und variabel halten. --- ok
+ * Abweichungswerte nicht Hardcodieren, sondern über static --- ok
+ * das proof of concept als queue mit variabler stabilität/länge einbinden --- ok
+ * Nun kann eigentlich nur noch der algorithmus zum erkennen verbessert werden ... 
+ * eine Möglichkeit Handausrichtung erkennen ... oben seite unten .... und algorithmus diesbezüglich optimieren
  */
 
 namespace HandDetection
