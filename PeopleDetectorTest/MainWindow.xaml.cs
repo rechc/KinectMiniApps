@@ -10,6 +10,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
     using System.Windows;
     using System.Windows.Media;
     using Microsoft.Kinect;
+    using PeopleDetector;
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -21,7 +22,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         /// </summary>
         private KinectSensor sensor;
 
-        private PeopleDetector actionDetector = new PeopleDetector();
+        private PeopleDetector peopleDetector = new PeopleDetector();
 
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
@@ -107,13 +108,13 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                 }
             }
 
-            actionDetector.Skeletons = skeletons;
+            peopleDetector.Skeletons = skeletons;
 
-            this.LblErkanntOutput.Content = actionDetector.GetPositionOnlyPeople().Count;
-            this.LblTrackedOutput.Content = actionDetector.GetTrackedPeople().Count;
-            this.LblLaufenOutput.Content = actionDetector.GetPassingPeople().Count;
-            this.LblStehenOutput.Content = actionDetector.GetStayingPeople().Count;
-            this.LblSchauenOutput.Content = actionDetector.GetLookingPeople().Count;
+            this.LblErkanntOutput.Content = peopleDetector.GetPositionOnlyPeople().Count;
+            this.LblTrackedOutput.Content = peopleDetector.GetTrackedPeople().Count;
+            this.LblLaufenOutput.Content = peopleDetector.GetWalkingPeople().Count;
+            this.LblStehenOutput.Content = peopleDetector.GetStayingPeople().Count;
+            this.LblSchauenOutput.Content = peopleDetector.GetLookingPeople().Count;
         }
 
         /// <summary>

@@ -47,7 +47,7 @@ namespace HandDetectionTest
         private byte[] colorPixels;
        // private DepthImagePixel[] depthPixels;
 
-        private HandDetection.HandTracker handDection;
+        private HandTracker handDection;
 
         private Bitmap bmap;
 
@@ -62,7 +62,7 @@ namespace HandDetectionTest
         //init sensors
         private void WindowLoaded(object sender, RoutedEventArgs e)
         {
-            handDection = new HandDetection.HandTracker();
+            handDection = new HandTracker();
 
             // Look through all sensors and start the first connected one.
             // This requires that a Kinect is connected at the time of app startup.

@@ -24,3 +24,6 @@ obj/
 [Rr]elease*/
 _ReSharper*
 .Ds_Store
+/ipch/
+*.sdf
+*.vcxproj.user
