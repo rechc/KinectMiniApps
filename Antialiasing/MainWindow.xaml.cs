@@ -99,8 +99,6 @@ namespace Antialiasing
         private int widthRange;
         private double opaqueRange;
 
-        private GreenScreenControl.GreenScreenControl gsc;
-
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
         /// </summary>
@@ -172,8 +170,7 @@ namespace Antialiasing
                 // Add an event handler to be called whenever there is new depth frame data
                 this.sensor.AllFramesReady += this.SensorAllFramesReady;
 
-                gsc = new GreenScreenControl.GreenScreenControl();
-                gsc.Start(sensor);
+                GreenScreen.Start(sensor);
 
                 // Start the sensor!
                 try
@@ -253,8 +250,8 @@ namespace Antialiasing
             if (depthReceived && colorReceived)
             {
                 //gsc.Antialiasing(depthPixels, colorPixels, DepthFormat, ColorFormat);
-                gsc.depthPixels = depthPixels;
-                gsc.colorPixels = colorPixels;
+                GreenScreen.DepthPixels = depthPixels;
+                GreenScreen.ColorPixels = colorPixels;
             }
         }
 

@@ -84,9 +84,7 @@
             <TextBlock DockPanel.Dock="Right" Margin="0 0 -1 0" HorizontalAlignment="Right" VerticalAlignment="Bottom" Foreground="{StaticResource MediumGreyBrush}" FontFamily="Segoe UI" FontSize="18"><Run Text="Green Screen"/></TextBlock>
             <Image Source="Images\Status.png" Stretch="None" HorizontalAlignment="Center" Margin="0 0 0 5"/>
         </DockPanel>
-        <Grid Grid.Row="1">
-            <GreenScreenControl:GreenScreenControl HorizontalAlignment="Left" Height="100" Margin="321,249,0,0" VerticalAlignment="Top" Width="100"/>
-        </Grid>
+
         <Button Grid.Row="2" Style="{StaticResource SnapshotButton}" Content="Screenshot" Height="Auto" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="10 10 0 10" x:Name="buttonScreenshot"  Click="ButtonScreenshotClick" />
         <CheckBox Grid.Row="2" Style="{StaticResource SquareCheckBox}" Content="Antialiasing" Height="Auto" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0 10 10 10" x:Name="checkBoxNearMode"/>
         <StatusBar Grid.Row="3" HorizontalAlignment="Stretch" x:Name="statusBar" VerticalAlignment="Bottom" Background="White" Foreground="{StaticResource MediumGreyBrush}">
@@ -94,5 +92,8 @@
                 <TextBlock x:Name="statusBarText" Margin="-1 0 0 0"><Run Text="Press 'Screenshot' to save a screenshot to your 'My Pictures' directory."/></TextBlock>
             </StatusBarItem>
         </StatusBar>
+        <Viewbox Grid.Row="1" Stretch="Uniform" HorizontalAlignment="Center">
+            <GreenScreenControl:GreenScreenControl x:Name="GreenScreen" Width="640" Height="480"/>
+        </Viewbox>
     </Grid>
 </Window>

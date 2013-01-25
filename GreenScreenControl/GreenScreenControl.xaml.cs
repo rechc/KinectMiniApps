@@ -1,17 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Microsoft.Kinect;
 
 namespace GreenScreenControl
@@ -38,6 +29,18 @@ namespace GreenScreenControl
         private int depthHeight;
         private WriteableBitmap colorBitmap;
         private WriteableBitmap playerOpacityMaskImage = null;
+
+        private byte[] colorPixels;
+        public DepthImagePixel[] DepthPixels { get; set; }
+        public byte[] ColorPixels
+        {
+            get { return colorPixels; }
+            set
+            {
+                colorPixels = value;
+                InvalidateVisual();
+            }
+        }
 
         public GreenScreenControl()
         {
@@ -72,18 +75,15 @@ namespace GreenScreenControl
             base.OnRender(drawingContext);
             // Nicht ueber den Rand des Controls hinaus zeichnen.
             drawingContext.PushClip(new RectangleGeometry(new Rect(0, 0, Width, Height)));
-            if(depthPixels != null && colorPixels != null)
+            if(DepthPixels != null && colorPixels != null)
                 Antialiasing(drawingContext);
         }
-
-        public DepthImagePixel[] depthPixels { get; set; }
-        public byte[] colorPixels { get; set; }
 
         public void Antialiasing(DrawingContext drawingContext) //DepthImagePixel[] depthPixels, byte[] colorPixels,DepthImageFormat depthFormat, ColorImageFormat colorFormat)
         {
                 Sensor.CoordinateMapper.MapDepthFrameToColorFrame(
                     DepthImageFormat.Resolution320x240Fps30,
-                    depthPixels,
+                    DepthPixels,
                     ColorImageFormat.RgbResolution640x480Fps30,
                     colorCoordinates);
 
@@ -97,7 +97,7 @@ namespace GreenScreenControl
                         // calculate index into depth array
                         int depthIndex = x + (y * depthWidth);
 
-                        DepthImagePixel depthPixel = depthPixels[depthIndex];
+                        DepthImagePixel depthPixel = DepthPixels[depthIndex];
 
                         int player = depthPixel.PlayerIndex;
 
@@ -198,7 +198,7 @@ namespace GreenScreenControl
                     depthWidth * ((this.playerOpacityMaskImage.Format.BitsPerPixel + 7) / 8),
                     0);
 
-            InvalidateVisual();
+            drawingContext.DrawImage(playerOpacityMaskImage, new Rect(0, 0, depthWidth, depthHeight));
         }
     }
 }
