@@ -256,30 +256,30 @@ namespace LoopList
 
         public Node AddToLeft(Node anchor, FrameworkElement frameworkElement)
         {
-            _currentNode = anchor;
-            if (_currentNode == null)
+            if (anchor == null)
             {
-                _currentNode = new Node(frameworkElement);
+                anchor = new Node(frameworkElement);
             }
             else
             {
-                if (!_currentNode.IsMarkedLeft())
+                if (!anchor.IsMarkedLeft())
                 {
                     throw new Exception("why you no add to marked anchor???");
                 }
                 Node newNode = new Node(frameworkElement);
-                Node first = _currentNode.GetLeft();
-                _currentNode.SetLeft(newNode);
-                _currentNode.UnmarkLeft();
-                newNode.SetRight(_currentNode);
+                Node first = anchor.GetLeft();
+                anchor.SetLeft(newNode);
+                anchor.UnmarkLeft();
+                newNode.SetRight(anchor);
                 newNode.UnmarkRight();
                 newNode.SetLeft(first);
                 first.SetRight(newNode);
-                _currentNode = newNode;
+                anchor = newNode;
             }
             if (!_firstAdded)
             {
                 _firstAdded = true;
+                _currentNode = anchor;
                 SetChild(_right, _currentNode.GetFrameworkElement());
             }
 
@@ -471,9 +471,9 @@ namespace LoopList
                     _right = _left;
                     _left = tmp;
                     _currentNode = _lastX < 0 ? _currentNode.GetRight() : _currentNode.GetLeft();
-                    FireScrolled(ttRight.X >= _right.ActualWidth
-                                     ? new LoopListArgs(Direction.Left)
-                                     : new LoopListArgs(Direction.Right));
+                    FireScrolled(_lastX > 0
+                                     ? new LoopListArgs(Direction.Right)
+                                     : new LoopListArgs(Direction.Left));
                     ttRight = (TranslateTransform) _right.RenderTransform;
                     ttLeft = (TranslateTransform) _left.RenderTransform;
                 }
@@ -538,13 +538,14 @@ namespace LoopList
                 ttRight.Y += yDistance;
                 ttAbove.Y += yDistance;
 
+                Debug.WriteLine(_lastY);
                 if (ttRight.Y >= _right.ActualHeight || ttRight.Y <= -_right.ActualHeight)
                 {
                     Grid tmp = _right;
                     _right = _above;
                     _above = tmp;
                     _currentNode = _lastY < 0 ? _currentNode.GetBelow() : _currentNode.GetAbove();
-                    FireScrolled(ttRight.Y >= _right.ActualHeight
+                    FireScrolled(_lastY < 0
                                      ? new LoopListArgs(Direction.Top)
                                      : new LoopListArgs(Direction.Down));
                     ttRight = (TranslateTransform)_right.RenderTransform;
@@ -599,8 +600,9 @@ namespace LoopList
             if (_animating == 0)
             {
                 LoopListArgs lla = _lastX > 0
-                                        ? new LoopListArgs(Direction.Left)
-                                        : new LoopListArgs(Direction.Right);
+                                        ? new LoopListArgs(Direction.Right)
+                                        : new LoopListArgs(Direction.Left);
+                _lastX = 0;
                 FireScrolled(lla);
             }
         }
@@ -613,6 +615,7 @@ namespace LoopList
                 LoopListArgs lla = _lastY > 0
                                         ? new LoopListArgs(Direction.Down)
                                         : new LoopListArgs(Direction.Top);
+                _lastY = 0;
                 FireScrolled(lla);
             }
         }
@@ -670,7 +673,6 @@ namespace LoopList
             _left = tmp;
 
             _currentNode = _lastX < 0 ? _currentNode.GetRight() : _currentNode.GetLeft();
-            _lastX = 0;
         }
 
         public void AnimV(bool upDir)
@@ -717,7 +719,6 @@ namespace LoopList
             _above = tmp;
 
             _currentNode = _lastY < 0 ? _currentNode.GetBelow() : _currentNode.GetAbove();
-            _lastY = 0;
         }
 
         public bool IsAnimating()
