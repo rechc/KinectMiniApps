@@ -2,16 +2,11 @@
 using HandDetection;
 using LoopList;
 using System;
-using System.IO;
-using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using Microsoft.Kinect;
 
-namespace LoopListTest
+namespace HtwKinect
 {
     /// <summary>
     /// Interaktionslogik für MainWindow.xaml
@@ -22,14 +17,13 @@ namespace LoopListTest
         private bool _doDrag;
         private bool _waitForTextList;
         private bool _mouseIsUp;
+        private KinectHelper _kinectHelper;
+        private KinectProjectUiBuilder _kinectProjectUiBuilder;
 
         private readonly List<int> _savedDirections = new List<int>();
         private bool _dragDirectionIsObvious;
 
-        private KinectSensor _kinectSensor;
-        private Skeleton[] _skeletons;
-        private DepthImagePixel[] _depthPixels;
-        private int _id = -1;
+        
         private HandTracker _handTracker;
 
         public MainWindow()
@@ -37,8 +31,8 @@ namespace LoopListTest
             InitializeComponent();
             try
             {
-                InitKinect();
                 InitList();
+                InitKinect();
             }
             catch (Exception exc)
             {
@@ -55,99 +49,36 @@ namespace LoopListTest
             MyTextLoopList.SetFontSize(36);
             MyTextLoopList.SetFontFamily("Miriam Fixed");
             MyTextLoopList.SetDuration(new Duration(new TimeSpan(2500000)));
-            KinectProjectUiBuilder kpub = new KinectProjectUiBuilder(MyLoopList, MyTextLoopList);
-            string[] paths = Directory.GetFiles(Environment.CurrentDirectory + @"\images", "tele*");
+            LoadPictures(new LocalPictureUiLoader());
+        }
 
-            List<FrameworkElement> list = new List<FrameworkElement>
-                    {
-                        BuildGrid(paths[0]),
-                        BuildGrid(paths[1]),
-                    };
-            kpub.AddRow("Ebene1", list);
-            list = new List<FrameworkElement>
-                    {
-                        BuildGrid(paths[2]),
-                        BuildGrid(paths[3]),
-                        BuildGrid(paths[4]),
-                    };
-            kpub.AddRow("Ebene2", list);
-            list = new List<FrameworkElement>
-                    {
-                        BuildGrid(paths[4]),
-                        BuildGrid(Environment.CurrentDirectory + @"\images\mokup.jpg"),
-                    };
-            kpub.AddRow("Ebene3", list);
+        private void LoadPictures(IUiLoader uiLoader)
+        {
+            _kinectProjectUiBuilder = new KinectProjectUiBuilder(MyLoopList, MyTextLoopList);
+            uiLoader.LoadElementsIntoList(_kinectProjectUiBuilder);
         }
 
         private void InitKinect()
         {
             _handTracker = new HandTracker();
-            _kinectSensor = KinectSensor.KinectSensors.FirstOrDefault(s => s.Status == KinectStatus.Connected);
-
-            if (_kinectSensor == null)
-            {
-                ExceptionTextBlock.Text = "Kein Kinect-Sensor erkannt";
-            }
-            else
-            {
-                _kinectSensor.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
-
-                _kinectSensor.DepthStream.Enable(DepthImageFormat.Resolution640x480Fps30);
-
-                _kinectSensor.SkeletonStream.Enable(new TransformSmoothParameters
+            _kinectHelper = KinectHelper.GetOrCreateInstance(new TransformSmoothParameters
                 {
-                    Smoothing = 0.8f,
-                    Correction = 0f,
-                    Prediction = 0.2f,
-                    JitterRadius = 0.1f,
-                    MaxDeviationRadius = 0.8f
-                });
-
-                _kinectSensor.AllFramesReady += OnAllReady;
-
-                _kinectSensor.Start();
-                _kinectSensor.ElevationAngle = 0;
-            }
+                    Correction = 0,
+                    JitterRadius = 0,
+                    MaxDeviationRadius = 0.8f,
+                    Prediction = 0,
+                    Smoothing = 0.8f
+                },
+                false,
+                ColorImageFormat.RgbResolution640x480Fps30,
+                DepthImageFormat.Resolution640x480Fps30);
+            _kinectHelper.AllFramesDispatchedEvent += (s, _) => HelperReady();
         }
 
-        private FrameworkElement BuildGrid(string path)
+        private void HelperReady()
         {
-            Grid grid = new Grid();
-            Image img = new Image
-            {
-                Stretch = Stretch.Fill,
-                Source = LoadImage(path)
-            };
-            grid.Children.Add(img);
-            return grid;
-        }
-
-        private void OnAllReady(object sender, AllFramesReadyEventArgs e)
-        {
-            try
-            {
-                using (DepthImageFrame dFrame = e.OpenDepthImageFrame())
-                {
-                    if (_depthPixels == null) 
-                        _depthPixels = new DepthImagePixel[dFrame.PixelDataLength];
-                    dFrame.CopyDepthImagePixelDataTo(_depthPixels);
-                    using (SkeletonFrame sFrame = e.OpenSkeletonFrame())
-                    {
-                        if (sFrame == null) return;
-                        if (_skeletons == null)
-                        {
-                            _skeletons = new Skeleton[_kinectSensor.SkeletonStream.FrameSkeletonArrayLength];
-                        }
-                        sFrame.CopySkeletonDataTo(_skeletons);
-                        Skeleton skeleton = GetFixedSkeleton();
-                        ProcessSkeleton(skeleton);
-                    }
-                }
-            }
-            catch (Exception exc)
-            {
-                ExceptionTextBlock.Text = exc.Message + "\n\r" + exc.InnerException;
-            }
+            Skeleton skeleton = _kinectHelper.GetFixedSkeleton();
+            ProcessSkeleton(skeleton);
         }
 
         private void ProcessSkeleton(Skeleton skeleton)
@@ -157,10 +88,10 @@ namespace LoopListTest
                 return;
             }
 
-            HandStatus handStatus = _handTracker.GetBufferedHandStatus(_depthPixels,
+            HandStatus handStatus = _handTracker.GetBufferedHandStatus(_kinectHelper.GetDepthImagePixels(),
                                                                        skeleton.Joints[JointType.HandRight],
-                                                                       _kinectSensor,
-                                                                       DepthImageFormat.Resolution640x480Fps30);
+                                                                       _kinectHelper.GetSensor(),
+                                                                       _kinectHelper.GetDepthImageFrame().Format);
             
             switch (handStatus)
             {
@@ -173,45 +104,13 @@ namespace LoopListTest
                 default:
                     return;
             }
-            ColorImagePoint cp = _kinectSensor.CoordinateMapper.MapSkeletonPointToColorPoint(skeleton.Joints[JointType.HandRight].Position, ColorImageFormat.RawBayerResolution640x480Fps30);
+            ColorImagePoint cp = _kinectHelper.GetSensor().CoordinateMapper.MapSkeletonPointToColorPoint(skeleton.Joints[JointType.HandRight].Position, _kinectHelper.GetColorImageFrame().Format);
 
             Point currentPoint = new Point(cp.X*6, cp.Y*6);
             Drag(currentPoint);
         }
 
-        private Skeleton GetFixedSkeleton()
-        {
-            Skeleton skeleton = null;
-            if (_skeletons != null)
-            {
-                if (_id == -1)
-                {
-                    skeleton = _skeletons.FirstOrDefault(s => s.TrackingState == SkeletonTrackingState.Tracked);
-                    if (skeleton != null)
-                    {
-                        _id = skeleton.TrackingId;
-                    }
-                }
-                else
-                {
-                    skeleton = _skeletons.FirstOrDefault(s => s.TrackingState == SkeletonTrackingState.Tracked && s.TrackingId == _id);
-                    if (skeleton == null)
-                    {
-                        skeleton = _skeletons.FirstOrDefault(s => s.TrackingState == SkeletonTrackingState.Tracked);
-                        if (skeleton != null)
-                        {
-                            _id = skeleton.TrackingId;
-                        }
-                        else
-                        {
-                            _id = -1;
-                            
-                        }
-                    }
-                }
-            }
-            return skeleton;
-        }
+       
 
         private void MyTextLoopList_Scrolled(object sender, EventArgs e)
         {
@@ -237,15 +136,6 @@ namespace LoopListTest
                 if (!_mouseIsUp)
                     _doDrag = true;
             }
-        }
-
-        private static BitmapImage LoadImage(string path)
-        {
-            BitmapImage bi = new BitmapImage();
-            bi.BeginInit();
-            bi.UriSource = new Uri(path, UriKind.RelativeOrAbsolute);
-            bi.EndInit();
-            return bi;
         }
 
         private void Drag(Point currentPos)
