@@ -75,6 +75,7 @@ namespace HtwKinect
             _kinectHelper.AllFramesDispatchedEvent += (s, _) => HelperReady();
         }
 
+        /*Callback fur ein fertiges Frame vom Kinect-Sensor*/
         private void HelperReady()
         {
             Skeleton skeleton = _kinectHelper.GetFixedSkeleton();
@@ -119,6 +120,7 @@ namespace HtwKinect
                 _doDrag = true;
         }
 
+        /*Wenn die LoopList vertical gescrollt wurde, wird die TextLoopList gescrollt.*/
         private void MyLoopListOnScrolled(object sender, EventArgs e)
         {
             if (e != null)
@@ -146,7 +148,7 @@ namespace HtwKinect
                 if (!_oldMovePoint.HasValue)
                     _oldMovePoint = currentPos;
                 if (Math.Abs(_oldMovePoint.Value.X - currentPos.X) < 0.000000001 &&
-                    Math.Abs(_oldMovePoint.Value.Y - currentPos.Y) < 0.000000001) goto exit;
+                    Math.Abs(_oldMovePoint.Value.Y - currentPos.Y) < 0.000000001) goto exit; //keine Bewegung?
 
 
                 int xDistance = (int) (currentPos.X - _oldMovePoint.Value.X);

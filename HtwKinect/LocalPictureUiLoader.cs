@@ -12,6 +12,7 @@ using LoopList;
 
 namespace HtwKinect
 {
+    /*Diese Klasse lädt lokale Testbilder in die LoopList*/
     class LocalPictureUiLoader : IUiLoader
     {
 
