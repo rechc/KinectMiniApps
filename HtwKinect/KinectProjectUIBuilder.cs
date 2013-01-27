@@ -38,63 +38,42 @@ namespace HtwKinect
                     
                 Node veryFirst = _firstNodeOfLastRow.GetBelow();
                 Node tmp = veryFirst;
-                bool stop = false;
-                while (true)
+                while (!tmp.IsMarkedRight())
                 {
                     tmp.SetAbove(first);
                     tmp = tmp.GetRight();
-                    if (stop)
-                        break;
-                    if (tmp.IsMarkedRight())
-                    {
-                        stop = true;
-                    }
                 }
-                stop = false;
+                tmp.SetAbove(first);
                 tmp = first;
-                while (true)
+                while (!tmp.IsMarkedRight())
                 {
                     tmp.SetBelow(veryFirst);
                     tmp = tmp.GetRight();
-                    if (stop)
-                        break;
-                    if (tmp.IsMarkedRight())
-                    {
-                        stop = true;
-                    }
                 }
-                stop = false;
+                tmp.SetBelow(veryFirst);
                 tmp = _firstNodeOfLastRow;
-                while (true)
+                while (!tmp.IsMarkedRight())
                 {
                     tmp.SetBelow(first);
                     tmp.UnmarkBelow();
                     tmp = tmp.GetRight();
-                    if (stop)
-                        break;
-                    if (tmp.IsMarkedRight())
-                    {
-                        stop = true;
-                    }
                 }
-                stop = false;
+                tmp.SetBelow(first);
+                tmp.UnmarkBelow();
                 tmp = first;
-                while (true)
+                while (!tmp.IsMarkedRight())
                 {
                     tmp.SetAbove(_firstNodeOfLastRow);
                     tmp.UnmarkAbove();
                     tmp = tmp.GetRight();
-                    if (stop)
-                        break;
-                    if (tmp.IsMarkedRight())
-                    {
-                        stop = true;
-                    }
                 }
+                tmp.SetAbove(_firstNodeOfLastRow);
+                tmp.UnmarkAbove();
             }
             _firstNodeOfLastRow = first;
         }
 
+        /*Beziehen des Anfangsknotens einer Row. Die Row wird über GetRight / GetLeft navigiert. Die Grenzen sind für IsMarkedLeft/IsMarkedRight == true*/
         public Node GetRowByRowName(string rowName)
         {
             Node node;
