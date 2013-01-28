@@ -48,7 +48,7 @@ namespace HtwKinect
             MyTextLoopList.Scrolled += MyTextLoopList_Scrolled;
             MyTextLoopList.SetFontSize(36);
             MyTextLoopList.SetFontFamily("Miriam Fixed");
-            MyTextLoopList.SetDuration(new Duration(new TimeSpan(2500000)));
+            MyTextLoopList.SetDuration(new Duration(new TimeSpan(5500000)));
             LoadPictures(new LocalPictureUiLoader());
         }
 
@@ -112,7 +112,7 @@ namespace HtwKinect
         }
 
        
-
+        /*Erst wenn die Scrollanimation der TextLoopList beendet ist, darf die LoopList weiterscrollen (vertical).*/
         private void MyTextLoopList_Scrolled(object sender, EventArgs e)
         {
             _waitForTextList = false;
@@ -173,7 +173,7 @@ namespace HtwKinect
                     }
                     int greater = Math.Max(xCount, yCount);
                     int lower = Math.Min(xCount, yCount);
-                    if (lower/(double) greater < 0.15)
+                    if (lower/(double) greater < 0.15) //x- und y-Entwicklung unterscheiden sich deutlich.
                     {
                         _dragDirectionIsObvious = true;
                         dragDirection = greater == xCount ? 1 : 2;
@@ -222,7 +222,7 @@ namespace HtwKinect
                 
                 _doDrag = false;
                 _oldMovePoint = null;
-                MyLoopList.AnimBack();
+                MyLoopList.AnimBack(); //zurueckspringen des Bildes
                 
             }
             catch (Exception exc)
@@ -245,7 +245,7 @@ namespace HtwKinect
             KinectFocusedRectangle.Visibility = Visibility.Visible;
         }
 
-
+        /*Tastensteuerung der LoopList*/
         protected override void OnKeyDown(KeyEventArgs e)
         {
             try
@@ -276,6 +276,7 @@ namespace HtwKinect
             }
         }
 
+        /*MouseLeave wird wie MouseUp behandelt*/
         private void myLoopList_MouseLeave_1(object sender, MouseEventArgs e)
         {
             myLoopList_MouseUp_1(null, null);
