@@ -228,6 +228,7 @@ namespace LoopList
                 RepeatBehavior = RepeatBehavior.Forever
             };
 
+
             if (node.HasHNeighbour())
             {
                 grid.Children[4].Visibility = Visibility.Visible;

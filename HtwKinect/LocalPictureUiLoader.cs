@@ -60,6 +60,15 @@ namespace HtwKinect
                         BuildGrid(Environment.CurrentDirectory + @"\images\mokup.jpg"),
                     };
             kinectProjectUiBuilder.AddRow("Ebene3", list);
+            paths = Directory.GetFiles(Environment.CurrentDirectory + @"\images\Beach");
+
+            list = new List<FrameworkElement>
+                    {
+                        BuildGrid(paths[0]),
+                        BuildGrid(paths[1]),
+                    };
+            kinectProjectUiBuilder.AddRow("Beach", list);
+            
         }
     }
 }

@@ -54,6 +54,8 @@ namespace LoopList
             _bottom.Child = bottomBlock;
 
             _top.Margin = new Thickness(20);
+            _center.Margin = new Thickness(20);
+            _bottom.Margin = new Thickness(20);
 
             SetFontSize(10);
             SetFontFamily("Verdana");
@@ -227,7 +229,6 @@ namespace LoopList
                 Duration = _duration.TimeSpan.Subtract(new TimeSpan((int)(_duration.TimeSpan.Ticks*0.5)))
             };
             fadeOut.Completed += (s, _) => FadeOutAnimCompleted();
-            
             disappearing.BeginAnimation(OpacityProperty, fadeOut);
             return true;
         }
