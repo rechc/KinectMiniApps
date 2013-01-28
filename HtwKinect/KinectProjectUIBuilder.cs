@@ -39,37 +39,32 @@ namespace HtwKinect
                     
                 Node veryFirst = _firstNodeOfLastRow.Below;
                 Node tmp = veryFirst;
-                while (!tmp.MarkedRight)
+                do
                 {
                     tmp.Above = first;
                     tmp = tmp.Right;
-                }
-                tmp.Above = first;
+                } while (tmp != veryFirst);
+
                 tmp = first;
-                while (!tmp.MarkedRight)
+                do
                 {
                     tmp.Below = veryFirst;
                     tmp = tmp.Right;
-                }
-                tmp.Below = veryFirst;
+                } while (tmp != first);
+
                 tmp = _firstNodeOfLastRow;
-                while (!tmp.MarkedRight)
+                do
                 {
                     tmp.Below = first;
-                    tmp.MarkedBelow = false;
                     tmp = tmp.Right;
-                }
-                tmp.Below = first;
-                tmp.MarkedBelow = false;
+                } while (tmp != _firstNodeOfLastRow);
+
                 tmp = first;
-                while (!tmp.MarkedRight)
+                do
                 {
                     tmp.Above = _firstNodeOfLastRow;
-                    tmp.MarkedAbove = false;
                     tmp = tmp.Right;
-                }
-                tmp.Above = _firstNodeOfLastRow;
-                tmp.MarkedAbove = false;
+                } while (tmp != first);
             }
             _firstNodeOfLastRow = first;
         }

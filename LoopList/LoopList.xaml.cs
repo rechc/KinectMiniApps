@@ -13,20 +13,16 @@ namespace LoopList
 {
     /// <summary>
     /// Dieses UserControl ermöglicht es alle Klassen vom Typ FrameworkElement karusellartig in vertikaler und horizontaler (nicht beides gleichzeitig) Richtung zu bewegen.
-    /// Dabei sind immer nur 3 Objekte im UserControl tatsächlich geladen. Diese 3 Objekte sind Grids (_left, _right, _above), die um Richtungspfeile dekoriert sind.
+    /// Dabei sind maximal nur 3 Objekte im UserControl tatsächlich geladen. Diese Objekte sind Grids (_left, _right, _above), die um Richtungspfeile dekoriert sind.
     /// In die Mitte eines jeden Grids wird das aktuelle FrameworkElement, welches angezeigt werden soll, geladen.
-    /// Bei nur einem hinzugefuegtem FrameworkElement gibt es keine Bewegung. Bei 2 FrameworkElement jeweils nur in horizontaler oder vertikaler Richtung.
+    /// Bei nur einem hinzugefuegten FrameworkElement gibt es keine Bewegung. Bei 2 FrameworkElementen jeweils nur in horizontaler oder vertikaler Richtung.
     /// 
-    /// Die interne Datenstruktur ist ein Graph, der aus verlinkten Nodes besteht. Der Graph kann beliebig sein. Wenn der Graph nicht zusammenhängend ist, können nur Nodes erreicht werden,
-    /// die vom ersten jemals eingefuegtem Node aus erreichbar sind.
+    /// Die interne Datenstruktur ist ein Graph, der aus verlinkten Nodes besteht. Der Graph kann beliebig sein, ein Node kann jedoch maximal nur 4 eingehende/ausgehende Links setzen.
+    /// Wenn der Graph nicht zusammenhängend ist, können nur Nodes erreicht werden, die vom ersten jemals eingefuegten Node aus erreichbar sind.
     /// 
-    /// Die Einfuegemethoden sind AddToLeft usw. Diese erzeugen neue Nodes.
+    /// Die Einfuegemethoden sind AddToLeft usw.. Diese erzeugen neue Nodes.
     /// Muss auf einen bereits existierenden Node verlinkt werden, so muss dies in den jeweiligen Nodes gesetzt werden (z.B node.Right = otherNode).
-    /// Ausserdem muss hier entsprechend die Marked-Eigenschaft gesetzt werden (z.B node.MarkedRight = false).
     /// 
-    /// Marked-Eigenschaften beschreiben fuer einen Node, dass dieser in der jeweiligen Marked-Richtung wieder zu einem sinngemäßen Anfangs-/End-Node zurückverweist, sodass dieser Node der
-    /// letzte/erste Node in der Schleife ist. Ohne diese Eigenschaft könnte man z.B nicht die Anzahl von unterschiedlichen Elementen in einer Folge von Node.Right zählen. Das setzen von Marked-Eigenschaften
-    /// obliegt dem Benutzer der LoopList bei verweisen auf existierende Nodes und der LoopList selbst bei Methoden wie AddToLeft, welche Nodes erzeugen.
     /// </summary>
     public partial class LoopList
     {
@@ -232,7 +228,7 @@ namespace LoopList
                 RepeatBehavior = RepeatBehavior.Forever
             };
 
-            if (HNeighbourExists(node))
+            if (node.HasHNeighbour())
             {
                 grid.Children[4].Visibility = Visibility.Visible;
                 grid.Children[7].Visibility = Visibility.Visible;
@@ -249,7 +245,7 @@ namespace LoopList
                 grid.Children[7].BeginAnimation(OpacityProperty, null);
                 grid.Children[4].BeginAnimation(OpacityProperty, null);
             }
-            if (VNeighbourExists(node))
+            if (node.HasVNeighbour())
             {
                 grid.Children[5].Visibility = Visibility.Visible;
                 grid.Children[6].Visibility = Visibility.Visible;
@@ -305,16 +301,10 @@ namespace LoopList
             }
             else
             {
-                if (!anchor.MarkedLeft)
-                {
-                    throw new Exception("why you no add to marked anchor???");
-                }
                 Node newNode = new Node(frameworkElement);
                 Node first = anchor.Left;
                 anchor.Left = newNode;
-                anchor.MarkedLeft = false;
                 newNode.Right = anchor;
-                newNode.MarkedRight = false;
                 newNode.Left = first;
                 first.Right = newNode;
                 anchor = newNode;
@@ -337,16 +327,10 @@ namespace LoopList
             }
             else
             {
-                if (!anchor.MarkedRight)
-                {
-                    throw new Exception("why you no add to marked anchor???");
-                }
                 Node newNode = new Node(frameworkElement);
                 Node first = anchor.Right;
                 anchor.Right = newNode;
-                anchor.MarkedRight = false;
                 newNode.Left = anchor;
-                newNode.MarkedLeft = false;
                 newNode.Right = first;
                 first.Left = newNode;
                 anchor = newNode;
@@ -370,16 +354,10 @@ namespace LoopList
             }
             else
             {
-                if (!anchor.MarkedAbove)
-                {
-                    throw new Exception("why you no add to marked anchor???");
-                }
                 Node newNode = new Node(frameworkElement);
                 Node first = anchor.Above;
                 anchor.Above = newNode;
-                anchor.MarkedAbove = false;
                 newNode.Below = anchor;
-                newNode.MarkedBelow = false;
                 newNode.Above = first;
                 first.Below = newNode;
                 anchor = newNode;
@@ -402,16 +380,10 @@ namespace LoopList
             }
             else
             {
-                if (!anchor.MarkedBelow)
-                {
-                    throw new Exception("why you no add to marked anchor???");
-                }
                 Node newNode = new Node(frameworkElement);
                 Node first = anchor.Below;
                 anchor.Below = newNode;
-                anchor.MarkedBelow = false;
                 newNode.Above = anchor;
-                newNode.MarkedAbove = false;
                 newNode.Below = first;
                 first.Above = newNode;
                 anchor = newNode;
@@ -424,24 +396,6 @@ namespace LoopList
             }
             MarkDirections(_right, _currentNode);
             return anchor;
-        }
-
-        private bool HNeighbourExists(Node node)
-        {
-            if (!node.MarkedLeft || !node.MarkedRight)
-            {
-                return true;
-            }
-            return false;
-        }
-
-        private bool VNeighbourExists(Node node)
-        {
-            if (!node.MarkedBelow|| !node.MarkedAbove)
-            {
-                return true;
-            }
-            return false;
         }
 
         private void MarkCentered()
@@ -468,7 +422,7 @@ namespace LoopList
             TranslateTransform ttRight = (TranslateTransform)_right.RenderTransform;
             TranslateTransform ttLeft = (TranslateTransform)_left.RenderTransform;
             if ((int)Math.Abs(ttRight.Y) != 0) return true; // diagonales scrollen gibts nicht
-            if (HNeighbourExists(_currentNode))
+            if (_currentNode.HasHNeighbour())
             {
                 ttLeft.X = (double)ttLeft.GetValue(TranslateTransform.XProperty);
                 ttRight.X = (double)ttRight.GetValue(TranslateTransform.XProperty);
@@ -542,7 +496,7 @@ namespace LoopList
             {
                 return true;
             }
-            if (VNeighbourExists(_currentNode))
+            if (_currentNode.HasVNeighbour())
             {
                 ttAbove.Y = (double)ttAbove.GetValue(TranslateTransform.YProperty);
                 ttRight.Y = (double)ttRight.GetValue(TranslateTransform.YProperty);
@@ -641,7 +595,7 @@ namespace LoopList
 
         public void AnimH(bool leftDir)
         {
-            if (_animating != 0 || !HNeighbourExists(_currentNode)) return;
+            if (_animating != 0 || !_currentNode.HasHNeighbour()) return;
             TranslateTransform ttRight = (TranslateTransform)_right.RenderTransform;
             TranslateTransform ttLeft = (TranslateTransform)_left.RenderTransform;
             
@@ -691,7 +645,7 @@ namespace LoopList
 
         public void AnimV(bool upDir)
         {
-            if (_animating != 0 || !VNeighbourExists(_currentNode)) return;
+            if (_animating != 0 || !_currentNode.HasVNeighbour()) return;
             TranslateTransform ttRight = (TranslateTransform)_right.RenderTransform;
             TranslateTransform ttAbove = (TranslateTransform)_above.RenderTransform;
 
