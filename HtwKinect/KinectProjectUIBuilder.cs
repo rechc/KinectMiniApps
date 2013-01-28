@@ -30,45 +30,46 @@ namespace HtwKinect
                 if (first == null)
                     first = anchor;
             }
+
             if (first == null)
                 throw new Exception("Given row has no elements to add");
             _rows.Add(rowName, first);
             if (_firstNodeOfLastRow != null)
             {
                     
-                Node veryFirst = _firstNodeOfLastRow.GetBelow();
+                Node veryFirst = _firstNodeOfLastRow.Below;
                 Node tmp = veryFirst;
-                while (!tmp.IsMarkedRight())
+                while (!tmp.MarkedRight)
                 {
-                    tmp.SetAbove(first);
-                    tmp = tmp.GetRight();
+                    tmp.Above = first;
+                    tmp = tmp.Right;
                 }
-                tmp.SetAbove(first);
+                tmp.Above = first;
                 tmp = first;
-                while (!tmp.IsMarkedRight())
+                while (!tmp.MarkedRight)
                 {
-                    tmp.SetBelow(veryFirst);
-                    tmp = tmp.GetRight();
+                    tmp.Below = veryFirst;
+                    tmp = tmp.Right;
                 }
-                tmp.SetBelow(veryFirst);
+                tmp.Below = veryFirst;
                 tmp = _firstNodeOfLastRow;
-                while (!tmp.IsMarkedRight())
+                while (!tmp.MarkedRight)
                 {
-                    tmp.SetBelow(first);
-                    tmp.UnmarkBelow();
-                    tmp = tmp.GetRight();
+                    tmp.Below = first;
+                    tmp.MarkedBelow = false;
+                    tmp = tmp.Right;
                 }
-                tmp.SetBelow(first);
-                tmp.UnmarkBelow();
+                tmp.Below = first;
+                tmp.MarkedBelow = false;
                 tmp = first;
-                while (!tmp.IsMarkedRight())
+                while (!tmp.MarkedRight)
                 {
-                    tmp.SetAbove(_firstNodeOfLastRow);
-                    tmp.UnmarkAbove();
-                    tmp = tmp.GetRight();
+                    tmp.Above = _firstNodeOfLastRow;
+                    tmp.MarkedAbove = false;
+                    tmp = tmp.Right;
                 }
-                tmp.SetAbove(_firstNodeOfLastRow);
-                tmp.UnmarkAbove();
+                tmp.Above = _firstNodeOfLastRow;
+                tmp.MarkedAbove = false;
             }
             _firstNodeOfLastRow = first;
         }
