@@ -201,7 +201,8 @@ namespace GreenScreenControl
                     this.depthWidth * ((this.playerOpacityMaskImage.Format.BitsPerPixel + 7) / 8),
                     0);
 
-            drawingContext.DrawImage(playerOpacityMaskImage, new Rect(0, 0, depthWidth, depthHeight));
+            drawingContext.PushOpacityMask(new ImageBrush() { ImageSource = this.playerOpacityMaskImage });
+            drawingContext.DrawImage(colorBitmap, new Rect(0, 0, Width, Height));
         }
 
         private void AddBorderPixels(int greenScreenIndex)
