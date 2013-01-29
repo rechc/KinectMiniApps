@@ -61,17 +61,7 @@ namespace HtwKinect
         private void InitKinect()
         {
             _handTracker = new HandTracker();
-            _kinectHelper = KinectHelper.GetOrCreateInstance(new TransformSmoothParameters
-                {
-                    Correction = 0,
-                    JitterRadius = 0,
-                    MaxDeviationRadius = 0.8f,
-                    Prediction = 0,
-                    Smoothing = 0.8f
-                },
-                false,
-                ColorImageFormat.RgbResolution640x480Fps30,
-                DepthImageFormat.Resolution640x480Fps30);
+            _kinectHelper = KinectHelper.GetInstance();
             _kinectHelper.AllFramesDispatchedEvent += (s, _) => HelperReady();
         }
 
