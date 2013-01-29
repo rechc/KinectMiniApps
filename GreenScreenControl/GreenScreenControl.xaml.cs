@@ -201,6 +201,8 @@ namespace GreenScreenControl
                     this.depthWidth * ((this.playerOpacityMaskImage.Format.BitsPerPixel + 7) / 8),
                     0);
 
+            Width = ActualWidth;
+            Height = ActualHeight;
             drawingContext.PushOpacityMask(new ImageBrush() { ImageSource = this.playerOpacityMaskImage });
             drawingContext.DrawImage(colorBitmap, new Rect(0, 0, Width, Height));
         }
