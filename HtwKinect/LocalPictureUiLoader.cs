@@ -56,10 +56,9 @@ namespace HtwKinect
 
             list = new List<FrameworkElement>();
             paths = Directory.GetFiles(Environment.CurrentDirectory + @"\images\Snow");
+
             for (int i = 0; i < paths.Count(); i++)
             {
-                if (i == paths.Count() -1)
-                {
                     var img = new Image(){Source = LoadImage(paths[i])};
                     var grid = new Grid();
                     grid.Children.Add(img);
@@ -72,11 +71,6 @@ namespace HtwKinect
                     gsc.Start(instance.GetSensor(), instance.DepthImageFormat, instance.ColorImageFormat);
                     instance.AllFramesDispatchedEvent += (sender, args) => RenderGreenScreen(gsc);
                     list.Add(grid);
-                }
-                else
-                {
-                    list.Add(BuildGrid(paths[i]));
-                }
             }
            
             kinectProjectUiBuilder.AddRow("Snow", list);
