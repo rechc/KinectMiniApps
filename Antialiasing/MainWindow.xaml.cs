@@ -170,7 +170,7 @@ namespace Antialiasing
                 // Add an event handler to be called whenever there is new depth frame data
                 this.sensor.AllFramesReady += this.SensorAllFramesReady;
 
-                GreenScreen.Start(sensor);
+                GreenScreen.Start(sensor, DepthFormat, ColorFormat);
 
                 // Start the sensor!
                 try
@@ -249,9 +249,7 @@ namespace Antialiasing
             // so that we return resources to the kinect as soon as possible
             if (depthReceived && colorReceived)
             {
-                //gsc.Antialiasing(depthPixels, colorPixels, DepthFormat, ColorFormat);
-                GreenScreen.DepthPixels = depthPixels;
-                GreenScreen.ColorPixels = colorPixels;
+                GreenScreen.InvalidateVisual(depthPixels, colorPixels);
             }
         }
 
