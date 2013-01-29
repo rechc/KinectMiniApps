@@ -42,7 +42,7 @@ namespace HtwKinect
             string[] paths = Directory.GetFiles(Environment.CurrentDirectory + @"\images\Top");
             List<FrameworkElement> list = new List<FrameworkElement> ();
             for (int i = 0; i < paths.Count(); i++) {
-                list.Add(BuildGrid(paths[i]));
+                list.Add(AddGreenScreen(paths[i]));
             }
             kinectProjectUiBuilder.AddRow("Top", list);
 
@@ -50,7 +50,7 @@ namespace HtwKinect
             paths = Directory.GetFiles(Environment.CurrentDirectory + @"\images\Beach");
             for (int i = 0; i < paths.Count(); i++)
             {
-                list.Add(BuildGrid(paths[i]));
+                list.Add(AddGreenScreen(paths[i]));
             }
             kinectProjectUiBuilder.AddRow("Beach", list);
 
@@ -59,28 +59,34 @@ namespace HtwKinect
 
             for (int i = 0; i < paths.Count(); i++)
             {
-                    var img = new Image(){Source = LoadImage(paths[i])};
-                    var grid = new Grid();
-                    grid.Children.Add(img);
-
-                    var gsc = new GreenScreenControl.GreenScreenControl();
-                    grid.Children.Add(gsc);
-                    gsc.Width = 640;
-                    gsc.Height = 480;
-                    var instance = KinectHelper.GetInstance();
-                    gsc.Start(instance.GetSensor(), instance.DepthImageFormat, instance.ColorImageFormat);
-                    instance.AllFramesDispatchedEvent += (sender, args) => RenderGreenScreen(gsc);
-                    list.Add(grid);
+                list.Add(AddGreenScreen(paths[i]));
             }
            
             kinectProjectUiBuilder.AddRow("Snow", list);
 
         }
 
+        private Grid AddGreenScreen(string s)
+        {
+            var img = new Image() { Source = LoadImage(s) };
+            img.Stretch = Stretch.Fill;
+            var grid = new Grid();
+            grid.Children.Add(img);
+
+            var gsc = new GreenScreenControl.GreenScreenControl();
+            grid.Children.Add(gsc);
+            //gsc.Width = 640;
+            //gsc.Height = 480;
+            var instance = KinectHelper.GetInstance();
+            gsc.Start(instance.GetSensor(), instance.DepthImageFormat, instance.ColorImageFormat);
+            instance.AllFramesDispatchedEvent += (sender, args) => RenderGreenScreen(gsc);
+            return grid;
+        }
+
         private void RenderGreenScreen(GreenScreenControl.GreenScreenControl greenScreenControl)
         {
             var instance = KinectHelper.GetInstance();
-           greenScreenControl.InvalidateVisual(instance.GetDepthImagePixels(), instance.GetColorPixels()); 
+            greenScreenControl.InvalidateVisual(instance.GetDepthImagePixels(), instance.GetColorPixels()); 
         }
 
         
