@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B658191C-9E09-44F6-A3A5-EB7A28E412D7}</ProjectGuid>
+    <ProjectGuid>{9F9A89A8-A1A5-4119-9D70-C44D2BB371A8}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HtwKinect</RootNamespace>
-    <AssemblyName>HtwKinect</AssemblyName>
+    <RootNamespace>GreenScreenLibTest</RootNamespace>
+    <AssemblyName>GreenScreenLibTest</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -34,16 +34,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Kinect, Version=1.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Program Files\Microsoft SDKs\Kinect\v1.6\Assemblies\Microsoft.Kinect.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Kinect.Toolkit.FaceTracking, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>.\Microsoft.Kinect.Toolkit.FaceTracking.dll</HintPath>
-    </Reference>
+    <Reference Include="Microsoft.Kinect, Version=1.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -69,10 +64,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="IUiLoader.cs" />
-    <Compile Include="KinectHelper.cs" />
-    <Compile Include="KinectProjectUIBuilder.cs" />
-    <Compile Include="LocalPictureUiLoader.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -106,56 +97,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AccessoryLib\AccessoryLib.csproj">
-      <Project>{e7cee4bd-1956-4199-9525-4b5583557d56}</Project>
-      <Name>AccessoryLib</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\HandDetection\HandDetection.csproj">
-      <Project>{5329d417-7747-4e92-8f9a-296aa39035bd}</Project>
-      <Name>HandDetection</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\LoopList\LoopList.csproj">
-      <Project>{0ef01833-063f-498f-b8ac-7744902a2efd}</Project>
-      <Name>LoopList</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="FaceTrackData.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="FaceTrackLib.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="images\Beach\beach1.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="images\Beach\beach2.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="images\mokup.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="images\teletubbies_02.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="images\teletubbies_03.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="images\teletubbies_05.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="images\teletubbies_06.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="images\teletubbies_04.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Microsoft.Kinect.Toolkit.FaceTracking.dll" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\LoopList\LoopList.csproj">
-      <Project>{0EF01833-063F-498F-B8AC-7744902A2EFD}</Project>
-      <Name>LoopList</Name>
+    <ProjectReference Include="..\GreenScreenControl\GreenScreenLib.csproj">
+      <Project>{B2AACE14-C7F6-4615-9F1F-228F13780687}</Project>
+      <Name>GreenScreenLib</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
