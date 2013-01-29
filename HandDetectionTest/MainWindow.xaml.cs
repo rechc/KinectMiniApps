@@ -45,7 +45,7 @@ namespace HandDetectionTest
         /// Intermediate storage for the color data received from the camera
         /// </summary>
         private byte[] colorPixels;
-       // private DepthImagePixel[] depthPixels;
+        // private DepthImagePixel[] depthPixels;
 
         private HandTracker handDection;
 
@@ -194,44 +194,40 @@ namespace HandDetectionTest
                 {
                     if (depthFrame != null)
                     {
-                        int intRightX = (int)(RightHand.X * depthFrame.Width);
-                        int intRightY = -1 * (int)(RightHand.Y * depthFrame.Height);
-
                         DepthImagePoint handPos = new DepthImagePoint();
                         try
                         {
                             handPos = sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(RightHand,
                                                                                            DepthImageFormat.
                                                                                                Resolution640x480Fps30);
-
-                            //depthFrame.CopyDepthImagePixelDataTo(this.depthPixels);
-
-                            //depthBitmap = new WriteableBitmap(sensor.DepthStream.FrameWidth, sensor.DepthStream.FrameHeight,
-                            //96.0, 96.0, PixelFormats.Bgr32, null);
                             this.DepthImage.Source = DepthToBitmapSource(depthFrame);
                             if (handtracked)
                             {
-                                if ((handPos.X + 42) > 640 || handPos.X - 42 <= 0) return; // epsilon +2 wegen möglichem -1  von handPosX/Y
-                                if ((handPos.Y + 42) > 480 || handPos.Y - 42 <= 0) return; // TODO die 40 und epsilon als static in HAndDetect
+                                var person = skeletons.First(p => p.TrackingState == SkeletonTrackingState.Tracked);
+                                Joint handJoint = person.Joints[JointType.HandRight];
+
+                                double handausschnitt = handDection.ComputeHandSize(handJoint);
+
+
+                                if ((handPos.X + HandTracker.epsilonTolerance + handausschnitt / 2) > 640 || handPos.X - HandTracker.epsilonTolerance - handausschnitt / 2 <= 0) return; // epsilon +2 wegen möglichem -1  von handPosX/Y
+                                if ((handPos.Y + HandTracker.epsilonTolerance + handausschnitt / 2) > 480 || handPos.Y - HandTracker.epsilonTolerance - handausschnitt / 2 <= 0) return; 
 
                                 ImageSource imgRightHandSource =
                                     new CroppedBitmap((BitmapSource)DepthImage.Source.CloneCurrentValue(), new Int32Rect(
-                                                                                                                handPos.X - 40,
-                                                                                                                handPos.Y - 40,
-                                                                                                                80, 80));
+                                                                                                                handPos.X - (int)handausschnitt / 2,
+                                                                                                                handPos.Y - (int)handausschnitt / 2,
+                                                                                                                (int)handausschnitt, (int)handausschnitt));
                                 RightHandImage.Source = imgRightHandSource; //paints
 
                                 DepthImagePixel[] depthPixels = new DepthImagePixel[sensor.DepthStream.FramePixelDataLength];
-                                depthFrame.CopyDepthImagePixelDataTo(depthPixels);
-
-                                var person = skeletons.First(p => p.TrackingState == SkeletonTrackingState.Tracked);
-
-                                Joint handJoint = person.Joints[JointType.HandRight];
+                                depthFrame.CopyDepthImagePixelDataTo(depthPixels);         
 
                                 //var handStatus = handDection.GetHandOpenedClosedStatus(depthPixels, handJoint, sensor, DepthImageFormat.Resolution640x480Fps30);
                                 var handStatus = handDection.GetBufferedHandStatus(depthPixels, handJoint, sensor, DepthImageFormat.Resolution640x480Fps30);
 
-                                this.HandDescriptionTBox.Text = "Hand is " + handStatus.ToString();
+                                this.HandDescriptionTBox.Text = "Hand is " + handStatus.ToString() ;
+                                //this.HandDescriptionTBox.Text = " rightH.: " + RightHand.Z.ToString();
+
                             }
                         }
                         catch (Exception ex)
@@ -246,7 +242,7 @@ namespace HandDetectionTest
             }
         }
 
-   
+
         BitmapSource DepthToBitmapSource(DepthImageFrame imageFrame)
         {
             short[] pixelData = new short[imageFrame.PixelDataLength];
@@ -272,7 +268,7 @@ namespace HandDetectionTest
         }
 
         // get bitmap of colorstream
-         Bitmap ImageToBitmap(ColorImageFrame Image)
+        Bitmap ImageToBitmap(ColorImageFrame Image)
         {
             if (colorPixels == null)
             {
@@ -291,51 +287,51 @@ namespace HandDetectionTest
         }
 
         // get hand cyrcle
-         private BitmapSource DrawEllipses(ColorImageFrame CFrame)
-         {
-             Bitmap bmap = ImageToBitmap(CFrame);
+        private BitmapSource DrawEllipses(ColorImageFrame CFrame)
+        {
+            Bitmap bmap = ImageToBitmap(CFrame);
 
-             try
-             {
-                 foreach (Skeleton s in skeletons)
-                 {
-                     if (s.TrackingState == SkeletonTrackingState.Tracked)
-                     {
-                         Graphics g = Graphics.FromImage(bmap);
+            try
+            {
+                foreach (Skeleton s in skeletons)
+                {
+                    if (s.TrackingState == SkeletonTrackingState.Tracked)
+                    {
+                        Graphics g = Graphics.FromImage(bmap);
 
-                         System.Drawing.Point? p3 = GetJoint2DPoint(JointType.HandRight, s);
-                         System.Drawing.Pen pen3 = new System.Drawing.Pen(System.Drawing.Color.Purple);
-                         pen3.Width = 10;
-                         if (p3 != null)
-                             g.DrawEllipse(pen3, p3.Value.X - 25, p3.Value.Y - 25, 50, 50);
-                     }
-                 }
+                        System.Drawing.Point? p3 = GetJoint2DPoint(JointType.HandRight, s);
+                        System.Drawing.Pen pen3 = new System.Drawing.Pen(System.Drawing.Color.Purple);
+                        pen3.Width = 10;
+                        if (p3 != null)
+                            g.DrawEllipse(pen3, p3.Value.X - 25, p3.Value.Y - 25, 50, 50);
+                    }
+                }
 
-             }
-             catch (Exception)
-             {
+            }
+            catch (Exception)
+            {
 
-                 throw;
-             }
-             return BitmapToBitmapSource(bmap);
-         }
+                throw;
+            }
+            return BitmapToBitmapSource(bmap);
+        }
 
-         private BitmapSource BitmapToBitmapSource(Bitmap bitmap)
-         {
-             using (MemoryStream stream = new MemoryStream())
-             {
-                 bitmap.Save(stream, ImageFormat.Bmp);
+        private BitmapSource BitmapToBitmapSource(Bitmap bitmap)
+        {
+            using (MemoryStream stream = new MemoryStream())
+            {
+                bitmap.Save(stream, ImageFormat.Bmp);
 
-                 stream.Position = 0;
-                 BitmapImage result = new BitmapImage();
-                 result.BeginInit();
+                stream.Position = 0;
+                BitmapImage result = new BitmapImage();
+                result.BeginInit();
 
-                 result.CacheOption = BitmapCacheOption.OnLoad;
-                 result.StreamSource = stream;
-                 result.EndInit();
-                 result.Freeze();
-                 return result;
-             }
-         }
+                result.CacheOption = BitmapCacheOption.OnLoad;
+                result.StreamSource = stream;
+                result.EndInit();
+                result.Freeze();
+                return result;
+            }
+        }
     }
 }
