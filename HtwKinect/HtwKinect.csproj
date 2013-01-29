@@ -120,6 +120,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="FaceTrackData.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="FaceTrackLib.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="images\Beach\beach1.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

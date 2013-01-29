@@ -46,16 +46,20 @@ namespace HtwKinect
             _faceTracker = new FaceTracker(_kinectSensor);
         }
 
-        internal static KinectHelper GetOrCreateInstance(TransformSmoothParameters tsp, bool seated, ColorImageFormat colorFormat, DepthImageFormat depthFormat)
-        {
-            return Instance ?? (Instance = new KinectHelper(tsp, seated, colorFormat, depthFormat));
-        }
-
-        /*Diese Methode ist eine Verkürzte Form von GetOrCreateInstance, kann jedoch null zurückgeben*/
         public static KinectHelper GetInstance()
         {
             if (Instance == null)
-                throw new Exception("Call GetOrCreateInstance first.");
+                Instance = new KinectHelper(new TransformSmoothParameters
+                    {
+                        Correction = 0,
+                        JitterRadius = 0,
+                        MaxDeviationRadius = 0.8f,
+                        Prediction = 0,
+                        Smoothing = 0.8f
+                    },
+                    false,
+                    ColorImageFormat.RgbResolution640x480Fps30,
+                    DepthImageFormat.Resolution640x480Fps30);
             return Instance;
         }
 
