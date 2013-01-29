@@ -39,35 +39,28 @@ namespace HtwKinect
 
         public void LoadElementsIntoList(KinectProjectUiBuilder kinectProjectUiBuilder)
         {
-            string[] paths = Directory.GetFiles(Environment.CurrentDirectory + @"\images", "tele*");
+            string[] paths = Directory.GetFiles(Environment.CurrentDirectory + @"\images\Top");
+            List<FrameworkElement> list = new List<FrameworkElement> ();
+            for (int i = 0; i < paths.Count(); i++) {
+                list.Add(BuildGrid(paths[i]));
+            }
+            kinectProjectUiBuilder.AddRow("Top", list);
 
-            List<FrameworkElement> list = new List<FrameworkElement>
-                    {
-                        BuildGrid(paths[0]),
-                        BuildGrid(paths[1]),
-                    };
-            kinectProjectUiBuilder.AddRow("Ebene1", list);
-            list = new List<FrameworkElement>
-                    {
-                        BuildGrid(paths[2]),
-                        BuildGrid(paths[3]),
-                        BuildGrid(paths[4]),
-                    };
-            kinectProjectUiBuilder.AddRow("Ebene2", list);
-            list = new List<FrameworkElement>
-                    {
-                        BuildGrid(paths[4]),
-                        BuildGrid(Environment.CurrentDirectory + @"\images\mokup.jpg"),
-                    };
-            kinectProjectUiBuilder.AddRow("Ebene3", list);
+            list = new List<FrameworkElement>();
             paths = Directory.GetFiles(Environment.CurrentDirectory + @"\images\Beach");
-
-            list = new List<FrameworkElement>
-                    {
-                        BuildGrid(paths[0]),
-                        BuildGrid(paths[1]),
-                    };
+            for (int i = 0; i < paths.Count(); i++)
+            {
+                list.Add(BuildGrid(paths[i]));
+            }
             kinectProjectUiBuilder.AddRow("Beach", list);
+
+            list = new List<FrameworkElement>();
+            paths = Directory.GetFiles(Environment.CurrentDirectory + @"\images\Snow");
+            for (int i = 0; i < paths.Count(); i++)
+            {
+                list.Add(BuildGrid(paths[i]));
+            }
+            kinectProjectUiBuilder.AddRow("Snow", list);
             
         }
     }

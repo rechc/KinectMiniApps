@@ -126,40 +126,39 @@
     <Content Include="FaceTrackLib.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Beach\beach1.jpg">
+    <Content Include="images\Beach\BeachPescara %281%29.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Beach\beach2.jpg">
+    <Content Include="images\Beach\BeachPescara %282%29.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Resource Include="images\Beach\BeachPescara %281%29.jpg" />
-    <Resource Include="images\Beach\BeachPescara %282%29.jpg" />
-    <Resource Include="images\Beach\BeachPescara %283%29.JPG" />
-    <Resource Include="images\Beach\BeachPescara %286%29.JPG" />
-    <Resource Include="images\Beach\BeachPescara %287%29.JPG" />
-    <Content Include="images\mokup.jpg">
+    <Content Include="images\Beach\BeachPescara %283%29.JPG">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Resource Include="images\Snow\snow %281%29.jpg" />
-    <Resource Include="images\Snow\snow %282%29.jpg" />
-    <Resource Include="images\Snow\snow %283%29.jpg" />
-    <Resource Include="images\Snow\snow %284%29.jpg" />
-    <Content Include="images\teletubbies_02.jpg">
+    <Content Include="images\Beach\BeachPescara %286%29.JPG">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\teletubbies_03.jpg">
+    <Content Include="images\Beach\BeachPescara %287%29.JPG">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\teletubbies_05.jpg">
+    <Content Include="images\Top\mokup.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\teletubbies_06.jpg">
+    <Content Include="images\Snow\snow %281%29.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\teletubbies_04.jpg">
+    <Content Include="images\Snow\snow %282%29.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Resource Include="images\Top\IMG_0844.JPG" />
+    <Content Include="images\Snow\snow %283%29.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Snow\snow %284%29.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Top\IMG_0844.JPG">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Microsoft.Kinect.Toolkit.FaceTracking.dll" />
   </ItemGroup>
   <ItemGroup>
