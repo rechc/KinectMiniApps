@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A1E039C4-0B91-46DC-A556-9A5575E173AB}</ProjectGuid>
+    <ProjectGuid>{9F9A89A8-A1A5-4119-9D70-C44D2BB371A8}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Antialiasing</RootNamespace>
-    <AssemblyName>Antialiasing</AssemblyName>
+    <RootNamespace>GreenScreenLibTest</RootNamespace>
+    <AssemblyName>GreenScreenLibTest</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -35,7 +35,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Kinect, Version=1.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
-    <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -49,6 +48,7 @@
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
@@ -95,36 +95,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\Background.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\CheckedHover.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\CheckedNormal.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\Kinect.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\Logo.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\SnapHover.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\SnapNormal.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\Status.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\UncheckedHover.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\UncheckedNormal.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GreenScreenControl\GreenScreenLib.csproj">
