@@ -58,10 +58,37 @@ namespace HtwKinect
             paths = Directory.GetFiles(Environment.CurrentDirectory + @"\images\Snow");
             for (int i = 0; i < paths.Count(); i++)
             {
-                list.Add(BuildGrid(paths[i]));
+                if (i == paths.Count() -1)
+                {
+                    var img = new Image(){Source = LoadImage(paths[i])};
+                    var grid = new Grid();
+                    grid.Children.Add(img);
+
+                    var gsc = new GreenScreenControl.GreenScreenControl();
+                    grid.Children.Add(gsc);
+                    gsc.Width = 640;
+                    gsc.Height = 480;
+                    var instance = KinectHelper.GetInstance();
+                    gsc.Start(instance.GetSensor(), instance.DepthImageFormat, instance.ColorImageFormat);
+                    instance.AllFramesDispatchedEvent += (sender, args) => RenderGreenScreen(gsc);
+                    list.Add(grid);
+                }
+                else
+                {
+                    list.Add(BuildGrid(paths[i]));
+                }
             }
+           
             kinectProjectUiBuilder.AddRow("Snow", list);
-            
+
         }
+
+        private void RenderGreenScreen(GreenScreenControl.GreenScreenControl greenScreenControl)
+        {
+            var instance = KinectHelper.GetInstance();
+           greenScreenControl.InvalidateVisual(instance.GetDepthImagePixels(), instance.GetColorPixels()); 
+        }
+
+        
     }
 }
