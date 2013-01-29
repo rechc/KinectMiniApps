@@ -152,6 +152,7 @@
     </Content>
     <Content Include="Microsoft.Kinect.Toolkit.FaceTracking.dll" />
   </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\LoopList\LoopList.csproj">
       <Project>{0EF01833-063F-498F-B8AC-7744902A2EFD}</Project>
       <Name>LoopList</Name>
