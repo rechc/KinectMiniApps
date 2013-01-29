@@ -120,9 +120,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="images\Beach\beach1.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="images\Beach\beach2.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
