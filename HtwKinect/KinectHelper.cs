@@ -21,6 +21,9 @@ namespace HtwKinect
         public static KinectHelper Instance;
         private int _id = -1;
 
+        public DepthImageFormat DepthImageFormat { get; set; }
+        public ColorImageFormat ColorImageFormat { get; set; }
+
         public event EventHandler AllFramesDispatchedEvent;
         
 
@@ -44,6 +47,9 @@ namespace HtwKinect
             
             _kinectSensor.Start();
             _faceTracker = new FaceTracker(_kinectSensor);
+
+            DepthImageFormat = depthFormat;
+            ColorImageFormat = colorFormat;
         }
 
         public static KinectHelper GetInstance()
