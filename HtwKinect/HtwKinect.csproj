@@ -120,6 +120,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="FaceTrackData.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="FaceTrackLib.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Beach\beach1.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="images\Beach\beach2.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -142,6 +151,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Microsoft.Kinect.Toolkit.FaceTracking.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LoopList\LoopList.csproj">
+      <Project>{0EF01833-063F-498F-B8AC-7744902A2EFD}</Project>
+      <Name>LoopList</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
