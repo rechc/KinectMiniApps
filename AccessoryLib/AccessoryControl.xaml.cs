@@ -29,47 +29,18 @@ namespace AccessoryLib
             AccessoryItems = new List<AccessoryItem>();
         }
 
-        public KinectSensor Sensor
+        public void InvalidateVisual(Skeleton[] skeletons)
         {
-            get { return _sensor; }
-            set { _sensor = value; }
-        }
-
-        public Skeleton[] Skeletons
-        {
-            get { return _skeletons; }
-
-            // Zeichnet das Control automatisch neu.
-            set
-            {
-                _skeletons = value;
-                InvalidateVisual();
-            }
+            _skeletons = skeletons;
+            InvalidateVisual();
         }
 
         // Liste von Gegenstaenden, die gezeichnet werden sollen.
         public List<AccessoryItem> AccessoryItems { get; private set; }
 
-        public void Start()
+        public void Start(KinectSensor sensor)
         {
-            if (!Sensor.SkeletonStream.IsEnabled)
-                Sensor.SkeletonStream.Enable();
-            Sensor.SkeletonFrameReady += OnSkeletonFrameReady;
-        }
-
-        // Event Handler liest alle Skeletons aus dem Skeleton Frame aus.
-        private void OnSkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e)
-        {
-            using (SkeletonFrame skeletonFrame = e.OpenSkeletonFrame())
-            {
-                if (skeletonFrame != null)
-                {
-                    var skeletons = new Skeleton[skeletonFrame.SkeletonArrayLength];
-                    skeletonFrame.CopySkeletonDataTo(skeletons);
-                    Skeletons = skeletons;
-                }
-            }
-
+            _sensor = sensor;
         }
 
         // Control neu zeichnen.
@@ -77,14 +48,14 @@ namespace AccessoryLib
         {
             base.OnRender(drawingContext);
 
-            if (Skeletons == null)
+            if (_skeletons == null)
                 return;
 
             // Nicht ueber den Rand des Controls hinaus zeichnen.
             drawingContext.PushClip(new RectangleGeometry(new Rect(0, 0, Width, Height)));
 
             // Items fuer alle Personen zeichnen.
-            foreach (Skeleton person in Skeletons)
+            foreach (Skeleton person in _skeletons)
             {
                 if (person.TrackingState == SkeletonTrackingState.Tracked)
                 {
