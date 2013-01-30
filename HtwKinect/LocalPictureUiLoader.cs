@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using LoopList;
+using Microsoft.Kinect;
 
 namespace HtwKinect
 {
@@ -24,18 +21,6 @@ namespace HtwKinect
             bi.UriSource = new Uri(path, UriKind.RelativeOrAbsolute);
             bi.EndInit();
             return bi;
-        }
-
-        private FrameworkElement BuildGrid(string path)
-        {
-            Grid grid = new Grid();
-            Image img = new Image
-            {
-                Stretch = Stretch.Fill,
-                Source = LoadImage(path)
-            };
-            grid.Children.Add(img);
-            return grid;
         }
 
         public void LoadElementsIntoList(KinectProjectUiBuilder kinectProjectUiBuilder)
@@ -72,24 +57,29 @@ namespace HtwKinect
             var img = new Image {Source = LoadImage(s), Stretch = Stretch.Fill};
             var grid = new Grid();
             grid.Children.Add(img);
-
-            var gsc = new GreenScreenControl.GreenScreenControl();
-            grid.Children.Add(gsc);
-            var instance = KinectHelper.GetInstance();
-            gsc.Start(instance.GetSensor(), true);
-            instance.AllFramesDispatchedEvent += (sender, args) => RenderGreenScreen(gsc);
+            try
+            {
+                var gsc = new GreenScreenControl.GreenScreenControl();
+                grid.Children.Add(gsc);
+                var instance = KinectHelper.Instance;
+                gsc.Start(instance.Sensor, true);
+                instance.ReadyEvent += (sender, args) => RenderGreenScreen(gsc);
+            }
+            catch (Exception e)
+            {
+                
+            }
             return grid;
         }
 
-        private int a = 0;
         private void RenderGreenScreen(GreenScreenControl.GreenScreenControl greenScreenControl)
         {
             if (((Grid)greenScreenControl.Parent).Parent == null)
             {
                 return; //nur auf dingen die auch angezeigt werden bitte, danke.
             }
-            var instance = KinectHelper.GetInstance();
-            greenScreenControl.InvalidateVisual(instance.GetDepthImagePixels(), instance.GetColorPixels()); 
+            var instance = KinectHelper.Instance;
+            greenScreenControl.InvalidateVisual(instance.DepthImagePixels, instance.ColorPixels); 
         }
 
         
