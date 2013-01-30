@@ -51,9 +51,8 @@ namespace HandDetection
 
             DepthImagePoint handPos = GetHandPos(sensor, handJoint, depthImageFormate);
             int halfhandCutSize = ComputeHandSize(handJoint)/2;
-
-            if (((handPos.X + EpsilonTolerance + halfhandCutSize) > 640 || handPos.X - halfhandCutSize - EpsilonTolerance <= 0)      // epsilon +2 wegen möglichem -1  von handPosX/Y
-               || ((handPos.Y + halfhandCutSize + EpsilonTolerance) > 480 || handPos.Y - halfhandCutSize - EpsilonTolerance <= 0))
+            if (((handPos.X + EpsilonTolerance + halfhandCutSize) > sensor.DepthStream.FrameWidth || handPos.X - halfhandCutSize - EpsilonTolerance <= 0)      // epsilon +2 wegen möglichem -1  von handPosX/Y
+               || ((handPos.Y + halfhandCutSize + EpsilonTolerance) > sensor.DepthStream.FrameHeight || handPos.Y - halfhandCutSize - EpsilonTolerance <= 0))
                 return HandStatus.Unknown;
 
             bool wasBlack = false;
@@ -67,7 +66,7 @@ namespace HandDetection
             {
                 for (int xx = xstart; xx < xend; xx++)
                 {
-                    int depthIndex = xx + (yy * 640);
+                    int depthIndex = xx + (yy * sensor.DepthStream.FrameWidth);
                     short depth = depthPixels[depthIndex].Depth;
                     DepthImagePixel depthPixel = depthPixels[depthIndex];
                     int player = depthPixel.PlayerIndex;
