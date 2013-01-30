@@ -67,7 +67,7 @@ namespace HtwKinect
         private void HelperReady()
         {
             Skeleton skeleton = KinectHelper.Instance.GetFixedSkeleton();
-            ProcessSkeleton(skeleton);
+            //ProcessSkeleton(skeleton);
         }
 
         private void ProcessSkeleton(Skeleton skeleton)
@@ -95,7 +95,7 @@ namespace HtwKinect
             }
             ColorImagePoint cp = KinectHelper.Instance.Sensor.CoordinateMapper.MapSkeletonPointToColorPoint(skeleton.Joints[JointType.HandRight].Position, KinectHelper.Instance.ColorImageFormat);
 
-            Point currentPoint = new Point(cp.X*6, cp.Y*6);
+            Point currentPoint = new Point(cp.X*2, cp.Y*2);
             Drag(currentPoint);
         }
 
