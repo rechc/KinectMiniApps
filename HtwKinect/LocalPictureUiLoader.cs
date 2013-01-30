@@ -65,9 +65,9 @@ namespace HtwKinect
                 gsc.Start(instance.Sensor, true);
                 instance.ReadyEvent += (sender, args) => RenderGreenScreen(gsc);
             }
-            catch (Exception e)
+            catch
             {
-                
+                //Dieser Try Catch ist dazu da, damit die Bilder geladen werden können, auch wenn kein Kinectsensor angeschloßen ist.
             }
             return grid;
         }
