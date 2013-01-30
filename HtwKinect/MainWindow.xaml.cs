@@ -256,6 +256,9 @@ namespace HtwKinect
                         if (!_waitForTextList)
                             MyLoopList.AnimV(false);
                         break;
+                    default:
+                        Environment.Exit(0);
+                        break;
                 }
 
                 e.Handled = true;

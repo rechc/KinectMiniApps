@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -75,14 +76,18 @@ namespace HtwKinect
             var gsc = new GreenScreenControl.GreenScreenControl();
             grid.Children.Add(gsc);
             var instance = KinectHelper.GetInstance();
-            gsc.Start(instance.GetSensor(), instance.DepthImageFormat, instance.ColorImageFormat);
+            gsc.Start(instance.GetSensor(), true);
             instance.AllFramesDispatchedEvent += (sender, args) => RenderGreenScreen(gsc);
             return grid;
         }
 
+        private int a = 0;
         private void RenderGreenScreen(GreenScreenControl.GreenScreenControl greenScreenControl)
         {
-            if (greenScreenControl.Parent == null) return;
+            if (((Grid)greenScreenControl.Parent).Parent == null)
+            {
+                return; //nur auf dingen die auch angezeigt werden bitte, danke.
+            }
             var instance = KinectHelper.GetInstance();
             greenScreenControl.InvalidateVisual(instance.GetDepthImagePixels(), instance.GetColorPixels()); 
         }
