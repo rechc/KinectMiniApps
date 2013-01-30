@@ -98,7 +98,7 @@ namespace GreenScreenControl
         {
             base.OnRender(drawingContext);
             // Nicht ueber den Rand des Controls hinaus zeichnen.
-            drawingContext.PushClip(new RectangleGeometry(new Rect(0, 0, Width, Height)));
+            drawingContext.PushClip(new RectangleGeometry(new Rect(0, 0, ActualWidth, ActualHeight)));
             if(DepthPixels != null && ColorPixels != null)
                 Antialiasing(drawingContext);
         }
@@ -201,10 +201,8 @@ namespace GreenScreenControl
                     this.depthWidth * ((this.playerOpacityMaskImage.Format.BitsPerPixel + 7) / 8),
                     0);
 
-            Width = ActualWidth;
-            Height = ActualHeight;
-            drawingContext.PushOpacityMask(new ImageBrush() { ImageSource = this.playerOpacityMaskImage });
-            drawingContext.DrawImage(colorBitmap, new Rect(0, 0, Width, Height));
+                drawingContext.PushOpacityMask(new ImageBrush() { ImageSource = this.playerOpacityMaskImage }); //TODO immer new ImageBrush??
+                drawingContext.DrawImage(colorBitmap, new Rect(0, 0, ActualWidth, ActualHeight)); 
         }
 
         private void AddBorderPixels(int greenScreenIndex)
