@@ -62,7 +62,7 @@ namespace HtwKinect
                 var gsc = new GreenScreenControl.GreenScreenControl();
                 grid.Children.Add(gsc);
                 var instance = KinectHelper.Instance;
-                gsc.Start(instance.Sensor, true);
+                gsc.Start(instance.Sensor, false);
                 instance.ReadyEvent += (sender, args) => RenderGreenScreen(gsc);
             }
             catch

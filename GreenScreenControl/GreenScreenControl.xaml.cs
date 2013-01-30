@@ -182,7 +182,7 @@ namespace GreenScreenControl
                         null);
 
                     //MaskedColor.OpacityMask = new ImageBrush { ImageSource = playerOpacityMaskImage };
-                    drawingContext.PushOpacityMask(new ImageBrush { ImageSource = _playerOpacityMaskImage});
+                    //drawingContext.PushOpacityMask(new ImageBrush { ImageSource = _playerOpacityMaskImage});
                 }
 
                 _playerOpacityMaskImage.WritePixels(
@@ -191,7 +191,9 @@ namespace GreenScreenControl
                     _depthWidth * ((_playerOpacityMaskImage.Format.BitsPerPixel + 7) / 8),
                     0);
 
-                drawingContext.PushOpacityMask(new ImageBrush() { ImageSource = _playerOpacityMaskImage }); //TODO immer new ImageBrush??
+                drawingContext.PushOpacityMask(new ImageBrush { ImageSource = _playerOpacityMaskImage});
+                drawingContext.PushTransform(new ScaleTransform() { ScaleX = 1.2, ScaleY = 1.2  });
+                drawingContext.PushTransform(new TranslateTransform { X = -70, Y = -70 });
                 drawingContext.DrawImage(_colorBitmap, new Rect(0, 0, ActualWidth, ActualHeight)); 
         }
 
