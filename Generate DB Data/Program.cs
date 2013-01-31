@@ -10,7 +10,7 @@ namespace Generate_DB_Data
     {
         static void Main(string[] args)
         {
-            int entryCount = 10;
+            int entryCount = 0;
             if(args.Count() == 1)
                 entryCount = int.Parse(args.First());
             new CreateData(entryCount);
