@@ -48,10 +48,10 @@ namespace GenderDetector
          */
         private void InitializeSensor()
         {
-            kh = KinectHelper.GetInstance();
-            this.colorBitmap = new WriteableBitmap(kh.GetSensor().ColorStream.FrameWidth, kh.GetSensor().ColorStream.FrameHeight, 96.0, 96.0, PixelFormats.Bgr32, null);
+            kh = KinectHelper.Instance;
+            this.colorBitmap = new WriteableBitmap(kh.Sensor.ColorStream.FrameWidth, kh.Sensor.ColorStream.FrameHeight, 96.0, 96.0, PixelFormats.Bgr32, null);
             this.Image.Source = this.colorBitmap;
-            kh.AllFramesDispatchedEvent += SensorColorFrameReady;
+            kh.ReadyEvent += SensorColorFrameReady;
         }
 
         /**
@@ -62,7 +62,7 @@ namespace GenderDetector
             // Write the pixel data into our bitmap
             this.colorBitmap.WritePixels(
                 new Int32Rect(0, 0, this.colorBitmap.PixelWidth, this.colorBitmap.PixelHeight),
-                kh.GetColorPixels(),
+                kh.ColorPixels,
                 this.colorBitmap.PixelWidth * sizeof(int),
                 0);
         }
@@ -125,14 +125,14 @@ namespace GenderDetector
             int width = 120;
             int height = 120;
 
-            if (kh.GetSkeletons().Count(t => t.TrackingState == SkeletonTrackingState.Tracked) > 0)
+            if (kh.Skeletons.Count(t => t.TrackingState == SkeletonTrackingState.Tracked) > 0)
             {
                 // Ersten Player selektieren
-                Skeleton player = kh.GetSkeletons().First(p => p.TrackingState == SkeletonTrackingState.Tracked);
+                Skeleton player = kh.Skeletons.First(p => p.TrackingState == SkeletonTrackingState.Tracked);
                 if (player != null)
                 {
                     // Punkte des Kopfes auf ColorPoints mappen
-                    var point = kh.GetSensor().CoordinateMapper.MapSkeletonPointToColorPoint(player.Joints[JointType.Head].Position, ColorImageFormat.RgbResolution640x480Fps30);
+                    var point = kh.Sensor.CoordinateMapper.MapSkeletonPointToColorPoint(player.Joints[JointType.Head].Position, ColorImageFormat.RgbResolution640x480Fps30);
                     
                     // Überprüfung das nicht außerhalb des Bildes ausgenschnitten wird
                     if ((int)point.X - 70 <= 0 || (int)point.Y - 70 >= 470)
