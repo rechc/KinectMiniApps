@@ -28,6 +28,7 @@ namespace Database
         public int DayCount { get; set; }
         public string BoardType { get; set; }
         public byte[] Image { get; set; }
+        public int CountryId { get; set; }
     
         public virtual Country Country { get; set; }
         public virtual ICollection<ExtendedInformation> ExtendedInformation { get; set; }

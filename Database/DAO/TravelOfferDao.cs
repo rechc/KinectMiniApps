@@ -55,7 +55,7 @@ namespace Database.DAO
                 Insert();
             else
                 Update();
-            new CountryDao(_context).Save(offer.Country);
+            new ExtendedInformationDao(_context).Save(offer.ExtendedInformation);
         }
     }
 }
