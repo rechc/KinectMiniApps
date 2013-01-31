@@ -31,7 +31,7 @@ namespace HtwKinect
 
         public FrameWindow()
         {
-            InitializeComponent();
+            InitializeComponent();            
         }
 
         void Button_Click(object sender, RoutedEventArgs e)
@@ -175,6 +175,9 @@ namespace HtwKinect
                 " Walking:" + peopleDetector.GetWalkingPeople().Count +
                 " Standing:" + peopleDetector.GetStayingPeople().Count
                 + " Looking:" + peopleDetector.GetLookingPeople().Count;
+
+           
+
             /* this.LblErkanntOutput.Content = peopleDetector.GetPositionOnlyPeople().Count;
              this.LblTrackedOutput.Content = peopleDetector.GetTrackedPeople().Count;
              this.LblLaufenOutput.Content = peopleDetector.GetWalkingPeople().Count;
