@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Globalization;
-using System.IO;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Kinect;
@@ -12,94 +9,87 @@ namespace GreenScreenControl
     /// <summary>
     /// Interaktionslogik für GreenScreenControl.xaml
     /// </summary>
-    public partial class GreenScreenControl : UserControl
+    public partial class GreenScreenControl
     {
-        public KinectSensor Sensor { get; set; }
+        private KinectSensor _sensor;
 
-        private int[] greenScreenPixelData;
-        private ColorImagePoint[] colorCoordinates;
+        private int[] _greenScreenPixelData;
+        private ColorImagePoint[] _colorCoordinates;
 
-        private int opaquePixelValue = -1;
 
-        private int colorToDepthDivisor;
-        private int depthWidth;
-        private int depthHeight;
-        private WriteableBitmap colorBitmap;
-        private WriteableBitmap playerOpacityMaskImage = null;
+        private int _colorToDepthDivisor;
+        private int _depthWidth;
+        private int _depthHeight;
+        private WriteableBitmap _colorBitmap;
+        private WriteableBitmap _playerOpacityMaskImage;
 
-        public DepthImagePixel[] DepthPixels { get; set; }
-        public byte[] ColorPixels { get; set; }
+        private DepthImagePixel[] _depthPixels;
+        private byte[] _colorPixels;
 
         //Variables for antialiasing
-        private int[] opaqueMatrix = new int[16];
-        private int opaqueMatrixLenghtSqrt;
-        private int[] border;
-        private int borderCounter = 0;
+        private int[] _border;
+        private int _borderCounter;
 
-        private const int TOP = 1;
-        private const int RIGHT = 2;
-        private const int BOTTOM = 4;
-        private const int LEFT = 8;
+        private const int Top = 1;
+        private const int Right = 2;
+        private const int Bottom = 4;
+        private const int Left = 8;
 
-        private const int TOP_RIGHT = TOP + RIGHT;
-        private const int RIGHT_BOTTOM = RIGHT + BOTTOM;
-        private const int BOTTOM_LEFT = BOTTOM + LEFT;
-        private const int LEFT_TOP = LEFT + TOP;
+        private const int TopRight = Top + Right;
+        private const int RightBottom = Right + Bottom;
+        private const int BottomLeft = Bottom + Left;
+        private const int LeftTop = Left + Top;
 
-        private const int OPAQUE_POINT = -1;
-        private const int BORDER_POINT = -2;
-        private const int CORNER_POINT = -3; // BROWN POINT
-        private const int LINE_POINT = -4;
-        private const int STAIR_POINT = -5;
+        private const int OpaquePoint = -1;
+        private const int BorderPoint = -2;
+        private const int CornerPoint = -3; // BROWN POINT
+        private const int LinePoint = -4;
+        private const int StairPoint = -5;
 
-        private bool antialiasing = true;
+        private bool _antialiasing;
 
-        private DepthImageFormat depthImageFormat;
-        private ColorImageFormat colorImageFormat;
 
         public void InvalidateVisual(DepthImagePixel[] depthPixels, byte[] colorPixels)
         {
-            DepthPixels = depthPixels;
-            ColorPixels = colorPixels;
+            _depthPixels = depthPixels;
+            _colorPixels = colorPixels;
             InvalidateVisual();
         }
 
         public GreenScreenControl()
         {
+            
             InitializeComponent();
         }
 
-        public void Start(KinectSensor sensor, DepthImageFormat depthFormat, ColorImageFormat colorFormat)
+        public void Start(KinectSensor sensor, bool antialiassing)
         {
-            this.Sensor = sensor;
-            this.depthImageFormat = depthFormat;
-            this.colorImageFormat = colorFormat;
+            _antialiasing = antialiassing;
+            _sensor = sensor;
 
-            opaqueMatrixLenghtSqrt = Convert.ToInt32(Math.Sqrt(opaqueMatrix.Length));
+            _depthWidth = _sensor.DepthStream.FrameWidth;
+            _depthHeight = _sensor.DepthStream.FrameHeight;
 
-            this.depthWidth = Sensor.DepthStream.FrameWidth;
-            this.depthHeight = Sensor.DepthStream.FrameHeight;
+            int colorWidth = _sensor.ColorStream.FrameWidth;
+            int colorHeight = _sensor.ColorStream.FrameHeight;
 
-            int colorWidth = Sensor.ColorStream.FrameWidth;
-            int colorHeight = Sensor.ColorStream.FrameHeight;
+            _greenScreenPixelData = new int[_sensor.DepthStream.FramePixelDataLength];
 
-            this.greenScreenPixelData = new int[Sensor.DepthStream.FramePixelDataLength];
+            _colorToDepthDivisor = colorWidth / _depthWidth;
 
-            this.colorToDepthDivisor = colorWidth / this.depthWidth;
+            _colorBitmap = new WriteableBitmap(colorWidth, colorHeight, 96.0, 96.0, PixelFormats.Bgr32, null);
+            _border = new int[_greenScreenPixelData.Length];
 
-            this.colorBitmap = new WriteableBitmap(colorWidth, colorHeight, 96.0, 96.0, PixelFormats.Bgr32, null);
-            border = new int[this.greenScreenPixelData.Length];
-
-            greenScreenPixelData = new int[Sensor.DepthStream.FramePixelDataLength];
-            colorCoordinates = new ColorImagePoint[Sensor.DepthStream.FramePixelDataLength];
+            _greenScreenPixelData = new int[_sensor.DepthStream.FramePixelDataLength];
+            _colorCoordinates = new ColorImagePoint[_sensor.DepthStream.FramePixelDataLength];
         }
 
         protected override void OnRender(DrawingContext drawingContext)
         {
             base.OnRender(drawingContext);
             // Nicht ueber den Rand des Controls hinaus zeichnen.
-            drawingContext.PushClip(new RectangleGeometry(new Rect(0, 0, Width, Height)));
-            if(DepthPixels != null && ColorPixels != null)
+            drawingContext.PushClip(new RectangleGeometry(new Rect(0, 0, ActualWidth, ActualHeight)));
+            if(_depthPixels != null && _colorPixels != null)
                 Antialiasing(drawingContext);
         }
 
@@ -107,275 +97,275 @@ namespace GreenScreenControl
         {
             // do our processing outside of the using block
             // so that we return resources to the kinect as soon as possible
-                this.Sensor.CoordinateMapper.MapDepthFrameToColorFrame(
-                    depthImageFormat,
-                    this.DepthPixels,
-                    colorImageFormat,
-                    this.colorCoordinates);
+            _sensor.CoordinateMapper.MapDepthFrameToColorFrame(
+                _sensor.DepthStream.Format,
+                _depthPixels,
+                _sensor.ColorStream.Format,
+                _colorCoordinates);
 
-                Array.Clear(this.greenScreenPixelData, 0, this.greenScreenPixelData.Length);
+            Array.Clear(_greenScreenPixelData, 0, _greenScreenPixelData.Length);
 
-                borderCounter = 0;
+            _borderCounter = 0;
 
-                // loop over each row and column of the depth
-                for (int y = 0; y < this.depthHeight; ++y)
+            // loop over each row and column of the depth
+            for (int y = 0; y < _depthHeight; ++y)
+            {
+                for (int x = 0; x < _depthWidth; ++x)
                 {
-                    for (int x = 0; x < this.depthWidth; ++x)
+                    // calculate index into depth array
+                    int depthIndex = x + (y * _depthWidth);
+
+                    DepthImagePixel depthPixel = _depthPixels[depthIndex];
+
+                    int player = depthPixel.PlayerIndex;
+
+                    // if we're tracking a player for the current pixel, do green screen
+                    if (player > 0)
                     {
-                        // calculate index into depth array
-                        int depthIndex = x + (y * this.depthWidth);
+                        //found = true;
 
-                        DepthImagePixel depthPixel = this.DepthPixels[depthIndex];
+                        // retrieve the depth to color mapping for the current depth pixel
+                        ColorImagePoint colorImagePoint = _colorCoordinates[depthIndex];
 
-                        int player = depthPixel.PlayerIndex;
+                        // scale color coordinates to depth resolution
+                        int colorInDepthX = colorImagePoint.X / _colorToDepthDivisor;
+                        int colorInDepthY = colorImagePoint.Y / _colorToDepthDivisor;
 
-                        // if we're tracking a player for the current pixel, do green screen
-                        if (player > 0)
+                        // make sure the depth pixel maps to a valid point in color space
+                        // check y > 0 and y < depthHeight to make sure we don't write outside of the array
+                        // check x > 0 instead of >= 0 since to fill gaps we set opaque current pixel plus the one to the left
+                        // because of how the sensor works it is more correct to do it this way than to set to the right
+                        if (colorInDepthX > 0 && colorInDepthX < _depthWidth && colorInDepthY >= 0 && colorInDepthY < _depthHeight)
                         {
-                            //found = true;
+                            // calculate index into the green screen pixel array
+                            int greenScreenIndex = colorInDepthX + (colorInDepthY * _depthWidth);
 
-                            // retrieve the depth to color mapping for the current depth pixel
-                            ColorImagePoint colorImagePoint = this.colorCoordinates[depthIndex];
-
-                            // scale color coordinates to depth resolution
-                            int colorInDepthX = colorImagePoint.X / this.colorToDepthDivisor;
-                            int colorInDepthY = colorImagePoint.Y / this.colorToDepthDivisor;
-
-                            // make sure the depth pixel maps to a valid point in color space
-                            // check y > 0 and y < depthHeight to make sure we don't write outside of the array
-                            // check x > 0 instead of >= 0 since to fill gaps we set opaque current pixel plus the one to the left
-                            // because of how the sensor works it is more correct to do it this way than to set to the right
-                            if (colorInDepthX > 0 && colorInDepthX < this.depthWidth && colorInDepthY >= 0 && colorInDepthY < this.depthHeight)
+                            if (_antialiasing)
                             {
-                                // calculate index into the green screen pixel array
-                                int greenScreenIndex = colorInDepthX + (colorInDepthY * this.depthWidth);
+                                AddBorderPixels(greenScreenIndex);
+                                _greenScreenPixelData[greenScreenIndex] = OpaquePoint;
+                            }
+                            else
+                            {
 
-                                if (antialiasing)
-                                {
-                                    AddBorderPixels(greenScreenIndex);
-                                    this.greenScreenPixelData[greenScreenIndex] = OPAQUE_POINT;
-                                }
-                                else
-                                {
-
-                                    this.greenScreenPixelData[greenScreenIndex] = OPAQUE_POINT;
-                                    this.greenScreenPixelData[greenScreenIndex - 1] = OPAQUE_POINT;
-                                }
+                                _greenScreenPixelData[greenScreenIndex] = OpaquePoint;
+                                _greenScreenPixelData[greenScreenIndex - 1] = OpaquePoint;
                             }
                         }
                     }
                 }
+            }
 
-                if (antialiasing)
-                {
-                    Antialiasing();
-                    //HidePixels();
-                }
+            if (_antialiasing)
+            {
+                Antialiasing();
+                //HidePixels();
+            }
 
-            // do our processing outside of the using block
-            // so that we return resources to the kinect as soon as possible
-                // Write the pixel data into our bitmap
-                this.colorBitmap.WritePixels(
-                    new Int32Rect(0, 0, this.colorBitmap.PixelWidth, this.colorBitmap.PixelHeight),
-                    this.ColorPixels,
-                    this.colorBitmap.PixelWidth * sizeof(int),
-                    0);
+        // do our processing outside of the using block
+        // so that we return resources to the kinect as soon as possible
+            // Write the pixel data into our bitmap
+            _colorBitmap.WritePixels(
+                new Int32Rect(0, 0, _colorBitmap.PixelWidth, _colorBitmap.PixelHeight),
+                _colorPixels,
+                _colorBitmap.PixelWidth * sizeof(int),
+                0);
 
-                if (this.playerOpacityMaskImage == null)
-                {
-                    this.playerOpacityMaskImage = new WriteableBitmap(
-                        this.depthWidth,
-                        this.depthHeight,
-                        96,
-                        96,
-                        PixelFormats.Bgra32,
-                        null);
+            if (_playerOpacityMaskImage == null)
+            {
+                _playerOpacityMaskImage = new WriteableBitmap(
+                    _depthWidth,
+                    _depthHeight,
+                    96,
+                    96,
+                    PixelFormats.Bgra32,
+                    null);
+            }
 
-                    //MaskedColor.OpacityMask = new ImageBrush { ImageSource = this.playerOpacityMaskImage };
-                    drawingContext.PushOpacityMask(new ImageBrush() { ImageSource = this.playerOpacityMaskImage});
-                }
+            _playerOpacityMaskImage.WritePixels(
+                new Int32Rect(0, 0, _depthWidth, _depthHeight),
+                _greenScreenPixelData,
+                _depthWidth * ((_playerOpacityMaskImage.Format.BitsPerPixel + 7) / 8),
+                0);
 
-                this.playerOpacityMaskImage.WritePixels(
-                    new Int32Rect(0, 0, this.depthWidth, this.depthHeight),
-                    this.greenScreenPixelData,
-                    this.depthWidth * ((this.playerOpacityMaskImage.Format.BitsPerPixel + 7) / 8),
-                    0);
-
-            drawingContext.PushOpacityMask(new ImageBrush() { ImageSource = this.playerOpacityMaskImage });
-            drawingContext.DrawImage(colorBitmap, new Rect(0, 0, Width, Height));
+            drawingContext.PushOpacityMask(new ImageBrush { ImageSource = _playerOpacityMaskImage});
+            drawingContext.PushTransform(new ScaleTransform { ScaleX = 1.075, ScaleY = 1.075 });
+            drawingContext.PushTransform(new TranslateTransform {X = -ActualWidth*0.05, Y = -ActualHeight*0.085});
+            drawingContext.DrawImage(_colorBitmap, new Rect(0, 0, ActualWidth, ActualHeight)); 
+                
         }
 
         private void AddBorderPixels(int greenScreenIndex)
         {
             int leftPixel = greenScreenIndex - 1;
             int rightPixel = greenScreenIndex + 1;
-            int topPixel = greenScreenIndex - this.depthWidth;
-            int bottomPixel = greenScreenIndex + this.depthWidth;
+            int topPixel = greenScreenIndex - _depthWidth;
+            int bottomPixel = greenScreenIndex + _depthWidth;
 
             int leftTopPixel = topPixel - 1;
             int rightTopPixel = topPixel + 1;
             int leftBottomPixel = bottomPixel - 1;
             int rightBottomPixel = bottomPixel + 1;
 
-            if (this.greenScreenPixelData[leftPixel] != OPAQUE_POINT)
+            if (_greenScreenPixelData[leftPixel] != OpaquePoint)
             {
-                this.greenScreenPixelData[leftPixel] = BORDER_POINT;
+                _greenScreenPixelData[leftPixel] = BorderPoint;
             }
 
-            if (greenScreenPixelData.Length > rightPixel)
+            if (_greenScreenPixelData.Length > rightPixel)
             {
-                this.greenScreenPixelData[rightPixel] = BORDER_POINT;
+                _greenScreenPixelData[rightPixel] = BorderPoint;
             }
 
 
-            if (this.greenScreenPixelData[leftTopPixel] != OPAQUE_POINT)
+            if (_greenScreenPixelData[leftTopPixel] != OpaquePoint)
             {
-                this.greenScreenPixelData[leftTopPixel] = BORDER_POINT;
+                _greenScreenPixelData[leftTopPixel] = BorderPoint;
             }
 
-            if (this.greenScreenPixelData[rightTopPixel] != OPAQUE_POINT)
+            if (_greenScreenPixelData[rightTopPixel] != OpaquePoint)
             {
-                this.greenScreenPixelData[rightTopPixel] = BORDER_POINT;
+                _greenScreenPixelData[rightTopPixel] = BorderPoint;
             }
 
-            if (this.greenScreenPixelData[topPixel] != OPAQUE_POINT)
+            if (_greenScreenPixelData[topPixel] != OpaquePoint)
             {
-                this.greenScreenPixelData[topPixel] = BORDER_POINT;
+                _greenScreenPixelData[topPixel] = BorderPoint;
             }
 
-            if (greenScreenPixelData.Length > bottomPixel)
+            if (_greenScreenPixelData.Length > bottomPixel)
             {
-                this.greenScreenPixelData[bottomPixel] = BORDER_POINT;
-                this.greenScreenPixelData[leftBottomPixel] = BORDER_POINT;
+                _greenScreenPixelData[bottomPixel] = BorderPoint;
+                _greenScreenPixelData[leftBottomPixel] = BorderPoint;
             }
 
-            if (greenScreenPixelData.Length > rightBottomPixel)
+            if (_greenScreenPixelData.Length > rightBottomPixel)
             {
 
-                this.greenScreenPixelData[rightBottomPixel] = BORDER_POINT;
+                _greenScreenPixelData[rightBottomPixel] = BorderPoint;
             }
         }
 
         private void HidePixels()
         {
-            for (int i = 0; i < this.greenScreenPixelData.Length; i++)
+            for (int i = 0; i < _greenScreenPixelData.Length; i++)
             {
-                if (this.greenScreenPixelData[i] == -1 || this.greenScreenPixelData[i] == BORDER_POINT)
+                if (_greenScreenPixelData[i] == -1 || _greenScreenPixelData[i] == BorderPoint)
                 {
-                    this.greenScreenPixelData[i] = 0;
+                    _greenScreenPixelData[i] = 0;
                 }
             }
         }
 
         private void Antialiasing()
         {
-            for (int i = 0; i < this.greenScreenPixelData.Length; i++)
+            for (int i = 0; i < _greenScreenPixelData.Length; i++)
             {
-                if (this.greenScreenPixelData[i] == -2)
+                if (_greenScreenPixelData[i] == -2)
                 {
-                    this.border[borderCounter++] = i;
+                    _border[_borderCounter++] = i;
                 }
             }
 
-            for (int i = 0; i < borderCounter; i++)
+            for (int i = 0; i < _borderCounter; i++)
             {
                 int opaqueFound = 0;
-                int idx = border[i];
-                if (idx > this.depthWidth && idx < (this.depthWidth - 1) * depthHeight)
+                int idx = _border[i];
+                if (idx > _depthWidth && idx < (_depthWidth - 1) * _depthHeight)
                 {
-                    if (this.greenScreenPixelData[idx - this.depthWidth] == OPAQUE_POINT)
+                    if (_greenScreenPixelData[idx - _depthWidth] == OpaquePoint)
                     {
                         // Top 1
-                        opaqueFound += TOP;
+                        opaqueFound += Top;
                     }
-                    if (this.greenScreenPixelData[idx + 1] == OPAQUE_POINT)
+                    if (_greenScreenPixelData[idx + 1] == OpaquePoint)
                     {
                         // Right 2
-                        opaqueFound += RIGHT;
+                        opaqueFound += Right;
                     }
-                    if (this.greenScreenPixelData.Length > idx + this.depthWidth && this.greenScreenPixelData[idx + this.depthWidth] == OPAQUE_POINT)
+                    if (_greenScreenPixelData.Length > idx + _depthWidth && _greenScreenPixelData[idx + _depthWidth] == OpaquePoint)
                     {
                         // Bottom 4
-                        opaqueFound += BOTTOM;
+                        opaqueFound += Bottom;
                     }
-                    if (this.greenScreenPixelData[idx - 1] == OPAQUE_POINT)
+                    if (_greenScreenPixelData[idx - 1] == OpaquePoint)
                     {
                         // Left 8
-                        opaqueFound += LEFT;
+                        opaqueFound += Left;
                     }
                     if (opaqueFound >= 2)
                     {
-                        this.greenScreenPixelData[idx] = CORNER_POINT;
-                        int hLength = 0;
-                        int vLength = 0;
-                        double diff = 0;
-                        int pointsToDraw = 0;
+                        _greenScreenPixelData[idx] = CornerPoint;
+                        int hLength;
+                        int vLength;
+                        double diff;
+                        int pointsToDraw;
                         switch (opaqueFound)
                         {
-                            case TOP_RIGHT:
+                            case TopRight:
                                 hLength = LeftSearch(idx, -1);
                                 vLength = BottomSearch(idx, 1);
                                 // DRAW stairs
                                 if (hLength != 0 && vLength != 0)
                                 {
-                                    diff = hLength / vLength;
+                                    diff = hLength / (double)vLength;
                                     for (int y = 0; y < vLength - 1; y++)
                                     {
                                         pointsToDraw = (int)Math.Round((vLength - y) * diff) - 1;
                                         for (int x = 0; x < pointsToDraw; x++)
                                         {
-                                            this.greenScreenPixelData[idx + ((y + 1) * this.depthWidth) - 1 - x] = STAIR_POINT;
+                                            _greenScreenPixelData[idx + ((y + 1) * _depthWidth) - 1 - x] = StairPoint;
                                         }
                                     }
                                 }
                                 break;
-                            case RIGHT_BOTTOM:
+                            case RightBottom:
                                 hLength = LeftSearch(idx, 1);
                                 vLength = TopSearch(idx, 1);
                                 // DRAW stairs
                                 if (hLength != 0 && vLength != 0)
                                 {
-                                    diff = hLength / vLength;
+                                    diff = hLength / (double)vLength;
                                     for (int y = 0; y < vLength - 1; y++)
                                     {
                                         pointsToDraw = (int)Math.Round((vLength - y) * diff) - 1;
                                         for (int x = 0; x < pointsToDraw; x++)
                                         {
-                                            this.greenScreenPixelData[idx - ((y + 1) * this.depthWidth) - 1 - x] = STAIR_POINT;
+                                            _greenScreenPixelData[idx - ((y + 1) * _depthWidth) - 1 - x] = StairPoint;
                                         }
                                     }
                                 }
                                 break;
-                            case BOTTOM_LEFT:
+                            case BottomLeft:
                                 hLength = RightSearch(idx, -1);
                                 vLength = TopSearch(idx, -1);
                                 // DRAW stairs
                                 if (hLength != 0 && vLength != 0)
                                 {
-                                    diff = hLength / vLength;
+                                    diff = hLength / (double)vLength;
                                     for (int y = 0; y < vLength - 1; y++)
                                     {
                                         pointsToDraw = (int)Math.Round((vLength - y) * diff) - 1;
                                         for (int x = 0; x < pointsToDraw; x++)
                                         {
-                                            this.greenScreenPixelData[idx - ((y + 1) * this.depthWidth) + 1 + x] = STAIR_POINT;
+                                            _greenScreenPixelData[idx - ((y + 1) * _depthWidth) + 1 + x] = StairPoint;
                                         }
                                     }
                                 }
                                 break;
-                            case LEFT_TOP:
+                            case LeftTop:
                                 hLength = RightSearch(idx, -1);
                                 vLength = BottomSearch(idx, -1);
                                 // DRAW stairs
                                 if (hLength != 0 && vLength != 0)
                                 {
-                                    diff = hLength / vLength;
+                                    diff = hLength / (double)vLength;
                                     for (int y = 0; y < vLength - 1; y++)
                                     {
                                         pointsToDraw = (int)Math.Round((vLength - y) * diff) - 1;
                                         for (int x = 0; x < pointsToDraw; x++)
                                         {
-                                            this.greenScreenPixelData[idx + ((y + 1) * this.depthWidth) + 1 + x] = STAIR_POINT;
+                                            _greenScreenPixelData[idx + ((y + 1) * _depthWidth) + 1 + x] = StairPoint;
                                         }
                                     }
                                 }
@@ -384,7 +374,7 @@ namespace GreenScreenControl
                     }
                     else
                     {
-                        this.greenScreenPixelData[idx] = 0;
+                        _greenScreenPixelData[idx] = 0;
                     }
                 }
             }
@@ -394,14 +384,14 @@ namespace GreenScreenControl
         {
             Boolean found = false;
             int x = 0;
-            int idx = index - (this.depthWidth * x) + site;
-            while (!found && idx < greenScreenPixelData.Length)
+            int idx = index - (_depthWidth * x) + site;
+            while (!found && idx < _greenScreenPixelData.Length)
             {
-                if (this.greenScreenPixelData[idx] == -1)
+                if (_greenScreenPixelData[idx] == -1)
                 {
-                    this.greenScreenPixelData[idx - site] = LINE_POINT;
+                    _greenScreenPixelData[idx - site] = LinePoint;
                     x++;
-                    idx -= this.depthWidth;
+                    idx -= _depthWidth;
                 }
                 else
                 {
@@ -417,9 +407,9 @@ namespace GreenScreenControl
             int x = 0;
             while (!found)
             {
-                if (this.greenScreenPixelData[index + x + (site * this.depthWidth)] == -1)
+                if (_greenScreenPixelData[index + x + (site * _depthWidth)] == -1)
                 {
-                    this.greenScreenPixelData[index + x] = LINE_POINT;
+                    _greenScreenPixelData[index + x] = LinePoint;
                     x++;
                 }
                 else
@@ -434,15 +424,15 @@ namespace GreenScreenControl
         {
             Boolean found = false;
             int x = 0;
-            int idx = index + (this.depthWidth * x) + site;
-            while (!found && idx < this.greenScreenPixelData.Length)
+            int idx = index + (_depthWidth * x) + site;
+            while (!found && idx < _greenScreenPixelData.Length)
             {
 
-                if (this.greenScreenPixelData[idx] == -1)
+                if (_greenScreenPixelData[idx] == -1)
                 {
-                    this.greenScreenPixelData[idx - site] = LINE_POINT;
+                    _greenScreenPixelData[idx - site] = LinePoint;
                     x++;
-                    idx += this.depthWidth;
+                    idx += _depthWidth;
                 }
                 else
                 {
@@ -458,9 +448,9 @@ namespace GreenScreenControl
             int x = 0;
             while (!found)
             {
-                if (this.greenScreenPixelData[index - x + (site * this.depthWidth)] == -1)
+                if (_greenScreenPixelData[index - x + (site * _depthWidth)] == -1)
                 {
-                    this.greenScreenPixelData[index - x] = LINE_POINT;
+                    _greenScreenPixelData[index - x] = LinePoint;
                     x++;
                 }
                 else

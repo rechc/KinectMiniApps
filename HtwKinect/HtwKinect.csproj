@@ -110,6 +110,10 @@
       <Project>{e7cee4bd-1956-4199-9525-4b5583557d56}</Project>
       <Name>AccessoryLib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\GreenScreenControl\GreenScreenLib.csproj">
+      <Project>{b2aace14-c7f6-4615-9f1f-228f13780687}</Project>
+      <Name>GreenScreenLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HandDetection\HandDetection.csproj">
       <Project>{5329d417-7747-4e92-8f9a-296aa39035bd}</Project>
       <Name>HandDetection</Name>
@@ -124,6 +128,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="FaceTrackLib.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Accessories\Hat.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="images\Beach\BeachPescara %281%29.jpg">

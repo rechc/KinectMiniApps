@@ -17,7 +17,6 @@ namespace HtwKinect
         private bool _doDrag;
         private bool _waitForTextList;
         private bool _mouseIsUp;
-        private KinectHelper _kinectHelper;
         private KinectProjectUiBuilder _kinectProjectUiBuilder;
 
         private readonly List<int> _savedDirections = new List<int>();
@@ -61,15 +60,14 @@ namespace HtwKinect
         private void InitKinect()
         {
             _handTracker = new HandTracker();
-            _kinectHelper = KinectHelper.GetInstance();
-            _kinectHelper.AllFramesDispatchedEvent += (s, _) => HelperReady();
+            KinectHelper.Instance.ReadyEvent += (s, _) => HelperReady();
         }
 
         /*Callback fur ein fertiges Frame vom Kinect-Sensor*/
         private void HelperReady()
         {
-            Skeleton skeleton = _kinectHelper.GetFixedSkeleton();
-            ProcessSkeleton(skeleton);
+            Skeleton skeleton = KinectHelper.Instance.GetFixedSkeleton();
+            //ProcessSkeleton(skeleton);
         }
 
         private void ProcessSkeleton(Skeleton skeleton)
@@ -79,10 +77,10 @@ namespace HtwKinect
                 return;
             }
 
-            HandStatus handStatus = _handTracker.GetBufferedHandStatus(_kinectHelper.GetDepthImagePixels(),
+            HandStatus handStatus = _handTracker.GetBufferedHandStatus(KinectHelper.Instance.DepthImagePixels,
                                                                        skeleton.Joints[JointType.HandRight],
-                                                                       _kinectHelper.GetSensor(),
-                                                                       _kinectHelper.GetDepthImageFrame().Format);
+                                                                       KinectHelper.Instance.Sensor,
+                                                                       KinectHelper.Instance.DepthImageFormat);
             
             switch (handStatus)
             {
@@ -95,9 +93,9 @@ namespace HtwKinect
                 default:
                     return;
             }
-            ColorImagePoint cp = _kinectHelper.GetSensor().CoordinateMapper.MapSkeletonPointToColorPoint(skeleton.Joints[JointType.HandRight].Position, _kinectHelper.GetColorImageFrame().Format);
+            ColorImagePoint cp = KinectHelper.Instance.Sensor.CoordinateMapper.MapSkeletonPointToColorPoint(skeleton.Joints[JointType.HandRight].Position, KinectHelper.Instance.ColorImageFormat);
 
-            Point currentPoint = new Point(cp.X*6, cp.Y*6);
+            Point currentPoint = new Point(cp.X*2, cp.Y*2);
             Drag(currentPoint);
         }
 
@@ -255,6 +253,13 @@ namespace HtwKinect
                     case Key.Down:
                         if (!_waitForTextList)
                             MyLoopList.AnimV(false);
+                        break;
+                    case Key.Escape:
+                        Application.Current.Shutdown();
+                        break;
+                    default:
+                        //Environment.Exit(0);
+                        Application.Current.Shutdown();
                         break;
                 }
 
