@@ -16,16 +16,6 @@ namespace Database.DAO
             _context = context;
         }
 
-        private void Insert()
-        {
-            Update(); //SingleInfoDao decides for insert or update
-        }
-
-        private void Update()
-        {
-
-        }
-
         public List<ExtendedInformation> SelectAllCountries()
         {
             return (from info in _context.ExtendedInformationSet
@@ -62,6 +52,8 @@ namespace Database.DAO
 
         public void Save(ExtendedInformation info)
         {
+            _information = info;
+
             if (IsNew())
                 Insert();
             else
