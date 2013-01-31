@@ -189,8 +189,8 @@ namespace GreenScreenControl
                 0);
 
             drawingContext.PushOpacityMask(new ImageBrush { ImageSource = _playerOpacityMaskImage});
-            drawingContext.PushTransform(new ScaleTransform { ScaleX = 1.075, ScaleY = 1.075 });
-            drawingContext.PushTransform(new TranslateTransform {X = -ActualWidth*0.05, Y = -ActualHeight*0.085});
+            //drawingContext.PushTransform(new ScaleTransform { ScaleX = 1.075, ScaleY = 1.075 });
+            //drawingContext.PushTransform(new TranslateTransform {X = -ActualWidth*0.05, Y = -ActualHeight*0.085});
             drawingContext.DrawImage(_colorBitmap, new Rect(0, 0, ActualWidth, ActualHeight)); 
                 
         }

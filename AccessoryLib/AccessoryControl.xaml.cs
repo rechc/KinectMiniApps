@@ -21,7 +21,7 @@ namespace AccessoryLib
             AccessoryItems = new List<AccessoryItem>();
         }
 
-        public void InvalidateVisual(Skeleton[] skeletons)
+        public void SetSkeletons(Skeleton[] skeletons)
         {
             _skeletons = skeletons;
             InvalidateVisual();
@@ -67,7 +67,6 @@ namespace AccessoryLib
             ColorImagePoint cloc = _sensor.CoordinateMapper.MapSkeletonPointToColorPoint(
                 headPos, _sensor.ColorStream.Format);
 
-            //const double px = 120; // Objektgroesse: 120 px bei 1 m Abstand.
             double g = item.Width; // Objektgroesse in m.
             double r = headPos.Z;  // Entfernung in m.
             double imgWidth = 2 * Math.Atan(g / (2 * r)) * _sensor.ColorStream.FrameWidth;
@@ -78,7 +77,7 @@ namespace AccessoryLib
             switch (item.Position)
             {
                 case AccessoryPositon.Hat:
-                    offsetY = -1.5*imgHeight;
+                    offsetY = -imgHeight;
                     break;
                 case AccessoryPositon.Beard:
                     offsetY = imgHeight/4;
@@ -88,7 +87,7 @@ namespace AccessoryLib
             double headX = cloc.X + offsetX;
             double headY = cloc.Y + offsetY;
 
-            //Console.WriteLine("Z: {0}, imgW: {1} , imgH {2}", headPos.Z, imgWidth, imgHeight);
+            //Console.WriteLine("Z: {0}, imgW: {1}, imgH: {2}, X: {3}, Y: {4}", headPos.Z, imgWidth, imgHeight, cloc.X, cloc.Y);
 
             drawingContext.DrawImage(item.Image, new Rect(headX - imgWidth/2, headY, imgWidth, imgHeight));
         }

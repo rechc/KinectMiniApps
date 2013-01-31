@@ -259,7 +259,7 @@ namespace HtwKinect
                         break;
                     default:
                         //Environment.Exit(0);
-                        Application.Current.Shutdown();
+                        //Application.Current.Shutdown();
                         break;
                 }
 

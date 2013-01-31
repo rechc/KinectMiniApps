@@ -48,10 +48,10 @@
             <TextBlock DockPanel.Dock="Right" Margin="0 0 -1 0" VerticalAlignment="Bottom" Foreground="{StaticResource MediumGreyBrush}" FontFamily="Segoe UI" FontSize="18">Accessory Sample</TextBlock>
             <Image Source="Images\Status.png" Stretch="None" HorizontalAlignment="Center" Margin="0 0 0 5"/>
         </DockPanel>
-        <Viewbox Grid.Row="1" Stretch="Uniform" HorizontalAlignment="Center">
+        <Viewbox Grid.Row="1" Stretch="Uniform" HorizontalAlignment="Stretch">
             <Image Name="Image" Width="640" Height="480"/>
         </Viewbox>
-        <Viewbox Grid.Row="1" Stretch="Uniform" HorizontalAlignment="Center">
+        <Viewbox Grid.Row="1" Stretch="Uniform" HorizontalAlignment="Stretch">
             <AccessoryLib:AccessoryControl x:Name="Accessories" Width="640" Height="480"/>
         </Viewbox>
         <Button Grid.Row="2" Style="{StaticResource SnapshotButton}" Content="Screenshot" Height="Auto" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="10 10 0 10" Name="buttonScreenshot" Click="ButtonScreenshotClick" />
