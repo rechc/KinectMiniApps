@@ -41,7 +41,7 @@ namespace AccessoryLib
                 return;
 
             // Nicht ueber den Rand des Controls hinaus zeichnen.
-            drawingContext.PushClip(new RectangleGeometry(new Rect(0, 0, Width, Height)));
+            drawingContext.PushClip(new RectangleGeometry(new Rect(0, 0, ActualWidth, ActualHeight)));
 
             // Items fuer alle Personen zeichnen.
             foreach (Skeleton person in _skeletons)
