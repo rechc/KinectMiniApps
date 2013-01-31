@@ -97,104 +97,102 @@ namespace GreenScreenControl
         {
             // do our processing outside of the using block
             // so that we return resources to the kinect as soon as possible
-                _sensor.CoordinateMapper.MapDepthFrameToColorFrame(
-                    _sensor.DepthStream.Format,
-                    _depthPixels,
-                    _sensor.ColorStream.Format,
-                    _colorCoordinates);
+            _sensor.CoordinateMapper.MapDepthFrameToColorFrame(
+                _sensor.DepthStream.Format,
+                _depthPixels,
+                _sensor.ColorStream.Format,
+                _colorCoordinates);
 
-                Array.Clear(_greenScreenPixelData, 0, _greenScreenPixelData.Length);
+            Array.Clear(_greenScreenPixelData, 0, _greenScreenPixelData.Length);
 
-                _borderCounter = 0;
+            _borderCounter = 0;
 
-                // loop over each row and column of the depth
-                for (int y = 0; y < _depthHeight; ++y)
+            // loop over each row and column of the depth
+            for (int y = 0; y < _depthHeight; ++y)
+            {
+                for (int x = 0; x < _depthWidth; ++x)
                 {
-                    for (int x = 0; x < _depthWidth; ++x)
+                    // calculate index into depth array
+                    int depthIndex = x + (y * _depthWidth);
+
+                    DepthImagePixel depthPixel = _depthPixels[depthIndex];
+
+                    int player = depthPixel.PlayerIndex;
+
+                    // if we're tracking a player for the current pixel, do green screen
+                    if (player > 0)
                     {
-                        // calculate index into depth array
-                        int depthIndex = x + (y * _depthWidth);
+                        //found = true;
 
-                        DepthImagePixel depthPixel = _depthPixels[depthIndex];
+                        // retrieve the depth to color mapping for the current depth pixel
+                        ColorImagePoint colorImagePoint = _colorCoordinates[depthIndex];
 
-                        int player = depthPixel.PlayerIndex;
+                        // scale color coordinates to depth resolution
+                        int colorInDepthX = colorImagePoint.X / _colorToDepthDivisor;
+                        int colorInDepthY = colorImagePoint.Y / _colorToDepthDivisor;
 
-                        // if we're tracking a player for the current pixel, do green screen
-                        if (player > 0)
+                        // make sure the depth pixel maps to a valid point in color space
+                        // check y > 0 and y < depthHeight to make sure we don't write outside of the array
+                        // check x > 0 instead of >= 0 since to fill gaps we set opaque current pixel plus the one to the left
+                        // because of how the sensor works it is more correct to do it this way than to set to the right
+                        if (colorInDepthX > 0 && colorInDepthX < _depthWidth && colorInDepthY >= 0 && colorInDepthY < _depthHeight)
                         {
-                            //found = true;
+                            // calculate index into the green screen pixel array
+                            int greenScreenIndex = colorInDepthX + (colorInDepthY * _depthWidth);
 
-                            // retrieve the depth to color mapping for the current depth pixel
-                            ColorImagePoint colorImagePoint = _colorCoordinates[depthIndex];
-
-                            // scale color coordinates to depth resolution
-                            int colorInDepthX = colorImagePoint.X / _colorToDepthDivisor;
-                            int colorInDepthY = colorImagePoint.Y / _colorToDepthDivisor;
-
-                            // make sure the depth pixel maps to a valid point in color space
-                            // check y > 0 and y < depthHeight to make sure we don't write outside of the array
-                            // check x > 0 instead of >= 0 since to fill gaps we set opaque current pixel plus the one to the left
-                            // because of how the sensor works it is more correct to do it this way than to set to the right
-                            if (colorInDepthX > 0 && colorInDepthX < _depthWidth && colorInDepthY >= 0 && colorInDepthY < _depthHeight)
+                            if (_antialiasing)
                             {
-                                // calculate index into the green screen pixel array
-                                int greenScreenIndex = colorInDepthX + (colorInDepthY * _depthWidth);
+                                AddBorderPixels(greenScreenIndex);
+                                _greenScreenPixelData[greenScreenIndex] = OpaquePoint;
+                            }
+                            else
+                            {
 
-                                if (_antialiasing)
-                                {
-                                    AddBorderPixels(greenScreenIndex);
-                                    _greenScreenPixelData[greenScreenIndex] = OpaquePoint;
-                                }
-                                else
-                                {
-
-                                    _greenScreenPixelData[greenScreenIndex] = OpaquePoint;
-                                    _greenScreenPixelData[greenScreenIndex - 1] = OpaquePoint;
-                                }
+                                _greenScreenPixelData[greenScreenIndex] = OpaquePoint;
+                                _greenScreenPixelData[greenScreenIndex - 1] = OpaquePoint;
                             }
                         }
                     }
                 }
+            }
 
-                if (_antialiasing)
-                {
-                    Antialiasing();
-                    //HidePixels();
-                }
+            if (_antialiasing)
+            {
+                Antialiasing();
+                //HidePixels();
+            }
 
-            // do our processing outside of the using block
-            // so that we return resources to the kinect as soon as possible
-                // Write the pixel data into our bitmap
-                _colorBitmap.WritePixels(
-                    new Int32Rect(0, 0, _colorBitmap.PixelWidth, _colorBitmap.PixelHeight),
-                    _colorPixels,
-                    _colorBitmap.PixelWidth * sizeof(int),
-                    0);
+        // do our processing outside of the using block
+        // so that we return resources to the kinect as soon as possible
+            // Write the pixel data into our bitmap
+            _colorBitmap.WritePixels(
+                new Int32Rect(0, 0, _colorBitmap.PixelWidth, _colorBitmap.PixelHeight),
+                _colorPixels,
+                _colorBitmap.PixelWidth * sizeof(int),
+                0);
 
-                if (_playerOpacityMaskImage == null)
-                {
-                    _playerOpacityMaskImage = new WriteableBitmap(
-                        _depthWidth,
-                        _depthHeight,
-                        96,
-                        96,
-                        PixelFormats.Bgra32,
-                        null);
+            if (_playerOpacityMaskImage == null)
+            {
+                _playerOpacityMaskImage = new WriteableBitmap(
+                    _depthWidth,
+                    _depthHeight,
+                    96,
+                    96,
+                    PixelFormats.Bgra32,
+                    null);
+            }
 
-                    //MaskedColor.OpacityMask = new ImageBrush { ImageSource = playerOpacityMaskImage };
-                    //drawingContext.PushOpacityMask(new ImageBrush { ImageSource = _playerOpacityMaskImage});
-                }
+            _playerOpacityMaskImage.WritePixels(
+                new Int32Rect(0, 0, _depthWidth, _depthHeight),
+                _greenScreenPixelData,
+                _depthWidth * ((_playerOpacityMaskImage.Format.BitsPerPixel + 7) / 8),
+                0);
 
-                _playerOpacityMaskImage.WritePixels(
-                    new Int32Rect(0, 0, _depthWidth, _depthHeight),
-                    _greenScreenPixelData,
-                    _depthWidth * ((_playerOpacityMaskImage.Format.BitsPerPixel + 7) / 8),
-                    0);
-
-                drawingContext.PushOpacityMask(new ImageBrush { ImageSource = _playerOpacityMaskImage});
-                drawingContext.PushTransform(new ScaleTransform() { ScaleX = 1.2, ScaleY = 1.2  });
-                drawingContext.PushTransform(new TranslateTransform { X = -70, Y = -70 });
-                drawingContext.DrawImage(_colorBitmap, new Rect(0, 0, ActualWidth, ActualHeight)); 
+            drawingContext.PushOpacityMask(new ImageBrush { ImageSource = _playerOpacityMaskImage});
+            drawingContext.PushTransform(new ScaleTransform { ScaleX = 1.075, ScaleY = 1.075 });
+            drawingContext.PushTransform(new TranslateTransform {X = -ActualWidth*0.05, Y = -ActualHeight*0.085});
+            drawingContext.DrawImage(_colorBitmap, new Rect(0, 0, ActualWidth, ActualHeight)); 
+                
         }
 
         private void AddBorderPixels(int greenScreenIndex)
