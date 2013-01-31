@@ -19,14 +19,27 @@
             <End Role="TravelOffer" EntitySet="TravelOfferSet" />
             <End Role="Country" EntitySet="CountrySet" />
           </AssociationSet>
+          <EntitySet Name="ExtendedInformationSet" EntityType="Model1.ExtendedInformation" />
+          <AssociationSet Name="TravelOfferExtendedInformation" Association="Model1.TravelOfferExtendedInformation">
+            <End Role="TravelOffer" EntitySet="TravelOfferSet" />
+            <End Role="ExtendedInformation" EntitySet="ExtendedInformationSet" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="TravelOffer">
           <Key>
             <PropertyRef Name="OfferId" />
           </Key>
           <Property Type="Int32" Name="OfferId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="Double" Name="PricePerPerson" Nullable="true" />
+          <Property Type="Double" Name="PricePerPerson" Nullable="false" />
           <NavigationProperty Name="Country" Relationship="Model1.TravelOfferCountry" FromRole="TravelOffer" ToRole="Country" />
+          <Property Type="String" Name="Place" Nullable="false" />
+          <Property Type="Int32" Name="HotelRating" Nullable="false" />
+          <Property Type="String" Name="HotelName" Nullable="false" />
+          <Property Type="String" Name="TravelType" Nullable="false" />
+          <Property Type="Int32" Name="DayCount" Nullable="false" />
+          <Property Type="String" Name="BoardType" Nullable="false" />
+          <Property Type="Binary" Name="Image" Nullable="false" />
+          <NavigationProperty Name="ExtendedInformation" Relationship="Model1.TravelOfferExtendedInformation" FromRole="TravelOffer" ToRole="ExtendedInformation" />
         </EntityType>
         <EntityType Name="Country">
           <Key>
@@ -38,7 +51,36 @@
         </EntityType>
         <Association Name="TravelOfferCountry">
           <End Type="Model1.TravelOffer" Role="TravelOffer" Multiplicity="1" />
-          <End Type="Model1.Country" Role="Country" Multiplicity="*" />
+          <End Type="Model1.Country" Role="Country" Multiplicity="1" />
+          <ReferentialConstraint>
+            <Principal Role="TravelOffer">
+              <PropertyRef Name="OfferId" />
+            </Principal>
+            <Dependent Role="Country">
+              <PropertyRef Name="CountryId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="ExtendedInformation">
+          <Key>
+            <PropertyRef Name="ExtendetInformationId" />
+          </Key>
+          <Property Type="Int32" Name="ExtendetInformationId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="Information" Nullable="false" />
+          <Property Type="Int32" Name="OfferId" Nullable="false" />
+          <NavigationProperty Name="TravelOffer" Relationship="Model1.TravelOfferExtendedInformation" FromRole="ExtendedInformation" ToRole="TravelOffer" cg:GetterAccess="Private" cg:SetterAccess="Private" />
+        </EntityType>
+        <Association Name="TravelOfferExtendedInformation">
+          <End Type="Model1.TravelOffer" Role="TravelOffer" Multiplicity="1" />
+          <End Type="Model1.ExtendedInformation" Role="ExtendedInformation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TravelOffer">
+              <PropertyRef Name="OfferId" />
+            </Principal>
+            <Dependent Role="ExtendedInformation">
+              <PropertyRef Name="OfferId" />
+            </Dependent>
+          </ReferentialConstraint>
         </Association>
       </Schema>
     </edmx:ConceptualModels>

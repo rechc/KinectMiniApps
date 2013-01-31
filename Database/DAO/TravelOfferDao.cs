@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Database.DAO
 {
-    public class TravelOverDAO
+    public class TravelOfferDao
     {
         private readonly Model1Container _context;
         private TravelOffer _offer;
 
-        public TravelOverDAO(Model1Container context)
+        public TravelOfferDao(Model1Container context)
         {
             _context = context;
         }
@@ -32,6 +32,22 @@ namespace Database.DAO
             _context.Entry(offerEntity).CurrentValues.SetValues(_offer);
         }
 
+        public List<TravelOffer> SelectAllOffers()
+        {
+            return (from offer in _context.TravelOfferSet
+                    select offer).ToList();
+        }
+
+        public TravelOffer SelectById(int offerId)
+        {
+            var obj = (from offer in _context.TravelOfferSet
+                    where offerId == offer.OfferId
+                    select offer).FirstOrDefault();
+            if(obj == null)
+                throw new Exception("No entry found. Wrong Id");
+            return obj;
+        }
+
         public void Save(TravelOffer offer)
         {
             _offer = offer;
@@ -39,6 +55,7 @@ namespace Database.DAO
                 Insert();
             else
                 Update();
+            new CountryDao(_context).Save(offer.Country);
         }
     }
 }
