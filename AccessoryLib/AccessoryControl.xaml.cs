@@ -70,7 +70,7 @@ namespace AccessoryLib
             //const double px = 120; // Objektgroesse: 120 px bei 1 m Abstand.
             double g = item.Width; // Objektgroesse in m.
             double r = headPos.Z;  // Entfernung in m.
-            double imgWidth = 2 * Math.Atan(g / (2 * r)) * 600/*(px / g)*/;
+            double imgWidth = 2 * Math.Atan(g / (2 * r)) * _sensor.ColorStream.FrameWidth;
             double aspectRatio = item.Image.Width / item.Image.Height;
             double imgHeight = imgWidth / aspectRatio;
 
@@ -78,7 +78,7 @@ namespace AccessoryLib
             switch (item.Position)
             {
                 case AccessoryPositon.Hat:
-                    offsetY = -imgHeight;
+                    offsetY = -1.5*imgHeight;
                     break;
                 case AccessoryPositon.Beard:
                     offsetY = imgHeight/4;
