@@ -4,11 +4,75 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl" Namespace="Model1.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2005">
-        <EntityContainer Name="Model1TargetContainer" >
-        </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+    <Schema Namespace="Model1.Store" Alias="Self" Provider="System.Data.SqlServerCe.4.0" ProviderManifestToken="4.0" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityContainer Name="Model1StoreContainer">
+    <EntitySet Name="TravelOfferSet" EntityType="Model1.Store.TravelOfferSet" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="CountrySet" EntityType="Model1.Store.CountrySet" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="ExtendedInformationSet" EntityType="Model1.Store.ExtendedInformationSet" store:Type="Tables" Schema="dbo" />
+    <AssociationSet Name="TravelOfferCountry" Association="Model1.Store.TravelOfferCountry">
+      <End Role="TravelOffer" EntitySet="TravelOfferSet" />
+      <End Role="Country" EntitySet="CountrySet" />
+    </AssociationSet>
+    <AssociationSet Name="TravelOfferExtendedInformation" Association="Model1.Store.TravelOfferExtendedInformation">
+      <End Role="TravelOffer" EntitySet="TravelOfferSet" />
+      <End Role="ExtendedInformation" EntitySet="ExtendedInformationSet" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="TravelOfferSet">
+    <Key>
+      <PropertyRef Name="OfferId" />
+    </Key>
+    <Property Name="OfferId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="PricePerPerson" Type="float" Nullable="false" />
+    <Property Name="Place" Type="nvarchar" Nullable="false" />
+    <Property Name="HotelRating" Type="int" Nullable="false" />
+    <Property Name="HotelName" Type="nvarchar" Nullable="false" />
+    <Property Name="TravelType" Type="nvarchar" Nullable="false" />
+    <Property Name="DayCount" Type="int" Nullable="false" />
+    <Property Name="BoardType" Type="nvarchar" Nullable="false" />
+    <Property Name="Image" Type="varbinary" Nullable="false" />
+    <Property Name="CountryId" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="CountrySet">
+    <Key>
+      <PropertyRef Name="CountryId" />
+    </Key>
+    <Property Name="CountryId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="CountryName" Type="nvarchar" Nullable="false" />
+  </EntityType>
+  <EntityType Name="ExtendedInformationSet">
+    <Key>
+      <PropertyRef Name="ExtendetInformationId" />
+    </Key>
+    <Property Name="ExtendetInformationId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Information" Type="nvarchar" Nullable="false" />
+    <Property Name="OfferId" Type="int" Nullable="false" />
+  </EntityType>
+  <Association Name="TravelOfferCountry">
+    <End Role="TravelOffer" Type="Model1.Store.TravelOfferSet" Multiplicity="*" />
+    <End Role="Country" Type="Model1.Store.CountrySet" Multiplicity="1" />
+    <ReferentialConstraint>
+      <Principal Role="Country">
+        <PropertyRef Name="CountryId" />
+      </Principal>
+      <Dependent Role="TravelOffer">
+        <PropertyRef Name="CountryId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="TravelOfferExtendedInformation">
+    <End Role="TravelOffer" Type="Model1.Store.TravelOfferSet" Multiplicity="1" />
+    <End Role="ExtendedInformation" Type="Model1.Store.ExtendedInformationSet" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="TravelOffer">
+        <PropertyRef Name="OfferId" />
+      </Principal>
+      <Dependent Role="ExtendedInformation">
+        <PropertyRef Name="OfferId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" xmlns:cg="http://schemas.microsoft.com/ado/2006/04/codegeneration" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" Namespace="Model1" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" annotation:UseStrongSpatialTypes="false">
@@ -87,13 +151,43 @@
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
-      <Mapping xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs" Space="C-S">
-        <Alias Key="Model" Value="Model1" />
-        <Alias Key="Target" Value="Model1.Store" />
-        <EntityContainerMapping CdmEntityContainer="Model1Container" StorageEntityContainer="Model1TargetContainer">
-        </EntityContainerMapping>
-      </Mapping>
-    </edmx:Mappings>
+    <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="Model1StoreContainer" CdmEntityContainer="Model1Container">
+    <EntitySetMapping Name="TravelOfferSet">
+      <EntityTypeMapping TypeName="IsTypeOf(Model1.TravelOffer)">
+        <MappingFragment StoreEntitySet="TravelOfferSet">
+          <ScalarProperty Name="OfferId" ColumnName="OfferId" />
+          <ScalarProperty Name="PricePerPerson" ColumnName="PricePerPerson" />
+          <ScalarProperty Name="Place" ColumnName="Place" />
+          <ScalarProperty Name="HotelRating" ColumnName="HotelRating" />
+          <ScalarProperty Name="HotelName" ColumnName="HotelName" />
+          <ScalarProperty Name="TravelType" ColumnName="TravelType" />
+          <ScalarProperty Name="DayCount" ColumnName="DayCount" />
+          <ScalarProperty Name="BoardType" ColumnName="BoardType" />
+          <ScalarProperty Name="Image" ColumnName="Image" />
+          <ScalarProperty Name="CountryId" ColumnName="CountryId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="CountrySet">
+      <EntityTypeMapping TypeName="IsTypeOf(Model1.Country)">
+        <MappingFragment StoreEntitySet="CountrySet">
+          <ScalarProperty Name="CountryId" ColumnName="CountryId" />
+          <ScalarProperty Name="CountryName" ColumnName="CountryName" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ExtendedInformationSet">
+      <EntityTypeMapping TypeName="IsTypeOf(Model1.ExtendedInformation)">
+        <MappingFragment StoreEntitySet="ExtendedInformationSet">
+          <ScalarProperty Name="ExtendetInformationId" ColumnName="ExtendetInformationId" />
+          <ScalarProperty Name="Information" ColumnName="Information" />
+          <ScalarProperty Name="OfferId" ColumnName="OfferId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping></edmx:Mappings>
   </edmx:Runtime>
   <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
