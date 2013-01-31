@@ -80,7 +80,6 @@ namespace AccessorySample
                 // Add an event handler to be called whenever there is new color frame data
                 this.sensor.ColorFrameReady += this.SensorColorFrameReady;
 
-                Accessories.Sensor = this.sensor;
                 //this.sensor.SkeletonStream.Enable();
                 //this.sensor.SkeletonFrameReady += this.SkeletonFrameReady;
 
@@ -89,7 +88,7 @@ namespace AccessorySample
                 Accessories.AccessoryItems.Add(hat);
                 Accessories.AccessoryItems.Add(beard);
 
-                Accessories.Start();
+                Accessories.Start(sensor);
 
                 // Start the sensor!
                 try
