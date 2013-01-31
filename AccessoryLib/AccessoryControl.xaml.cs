@@ -1,27 +1,19 @@
 ﻿using Microsoft.Kinect;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace AccessoryLib
 {
-    /// <summary>
-    /// Interaction logic for AccessoryControl.xaml
-    /// </summary>
     public partial class AccessoryControl : UserControl
     {
         private KinectSensor _sensor;
         private Skeleton[] _skeletons;
+
+        // Liste von Gegenstaenden, die gezeichnet werden sollen.
+        public List<AccessoryItem> AccessoryItems { get; private set; }
 
         public AccessoryControl()
         {
@@ -29,47 +21,15 @@ namespace AccessoryLib
             AccessoryItems = new List<AccessoryItem>();
         }
 
-        public KinectSensor Sensor
+        public void SetSkeletons(Skeleton[] skeletons)
         {
-            get { return _sensor; }
-            set { _sensor = value; }
+            _skeletons = skeletons;
+            InvalidateVisual();
         }
 
-        public Skeleton[] Skeletons
+        public void Start(KinectSensor sensor)
         {
-            get { return _skeletons; }
-
-            // Zeichnet das Control automatisch neu.
-            set
-            {
-                _skeletons = value;
-                InvalidateVisual();
-            }
-        }
-
-        // Liste von Gegenstaenden, die gezeichnet werden sollen.
-        public List<AccessoryItem> AccessoryItems { get; private set; }
-
-        public void Start()
-        {
-            if (!Sensor.SkeletonStream.IsEnabled)
-                Sensor.SkeletonStream.Enable();
-            Sensor.SkeletonFrameReady += OnSkeletonFrameReady;
-        }
-
-        // Event Handler liest alle Skeletons aus dem Skeleton Frame aus.
-        private void OnSkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e)
-        {
-            using (SkeletonFrame skeletonFrame = e.OpenSkeletonFrame())
-            {
-                if (skeletonFrame != null)
-                {
-                    var skeletons = new Skeleton[skeletonFrame.SkeletonArrayLength];
-                    skeletonFrame.CopySkeletonDataTo(skeletons);
-                    Skeletons = skeletons;
-                }
-            }
-
+            _sensor = sensor;
         }
 
         // Control neu zeichnen.
@@ -77,19 +37,17 @@ namespace AccessoryLib
         {
             base.OnRender(drawingContext);
 
-            if (Skeletons == null)
+            if (_skeletons == null)
                 return;
 
             // Nicht ueber den Rand des Controls hinaus zeichnen.
-            drawingContext.PushClip(new RectangleGeometry(new Rect(0, 0, Width, Height)));
+            drawingContext.PushClip(new RectangleGeometry(new Rect(0, 0, ActualWidth, ActualHeight)));
 
             // Items fuer alle Personen zeichnen.
-            foreach (Skeleton person in Skeletons)
+            foreach (Skeleton person in _skeletons)
             {
                 if (person.TrackingState == SkeletonTrackingState.Tracked)
-                {
                     RenderAccessories(drawingContext, person);
-                }
             }
         }
 
@@ -109,10 +67,9 @@ namespace AccessoryLib
             ColorImagePoint cloc = _sensor.CoordinateMapper.MapSkeletonPointToColorPoint(
                 headPos, _sensor.ColorStream.Format);
 
-            //const double px = 120; // Objektgroesse: 120 px bei 1 m Abstand.
             double g = item.Width; // Objektgroesse in m.
             double r = headPos.Z;  // Entfernung in m.
-            double imgWidth = 2 * Math.Atan(g / (2 * r)) * 600/*(px / g)*/;
+            double imgWidth = 2 * Math.Atan(g / (2 * r)) * _sensor.ColorStream.FrameWidth;
             double aspectRatio = item.Image.Width / item.Image.Height;
             double imgHeight = imgWidth / aspectRatio;
 
@@ -122,7 +79,6 @@ namespace AccessoryLib
                 case AccessoryPositon.Hat:
                     offsetY = -imgHeight;
                     break;
-
                 case AccessoryPositon.Beard:
                     offsetY = imgHeight/4;
                     break;
@@ -131,7 +87,7 @@ namespace AccessoryLib
             double headX = cloc.X + offsetX;
             double headY = cloc.Y + offsetY;
 
-            //Console.WriteLine("Z: {0}, imgW: {1} , imgH {2}", headPos.Z, imgWidth, imgHeight);
+            //Console.WriteLine("Z: {0}, imgW: {1}, imgH: {2}, X: {3}, Y: {4}", headPos.Z, imgWidth, imgHeight, cloc.X, cloc.Y);
 
             drawingContext.DrawImage(item.Image, new Rect(headX - imgWidth/2, headY, imgWidth, imgHeight));
         }

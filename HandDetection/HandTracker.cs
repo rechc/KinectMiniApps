@@ -1,19 +1,13 @@
 ﻿using Microsoft.Kinect;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 /**
  * Mögliche Erweiterungen/ Verbesserungen
- * Handausschnitt über z achse anpassen und variabel halten.
- * Abweichungswerte nicht Hardcodieren, sondern über static
- * das proof of concept als queue mit variabler stabilität/länge einbinden
+ * Handausschnitt über z achse anpassen und variabel halten. --- ok
+ * Abweichungswerte nicht Hardcodieren, sondern über static --- ok
+ * das proof of concept als queue mit variabler stabilität/länge einbinden --- ok
+ * Nun kann eigentlich nur noch der algorithmus zum erkennen verbessert werden ... 
+ * eine Möglichkeit Handausrichtung erkennen ... oben seite unten .... und algorithmus diesbezüglich optimieren
  */
 
 namespace HandDetection
@@ -29,12 +23,15 @@ namespace HandDetection
     {
 
         // vars for Buffer
-        private int[] handstatusarray;
-        private int bufferIterator = 0;
+        private readonly int[] _handstatusarray;
+        private int _bufferIterator;
+
+        //vars for cutout handsize
+        public static int EpsilonTolerance = 2;
 
         public HandTracker(int bufferSize = 15)
         {
-            handstatusarray = new int[bufferSize];
+            _handstatusarray = new int[bufferSize];
         }
 
         private bool IsHandTracked(Joint hand)
@@ -53,30 +50,30 @@ namespace HandDetection
             if (!IsHandTracked(handJoint)) return HandStatus.Unknown;
 
             DepthImagePoint handPos = GetHandPos(sensor, handJoint, depthImageFormate);
-
-            if (((handPos.X + 42) > 640 || handPos.X - 42 <= 0)      // epsilon +2 wegen möglichem -1  von handPosX/Y
-               || ((handPos.Y + 42) > 480 || handPos.Y - 42 <= 0))  // TODO die 40 und epsilon als static in HAndDetect
+            int halfhandCutSize = ComputeHandSize(handJoint)/2;
+            if (((handPos.X + EpsilonTolerance + halfhandCutSize) > sensor.DepthStream.FrameWidth || handPos.X - halfhandCutSize - EpsilonTolerance <= 0)      // epsilon +2 wegen möglichem -1  von handPosX/Y
+               || ((handPos.Y + halfhandCutSize + EpsilonTolerance) > sensor.DepthStream.FrameHeight || handPos.Y - halfhandCutSize - EpsilonTolerance <= 0))
                 return HandStatus.Unknown;
 
             bool wasBlack = false;
             int blackWidth = 0, blackTimes = 0;
-            int ystart = handPos.Y - 40;
-            int yend = handPos.Y + 40;
-            int xstart = handPos.X - 40;
-            int xend = handPos.X + 40;
+            int ystart = handPos.Y - halfhandCutSize;
+            int yend = handPos.Y + halfhandCutSize;
+            int xstart = handPos.X - halfhandCutSize;
+            int xend = handPos.X + halfhandCutSize;
 
             for (int yy = ystart; yy < yend - 10; yy += 10)
             {
                 for (int xx = xstart; xx < xend; xx++)
                 {
-                    int depthIndex = xx + (yy * 640);
+                    int depthIndex = xx + (yy * sensor.DepthStream.FrameWidth);
                     short depth = depthPixels[depthIndex].Depth;
                     DepthImagePixel depthPixel = depthPixels[depthIndex];
                     int player = depthPixel.PlayerIndex;
 
                     if (player > 0)
                     {
-                        //need to detect if the hand is before the body
+                        //need to detect if the hand is in front of the body
                         if (Math.Abs(handPos.Depth - depth) > 80)
                         {
                             wasBlack = false;
@@ -106,32 +103,18 @@ namespace HandDetection
             return HandStatus.Closed;
         }
 
-        //only proof of concept
-
-        private List<HandStatus> handStatusList = new List<HandStatus>();
-        private HandStatus lastHandStatus;
-
-        public HandStatus GetHandOpenedClosedStatusBuffered(DepthImagePixel[] depthPixels, Joint handJoint, KinectSensor sensor, DepthImageFormat depthImageFormate)
+        /**
+         * computes the cout out of the hand, with the help of z position 
+         */
+        public int ComputeHandSize(Joint handJoint)
         {
-            HandStatus currentHandStatus = GetHandOpenedClosedStatus(depthPixels, handJoint, sensor, depthImageFormate);
-            handStatusList.Add(currentHandStatus);
-
-            if (handStatusList.Count() == 4)
-            {
-                if (handStatusList.All(x => x == handStatusList.First()))
-                {
-                    lastHandStatus = currentHandStatus;
-                }
-                handStatusList.Clear();
-            }
-
-            return lastHandStatus;
+            const double g = 0.22; // Objektgroesse in m.
+            double r = handJoint.Position.Z;  // Entfernung in m.
+            double imgWidth = 2 * Math.Atan(g / (2 * r)) * 600/*(px / g)*/;
+            return (int)imgWidth;
         }
 
         // V2 
-        //   private Queue<HandStatus> handStatusQueue = new Queue<HandStatus>(4);
-
-
         public HandStatus GetBufferedHandStatus(DepthImagePixel[] depthPixels, Joint handJoint, KinectSensor sensor, DepthImageFormat depthImageFormate)
         {
             HandStatus currentHandStatusEnum = GetHandOpenedClosedStatus(depthPixels, handJoint, sensor, depthImageFormate);
@@ -148,15 +131,15 @@ namespace HandDetection
             }
 
             //loop overwrite
-            bufferIterator = (bufferIterator == handstatusarray.Length) ? 0 : bufferIterator;
+            _bufferIterator = (_bufferIterator == _handstatusarray.Length) ? 0 : _bufferIterator;
 
-            handstatusarray[bufferIterator] = currentHandStatus;
-            bufferIterator++;
+            _handstatusarray[_bufferIterator] = currentHandStatus;
+            _bufferIterator++;
 
             // double Counter
             int openCounter = 0;
             int closedCounter = 0;
-            foreach (int currentEntry in handstatusarray)
+            foreach (int currentEntry in _handstatusarray)
             {
                 if (currentEntry == 1)
                 {
@@ -169,23 +152,15 @@ namespace HandDetection
             }
 
             //output
-            foreach (int obj in handstatusarray)
-                Console.Write("    {0}", obj);
-            Console.WriteLine();
+            /* foreach (int obj in handstatusarray)
+                 Console.Write("    {0}", obj);
+             Console.WriteLine();*/
 
-
-            if (closedCounter > handstatusarray.Length/2)
+            if (closedCounter > _handstatusarray.Length / 2)
             {
                 return HandStatus.Closed;
             }
-            else if (openCounter > handstatusarray.Length / 2)
-            {
-                return HandStatus.Opened;
-            }
-            else
-            {
-                return HandStatus.Unknown;
-            }
+            return openCounter > _handstatusarray.Length / 2 ? HandStatus.Opened : HandStatus.Unknown;
         }
     }
 }

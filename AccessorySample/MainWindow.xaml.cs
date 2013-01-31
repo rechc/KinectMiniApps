@@ -66,7 +66,7 @@ namespace AccessorySample
             if (null != this.sensor)
             {
                 // Turn on the color stream to receive color frames
-                this.sensor.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
+                this.sensor.ColorStream.Enable(ColorImageFormat.RgbResolution1280x960Fps12);
 
                 // Allocate space to put the pixels we'll receive
                 this.colorPixels = new byte[this.sensor.ColorStream.FramePixelDataLength];
@@ -80,16 +80,15 @@ namespace AccessorySample
                 // Add an event handler to be called whenever there is new color frame data
                 this.sensor.ColorFrameReady += this.SensorColorFrameReady;
 
-                Accessories.Sensor = this.sensor;
-                //this.sensor.SkeletonStream.Enable();
-                //this.sensor.SkeletonFrameReady += this.SkeletonFrameReady;
+                this.sensor.SkeletonStream.Enable();
+                this.sensor.SkeletonFrameReady += this.SkeletonFrameReady;
 
                 AccessoryItem hat = new AccessoryItem(AccessoryPositon.Hat, @"..\..\Images\Hat.png", 0.25);
                 AccessoryItem beard = new AccessoryItem(AccessoryPositon.Beard, @"..\..\Images\Bart.png", 0.15);
                 Accessories.AccessoryItems.Add(hat);
                 Accessories.AccessoryItems.Add(beard);
 
-                Accessories.Start();
+                Accessories.Start(sensor);
 
                 // Start the sensor!
                 try
@@ -108,18 +107,18 @@ namespace AccessorySample
             }
         }
 
-        //private void SkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e)
-        //{
-        //    using (SkeletonFrame skeletonFrame = e.OpenSkeletonFrame())
-        //    {
-        //        if (skeletonFrame != null)
-        //        {
-        //            var skeletons = new Skeleton[skeletonFrame.SkeletonArrayLength];
-        //            skeletonFrame.CopySkeletonDataTo(skeletons);
-        //            Accessories.Skeletons = skeletons;
-        //        }
-        //    }
-        //}
+        private void SkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e)
+        {
+            using (SkeletonFrame skeletonFrame = e.OpenSkeletonFrame())
+            {
+                if (skeletonFrame != null)
+                {
+                    var skeletons = new Skeleton[skeletonFrame.SkeletonArrayLength];
+                    skeletonFrame.CopySkeletonDataTo(skeletons);
+                    Accessories.SetSkeletons(skeletons);
+                }
+            }
+        }
 
         /// <summary>
         /// Execute shutdown tasks
@@ -141,6 +140,7 @@ namespace AccessorySample
         /// <param name="e">event arguments</param>
         private void SensorColorFrameReady(object sender, ColorImageFrameReadyEventArgs e)
         {
+            //Console.WriteLine("{0} x {1} => {2} x {3}", Image.Width, Image.Height, Image.ActualWidth, Image.ActualHeight);
             using (ColorImageFrame colorFrame = e.OpenColorImageFrame())
             {
                 if (colorFrame != null)

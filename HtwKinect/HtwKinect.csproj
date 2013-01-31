@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{1EFDE6A0-1B8B-49CE-BC4E-DD0E89A14720}</ProjectGuid>
+    <ProjectGuid>{B658191C-9E09-44F6-A3A5-EB7A28E412D7}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>HtwKinect</RootNamespace>
@@ -34,7 +34,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Kinect, Version=1.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Kinect, Version=1.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Program Files\Microsoft SDKs\Kinect\v1.6\Assemblies\Microsoft.Kinect.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Kinect.Toolkit.FaceTracking, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\Microsoft.Kinect.Toolkit.FaceTracking.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -62,6 +69,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="IUiLoader.cs" />
+    <Compile Include="KinectHelper.cs" />
+    <Compile Include="KinectProjectUIBuilder.cs" />
+    <Compile Include="LocalPictureUiLoader.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -96,9 +107,68 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AccessoryLib\AccessoryLib.csproj">
-      <Project>{E7CEE4BD-1956-4199-9525-4B5583557D56}</Project>
+      <Project>{e7cee4bd-1956-4199-9525-4b5583557d56}</Project>
       <Name>AccessoryLib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\GreenScreenControl\GreenScreenLib.csproj">
+      <Project>{b2aace14-c7f6-4615-9f1f-228f13780687}</Project>
+      <Name>GreenScreenLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HandDetection\HandDetection.csproj">
+      <Project>{5329d417-7747-4e92-8f9a-296aa39035bd}</Project>
+      <Name>HandDetection</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LoopList\LoopList.csproj">
+      <Project>{0ef01833-063f-498f-b8ac-7744902a2efd}</Project>
+      <Name>LoopList</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="FaceTrackData.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="FaceTrackLib.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Accessories\Hat.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Beach\BeachPescara %281%29.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Beach\BeachPescara %282%29.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Beach\BeachPescara %283%29.JPG">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Beach\BeachPescara %286%29.JPG">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Beach\BeachPescara %287%29.JPG">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Top\mokup.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Snow\snow %281%29.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Snow\snow %282%29.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Snow\snow %283%29.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Snow\snow %284%29.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Top\IMG_0844.JPG">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Microsoft.Kinect.Toolkit.FaceTracking.dll" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\LoopList\LoopList.csproj">
       <Project>{0EF01833-063F-498F-B8AC-7744902A2EFD}</Project>
       <Name>LoopList</Name>

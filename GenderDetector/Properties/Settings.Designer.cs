@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace LoopListTest.Properties
+namespace GenderDetector.Properties
 {
 
 
