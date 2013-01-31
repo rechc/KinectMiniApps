@@ -9,7 +9,7 @@ namespace Database.DAO
     public class ExtendedInformationDao
     {
         private readonly Model1Container _context;
-        private List<ExtendedInformation> _informations;
+        private ICollection<ExtendedInformation> _informations;
 
         public ExtendedInformationDao(Model1Container context)
         {
@@ -22,7 +22,7 @@ namespace Database.DAO
                     select info).ToList();
         }
 
-        public void Save(List<ExtendedInformation> informations)
+        public void Save(ICollection<ExtendedInformation> informations)
         {
             _informations = informations;
 

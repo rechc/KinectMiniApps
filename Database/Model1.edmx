@@ -40,6 +40,7 @@
           <Property Type="String" Name="BoardType" Nullable="false" />
           <Property Type="Binary" Name="Image" Nullable="false" />
           <NavigationProperty Name="ExtendedInformation" Relationship="Model1.TravelOfferExtendedInformation" FromRole="TravelOffer" ToRole="ExtendedInformation" />
+          <Property Type="Int32" Name="CountryId" Nullable="false" />
         </EntityType>
         <EntityType Name="Country">
           <Key>
@@ -47,16 +48,16 @@
           </Key>
           <Property Type="Int32" Name="CountryId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Type="String" Name="CountryName" Nullable="false" />
-          <NavigationProperty Name="TravelOffer" Relationship="Model1.TravelOfferCountry" FromRole="Country" ToRole="TravelOffer" />
+          <NavigationProperty Name="TravelOffer" Relationship="Model1.TravelOfferCountry" FromRole="Country" ToRole="TravelOffer" cg:GetterAccess="Private" cg:SetterAccess="Private" />
         </EntityType>
         <Association Name="TravelOfferCountry">
-          <End Type="Model1.TravelOffer" Role="TravelOffer" Multiplicity="1" />
+          <End Type="Model1.TravelOffer" Role="TravelOffer" Multiplicity="*" />
           <End Type="Model1.Country" Role="Country" Multiplicity="1" />
           <ReferentialConstraint>
-            <Principal Role="TravelOffer">
-              <PropertyRef Name="OfferId" />
+            <Principal Role="Country">
+              <PropertyRef Name="CountryId" />
             </Principal>
-            <Dependent Role="Country">
+            <Dependent Role="TravelOffer">
               <PropertyRef Name="CountryId" />
             </Dependent>
           </ReferentialConstraint>

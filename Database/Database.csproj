@@ -65,7 +65,6 @@
     <Compile Include="Country.cs">
       <DependentUpon>ModelObjects.tt</DependentUpon>
     </Compile>
-    <Compile Include="DAO\CountryDao.cs" />
     <Compile Include="DAO\ExtendedInformationDao.cs" />
     <Compile Include="DAO\TravelOfferDao.cs" />
     <Compile Include="ExtendedInformation.cs">

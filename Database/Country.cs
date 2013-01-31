@@ -14,9 +14,14 @@ namespace Database
     
     public partial class Country
     {
+        public Country()
+        {
+            this.TravelOffer = new HashSet<TravelOffer>();
+        }
+    
         public int CountryId { get; set; }
         public string CountryName { get; set; }
     
-        public virtual TravelOffer TravelOffer { get; set; }
+        private ICollection<TravelOffer> TravelOffer { get; set; }
     }
 }
