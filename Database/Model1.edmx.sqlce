@@ -2,7 +2,7 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server Compact Edition
 -- --------------------------------------------------
--- Date Created: 01/31/2013 16:00:40
+-- Date Created: 01/31/2013 16:02:57
 -- Generated from EDMX file: C:\Users\Christian\workspace\KinectMiniApps\Database\Model1.edmx
 -- --------------------------------------------------
 
@@ -12,12 +12,22 @@
 -- NOTE: if the constraint does not exist, an ignorable error will be reported.
 -- --------------------------------------------------
 
+    ALTER TABLE [TravelOfferSet] DROP CONSTRAINT [FK_TravelOfferCountry];
+GO
+    ALTER TABLE [ExtendedInformationSet] DROP CONSTRAINT [FK_TravelOfferExtendedInformation];
+GO
 
 -- --------------------------------------------------
 -- Dropping existing tables
 -- NOTE: if the table does not exist, an ignorable error will be reported.
 -- --------------------------------------------------
 
+    DROP TABLE [TravelOfferSet];
+GO
+    DROP TABLE [CountrySet];
+GO
+    DROP TABLE [ExtendedInformationSet];
+GO
 
 -- --------------------------------------------------
 -- Creating all tables
