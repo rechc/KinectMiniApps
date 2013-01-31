@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.Kinect;
 using Microsoft.Kinect.Toolkit.FaceTracking;
+using System.Windows.Media;
 
 namespace HtwKinect
 {
@@ -183,6 +184,26 @@ namespace HtwKinect
             if (_faceFrame == null) /* Aus effizienzgruenden wird nicht bei jedem Zugriff ein neues Faceframe erzeugt, sondern nur ein Mal pro Frame. Siehe OnAllFramesReady unten.*/
                 _faceFrame = _faceTracker.Track(_kinectSensor.ColorStream.Format, ColorPixels, _kinectSensor.DepthStream.Format, DepthPixels, skeleton);
             return _faceFrame;
+        }
+
+        public Transform CreateTransform()
+        {
+            var transforms = new TransformGroup();
+            var mapper = Sensor.CoordinateMapper;
+            var pt0 = mapper.MapDepthPointToColorPoint(DepthImageFormat,
+                new DepthImagePoint() { X = 0, Y = 0, Depth = 1000 }, ColorImageFormat);
+            var pt1 = mapper.MapDepthPointToColorPoint(DepthImageFormat,
+                new DepthImagePoint()
+                {
+                    X = Sensor.DepthStream.FrameWidth,
+                    Y = Sensor.DepthStream.FrameHeight, Depth = 1000
+                },
+                ColorImageFormat);
+            transforms.Children.Add(new TranslateTransform(-pt0.X, -pt0.Y));
+            transforms.Children.Add(new ScaleTransform(
+                (double)(Sensor.ColorStream.FrameWidth + pt0.X) / (double)pt1.X,
+                (double)(Sensor.ColorStream.FrameHeight + pt0.Y) / (double)pt1.Y));
+            return transforms;
         }
     } 
 }

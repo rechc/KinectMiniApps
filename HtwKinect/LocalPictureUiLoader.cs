@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using AccessoryLib;
 using Microsoft.Kinect;
+using System.Diagnostics;
 
 namespace HtwKinect
 {
@@ -84,7 +85,14 @@ namespace HtwKinect
             try
             {
                 var gsc = new GreenScreenControl.GreenScreenControl();
-                grid.Children.Add(gsc);
+                var kinectHelper = KinectHelper.Instance;
+                gsc.RenderTransform = kinectHelper.CreateTransform();
+                gsc.Width = kinectHelper.Sensor.ColorStream.FrameWidth;
+                gsc.Height = kinectHelper.Sensor.ColorStream.FrameHeight;
+                Viewbox box = new Viewbox();
+                box.Child = gsc;
+                box.Stretch = Stretch.Fill;
+                grid.Children.Add(box);
                 var instance = KinectHelper.Instance;
                 gsc.Start(instance.Sensor, false);
                 instance.ReadyEvent += (sender, args) => RenderGreenScreen(gsc);
@@ -99,7 +107,7 @@ namespace HtwKinect
 
         private void RenderGreenScreen(GreenScreenControl.GreenScreenControl greenScreenControl)
         {
-            if (((Grid)greenScreenControl.Parent).Parent == null)
+            if (((FrameworkElement)((FrameworkElement)greenScreenControl.Parent).Parent).Parent == null)
             {
                 return; //nur auf dingen die auch angezeigt werden bitte, danke.
             }
@@ -113,14 +121,20 @@ namespace HtwKinect
         {
             try
             {
+                var kinectHelper = KinectHelper.Instance;
                 AccessoryItem hat = new AccessoryItem(AccessoryPositon.Hat, @"images\Accessories\Hat.png", 0.25);
                 var accessoryControl = new AccessoryControl();
                 accessoryControl.AccessoryItems.Add(hat);
-                grid.Children.Add(accessoryControl);
-                var instance = KinectHelper.Instance;
-                accessoryControl.Start(instance.Sensor);
-                instance.ReadyEvent += (sender, args) => RenderAccessoryItems(accessoryControl);
-
+                accessoryControl.RenderTransform = kinectHelper.CreateTransform();
+                accessoryControl.Width = kinectHelper.Sensor.ColorStream.FrameWidth;
+                accessoryControl.Height = kinectHelper.Sensor.ColorStream.FrameHeight;
+                Viewbox box = new Viewbox();
+                box.Child = accessoryControl;
+                box.Stretch = Stretch.Fill;
+                box.ClipToBounds = true;
+                grid.Children.Add(box);
+                accessoryControl.Start(kinectHelper.Sensor);
+                kinectHelper.ReadyEvent += (sender, args) => RenderAccessoryItems(accessoryControl);
             }
             catch
             {
@@ -130,12 +144,12 @@ namespace HtwKinect
 
         private void RenderAccessoryItems(AccessoryControl accessoryControl)
         {
-            if (((Grid)accessoryControl.Parent).Parent == null)
+            if (((FrameworkElement)((FrameworkElement)accessoryControl.Parent).Parent).Parent == null)
             {
                 return; //nur auf dingen die auch angezeigt werden bitte, danke.
             }
             var instance = KinectHelper.Instance;
-            accessoryControl.InvalidateVisual(instance.Skeletons);
+            accessoryControl.SetSkeletons(instance.Skeletons);
         }
         #endregion
 
