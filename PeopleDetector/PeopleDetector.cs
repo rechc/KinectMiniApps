@@ -134,6 +134,17 @@ namespace PeopleDetector
         }
 
         /// <summary>
+        /// returns true if people is Tracked
+        /// </summary>
+        /// <param name="TrackingId"></param>
+        /// <returns></returns>
+        public bool IsPeopleTracked(int TrackingId)
+        {
+            return GetTrackedPeople().Any(skel => skel.TrackingId == TrackingId);
+        }
+
+
+        /// <summary>
         /// returns true if people with transfered TrackingId is currently walking
         /// </summary>
         /// <param name="TrackingId"></param>
