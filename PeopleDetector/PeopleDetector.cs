@@ -7,6 +7,22 @@ namespace PeopleDetector
 {
     public class PeoplePositionDetector
     {
+
+      /*  #region Event
+        public event EventHandler ChangeEvent;
+
+        private void FireChangeEvent()
+        {
+            if (ChangeEvent != null)
+            {
+                ChangeEvent(this, EventArgs.Empty);
+            }
+        }
+
+        #endregion Event*/
+        //
+
+
         private Dictionary<int, List<Skeleton>> skeletonsDict = new Dictionary<int, List<Skeleton>>();
         private const int maxNumberOfFramesInSkeletonList = 30;
 
