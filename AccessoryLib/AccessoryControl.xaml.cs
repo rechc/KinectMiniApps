@@ -1,27 +1,19 @@
 ﻿using Microsoft.Kinect;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace AccessoryLib
 {
-    /// <summary>
-    /// Interaction logic for AccessoryControl.xaml
-    /// </summary>
     public partial class AccessoryControl : UserControl
     {
         private KinectSensor _sensor;
         private Skeleton[] _skeletons;
+
+        // Liste von Gegenstaenden, die gezeichnet werden sollen.
+        public List<AccessoryItem> AccessoryItems { get; private set; }
 
         public AccessoryControl()
         {
@@ -34,9 +26,6 @@ namespace AccessoryLib
             _skeletons = skeletons;
             InvalidateVisual();
         }
-
-        // Liste von Gegenstaenden, die gezeichnet werden sollen.
-        public List<AccessoryItem> AccessoryItems { get; private set; }
 
         public void Start(KinectSensor sensor)
         {
@@ -58,9 +47,7 @@ namespace AccessoryLib
             foreach (Skeleton person in _skeletons)
             {
                 if (person.TrackingState == SkeletonTrackingState.Tracked)
-                {
                     RenderAccessories(drawingContext, person);
-                }
             }
         }
 
@@ -93,7 +80,6 @@ namespace AccessoryLib
                 case AccessoryPositon.Hat:
                     offsetY = -imgHeight;
                     break;
-
                 case AccessoryPositon.Beard:
                     offsetY = imgHeight/4;
                     break;
