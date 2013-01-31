@@ -61,7 +61,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="MainWindow.xaml">
+    <Compile Include="WindowShopping.xaml.cs">
+      <DependentUpon>WindowShopping.xaml</DependentUpon>
+    </Compile>
+    <Page Include="LoopScreen.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -73,10 +76,14 @@
     <Compile Include="KinectHelper.cs" />
     <Compile Include="KinectProjectUIBuilder.cs" />
     <Compile Include="LocalPictureUiLoader.cs" />
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
+    <Compile Include="LoopScreen.xaml.cs">
+      <DependentUpon>LoopScreen.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="WindowShopping.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -121,6 +128,10 @@
     <ProjectReference Include="..\LoopList\LoopList.csproj">
       <Project>{0ef01833-063f-498f-b8ac-7744902a2efd}</Project>
       <Name>LoopList</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PeopleDetector\PeopleDetector.csproj">
+      <Project>{a6b20949-7a88-4e88-b857-f57f02546a54}</Project>
+      <Name>PeopleDetector</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

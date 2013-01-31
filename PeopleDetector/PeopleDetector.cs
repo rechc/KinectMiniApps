@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace PeopleDetector
 {
-    public class PeopleDetector
+    public class PeoplePositionDetector
     {
         private Dictionary<int, List<Skeleton>> skeletonsDict = new Dictionary<int, List<Skeleton>>();
         private const int maxNumberOfFramesInSkeletonList = 30;
@@ -14,11 +14,11 @@ namespace PeopleDetector
         private const double walkingDistance = 0.22;
         private const int compareLastFrames = 16; // nice to have: duration of gesture in milis instead of frames
 
-        public PeopleDetector()
+        public PeoplePositionDetector()
         {
         }
 
-        public PeopleDetector(Skeleton[] skeletons)
+        public PeoplePositionDetector(Skeleton[] skeletons)
         {
             AddSkeletonsToDictionary(skeletons);
         }
