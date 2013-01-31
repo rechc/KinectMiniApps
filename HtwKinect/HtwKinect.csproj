@@ -61,10 +61,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="StateViews\SplashScreen.xaml.cs">
+      <DependentUpon>SplashScreen.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="StateViews\WalkAndLookScreen.xaml.cs">
+      <DependentUpon>WalkAndLookScreen.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="StateViews\WalkScreen.xaml.cs">
+      <DependentUpon>WalkScreen.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WindowShopping.xaml.cs">
       <DependentUpon>WindowShopping.xaml</DependentUpon>
     </Compile>
-    <Page Include="LoopScreen.xaml">
+    <Page Include="StateViews\LoopScreen.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -76,10 +85,22 @@
     <Compile Include="KinectHelper.cs" />
     <Compile Include="KinectProjectUIBuilder.cs" />
     <Compile Include="LocalPictureUiLoader.cs" />
-    <Compile Include="LoopScreen.xaml.cs">
+    <Compile Include="StateViews\LoopScreen.xaml.cs">
       <DependentUpon>LoopScreen.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="StateViews\SplashScreen.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="StateViews\WalkAndLookScreen.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="StateViews\WalkScreen.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="WindowShopping.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -157,6 +178,15 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="images\Beach\BeachPescara %287%29.JPG">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\ScreenDummies\Screen1.jpg.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\ScreenDummies\ws-mockups.005.jpg.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\ScreenDummies\ws-mockups.006.jpg.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="images\Top\mokup.jpg">

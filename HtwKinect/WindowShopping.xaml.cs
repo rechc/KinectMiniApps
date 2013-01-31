@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using PeopleDetector;
 using System.IO;
+using HtwKinect.StateViews;
 
 namespace HtwKinect
 {
@@ -23,10 +24,15 @@ namespace HtwKinect
     /// </summary>
     public partial class FrameWindow : Window
     {
+        private PeoplePositionDetector peopleDetector;
         int oldstate = 1;
 
         MainWindow mw = null;
-        TextLoopList tll = null;
+        HtwKinect.StateViews.SplashScreen sscreen = null;
+        WalkScreen ws = null;
+        WalkAndLookScreen wals = null;
+
+        TextLoopList tll = null; // das weg und die anderen einbinden
 
 
         public FrameWindow()
@@ -36,7 +42,7 @@ namespace HtwKinect
 
         void Button_Click(object sender, RoutedEventArgs e)
         {
-            ChangeScreen();
+           // ChangeScreen();
         }
 
         private void ChangeScreen()
@@ -45,7 +51,7 @@ namespace HtwKinect
             {
                 RemoveOldScreen();
                 oldstate = 1;
-                tll = new TextLoopList();
+                if(tll ==null){tll = new TextLoopList();}
                 Grid.SetRow(tll, 1);
                 GridX.Children.Add(tll);
             }
@@ -65,7 +71,7 @@ namespace HtwKinect
                 {
                     RemoveOldScreen();
                     oldstate = 4;
-                    mw = new MainWindow();
+                    if (mw == null) { mw = new MainWindow(); }
                     Grid.SetRow(mw, 1);
                     GridX.Children.Add(mw);
                 }
@@ -80,132 +86,39 @@ namespace HtwKinect
             }
         }
 
-        #region PeopleDetector
+        #region PeopleDetector and Window start exit
 
-        /// <summary>
-        /// Active Kinect sensor
-        /// </summary>
-        private KinectSensor sensor;
-
-        private PeoplePositionDetector peopleDetector = new PeoplePositionDetector();
-
-
-
-        /// <summary>
-        /// Execute startup tasks
-        /// </summary>
-        /// <param name="sender">object sending the event</param>
-        /// <param name="e">event arguments</param>
+        /**
+         * Wird beim Windowstart aufgerufen
+         */
         private void WindowLoaded(object sender, RoutedEventArgs e)
         {
-            // Look through all sensors and start the first connected one.
-            // This requires that a Kinect is connected at the time of app startup.
-            // To make your app robust against plug/unplug, 
-            // it is recommended to use KinectSensorChooser provided in Microsoft.Kinect.Toolkit
-            foreach (var potentialSensor in KinectSensor.KinectSensors)
-            {
-                if (potentialSensor.Status == KinectStatus.Connected)
-                {
-                    this.sensor = potentialSensor;
-                    break;
-                }
-            }
-
-            if (null != this.sensor)
-            {
-                // Turn on the skeleton stream to receive skeleton frames
-                this.sensor.SkeletonStream.Enable();
-                //this.sensor.SkeletonStream.AppChoosesSkeletons = true;
-                // Add an event handler to be called whenever there is new color frame data
-                this.sensor.SkeletonFrameReady += this.SensorSkeletonFrameReady;
-
-                // Start the sensor!
-                try
-                {
-                    this.sensor.Start();
-                }
-                catch (IOException)
-                {
-                    this.sensor = null;
-                }
-            }
-
-            if (null == this.sensor)
-            {
-            }
+            peopleDetector = new PeoplePositionDetector();
+            KinectHelper kh = KinectHelper.Instance;
+            kh.ReadyEvent+= this.PeopleDetectorSkeletonEvent;
         }
 
-        /// <summary>
-        /// Execute shutdown tasks
-        /// </summary>
-        /// <param name="sender">object sending the event</param>
-        /// <param name="e">event arguments</param>
+        /**
+         * Wird beim beenden aufgerufen
+         */
         private void WindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            if (null != this.sensor)
-            {
-                this.sensor.Stop();
-            }
+        {          
         }
 
-        /// <summary>
-        /// Event handler for Kinect sensor's SkeletonFrameReady event
-        /// </summary>
-        /// <param name="sender">object sending the event</param>
-        /// <param name="e">event arguments</param>
-        private void SensorSkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e)
+        /**
+         * Event Skeleton für PeopleDetector
+         */ 
+        private void PeopleDetectorSkeletonEvent(object sender, EventArgs e)
         {
-            Skeleton[] skeletons = new Skeleton[0];
-
-            using (SkeletonFrame skeletonFrame = e.OpenSkeletonFrame())
-            {
-                if (skeletonFrame != null)
-                {
-                    skeletons = new Skeleton[skeletonFrame.SkeletonArrayLength];
-                    skeletonFrame.CopySkeletonDataTo(skeletons);
-
-                }
-            }
-
-            peopleDetector.Skeletons = skeletons;
-
+            peopleDetector.Skeletons = KinectHelper.Instance.Skeletons;
             OutputLabelX.Content =
             "Erkannt:" + peopleDetector.GetPositionOnlyPeople().Count +
                 " Tracked:" + peopleDetector.GetTrackedPeople().Count +
                 " Walking:" + peopleDetector.GetWalkingPeople().Count +
                 " Standing:" + peopleDetector.GetStayingPeople().Count
                 + " Looking:" + peopleDetector.GetLookingPeople().Count;
-
-           
-
-            /* this.LblErkanntOutput.Content = peopleDetector.GetPositionOnlyPeople().Count;
-             this.LblTrackedOutput.Content = peopleDetector.GetTrackedPeople().Count;
-             this.LblLaufenOutput.Content = peopleDetector.GetWalkingPeople().Count;
-             this.LblStehenOutput.Content = peopleDetector.GetStayingPeople().Count;
-             this.LblSchauenOutput.Content = peopleDetector.GetLookingPeople().Count;*/
+            ChangeScreen();
         }
-
-        /// <summary>
-        /// Handles the checking or unchecking of the seated mode combo box
-        /// </summary>
-        /// <param name="sender">object sending the event</param>
-        /// <param name="e">event arguments</param>
-        private void CheckBoxSeatedModeChanged(object sender, RoutedEventArgs e)
-        {
-            if (null != this.sensor)
-            {
-                /* if (this.checkBoxSeatedMode.IsChecked.GetValueOrDefault())
-                 {
-                     this.sensor.SkeletonStream.TrackingMode = SkeletonTrackingMode.Seated;
-                 }
-                 else
-                 {*/
-                this.sensor.SkeletonStream.TrackingMode = SkeletonTrackingMode.Default;
-                /* }*/
-            }
-        }
-
-        #endregion PeopleDetector
-
+        #endregion PeopleDetector and Window start exit
     }
 }
