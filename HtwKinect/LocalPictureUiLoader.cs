@@ -7,8 +7,6 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using AccessoryLib;
-using Microsoft.Kinect;
-using System.Diagnostics;
 
 namespace HtwKinect
 {
@@ -84,16 +82,9 @@ namespace HtwKinect
         {
             try
             {
-                var gsc = new GreenScreenControl.GreenScreenControl();
-                var kinectHelper = KinectHelper.Instance;
-                gsc.RenderTransform = kinectHelper.CreateTransform();
-                gsc.Width = kinectHelper.Sensor.ColorStream.FrameWidth;
-                gsc.Height = kinectHelper.Sensor.ColorStream.FrameHeight;
-                Viewbox box = new Viewbox();
-                box.Child = gsc;
-                box.Stretch = Stretch.Fill;
-                grid.Children.Add(box);
                 var instance = KinectHelper.Instance;
+                var gsc = new GreenScreenControl.GreenScreenControl();
+                grid.Children.Add(instance.GetScaledControl(gsc)); // TODO:braucht man überhaupt diesen grid? kann man das controll nich gleich in die Liste einfügen?
                 gsc.Start(instance.Sensor, false);
                 instance.ReadyEvent += (sender, args) => RenderGreenScreen(gsc);
             }
@@ -125,14 +116,8 @@ namespace HtwKinect
                 AccessoryItem hat = new AccessoryItem(AccessoryPositon.Hat, @"images\Accessories\Hat.png", 0.25);
                 var accessoryControl = new AccessoryControl();
                 accessoryControl.AccessoryItems.Add(hat);
-                accessoryControl.RenderTransform = kinectHelper.CreateTransform();
-                accessoryControl.Width = kinectHelper.Sensor.ColorStream.FrameWidth;
-                accessoryControl.Height = kinectHelper.Sensor.ColorStream.FrameHeight;
-                Viewbox box = new Viewbox();
-                box.Child = accessoryControl;
-                box.Stretch = Stretch.Fill;
-                box.ClipToBounds = true;
-                grid.Children.Add(box);
+                Viewbox vb = kinectHelper.GetScaledControl(accessoryControl);
+                grid.Children.Add(vb);// TODO:braucht man überhaupt diesen grid? kann man das vb nich gleich in die Liste einfügen?
                 accessoryControl.Start(kinectHelper.Sensor);
                 kinectHelper.ReadyEvent += (sender, args) => RenderAccessoryItems(accessoryControl);
             }

@@ -41,7 +41,7 @@ namespace HtwKinect
 
         private void InitList()
         {
-            MyLoopList.SetAutoDragOffset(0.20);
+            MyLoopList.SetAutoDragOffset(0.50);
             MyLoopList.SetDuration(new Duration(new TimeSpan(3000000))); //300m
             MyLoopList.Scrolled += MyLoopListOnScrolled;
             MyTextLoopList.Scrolled += MyTextLoopList_Scrolled;
@@ -154,10 +154,15 @@ namespace HtwKinect
                     int yCount = 0;
                     foreach (int dir in _savedDirections)
                     {
-                        if (dir == 1)
-                            xCount++;
-                        else if (dir == 2)
-                            yCount++;
+                        switch (dir)
+                        {
+                            case 1:
+                                xCount++;
+                                break;
+                            case 2:
+                                yCount++;
+                                break;
+                        }
                     }
                     int greater = Math.Max(xCount, yCount);
                     int lower = Math.Min(xCount, yCount);
