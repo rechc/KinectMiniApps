@@ -10,20 +10,41 @@ namespace HtwKinect
     {
 
         private readonly KinectSensor _kinectSensor;
-        private Skeleton[] _skeletons;
-        private DepthImagePixel[] _depthImagePixels;
-        private short[] _depthPixels;
-        private byte[] _colorPixels;
         private readonly FaceTracker _faceTracker;
-        private ColorImageFrame _colorImageFrame;
-        private DepthImageFrame _depthImageFrame;
         private FaceTrackFrame _faceFrame;
-        public static KinectHelper Instance;
         private int _id = -1;
+        private static KinectHelper _instance;
 
-        public event EventHandler AllFramesDispatchedEvent;
+        public static KinectHelper Instance {
+            get
+            {
+                if (_instance == null)
+                    _instance = new KinectHelper(new TransformSmoothParameters
+                    {
+                        Correction = 0,
+                        JitterRadius = 0,
+                        MaxDeviationRadius = 0.8f,
+                        Prediction = 0,
+                        Smoothing = 0.8f
+                    },
+                        false,
+                        ColorImageFormat.RgbResolution1280x960Fps12,
+                        DepthImageFormat.Resolution640x480Fps30);
+                return _instance;
+            }
+        }
+        public KinectSensor Sensor { get { return _kinectSensor; } }
+        public Skeleton[] Skeletons { get; private set; }
+        public DepthImagePixel[] DepthImagePixels { get; private set; }
+        public short[] DepthPixels { get; private set; }
+        public byte[] ColorPixels { get; private set; }
+        public ColorImageFrame ColorImageFrame { get; private set; }
+        public DepthImageFrame DepthImageFrame { get; private set; }
+        public DepthImageFormat DepthImageFormat { get; private set; }
+        public ColorImageFormat ColorImageFormat { get; private set; }
+
+        public event EventHandler ReadyEvent;
         
-
         private KinectHelper(TransformSmoothParameters tsp, bool near, ColorImageFormat colorFormat, DepthImageFormat depthFormat) {
             _kinectSensor = KinectSensor.KinectSensors.FirstOrDefault(s => s.Status == KinectStatus.Connected);
 
@@ -44,34 +65,21 @@ namespace HtwKinect
             
             _kinectSensor.Start();
             _faceTracker = new FaceTracker(_kinectSensor);
+
+            DepthImageFormat = depthFormat;
+            ColorImageFormat = colorFormat;
         }
 
-        public static KinectHelper GetInstance()
-        {
-            if (Instance == null)
-                Instance = new KinectHelper(new TransformSmoothParameters
-                    {
-                        Correction = 0,
-                        JitterRadius = 0,
-                        MaxDeviationRadius = 0.8f,
-                        Prediction = 0,
-                        Smoothing = 0.8f
-                    },
-                    false,
-                    ColorImageFormat.RgbResolution640x480Fps30,
-                    DepthImageFormat.Resolution640x480Fps30);
-            return Instance;
-        }
 
         /*Diese Methode sorgt dafür, dass immer zuverlaessig immer nur der Skeleton der selben Person zurückgegeben wird*/
         public Skeleton GetFixedSkeleton()
         {
             Skeleton skeleton = null;
-            if (_skeletons != null)
+            if (Skeletons != null)
             {
                 if (_id == -1)
                 {
-                    skeleton = _skeletons.FirstOrDefault(s => s.TrackingState == SkeletonTrackingState.Tracked);
+                    skeleton = Skeletons.FirstOrDefault(s => s.TrackingState == SkeletonTrackingState.Tracked);
                     if (skeleton != null)
                     {
                         _id = skeleton.TrackingId;
@@ -79,10 +87,10 @@ namespace HtwKinect
                 }
                 else
                 {
-                    skeleton = _skeletons.FirstOrDefault(s => s.TrackingState == SkeletonTrackingState.Tracked && s.TrackingId == _id);
+                    skeleton = Skeletons.FirstOrDefault(s => s.TrackingState == SkeletonTrackingState.Tracked && s.TrackingId == _id);
                     if (skeleton == null)
                     {
-                        skeleton = _skeletons.FirstOrDefault(s => s.TrackingState == SkeletonTrackingState.Tracked);
+                        skeleton = Skeletons.FirstOrDefault(s => s.TrackingState == SkeletonTrackingState.Tracked);
                         if (skeleton != null)
                         {
                             _id = skeleton.TrackingId;
@@ -104,29 +112,29 @@ namespace HtwKinect
             {
                 if (skeletonFrame != null)
                 {
-                    if (_skeletons == null)
-                        _skeletons = new Skeleton[skeletonFrame.SkeletonArrayLength];
-                    skeletonFrame.CopySkeletonDataTo(_skeletons);
+                    if (Skeletons == null)
+                        Skeletons = new Skeleton[skeletonFrame.SkeletonArrayLength];
+                    skeletonFrame.CopySkeletonDataTo(Skeletons);
                     //CorrectRoomCoords();
                     using (ColorImageFrame colorImageFrame = e.OpenColorImageFrame())
                     {
                         if (colorImageFrame != null)
                         {
-                            if (_colorPixels == null)
-                                _colorPixels = new byte[colorImageFrame.PixelDataLength];
-                            colorImageFrame.CopyPixelDataTo(_colorPixels);
-                            _colorImageFrame = colorImageFrame;
+                            if (ColorPixels == null)
+                                ColorPixels = new byte[colorImageFrame.PixelDataLength];
+                            colorImageFrame.CopyPixelDataTo(ColorPixels);
+                            ColorImageFrame = colorImageFrame;
                             using (DepthImageFrame depthImageFrame = e.OpenDepthImageFrame())
                             {
                                 if (depthImageFrame != null)
                                 {
-                                    if (_depthImagePixels == null)
-                                        _depthImagePixels = new DepthImagePixel[depthImageFrame.PixelDataLength];
-                                    if (_depthPixels == null)
-                                        _depthPixels = new short[depthImageFrame.PixelDataLength];
-                                    depthImageFrame.CopyDepthImagePixelDataTo(_depthImagePixels);
-                                    depthImageFrame.CopyPixelDataTo(_depthPixels);
-                                    _depthImageFrame = depthImageFrame;
+                                    if (DepthImagePixels == null)
+                                        DepthImagePixels = new DepthImagePixel[depthImageFrame.PixelDataLength];
+                                    depthImageFrame.CopyDepthImagePixelDataTo(DepthImagePixels);
+                                    if (DepthPixels == null)
+                                        DepthPixels = new short[depthImageFrame.PixelDataLength];
+                                    depthImageFrame.CopyPixelDataTo(DepthPixels);
+                                    DepthImageFrame = depthImageFrame;
                                     _faceFrame = null;
                                     FireAllFramesDispatched();
                                 }
@@ -146,7 +154,7 @@ namespace HtwKinect
                 if (elevationAngle != 0)
                 {
                     int angle = elevationAngle * -1;
-                    foreach (Skeleton s in _skeletons)
+                    foreach (Skeleton s in Skeletons)
                     {
                         foreach (JointType jt in Enum.GetValues(typeof(JointType)))
                         {
@@ -164,52 +172,17 @@ namespace HtwKinect
 
         private void FireAllFramesDispatched()
         {
-            if (AllFramesDispatchedEvent != null)
+            if (ReadyEvent != null)
             {
-                AllFramesDispatchedEvent(this, EventArgs.Empty);
+                ReadyEvent(this, EventArgs.Empty);
             }
         }
-
-        public Skeleton[] GetSkeletons()
-        {
-            return _skeletons;
-        }
-
-        public DepthImagePixel[] GetDepthImagePixels()
-        {
-            return _depthImagePixels;
-        }
-
-        public short[] GetDepthPixels()
-        {
-            return _depthPixels;
-        }
-
-        public byte[] GetColorPixels()
-        {
-            return _colorPixels;
-        } 
 
         public FaceTrackFrame GetFaceTrackFrame(Skeleton skeleton)
         {
             if (_faceFrame == null) /* Aus effizienzgruenden wird nicht bei jedem Zugriff ein neues Faceframe erzeugt, sondern nur ein Mal pro Frame. Siehe OnAllFramesReady unten.*/
-                _faceFrame = _faceTracker.Track(_kinectSensor.ColorStream.Format, _colorPixels, _kinectSensor.DepthStream.Format, _depthPixels, skeleton);
+                _faceFrame = _faceTracker.Track(_kinectSensor.ColorStream.Format, ColorPixels, _kinectSensor.DepthStream.Format, DepthPixels, skeleton);
             return _faceFrame;
-        }
-
-        public ColorImageFrame GetColorImageFrame()
-        {
-            return _colorImageFrame;
-        }
-
-        public DepthImageFrame GetDepthImageFrame()
-        {
-            return _depthImageFrame;
-        }
-
-        public KinectSensor GetSensor()
-        {
-            return _kinectSensor;
         }
     } 
 }

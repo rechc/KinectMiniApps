@@ -1,13 +1,5 @@
 ﻿using Microsoft.Kinect;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 /**
  * Mögliche Erweiterungen/ Verbesserungen
@@ -31,15 +23,15 @@ namespace HandDetection
     {
 
         // vars for Buffer
-        private int[] handstatusarray;
-        private int bufferIterator = 0;
+        private readonly int[] _handstatusarray;
+        private int _bufferIterator;
 
         //vars for cutout handsize
-        public static int epsilonTolerance = 2;
+        public static int EpsilonTolerance = 2;
 
         public HandTracker(int bufferSize = 15)
         {
-            handstatusarray = new int[bufferSize];
+            _handstatusarray = new int[bufferSize];
         }
 
         private bool IsHandTracked(Joint hand)
@@ -59,9 +51,8 @@ namespace HandDetection
 
             DepthImagePoint handPos = GetHandPos(sensor, handJoint, depthImageFormate);
             int halfhandCutSize = ComputeHandSize(handJoint)/2;
-
-            if (((handPos.X + epsilonTolerance + halfhandCutSize) > 640 || handPos.X - halfhandCutSize - epsilonTolerance <= 0)      // epsilon +2 wegen möglichem -1  von handPosX/Y
-               || ((handPos.Y + halfhandCutSize + epsilonTolerance) > 480 || handPos.Y - halfhandCutSize - epsilonTolerance <= 0))
+            if (((handPos.X + EpsilonTolerance + halfhandCutSize) > sensor.DepthStream.FrameWidth || handPos.X - halfhandCutSize - EpsilonTolerance <= 0)      // epsilon +2 wegen möglichem -1  von handPosX/Y
+               || ((handPos.Y + halfhandCutSize + EpsilonTolerance) > sensor.DepthStream.FrameHeight || handPos.Y - halfhandCutSize - EpsilonTolerance <= 0))
                 return HandStatus.Unknown;
 
             bool wasBlack = false;
@@ -75,7 +66,7 @@ namespace HandDetection
             {
                 for (int xx = xstart; xx < xend; xx++)
                 {
-                    int depthIndex = xx + (yy * 640);
+                    int depthIndex = xx + (yy * sensor.DepthStream.FrameWidth);
                     short depth = depthPixels[depthIndex].Depth;
                     DepthImagePixel depthPixel = depthPixels[depthIndex];
                     int player = depthPixel.PlayerIndex;
@@ -117,7 +108,7 @@ namespace HandDetection
          */
         public int ComputeHandSize(Joint handJoint)
         {
-            double g = 0.22; // Objektgroesse in m.
+            const double g = 0.22; // Objektgroesse in m.
             double r = handJoint.Position.Z;  // Entfernung in m.
             double imgWidth = 2 * Math.Atan(g / (2 * r)) * 600/*(px / g)*/;
             return (int)imgWidth;
@@ -140,15 +131,15 @@ namespace HandDetection
             }
 
             //loop overwrite
-            bufferIterator = (bufferIterator == handstatusarray.Length) ? 0 : bufferIterator;
+            _bufferIterator = (_bufferIterator == _handstatusarray.Length) ? 0 : _bufferIterator;
 
-            handstatusarray[bufferIterator] = currentHandStatus;
-            bufferIterator++;
+            _handstatusarray[_bufferIterator] = currentHandStatus;
+            _bufferIterator++;
 
             // double Counter
             int openCounter = 0;
             int closedCounter = 0;
-            foreach (int currentEntry in handstatusarray)
+            foreach (int currentEntry in _handstatusarray)
             {
                 if (currentEntry == 1)
                 {
@@ -165,18 +156,11 @@ namespace HandDetection
                  Console.Write("    {0}", obj);
              Console.WriteLine();*/
 
-            if (closedCounter > handstatusarray.Length / 2)
+            if (closedCounter > _handstatusarray.Length / 2)
             {
                 return HandStatus.Closed;
             }
-            else if (openCounter > handstatusarray.Length / 2)
-            {
-                return HandStatus.Opened;
-            }
-            else
-            {
-                return HandStatus.Unknown;
-            }
+            return openCounter > _handstatusarray.Length / 2 ? HandStatus.Opened : HandStatus.Unknown;
         }
     }
 }

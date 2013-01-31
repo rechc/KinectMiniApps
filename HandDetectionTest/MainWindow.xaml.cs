@@ -209,8 +209,8 @@ namespace HandDetectionTest
                                 double handausschnitt = handDection.ComputeHandSize(handJoint);
 
 
-                                if ((handPos.X + HandTracker.epsilonTolerance + handausschnitt / 2) > 640 || handPos.X - HandTracker.epsilonTolerance - handausschnitt / 2 <= 0) return; // epsilon +2 wegen möglichem -1  von handPosX/Y
-                                if ((handPos.Y + HandTracker.epsilonTolerance + handausschnitt / 2) > 480 || handPos.Y - HandTracker.epsilonTolerance - handausschnitt / 2 <= 0) return; 
+                                if ((handPos.X + HandTracker.EpsilonTolerance + handausschnitt / 2) > 640 || handPos.X - HandTracker.EpsilonTolerance - handausschnitt / 2 <= 0) return; // epsilon +2 wegen möglichem -1  von handPosX/Y
+                                if ((handPos.Y + HandTracker.EpsilonTolerance + handausschnitt / 2) > 480 || handPos.Y - HandTracker.EpsilonTolerance - handausschnitt / 2 <= 0) return; 
 
                                 ImageSource imgRightHandSource =
                                     new CroppedBitmap((BitmapSource)DepthImage.Source.CloneCurrentValue(), new Int32Rect(

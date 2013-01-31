@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -280,7 +281,6 @@ namespace LoopList
                 if (_above.Children.Count == 9)
                 {
                     _above.Children.RemoveAt(8);
-                        
                 }
             }
             Grid.SetRow(frameworkElement, 2);
