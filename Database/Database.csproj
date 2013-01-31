@@ -121,6 +121,7 @@
     <None Include="Model1.edmx.diagram">
       <DependentUpon>Model1.edmx</DependentUpon>
     </None>
+    <None Include="Model1.edmx.sqlce" />
     <None Include="Model1.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Model1.cs</LastGenOutput>
