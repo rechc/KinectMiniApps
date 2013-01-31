@@ -16,12 +16,20 @@ namespace Database
     {
         public TravelOffer()
         {
-            this.Country = new HashSet<Country>();
+            this.ExtendedInformation = new HashSet<ExtendedInformation>();
         }
     
         public int OfferId { get; set; }
-        public Nullable<double> PricePerPerson { get; set; }
+        public double PricePerPerson { get; set; }
+        public string Place { get; set; }
+        public int HotelRating { get; set; }
+        public string HotelName { get; set; }
+        public string TravelType { get; set; }
+        public int DayCount { get; set; }
+        public string BoardType { get; set; }
+        public byte[] Image { get; set; }
     
-        public virtual ICollection<Country> Country { get; set; }
+        public virtual Country Country { get; set; }
+        public virtual ICollection<ExtendedInformation> ExtendedInformation { get; set; }
     }
 }

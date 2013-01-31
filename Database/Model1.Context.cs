@@ -27,5 +27,6 @@ namespace Database
     
         public DbSet<TravelOffer> TravelOfferSet { get; set; }
         public DbSet<Country> CountrySet { get; set; }
+        public DbSet<ExtendedInformation> ExtendedInformationSet { get; set; }
     }
 }
