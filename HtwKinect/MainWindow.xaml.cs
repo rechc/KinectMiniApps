@@ -132,12 +132,13 @@ namespace HtwKinect
         {
             try
             {
-                if (!_doDrag) goto exit;
+                if (!_doDrag)
+                    return;
                 if (!_oldMovePoint.HasValue)
                     _oldMovePoint = currentPos;
                 if (Math.Abs(_oldMovePoint.Value.X - currentPos.X) < 0.000000001 &&
-                    Math.Abs(_oldMovePoint.Value.Y - currentPos.Y) < 0.000000001) goto exit; //keine Bewegung?
-
+                    Math.Abs(_oldMovePoint.Value.Y - currentPos.Y) < 0.000000001)
+                    return; //keine Bewegung?
 
                 int xDistance = (int) (currentPos.X - _oldMovePoint.Value.X);
                 int yDistance = (int) (currentPos.Y - _oldMovePoint.Value.Y);
@@ -148,7 +149,7 @@ namespace HtwKinect
                     if (_savedDirections.Count < 4)
                     {
                         _savedDirections.Add(dragDirection);
-                        goto exit;
+                        return;
                     }
                     int xCount = 0;
                     int yCount = 0;
@@ -176,7 +177,7 @@ namespace HtwKinect
                     if (!_dragDirectionIsObvious)
                     {
                         KinectVibratingRectangle.Visibility = Visibility.Visible;
-                        goto exit;
+                        return;
                     }
                 }
 
@@ -191,12 +192,14 @@ namespace HtwKinect
                         mayDragOn = MyLoopList.VDrag(yDistance);
                 }
                 if (!mayDragOn) _doDrag = false;
-                exit:
-                _oldMovePoint = currentPos;
             }
             catch (Exception exc)
             {
                 ExceptionTextBlock.Text = exc.Message + "\n\r" + exc.InnerException;
+            }
+            finally
+            {
+                _oldMovePoint = currentPos;
             }
         }
 
