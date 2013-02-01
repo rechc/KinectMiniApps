@@ -22,14 +22,15 @@ namespace HtwKinect
             get
             {
                 if (_instance == null)
-                    _instance = new KinectHelper(new TransformSmoothParameters
-                    {
-                        Correction = 0,
-                        JitterRadius = 0,
-                        MaxDeviationRadius = 0.8f,
-                        Prediction = 0,
-                        Smoothing = 0.8f
-                    },
+                    _instance = new KinectHelper(
+                        new TransformSmoothParameters
+                        {
+                            Correction = 0,
+                            JitterRadius = 0,
+                            MaxDeviationRadius = 0.8f,
+                            Prediction = 0,
+                            Smoothing = 0.8f
+                        },
                         false,
                         ColorImageFormat.RgbResolution1280x960Fps12,
                         DepthImageFormat.Resolution640x480Fps30);
@@ -101,7 +102,6 @@ namespace HtwKinect
                         else
                         {
                             _id = -1;
-
                         }
                     }
                 }
@@ -111,15 +111,11 @@ namespace HtwKinect
 
         private void AllFramesReady(object sender, AllFramesReadyEventArgs e)
         {
-            using (SkeletonFrame skeletonFrame = e.OpenSkeletonFrame())
+            using (ColorImageFrame colorImageFrame = e.OpenColorImageFrame())
             {
-                if (skeletonFrame != null)
+                using (DepthImageFrame depthImageFrame = e.OpenDepthImageFrame())
                 {
-                    if (Skeletons == null)
-                        Skeletons = new Skeleton[skeletonFrame.SkeletonArrayLength];
-                    skeletonFrame.CopySkeletonDataTo(Skeletons);
-                    //CorrectRoomCoords();
-                    using (ColorImageFrame colorImageFrame = e.OpenColorImageFrame())
+                    using (SkeletonFrame skeletonFrame = e.OpenSkeletonFrame())
                     {
                         if (colorImageFrame != null)
                         {
@@ -127,21 +123,27 @@ namespace HtwKinect
                                 ColorPixels = new byte[colorImageFrame.PixelDataLength];
                             colorImageFrame.CopyPixelDataTo(ColorPixels);
                             ColorImageFrame = colorImageFrame;
-                            using (DepthImageFrame depthImageFrame = e.OpenDepthImageFrame())
-                            {
-                                if (depthImageFrame != null)
-                                {
-                                    if (DepthImagePixels == null)
-                                        DepthImagePixels = new DepthImagePixel[depthImageFrame.PixelDataLength];
-                                    depthImageFrame.CopyDepthImagePixelDataTo(DepthImagePixels);
-                                    if (DepthPixels == null)
-                                        DepthPixels = new short[depthImageFrame.PixelDataLength];
-                                    depthImageFrame.CopyPixelDataTo(DepthPixels);
-                                    DepthImageFrame = depthImageFrame;
-                                    _faceFrame = null;
-                                    FireAllFramesDispatched();
-                                }
-                            }
+                        }
+
+                        if (depthImageFrame != null)
+                        {
+                            if (DepthImagePixels == null)
+                                DepthImagePixels = new DepthImagePixel[depthImageFrame.PixelDataLength];
+                            depthImageFrame.CopyDepthImagePixelDataTo(DepthImagePixels);
+                            if (DepthPixels == null)
+                                DepthPixels = new short[depthImageFrame.PixelDataLength];
+                            depthImageFrame.CopyPixelDataTo(DepthPixels);
+                            DepthImageFrame = depthImageFrame;
+                            _faceFrame = null;
+                            FireAllFramesDispatched();
+                        }
+
+                        if (skeletonFrame != null)
+                        {
+                            if (Skeletons == null)
+                                Skeletons = new Skeleton[skeletonFrame.SkeletonArrayLength];
+                            skeletonFrame.CopySkeletonDataTo(Skeletons);
+                            //CorrectRoomCoords();
                         }
                     }
                 }
@@ -175,9 +177,10 @@ namespace HtwKinect
 
         private void FireAllFramesDispatched()
         {
-            if (ReadyEvent != null)
+            var handler = ReadyEvent;
+            if (handler != null)
             {
-                ReadyEvent(this, EventArgs.Empty);
+                handler(this, EventArgs.Empty);
             }
         }
 
