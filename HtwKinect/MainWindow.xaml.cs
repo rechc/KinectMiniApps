@@ -36,7 +36,7 @@ namespace HtwKinect
             }
             catch (Exception exc)
             {
-                ExceptionTextBlock.Text = exc.Message + "\n\r" + exc.InnerException;
+                ExceptionTextBlock.Text = exc.Message + "\r\n" + exc.InnerException;
             }
         }
 
@@ -196,7 +196,7 @@ namespace HtwKinect
             }
             catch (Exception exc)
             {
-                ExceptionTextBlock.Text = exc.Message + "\n\r" + exc.InnerException;
+                ExceptionTextBlock.Text = exc.Message + "\r\n" + exc.InnerException;
             }
             finally
             {
@@ -224,7 +224,7 @@ namespace HtwKinect
             }
             catch (Exception exc)
             {
-                ExceptionTextBlock.Text = exc.Message + "\n\r" + exc.InnerException;
+                ExceptionTextBlock.Text = exc.Message + "\r\n" + exc.InnerException;
             }
         }
 
@@ -276,7 +276,7 @@ namespace HtwKinect
             }
             catch (Exception exc)
             {
-                ExceptionTextBlock.Text = exc.Message + "\n\r" + exc.InnerException;
+                ExceptionTextBlock.Text = exc.Message + "\r\n" + exc.InnerException;
             }
         }
 
