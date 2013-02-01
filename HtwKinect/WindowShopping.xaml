@@ -8,7 +8,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Button Content="Change Content" FontSize="20" HorizontalAlignment="Right" VerticalAlignment="Center"  Padding="10,5" Grid.Row="0" />
+        <!-- Button Content="Change Content" FontSize="20" HorizontalAlignment="Right" VerticalAlignment="Center"  Padding="10,5" Grid.Row="0" / -->
         <Label x:Name="OutputLabelX" FontSize="25" Content="Label" Height="41" HorizontalAlignment="Left" VerticalAlignment="Center" Width="698" Grid.Row="0" Grid.Column="0"/>
         <!-- loopl:TextLoopList x:Name="CurrentContentX" Background="BlueViolet" Grid.Row="1"/ -->
     </Grid>

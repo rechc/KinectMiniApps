@@ -6,21 +6,7 @@ using System.IO;
 using HtwKinect.StateViews;
 using System.Windows.Controls;
 using System;
-
-/**
-  using System.Threading.Tasks;
-  using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-  using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-  using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-  using System;
- */
 
 namespace HtwKinect
 {
@@ -89,9 +75,38 @@ namespace HtwKinect
         
         private void RemoveOldScreen()
         {
-            if (GridX.Children.Count > 2)
+            if (GridX.Children.Count > 1)
             {
-                GridX.Children.RemoveAt(2);
+                GridX.Children.RemoveAt(1);
+            }
+        }
+
+
+        /*Tastensteuerung */
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            try
+            {
+                if (e.SystemKey == Key.F4)
+                {
+                    Application.Current.Shutdown();
+                }
+                else
+                {
+                    switch (e.Key)
+                    {
+                        case Key.Escape:
+                            Application.Current.Shutdown();
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                e.Handled = true;
+            }
+            catch (Exception exc)
+            {
+                Console.WriteLine(exc);
             }
         }
 
@@ -111,7 +126,8 @@ namespace HtwKinect
          * Wird beim beenden aufgerufen
          */
         private void WindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
-        {          
+        {
+            Console.WriteLine("Joke: Fenster Klose");
         }
 
         /**
