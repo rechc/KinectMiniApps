@@ -9,7 +9,9 @@ using System.Windows.Media;
 
 namespace HtwKinect
 {
-    /*Diese Klasse verwaltet die elementaren Kinect-Resourcen*/
+    /// <summary>
+    /// Verwaltet die elementaren Kinect-Ressourcen.
+    /// </summary>
     public class KinectHelper 
     {
         private readonly KinectSensor _kinectSensor;
@@ -75,7 +77,9 @@ namespace HtwKinect
         }
 
 
-        /*Diese Methode sorgt dafür, dass immer zuverlaessig immer nur der Skeleton der selben Person zurückgegeben wird*/
+        /// <summary>
+        /// Sorgt dafür, dass immer zuverlaessig immer nur der Skeleton der selben Person zurückgegeben wird.
+        /// </summary>
         public Skeleton GetFixedSkeleton()
         {
             Skeleton skeleton = null;
@@ -150,7 +154,9 @@ namespace HtwKinect
             }
         }
 
-        /*Korrigiert die Raumverzerrung bei geneigter Kinect*/
+        /// <summary>
+        /// Korrigiert die Raumverzerrung bei geneigter Kinect.
+        /// </summary>
         private void CorrectRoomCoords()
         {
             if (_kinectSensor.IsRunning)
@@ -227,6 +233,12 @@ namespace HtwKinect
             return transforms;
         }
 
+        /// <summary>
+        /// Setzt die Groesse eines FrameworkElement-Objekts auf die Groesse
+        /// des Farbbildes der Kinect und verpackt es in eine Viewbox mit
+        /// Stretch- und Clip-Eigenschaften.
+        /// </summary>
+        /// <param name="frameWorkElement">Das Element, das gewrapt wird.</param>
         public Viewbox GetScaledControl(FrameworkElement frameWorkElement)
         {
             frameWorkElement.RenderTransform = CreateTransform();
