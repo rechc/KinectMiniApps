@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
-using HandDetection;
+﻿using HandDetection;
 using LoopList;
-using System;
-using System.Windows;
-using System.Windows.Input;
 using Microsoft.Kinect;
+using System;
+using System.Collections.Generic;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace HtwKinect
 {
@@ -19,7 +20,7 @@ namespace HtwKinect
         private bool _mouseIsUp;
         private KinectProjectUiBuilder _kinectProjectUiBuilder;
 
-        private readonly List<int> _savedDirections = new List<int>();
+        private readonly List<Orientation> _savedDirections = new List<Orientation>();
         private bool _dragDirectionIsObvious;
 
         
@@ -143,7 +144,7 @@ namespace HtwKinect
                 int xDistance = (int) (currentPos.X - _oldMovePoint.Value.X);
                 int yDistance = (int) (currentPos.Y - _oldMovePoint.Value.Y);
 
-                int dragDirection = Math.Abs(xDistance) >= Math.Abs(yDistance) ? 1 : 2;
+                Orientation dragDirection = Math.Abs(xDistance) >= Math.Abs(yDistance) ? Orientation.Horizontal : Orientation.Vertical;
                 if (!_dragDirectionIsObvious)
                 {
                     if (_savedDirections.Count < 4)
@@ -153,14 +154,14 @@ namespace HtwKinect
                     }
                     int xCount = 0;
                     int yCount = 0;
-                    foreach (int dir in _savedDirections)
+                    foreach (Orientation dir in _savedDirections)
                     {
                         switch (dir)
                         {
-                            case 1:
+                            case Orientation.Horizontal:
                                 xCount++;
                                 break;
-                            case 2:
+                            case Orientation.Vertical:
                                 yCount++;
                                 break;
                         }
@@ -170,7 +171,7 @@ namespace HtwKinect
                     if (lower/(double) greater < 0.15) //x- und y-Entwicklung unterscheiden sich deutlich.
                     {
                         _dragDirectionIsObvious = true;
-                        dragDirection = greater == xCount ? 1 : 2;
+                        dragDirection = greater == xCount ? Orientation.Horizontal : Orientation.Vertical;
                         KinectVibratingRectangle.Visibility = Visibility.Collapsed;
                     }
                     _savedDirections.Clear();
@@ -182,13 +183,13 @@ namespace HtwKinect
                 }
 
                 bool mayDragOn = false;
-                if (dragDirection == 1)
+                if (dragDirection == Orientation.Horizontal)
                 {
                     mayDragOn = MyLoopList.HDrag(xDistance);
                 }
-                if (dragDirection == 2)
+                else
                 {
-                    if (!_waitForTextList)
+                    //if (!_waitForTextList) <-- nervt doch nur ...
                         mayDragOn = MyLoopList.VDrag(yDistance);
                 }
                 if (!mayDragOn) _doDrag = false;
