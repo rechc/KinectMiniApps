@@ -102,9 +102,9 @@
           <Property Type="String" Name="TravelType" Nullable="false" />
           <Property Type="Int32" Name="DayCount" Nullable="false" />
           <Property Type="String" Name="BoardType" Nullable="false" />
-          <Property Type="Binary" Name="Image" Nullable="false" />
           <NavigationProperty Name="ExtendedInformation" Relationship="Model1.TravelOfferExtendedInformation" FromRole="TravelOffer" ToRole="ExtendedInformation" />
           <Property Type="Int32" Name="CountryId" Nullable="false" />
+          <Property Type="String" Name="ImgPath" Nullable="false" />
         </EntityType>
         <EntityType Name="Country">
           <Key>
@@ -164,7 +164,6 @@
           <ScalarProperty Name="TravelType" ColumnName="TravelType" />
           <ScalarProperty Name="DayCount" ColumnName="DayCount" />
           <ScalarProperty Name="BoardType" ColumnName="BoardType" />
-          <ScalarProperty Name="Image" ColumnName="Image" />
           <ScalarProperty Name="CountryId" ColumnName="CountryId" />
         </MappingFragment>
       </EntityTypeMapping>

@@ -2,8 +2,8 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server Compact Edition
 -- --------------------------------------------------
--- Date Created: 01/31/2013 16:48:15
--- Generated from EDMX file: C:\Users\Christian\workspace\KinectMiniApps\Database\Model1.edmx
+-- Date Created: 02/01/2013 09:47:21
+-- Generated from EDMX file: C:\Users\RechC_000\workspace\KinectMiniApps\Database\Model1.edmx
 -- --------------------------------------------------
 
 
@@ -43,8 +43,8 @@ CREATE TABLE [TravelOfferSet] (
     [TravelType] nvarchar(4000)  NOT NULL,
     [DayCount] int  NOT NULL,
     [BoardType] nvarchar(4000)  NOT NULL,
-    [Image] varbinary(8000)  NOT NULL,
-    [CountryId] int  NOT NULL
+    [CountryId] int  NOT NULL,
+    [ImgPath] nvarchar(4000)  NOT NULL
 );
 GO
 
