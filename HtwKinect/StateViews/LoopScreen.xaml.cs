@@ -254,12 +254,8 @@ namespace HtwKinect
                         if (!_waitForTextList)
                             MyLoopList.AnimV(false);
                         break;
-                    case Key.Escape:
-                        Application.Current.Shutdown();
-                        break;
                     default:
                         //Environment.Exit(0);
-                        Application.Current.Shutdown();
                         break;
                 }
 
