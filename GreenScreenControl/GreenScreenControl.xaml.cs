@@ -62,9 +62,9 @@ namespace GreenScreenControl
             InitializeComponent();
         }
 
-        public void Start(KinectSensor sensor, bool antialiassing)
+        public void Start(KinectSensor sensor, bool antialiasing)
         {
-            _antialiasing = antialiassing;
+            _antialiasing = antialiasing;
             _sensor = sensor;
 
             _depthWidth = _sensor.DepthStream.FrameWidth;
