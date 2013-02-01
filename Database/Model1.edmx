@@ -30,8 +30,8 @@
     <Property Name="TravelType" Type="nvarchar" Nullable="false" />
     <Property Name="DayCount" Type="int" Nullable="false" />
     <Property Name="BoardType" Type="nvarchar" Nullable="false" />
-    <Property Name="Image" Type="varbinary" Nullable="false" />
     <Property Name="CountryId" Type="int" Nullable="false" />
+    <Property Name="ImgPath" Type="nvarchar" Nullable="false" />
   </EntityType>
   <EntityType Name="CountrySet">
     <Key>
@@ -165,6 +165,7 @@
           <ScalarProperty Name="DayCount" ColumnName="DayCount" />
           <ScalarProperty Name="BoardType" ColumnName="BoardType" />
           <ScalarProperty Name="CountryId" ColumnName="CountryId" />
+          <ScalarProperty Name="ImgPath" ColumnName="ImgPath" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
