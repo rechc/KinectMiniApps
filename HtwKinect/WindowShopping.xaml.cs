@@ -1,83 +1,92 @@
 ﻿using LoopList;
 using Microsoft.Kinect;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using PeopleDetector;
 using System.IO;
 using HtwKinect.StateViews;
+using System.Windows.Controls;
+using System;
+
+/**
+  using System.Threading.Tasks;
+  using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+  using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
+  using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+  using System;
+ */
 
 namespace HtwKinect
 {
     /// <summary>
-    /// Interaktionslogik für Window1.xaml
+    /// Interaktionslogik für FrameWindow.xaml
     /// </summary>
     public partial class FrameWindow : Window
     {
-        private PeoplePositionDetector peopleDetector;
-        int oldstate = 1;
+        private PeoplePositionDetector _peopleDetector;
+        private int _oldstate = 1;
 
-        MainWindow mw = null;
-        HtwKinect.StateViews.SplashScreen sscreen = null;
-        WalkScreen ws = null;
-        WalkAndLookScreen wals = null;
-
-        TextLoopList tll = null; // das weg und die anderen einbinden
-
+        private MainWindow _mainWindow = null;
+        private HtwKinect.StateViews.SplashScreen _sscreen = null;
+        private WalkScreen _walkScreen = null;
+        private WalkAndLookScreen _walkLookScreen = null;
 
         public FrameWindow()
         {
-            InitializeComponent();            
-        }
-
-        void Button_Click(object sender, RoutedEventArgs e)
-        {
-           // ChangeScreen();
+            InitializeComponent();
+            StartFirstScreen();           
         }
 
         private void ChangeScreen()
         {
-            if (peopleDetector.GetPositionOnlyPeople().Count == 0 && peopleDetector.GetTrackedPeople().Count == 0 && oldstate != 1) //Zustand 1
+            if (_peopleDetector.GetPositionOnlyPeople().Count == 0 && _peopleDetector.GetTrackedPeople().Count == 0 && _oldstate != 1) //Zustand 1
             {
-                RemoveOldScreen();
-                oldstate = 1;
-                if(tll ==null){tll = new TextLoopList();}
-                Grid.SetRow(tll, 1);
-                GridX.Children.Add(tll);
+                StartFirstScreen();
             }
             else  // Zustand 2-4
             {
-                if (peopleDetector.GetWalkingPeople().Count != 0 && peopleDetector.GetLookingPeople().Count == 0 && oldstate != 2) // Zustand 2
+                if (_peopleDetector.GetWalkingPeople().Count != 0 && _peopleDetector.GetLookingPeople().Count == 0 && _oldstate != 2) // Zustand 2
                 {
                     RemoveOldScreen();
-                    oldstate = 2;
+                    _oldstate = 2;
+                    if (_walkScreen == null) { _walkScreen = new WalkScreen(); }
+                    Grid.SetRow(_walkScreen, 1);
+                    GridX.Children.Add(_walkScreen);
                 }
-                else if (peopleDetector.GetWalkingPeople().Count != 0 && peopleDetector.GetLookingPeople().Count != 0 && oldstate != 3) // Zustand 3
+                else if (_peopleDetector.GetWalkingPeople().Count != 0 && _peopleDetector.GetLookingPeople().Count != 0 && _oldstate != 3) // Zustand 3
                 {
                     RemoveOldScreen();
-                    oldstate = 3;
+                    _oldstate = 3;
+                    if (_walkLookScreen == null) { _walkLookScreen = new WalkAndLookScreen(); }
+                    Grid.SetRow(_walkLookScreen, 1);
+                    GridX.Children.Add(_walkLookScreen);
                 }
-                else if (peopleDetector.GetStayingPeople().Count != 0 && peopleDetector.GetLookingPeople().Count != 0 && oldstate != 4) // Zustand 4
+                else if (_peopleDetector.GetStayingPeople().Count != 0 && _peopleDetector.GetLookingPeople().Count != 0 && _oldstate != 4) // Zustand 4
                 {
                     RemoveOldScreen();
-                    oldstate = 4;
-                    if (mw == null) { mw = new MainWindow(); }
-                    Grid.SetRow(mw, 1);
-                    GridX.Children.Add(mw);
+                    _oldstate = 4;
+                    if (_mainWindow == null) { _mainWindow = new MainWindow(); }
+                    Grid.SetRow(_mainWindow, 1);
+                    GridX.Children.Add(_mainWindow);
                 }
             }
         }
 
+        private void StartFirstScreen() 
+        {
+            RemoveOldScreen();
+            _oldstate = 1;
+            if (_sscreen == null) { _sscreen = new HtwKinect.StateViews.SplashScreen(); }
+            Grid.SetRow(_sscreen, 1);
+            GridX.Children.Add(_sscreen);
+        }
+        
         private void RemoveOldScreen()
         {
             if (GridX.Children.Count > 2)
@@ -93,7 +102,7 @@ namespace HtwKinect
          */
         private void WindowLoaded(object sender, RoutedEventArgs e)
         {
-            peopleDetector = new PeoplePositionDetector();
+            _peopleDetector = new PeoplePositionDetector();
             KinectHelper kh = KinectHelper.Instance;
             kh.ReadyEvent+= this.PeopleDetectorSkeletonEvent;
         }
@@ -110,13 +119,13 @@ namespace HtwKinect
          */ 
         private void PeopleDetectorSkeletonEvent(object sender, EventArgs e)
         {
-            peopleDetector.Skeletons = KinectHelper.Instance.Skeletons;
+            _peopleDetector.Skeletons = KinectHelper.Instance.Skeletons;
             OutputLabelX.Content =
-            "Erkannt:" + peopleDetector.GetPositionOnlyPeople().Count +
-                " Tracked:" + peopleDetector.GetTrackedPeople().Count +
-                " Walking:" + peopleDetector.GetWalkingPeople().Count +
-                " Standing:" + peopleDetector.GetStayingPeople().Count
-                + " Looking:" + peopleDetector.GetLookingPeople().Count;
+            "Erkannt:" + _peopleDetector.GetPositionOnlyPeople().Count +
+                " Tracked:" + _peopleDetector.GetTrackedPeople().Count +
+                " Walking:" + _peopleDetector.GetWalkingPeople().Count +
+                " Standing:" + _peopleDetector.GetStayingPeople().Count
+                + " Looking:" + _peopleDetector.GetLookingPeople().Count;
             ChangeScreen();
         }
         #endregion PeopleDetector and Window start exit
