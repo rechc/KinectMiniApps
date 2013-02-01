@@ -139,7 +139,7 @@ namespace HtwKinect
                             depthImageFrame.CopyPixelDataTo(DepthPixels);
                             DepthImageFrame = depthImageFrame;
                             _faceFrame = null;
-                            FireAllFramesDispatched();
+                            
                         }
 
                         if (skeletonFrame != null)
@@ -149,6 +149,8 @@ namespace HtwKinect
                             skeletonFrame.CopySkeletonDataTo(Skeletons);
                             //CorrectRoomCoords();
                         }
+
+                        FireAllFramesDispatched();
                     }
                 }
             }
