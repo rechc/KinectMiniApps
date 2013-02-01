@@ -22,7 +22,7 @@ namespace HtwKinect
 
         public static KinectHelper Instance {
             get
-            {
+            { //test
                 if (_instance == null)
                     _instance = new KinectHelper(
                         new TransformSmoothParameters
