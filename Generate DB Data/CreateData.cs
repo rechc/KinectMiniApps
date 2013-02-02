@@ -62,7 +62,7 @@ namespace Generate_DB_Data
             {
                 offer.ExtendedInformation.Add(CreateExtendedInfo(j));
             }
-
+            _context.TravelOfferSet.Add(offer);
         }
 
         private ExtendedInformation CreateExtendedInfo(int j)
@@ -107,7 +107,7 @@ namespace Generate_DB_Data
             {
                 if (context.Database.Exists())
                 {
-                    context.Database.ExecuteSqlCommand("alter database " + context.Database.Connection.Database + " set SINGLE_USER WITH ROLLBACK IMMEDIATE");
+                    //context.Database.ExecuteSqlCommand("alter database " + context.Database.Connection.Database + " set SINGLE_USER WITH ROLLBACK IMMEDIATE");
                     context.Database.Delete();
                 }
                 context.Database.CreateIfNotExists();
