@@ -73,7 +73,6 @@ namespace HtwKinect
             {
                 var instance = KinectHelper.Instance;
                 var gsc = new GreenScreenControl.GreenScreenControl();
-                gsc.Loaded += (sender, args) => TansformFrameworkElement(gsc);
                 gsc.Start(instance.Sensor, false);
                 instance.ReadyEvent += (sender, args) => RenderGreenScreen(gsc);
                 grid.Children.Add(gsc);
@@ -83,11 +82,6 @@ namespace HtwKinect
                 //TODO logging
                 //Dieser Try Catch ist dazu da, damit die Bilder geladen werden können, auch wenn kein Kinectsensor angeschloßen ist.
             }
-        }
-
-        private void TansformFrameworkElement(FrameworkElement frameworkElement)
-        {
-            KinectHelper.Instance.SetTransform(frameworkElement);
         }
 
         private void RenderGreenScreen(GreenScreenControl.GreenScreenControl greenScreenControl)
@@ -111,7 +105,6 @@ namespace HtwKinect
                 AccessoryItem hat = new AccessoryItem(AccessoryPositon.Hat, @"images\Accessories\Hat.png", 0.25);
                 var accessoryControl = new AccessoryControl();
                 accessoryControl.AccessoryItems.Add(hat);
-                accessoryControl.Loaded += (sender, args) => TansformFrameworkElement(accessoryControl);
                 accessoryControl.Start(kinectHelper.Sensor);
                 kinectHelper.ReadyEvent += (sender, args) => RenderAccessoryItems(accessoryControl);
                 grid.Children.Add(accessoryControl);
@@ -132,6 +125,11 @@ namespace HtwKinect
             TansformFrameworkElement(accessoryControl);
         }
         #endregion
+
+        private void TansformFrameworkElement(FrameworkElement frameworkElement)
+        {
+            KinectHelper.Instance.SetTransform(frameworkElement);
+        }
 
     }
 }
