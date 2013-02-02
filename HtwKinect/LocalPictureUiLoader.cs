@@ -97,7 +97,8 @@ namespace HtwKinect
                 return; //nur auf dingen die auch angezeigt werden bitte, danke.
             }
             var instance = KinectHelper.Instance;
-            greenScreenControl.InvalidateVisual(instance.DepthImagePixels, instance.ColorPixels); 
+            greenScreenControl.InvalidateVisual(instance.DepthImagePixels, instance.ColorPixels);
+            TansformFrameworkElement(greenScreenControl);
         }
         #endregion
 
@@ -128,6 +129,7 @@ namespace HtwKinect
             }
             var instance = KinectHelper.Instance;
             accessoryControl.SetSkeletons(instance.Skeletons);
+            TansformFrameworkElement(accessoryControl);
         }
         #endregion
 

@@ -208,38 +208,50 @@ namespace HtwKinect
         /// <param name="depthmm">Entfernung, die fuer das Mapping von
         /// Tiefeninformation auf das Farbbild verwendet wird.
         /// Standard: 1000</param>
-        public void SetTransform(FrameworkElement frameworkElement, int depthmm = 1000)
+        public void SetTransform(FrameworkElement frameworkElement)
         {
+            int depthHandLeft = 1000;
+            int depthHandRight = 1000;
+            int depthHead = 1000;
+            int depthFoot = 1000;
+            Skeleton skeleton = GetFixedSkeleton();
+            if (skeleton != null)
+            {
+                depthHandLeft = (int)(skeleton.Joints[JointType.HandLeft].Position.Z * 1000);
+                depthHandRight = (int)(skeleton.Joints[JointType.HandLeft].Position.Z * 1000);
+                depthHead = (int)(skeleton.Joints[JointType.Head].Position.Z * 1000);
+                depthFoot = (int)(skeleton.Joints[JointType.FootLeft].Position.Z * 1000);
+            }
             var transforms = new TransformGroup();
             var mapper = Sensor.CoordinateMapper;
             int w = Sensor.DepthStream.FrameWidth;
             int h = Sensor.DepthStream.FrameHeight;
             double y0 = mapper.MapDepthPointToColorPoint(
                 DepthImageFormat,
-                new DepthImagePoint { X = w/2, Y = 0, Depth = depthmm },
+                new DepthImagePoint { X = w/2, Y = 0, Depth = depthHead },
                 ColorImageFormat).Y;
             double yh = mapper.MapDepthPointToColorPoint(
                 DepthImageFormat,
-                new DepthImagePoint { X = w/2, Y = h, Depth = depthmm },
+                new DepthImagePoint { X = w/2, Y = h, Depth = depthFoot },
                 ColorImageFormat).Y;
             double x0 = mapper.MapDepthPointToColorPoint(
                 DepthImageFormat,
-                new DepthImagePoint { X = 0, Y = h/2, Depth = depthmm },
+                new DepthImagePoint { X = 0, Y = h/2, Depth = depthHandLeft },
                 ColorImageFormat).X;
             double xw = mapper.MapDepthPointToColorPoint(
                 DepthImageFormat,
-                new DepthImagePoint() { X = w, Y = h/2, Depth = depthmm },
+                new DepthImagePoint() { X = w, Y = h/2, Depth = depthHandRight },
                 ColorImageFormat).X;
             x0 *= frameworkElement.ActualWidth / Sensor.ColorStream.FrameWidth;
             xw *= frameworkElement.ActualWidth / Sensor.ColorStream.FrameWidth;
             y0 *= frameworkElement.ActualHeight / Sensor.ColorStream.FrameHeight;
             yh *= frameworkElement.ActualHeight / Sensor.ColorStream.FrameHeight;
-            transforms.Children.Add(new TranslateTransform(-x0, -y0));
-            transforms.Children.Add(new ScaleTransform(
-                frameworkElement.ActualWidth / (xw - x0),
-                frameworkElement.ActualHeight / (yh - y0)));
+            double factorX = (frameworkElement.ActualWidth/(xw - x0));
+            double factorY = (frameworkElement.ActualHeight / (yh - y0));
+            transforms.Children.Add(new TranslateTransform(-x0 * factorX, -y0 * factorY));
+            transforms.Children.Add(new ScaleTransform(factorX, factorY));
             frameworkElement.RenderTransform = transforms;
-            frameworkElement.Clip = new RectangleGeometry(new Rect(x0, y0, frameworkElement.ActualWidth - x0, frameworkElement.ActualHeight - y0));
+            frameworkElement.Clip = new RectangleGeometry(new Rect(x0 * factorX, y0 * factorY, frameworkElement.ActualWidth / factorX, frameworkElement.ActualHeight / factorY));
         }
     } 
 }
