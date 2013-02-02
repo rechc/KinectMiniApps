@@ -54,23 +54,16 @@ namespace HtwKinect
             LoadPictures(new LocalPictureUiLoader());
         }
 
-        //private static BitmapImage LoadImage(string path)
-        //{
-        //    BitmapImage bi = new BitmapImage();
-        //    bi.BeginInit();
-        //    bi.UriSource = new Uri(path, UriKind.RelativeOrAbsolute);
-        //    bi.EndInit();
-        //    return bi;
-        //}
+
 
         private void LoadPictures(IUiLoader uiLoader)
         {
             _kinectProjectUiBuilder = new KinectProjectUiBuilder(MyLoopList, MyTextLoopList);
             uiLoader.LoadElementsIntoList(_kinectProjectUiBuilder);
             //string[] paths = Directory.GetFiles(Environment.CurrentDirectory + @"\images\Top");
-            //Image img = new Image {Source = LoadImage(paths[0])};
+            //Image img = new Image {Source = new BitmapImage(new Uri(paths[0], UriKind.RelativeOrAbsolute)) };
             //Node node1 = MyLoopList.AddNewToLeft(null, img);
-            //img = new Image {Source = LoadImage(paths[1])};
+            //img = new Image { Source = new BitmapImage(new Uri(paths[1], UriKind.RelativeOrAbsolute)) };
             //Node node2 = MyLoopList.AddNewToLeft(null, img);
             //node1.Right = node2;
             //node2.Left = node1;
@@ -210,7 +203,7 @@ namespace HtwKinect
                 }
                 else
                 {
-                    //if (!_waitForTextList) <-- nervt doch nur ...
+                    if (!_waitForTextList) //<-- nervt doch nur ... <-- nein das dient der synchronisation zwischen linkem text und looplist.
                         mayDragOn = MyLoopList.VDrag(yDistance);
                 }
                 if (!mayDragOn) _doDrag = false;

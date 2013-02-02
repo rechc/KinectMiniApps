@@ -6,6 +6,7 @@ using AccessoryLib;
 using Microsoft.Kinect;
 using Microsoft.Kinect.Toolkit.FaceTracking;
 using System.Windows.Media;
+using Rect = System.Windows.Rect;
 
 namespace HtwKinect
 {
@@ -203,10 +204,11 @@ namespace HtwKinect
         /// Erstellt ein Transform-Objekt, das den Bildbereich auf den aktiven
         /// Bereich des Tiefensensors begrenzt.
         /// </summary>
+        /// <param name="frameworkElement"></param>
         /// <param name="depthmm">Entfernung, die fuer das Mapping von
         /// Tiefeninformation auf das Farbbild verwendet wird.
         /// Standart: 1000</param>
-        public Transform CreateTransform(int depthmm = 1000)
+        public void SetTransform(FrameworkElement frameworkElement, int depthmm = 1000)
         {
             var transforms = new TransformGroup();
             var mapper = Sensor.CoordinateMapper;
@@ -214,15 +216,15 @@ namespace HtwKinect
             int h = Sensor.DepthStream.FrameHeight;
             double y0 = mapper.MapDepthPointToColorPoint(
                 DepthImageFormat,
-                new DepthImagePoint() { X = w/2, Y = 0, Depth = depthmm },
+                new DepthImagePoint { X = w/2, Y = 0, Depth = depthmm },
                 ColorImageFormat).Y;
             double yh = mapper.MapDepthPointToColorPoint(
                 DepthImageFormat,
-                new DepthImagePoint() { X = w/2, Y = h, Depth = depthmm },
+                new DepthImagePoint { X = w/2, Y = h, Depth = depthmm },
                 ColorImageFormat).Y;
             double x0 = mapper.MapDepthPointToColorPoint(
                 DepthImageFormat,
-                new DepthImagePoint() { X = 0, Y = h/2, Depth = depthmm },
+                new DepthImagePoint { X = 0, Y = h/2, Depth = depthmm },
                 ColorImageFormat).X;
             double xw = mapper.MapDepthPointToColorPoint(
                 DepthImageFormat,
@@ -232,22 +234,8 @@ namespace HtwKinect
             transforms.Children.Add(new ScaleTransform(
                 Sensor.ColorStream.FrameWidth / (xw - x0),
                 Sensor.ColorStream.FrameHeight / (yh - y0)));
-            return transforms;
-        }
-
-        /// <summary>
-        /// Setzt die Groesse eines FrameworkElement-Objekts auf die Groesse
-        /// des Farbbildes der Kinect und verpackt es in eine Viewbox mit
-        /// Stretch- und Clip-Eigenschaften.
-        /// </summary>
-        /// <param name="frameWorkElement">Das Element, das gewrapt wird.</param>
-        public Viewbox GetScaledControl(FrameworkElement frameWorkElement)
-        {
-            frameWorkElement.RenderTransform = CreateTransform();
-            frameWorkElement.Width = Sensor.ColorStream.FrameWidth; //TODO ist das wirklich notwendig??
-            frameWorkElement.Height = Sensor.ColorStream.FrameHeight; //TODO ist das wirklich notwendig??
-            Viewbox box = new Viewbox { Child = frameWorkElement, Stretch = Stretch.Fill, ClipToBounds = true };
-            return box;
+            frameworkElement.RenderTransform = transforms;
+            frameworkElement.Clip = new RectangleGeometry(new Rect(x0, y0, frameworkElement.ActualWidth - x0, frameworkElement.ActualHeight - y0));
         }
     } 
 }

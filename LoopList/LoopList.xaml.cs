@@ -481,7 +481,6 @@ namespace LoopList
             if (xDistance < 0 && (_currentNode.HasRightNeighbour() || (int) ttRight.X >= 0) ||
                 xDistance > 0 && (_currentNode.HasLeftNeighbour() || (int) ttRight.X <= 0))
             {
-
                 if (ttRight.X >= _right.ActualWidth || ttRight.X <= -_right.ActualWidth)
                 {
                     Grid tmp = _right;
