@@ -25,6 +25,7 @@ namespace Database.DAO
 
             //SingleInfoDao decides for insert or update
             var singleInfoDao = new SingleInfoDao();
+
             foreach (var info in _informations)
             {
                 singleInfoDao.Save(info);
@@ -61,6 +62,7 @@ namespace Database.DAO
                         con.Entry(infoEntity).CurrentValues.SetValues(_information);
                 con.SaveChanges();
             }
+
         }
 
         private void Insert()

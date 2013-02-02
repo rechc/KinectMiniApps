@@ -8,6 +8,7 @@ namespace Database.DAO
 {
     public class TravelOfferDao
     {
+
         private TravelOffer _offer;
 
         private bool IsNew()
@@ -66,7 +67,6 @@ namespace Database.DAO
                 Insert();
             else
                 Update();
-            new ExtendedInformationDao().Save(offer.ExtendedInformation);
         }
     }
 }
