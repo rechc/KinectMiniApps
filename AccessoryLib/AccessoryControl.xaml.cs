@@ -64,9 +64,11 @@ namespace AccessoryLib
         private void RenderAccessoryItem(DrawingContext drawingContext, Skeleton person, AccessoryItem item)
         {
             SkeletonPoint headPos = person.Joints[JointType.Head].Position;
-            DepthImagePoint depthImagePoint = _sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(headPos,
-                                                                                                    _sensor.DepthStream
+
+            ColorImagePoint colorImagePoint = _sensor.CoordinateMapper.MapSkeletonPointToColorPoint(headPos,
+                                                                                                    _sensor.ColorStream
                                                                                                            .Format);
+
             double g = item.Width; // Objektgroesse in m.
             double r = headPos.Z;  // Entfernung in m.
             double imgWidth = 2 * Math.Atan(g / (2 * r)) * ActualWidth;
@@ -84,8 +86,8 @@ namespace AccessoryLib
                     break;
             }
 
-            double headX = depthImagePoint.X * (ActualWidth / _sensor.DepthStream.FrameWidth) + offsetX;
-            double headY = depthImagePoint.Y * (ActualHeight / _sensor.DepthStream.FrameHeight) + offsetY;
+            double headX = colorImagePoint.X * (ActualWidth / _sensor.ColorStream.FrameWidth) + offsetX;
+            double headY = colorImagePoint.Y * (ActualHeight / _sensor.ColorStream.FrameHeight) + offsetY;
 
             //Console.WriteLine("Z: {0}, imgW: {1}, imgH: {2}, X: {3}, Y: {4}", headPos.Z, imgWidth, imgHeight, cloc.X, cloc.Y);
             drawingContext.DrawImage(item.Image, new Rect(headX - imgWidth / 2, headY, imgWidth, imgHeight));

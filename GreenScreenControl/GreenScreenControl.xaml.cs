@@ -131,6 +131,7 @@ namespace GreenScreenControl
                         int colorInDepthX = colorImagePoint.X / _colorToDepthDivisor;
                         int colorInDepthY = colorImagePoint.Y / _colorToDepthDivisor;
 
+
                         // make sure the depth pixel maps to a valid point in color space
                         // check y > 0 and y < depthHeight to make sure we don't write outside of the array
                         // check x > 0 instead of >= 0 since to fill gaps we set opaque current pixel plus the one to the left
@@ -185,7 +186,7 @@ namespace GreenScreenControl
             _playerOpacityMaskImage.WritePixels(
                 new Int32Rect(0, 0, _depthWidth, _depthHeight),
                 _greenScreenPixelData,
-                _depthWidth * ((_playerOpacityMaskImage.Format.BitsPerPixel + 7) / 8),
+                _depthWidth * ((_playerOpacityMaskImage.Format.BitsPerPixel) / 8),
                 0);
 
             drawingContext.PushOpacityMask(new ImageBrush { ImageSource = _playerOpacityMaskImage});

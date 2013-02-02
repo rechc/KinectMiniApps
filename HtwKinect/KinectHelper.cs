@@ -207,7 +207,7 @@ namespace HtwKinect
         /// <param name="frameworkElement"></param>
         /// <param name="depthmm">Entfernung, die fuer das Mapping von
         /// Tiefeninformation auf das Farbbild verwendet wird.
-        /// Standart: 1000</param>
+        /// Standard: 1000</param>
         public void SetTransform(FrameworkElement frameworkElement, int depthmm = 1000)
         {
             var transforms = new TransformGroup();
@@ -230,10 +230,14 @@ namespace HtwKinect
                 DepthImageFormat,
                 new DepthImagePoint() { X = w, Y = h/2, Depth = depthmm },
                 ColorImageFormat).X;
+            x0 *= frameworkElement.ActualWidth / Sensor.ColorStream.FrameWidth;
+            xw *= frameworkElement.ActualWidth / Sensor.ColorStream.FrameWidth;
+            y0 *= frameworkElement.ActualHeight / Sensor.ColorStream.FrameHeight;
+            yh *= frameworkElement.ActualHeight / Sensor.ColorStream.FrameHeight;
             transforms.Children.Add(new TranslateTransform(-x0, -y0));
             transforms.Children.Add(new ScaleTransform(
-                Sensor.ColorStream.FrameWidth / (xw - x0),
-                Sensor.ColorStream.FrameHeight / (yh - y0)));
+                frameworkElement.ActualWidth / (xw - x0),
+                frameworkElement.ActualHeight / (yh - y0)));
             frameworkElement.RenderTransform = transforms;
             frameworkElement.Clip = new RectangleGeometry(new Rect(x0, y0, frameworkElement.ActualWidth - x0, frameworkElement.ActualHeight - y0));
         }

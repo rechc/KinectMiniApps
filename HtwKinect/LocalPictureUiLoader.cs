@@ -92,7 +92,7 @@ namespace HtwKinect
 
         private void RenderGreenScreen(GreenScreenControl.GreenScreenControl greenScreenControl)
         {
-            if (((FrameworkElement)((FrameworkElement)greenScreenControl.Parent).Parent) == null)
+            if (((FrameworkElement)greenScreenControl.Parent).Parent == null)
             {
                 return; //nur auf dingen die auch angezeigt werden bitte, danke.
             }
@@ -122,7 +122,7 @@ namespace HtwKinect
 
         private void RenderAccessoryItems(AccessoryControl accessoryControl)
         {
-            if (((FrameworkElement)((FrameworkElement)accessoryControl.Parent).Parent) == null)
+            if (((FrameworkElement)accessoryControl.Parent).Parent == null)
             {
                 return; //nur auf dingen die auch angezeigt werden bitte, danke.
             }
