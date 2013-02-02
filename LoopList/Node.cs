@@ -1,17 +1,58 @@
-﻿using System.Windows;
-using System.Windows.Controls;
+﻿using System;
+using System.Windows;
 
 namespace LoopList
 {
     public class Node
     {
-        public Node Left { get; set; }
-        public Node Right { get; set; }
-        public Node Above { get; set; }
-        public Node Below { get; set; }
+        private Node _left;
+        private Node _right;
+        private Node _above;
+        private Node _below;
 
-        public FrameworkElement FrameworkElement { get; set; }
+        public Node Left
+        {
+            get { return _left; }
+            set
+            { 
+                _left = value;
+                FireNodeChanged();
+            }
+        }
 
+        public Node Right
+        {
+            get { return _right; }
+            set
+            {
+                _right = value;
+                FireNodeChanged();
+            }
+        }
+
+        public Node Above
+        {
+            get { return _above; }
+            set
+            {
+                _above = value;
+                FireNodeChanged();
+            }
+        }
+
+        public Node Below
+        {
+            get { return _below; }
+            set
+            {
+                _below = value;
+                FireNodeChanged();
+            }
+        }
+
+        internal event EventHandler NodeChangedEvent;
+
+        public FrameworkElement FrameworkElement { get; internal set; }
 
         internal Node(FrameworkElement frameworkElement)
         {
@@ -22,14 +63,30 @@ namespace LoopList
             Above = this;
         }
 
-        public bool HasHNeighbour()
+        private void FireNodeChanged()
         {
-            return Right != this || Left != this;
+            if (NodeChangedEvent != null)
+                NodeChangedEvent(this, EventArgs.Empty);
         }
 
-        public bool HasVNeighbour()
+        public bool HasRightNeighbour()
         {
-            return Above != this || Below != this;
+            return Right != this;
+        }
+
+        public bool HasLeftNeighbour()
+        {
+            return Left != this;
+        }
+
+        public bool HasAboveNeighbour()
+        {
+            return Above != this;
+        }
+
+        public bool HasBelowNeighbour()
+        {
+            return Below != this;
         }
     }
 }

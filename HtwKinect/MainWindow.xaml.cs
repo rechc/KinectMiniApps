@@ -1,4 +1,6 @@
-﻿using HandDetection;
+﻿using System.IO;
+using System.Windows.Media.Imaging;
+using HandDetection;
 using LoopList;
 using Microsoft.Kinect;
 using System;
@@ -52,10 +54,29 @@ namespace HtwKinect
             LoadPictures(new LocalPictureUiLoader());
         }
 
+        //private static BitmapImage LoadImage(string path)
+        //{
+        //    BitmapImage bi = new BitmapImage();
+        //    bi.BeginInit();
+        //    bi.UriSource = new Uri(path, UriKind.RelativeOrAbsolute);
+        //    bi.EndInit();
+        //    return bi;
+        //}
+
         private void LoadPictures(IUiLoader uiLoader)
         {
             _kinectProjectUiBuilder = new KinectProjectUiBuilder(MyLoopList, MyTextLoopList);
             uiLoader.LoadElementsIntoList(_kinectProjectUiBuilder);
+            //string[] paths = Directory.GetFiles(Environment.CurrentDirectory + @"\images\Top");
+            //Image img = new Image {Source = LoadImage(paths[0])};
+            //Node node1 = MyLoopList.AddNewToLeft(null, img);
+            //img = new Image {Source = LoadImage(paths[1])};
+            //Node node2 = MyLoopList.AddNewToLeft(null, img);
+            //node1.Right = node2;
+            //node2.Left = node1;
+            //node2.Below = node1;
+            //node2.Right = node1;
+            //MyTextLoopList.Add("lol");
         }
 
         private void InitKinect()
@@ -265,10 +286,6 @@ namespace HtwKinect
                         break;
                     case Key.Escape:
                         Application.Current.Shutdown();
-                        break;
-                    default:
-                        //Environment.Exit(0);
-                        //Application.Current.Shutdown();
                         break;
                 }
 
