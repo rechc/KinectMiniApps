@@ -8,13 +8,7 @@ namespace Database.DAO
 {
     public class TravelOfferDao
     {
-        private readonly Model1Container _context;
         private TravelOffer _offer;
-
-        public TravelOfferDao(Model1Container context)
-        {
-            _context = context;
-        }
 
         private bool IsNew()
         {
@@ -23,29 +17,46 @@ namespace Database.DAO
 
         private void Insert()
         {
-            _context.TravelOfferSet.Add(_offer);
+            using (var con = new Model1Container())
+            {
+                con.TravelOfferSet.Add(_offer);
+                con.SaveChanges();
+            }
         }
 
         private void Update()
         {
-            var offerEntity = _context.TravelOfferSet.Single(o => o.OfferId == _offer.OfferId);
-            _context.Entry(offerEntity).CurrentValues.SetValues(_offer);
+            using (var con = new Model1Container())
+            {
+
+                var offerEntity = con.TravelOfferSet.Single(o => o.OfferId == _offer.OfferId);
+                con.Entry(offerEntity).CurrentValues.SetValues(_offer);
+                con.SaveChanges();
+            } 
         }
 
         public List<TravelOffer> SelectAllOffers()
         {
-            return (from offer in _context.TravelOfferSet
-                    select offer).ToList();
+            using (var con = new Model1Container())
+            {
+
+                return (from offer in con.TravelOfferSet
+                        select offer).ToList();
+            } 
         }
 
         public TravelOffer SelectById(int offerId)
         {
-            var obj = (from offer in _context.TravelOfferSet
-                    where offerId == offer.OfferId
-                    select offer).FirstOrDefault();
-            if(obj == null)
-                throw new Exception("No entry found. Wrong Id");
-            return obj;
+            using (var con = new Model1Container())
+            {
+
+                var obj = (from offer in con.TravelOfferSet
+                           where offerId == offer.OfferId
+                           select offer).FirstOrDefault();
+                if (obj == null)
+                    throw new Exception("No entry found. Wrong Id");
+                return obj;
+            } 
         }
 
         public void Save(TravelOffer offer)
@@ -55,7 +66,7 @@ namespace Database.DAO
                 Insert();
             else
                 Update();
-            new ExtendedInformationDao(_context).Save(offer.ExtendedInformation);
+            new ExtendedInformationDao().Save(offer.ExtendedInformation);
         }
     }
 }

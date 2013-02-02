@@ -8,18 +8,15 @@ namespace Database.DAO
 {
     public class ExtendedInformationDao
     {
-        private readonly Model1Container _context;
         private ICollection<ExtendedInformation> _informations;
-
-        public ExtendedInformationDao(Model1Container context)
-        {
-            _context = context;
-        }
 
         public List<ExtendedInformation> SelectAllCountries()
         {
-            return (from info in _context.ExtendedInformationSet
-                    select info).ToList();
+            using (var con = new Model1Container())
+            {
+                return (from info in con.ExtendedInformationSet
+                        select info).ToList();
+            } 
         }
 
         public void Save(ICollection<ExtendedInformation> informations)
@@ -27,7 +24,7 @@ namespace Database.DAO
             _informations = informations;
 
             //SingleInfoDao decides for insert or update
-            var singleInfoDao = new SingleInfoDao(_context);
+            var singleInfoDao = new SingleInfoDao();
             foreach (var info in _informations)
             {
                 singleInfoDao.Save(info);
@@ -37,13 +34,7 @@ namespace Database.DAO
 
     class SingleInfoDao
     {
-        private readonly Model1Container _context;
         private ExtendedInformation _information;
-
-        public SingleInfoDao(Model1Container context)
-        {
-            _context = context;
-        }
 
         private bool IsNew()
         {
@@ -62,15 +53,23 @@ namespace Database.DAO
 
         private void Update()
         {
-            var infoEntity =
-                _context.ExtendedInformationSet.Single(
-                    o => o.ExtendetInformationId == _information.ExtendetInformationId);
-            _context.Entry(infoEntity).CurrentValues.SetValues(_information);
+            using (var con = new Model1Container())
+            {
+                var infoEntity =
+                    con.ExtendedInformationSet.Single(
+                        o => o.ExtendetInformationId == _information.ExtendetInformationId);
+                        con.Entry(infoEntity).CurrentValues.SetValues(_information);
+                con.SaveChanges();
+            }
         }
 
         private void Insert()
         {
-            _context.ExtendedInformationSet.Add(_information);
+            using (var con = new Model1Container())
+            {
+                con.ExtendedInformationSet.Add(_information);
+                con.SaveChanges();
+            }
         }
     }
 }
