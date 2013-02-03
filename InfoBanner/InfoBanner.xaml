@@ -1,0 +1,13 @@
+﻿<UserControl x:Class="InfoBanner.UserControl1"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="505.367" d:DesignWidth="441.297">
+    <Grid>
+        <Rectangle Fill="#FF9DA2A1" HorizontalAlignment="Left" Height="495" Stroke="Black" VerticalAlignment="Top" Width="251"/>
+        <Label Name="Categorie" Content="Categorie" HorizontalAlignment="Left" Height="61" Margin="19,18,0,0" VerticalAlignment="Top" Width="200" FontSize="36"/>
+
+    </Grid>
+</UserControl>
