@@ -62,6 +62,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConnectionStringHelper.cs" />
     <Compile Include="Country.cs">
       <DependentUpon>ModelObjects.tt</DependentUpon>
     </Compile>
