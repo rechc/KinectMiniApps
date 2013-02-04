@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -20,9 +21,29 @@ namespace MiniGameTest
     /// </summary>
     public partial class MainWindow : Window
     {
+        
+
         public MainWindow()
         {
             InitializeComponent();
         }
+
+        private void Move(int i)
+        {
+            this.BeachBall.SetValue(Grid.RowProperty, i);
+            Thread.Sleep(1000);
+        }
+
+
+        private void Event_Click(object sender, RoutedEventArgs e)
+        {
+
+            for (int i = 1; i <= 4; i++)
+            {
+                Move(i);
+
+            }
+            
+        }    
     }
 }

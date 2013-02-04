@@ -4,9 +4,9 @@
         xmlns:MiniGameControl="clr-namespace:MiniGame;assembly=MiniGame"
         Title="MainWindow" Height="480" Width="640">
     <!--<MiniGameControl:MainWindow />-->
-    <Grid>
+    <Grid Name="MiniGameGrid">
         <Grid.Background>
-            <ImageBrush ImageSource="Bilder/BeachGame2.jpg"/>
+            <ImageBrush ImageSource="Bilder/Skipiste.jpg"/>
         </Grid.Background>
         <Grid.RowDefinitions>
             <RowDefinition Height="15*"/>
@@ -22,8 +22,9 @@
             <ColumnDefinition Width="2*"/>
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
-        
-        <Image Source="Bilder/BeachBall.png" Grid.Row="1" Grid.Column="2"/>
+
+        <Image Name="BeachBall" Source="Bilder/BeachBall.png" Grid.Row="1" Grid.Column="2"/>
+        <Button Name="Event" Content="Event" Grid.Row="5" Click="Event_Click" />
     </Grid>
     
 </Window>
