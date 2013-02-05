@@ -16,7 +16,7 @@ namespace HtwKinect
     public partial class FrameWindow : Window
     {
         private PeoplePositionDetector _peopleDetector;
-        private int _oldstate = 1; // durch enum noch ersetzen
+        private ScreenMode _currentScreen = ScreenMode.Splash; // durch enum noch ersetzen
         public enum ScreenMode
         {
             Splash,
@@ -39,32 +39,32 @@ namespace HtwKinect
 
         private void ChangeScreen()
         {
-            if (_peopleDetector.GetPositionOnlyPeople().Count == 0 && _peopleDetector.GetTrackedPeople().Count == 0 && _oldstate != 1) //Zustand 1
+            if (_peopleDetector.GetPositionOnlyPeople().Count == 0 && _peopleDetector.GetTrackedPeople().Count == 0 && _currentScreen != ScreenMode.Splash) //Zustand 1
             {
                 StartFirstScreen();
             }
             else  // Zustand 2-4
             {
-                if (_peopleDetector.GetWalkingPeople().Count != 0 && _peopleDetector.GetLookingPeople().Count == 0 && _oldstate != 2) // Zustand 2
+                if (_peopleDetector.GetWalkingPeople().Count != 0 && _peopleDetector.GetLookingPeople().Count == 0 && _currentScreen != ScreenMode.Walk) // Zustand 2
                 {
                     RemoveOldScreen();
-                    _oldstate = 2;
+                    _currentScreen = ScreenMode.Walk;
                     if (_walkScreen == null) { _walkScreen = new WalkScreen(); }
                     Grid.SetRow(_walkScreen, 1);
                     GridX.Children.Add(_walkScreen);
                 }
-                else if (_peopleDetector.GetWalkingPeople().Count != 0 && _peopleDetector.GetLookingPeople().Count != 0 && _oldstate != 3) // Zustand 3
+                else if (_peopleDetector.GetWalkingPeople().Count != 0 && _peopleDetector.GetLookingPeople().Count != 0 && _currentScreen != ScreenMode.WalkandLook) // Zustand 3
                 {
                     RemoveOldScreen();
-                    _oldstate = 3;
+                    _currentScreen = ScreenMode.WalkandLook;
                     if (_walkLookScreen == null) { _walkLookScreen = new WalkAndLookScreen(); }
                     Grid.SetRow(_walkLookScreen, 1);
                     GridX.Children.Add(_walkLookScreen);
                 }
-                else if (_peopleDetector.GetStayingPeople().Count != 0 && _peopleDetector.GetLookingPeople().Count != 0 && _oldstate != 4) // Zustand 4
+                else if (_peopleDetector.GetStayingPeople().Count != 0 && _peopleDetector.GetLookingPeople().Count != 0 && _currentScreen != ScreenMode.MainScreen) // Zustand 4
                 {
                     RemoveOldScreen();
-                    _oldstate = 4;
+                    _currentScreen = ScreenMode.MainScreen;
                     if (_mainWindow == null) { _mainWindow = new MainWindow(); }
                     Grid.SetRow(_mainWindow, 1);
                     GridX.Children.Add(_mainWindow);
@@ -75,7 +75,7 @@ namespace HtwKinect
         private void StartFirstScreen() 
         {
             RemoveOldScreen();
-            _oldstate = 1;
+            _currentScreen = ScreenMode.Splash;
             if (_sscreen == null) { _sscreen = new HtwKinect.StateViews.SplashScreen(); }
             Grid.SetRow(_sscreen, 1);
             GridX.Children.Add(_sscreen);
@@ -117,6 +117,11 @@ namespace HtwKinect
             {
                 Console.WriteLine(exc);
             }
+            if (e.Handled == false && _currentScreen==ScreenMode.MainScreen && _mainWindow!=null) 
+            {
+              _mainWindow.DelegateKeyEvent(e);
+            }
+
         }
 
         #region PeopleDetector and Window start exit

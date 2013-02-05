@@ -256,6 +256,10 @@ namespace HtwKinect
             KinectFocusedRectangle.Visibility = Visibility.Visible;
         }
 
+        public void DelegateKeyEvent(KeyEventArgs e) 
+        {
+            OnKeyDown(e);
+        }
         /*Tastensteuerung der LoopList*/
         protected override void OnKeyDown(KeyEventArgs e)
         {
