@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.EntityClient;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,11 +12,52 @@ namespace Generate_DB_Data
 {
     class CreateData
     {
+        private static string ConnectionString
+        {
+            get
+            {
+                // Specify the provider name, server and database.
+                string providerName = "System.Data.SqlClient";
+                string serverName = "localhost";
+                string databaseName = "AdventureWorks";
+
+                // Initialize the connection string builder for the
+                // underlying provider.
+                SqlConnectionStringBuilder sqlBuilder =
+                    new SqlConnectionStringBuilder();
+
+                // Set the properties for the data source.
+                sqlBuilder.DataSource = serverName;
+                sqlBuilder.InitialCatalog = databaseName;
+                sqlBuilder.IntegratedSecurity = true;
+
+                // Build the SqlConnection connection string.
+                string providerString = sqlBuilder.ToString();
+
+                // Initialize the EntityConnectionStringBuilder.
+                EntityConnectionStringBuilder entityBuilder =
+                    new EntityConnectionStringBuilder();
+
+                //Set the provider name.
+                entityBuilder.Provider = providerName;
+
+                // Set the provider-specific connection string.
+                entityBuilder.ProviderConnectionString = providerString;
+
+                // Set the Metadata location.
+                entityBuilder.Metadata = "res://*/";
+
+                return entityBuilder.ToString();
+            }
+        }
+
         private Model1Container _context;
         private readonly Random _random = new Random();
 
         public CreateData(int entryCount)
         {
+            //string connectionString = ConnectionStringHelper.GetSqlCeConnectionString(@"C:\Users\Christian\workspace\KinectMiniApps\Generate DB Data\bin\Debug\Database1.sdf");
+
             using (var con = new Model1Container())
             {
                 _context = con;
@@ -35,8 +78,8 @@ namespace Generate_DB_Data
             string[] countries = {"Spanien", "Deutschland", "USA", "Mallorca", "Frankreich"};
             foreach (var countryName in countries)
             {
-                var c = new Country() {CountryName = countryName};
-                _context.CountrySet.Add(c);
+                var c = new Categorie() {CategoryName = countryName};
+                _context.CategorieSet.Add(c);
             }
         }
 
@@ -53,7 +96,7 @@ namespace Generate_DB_Data
                                 PricePerPerson = GetRandomInteger(50, 1000),
                                 TravelType = travelType[GetRandomInteger(0, travelType.Count() - 1)],
                                 HotelRating = GetRandomInteger(1,5),
-                                CountryId = GetRandomInteger(1, _context.CountrySet.Count()),
+                                CategoryId = GetRandomInteger(1, _context.CategorieSet.Count()),
                                 ImgPath = "path" //todo set path
                             };
 
