@@ -6,7 +6,7 @@
     <edmx:Diagrams>
       <Diagram DiagramId="40abb9221ab34fe5adb818aa38d113cc" Name="Diagram1" >
         <EntityTypeShape EntityType="Model1.TravelOffer" Width="3" PointX="0.5" PointY="1.25" IsExpanded="true" />
-        <EntityTypeShape EntityType="Model1.Country" Width="1.5" PointX="4.875" PointY="0.875" />
+        <EntityTypeShape EntityType="Model1.Categorie" Width="1.5" PointX="4.875" PointY="0.875" />
         <AssociationConnector Association="Model1.TravelOfferCountry" />
         <EntityTypeShape EntityType="Model1.ExtendedInformation" Width="2.125" PointX="4.75" PointY="3.125" />
         <AssociationConnector Association="Model1.TravelOfferExtendedInformation" />
