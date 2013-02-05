@@ -67,7 +67,7 @@ namespace HtwKinect
         private void HelperReady()
         {
             Skeleton skeleton = KinectHelper.Instance.GetFixedSkeleton();
-            //ProcessSkeleton(skeleton);
+            ProcessSkeleton(skeleton);
         }
 
         private void ProcessSkeleton(Skeleton skeleton)

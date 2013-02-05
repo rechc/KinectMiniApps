@@ -90,6 +90,7 @@ namespace HtwKinect
                 if (e.SystemKey == Key.F4)
                 {
                     Application.Current.Shutdown();
+                    e.Handled = true;
                 }
                 else
                 {
@@ -97,12 +98,12 @@ namespace HtwKinect
                     {
                         case Key.Escape:
                             Application.Current.Shutdown();
+                            e.Handled = true;
                             break;
                         default:
                             break;
                     }
                 }
-                e.Handled = true;
             }
             catch (Exception exc)
             {
