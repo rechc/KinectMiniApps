@@ -1,0 +1,122 @@
+
+-- --------------------------------------------------
+-- Entity Designer DDL Script for SQL Server Compact Edition
+-- --------------------------------------------------
+-- Date Created: 02/02/2013 19:22:44
+-- Generated from EDMX file: C:\Users\RechC_000\workspace\KinectMiniApps\Database\Model1.edmx
+-- --------------------------------------------------
+
+
+-- --------------------------------------------------
+-- Dropping existing FOREIGN KEY constraints
+-- NOTE: if the constraint does not exist, an ignorable error will be reported.
+-- --------------------------------------------------
+
+    ALTER TABLE [TravelOfferSet] DROP CONSTRAINT [FK_TravelOfferCountry];
+GO
+    ALTER TABLE [ExtendedInformationSet] DROP CONSTRAINT [FK_TravelOfferExtendedInformation];
+GO
+
+-- --------------------------------------------------
+-- Dropping existing tables
+-- NOTE: if the table does not exist, an ignorable error will be reported.
+-- --------------------------------------------------
+
+    DROP TABLE [TravelOfferSet];
+GO
+    DROP TABLE [CountrySet];
+GO
+    DROP TABLE [ExtendedInformationSet];
+GO
+
+-- --------------------------------------------------
+-- Creating all tables
+-- --------------------------------------------------
+
+-- Creating table 'TravelOfferSet'
+CREATE TABLE [TravelOfferSet] (
+    [OfferId] int IDENTITY(1,1) NOT NULL,
+    [PricePerPerson] float  NOT NULL,
+    [Place] nvarchar(4000)  NOT NULL,
+    [HotelRating] int  NOT NULL,
+    [HotelName] nvarchar(4000)  NOT NULL,
+    [TravelType] nvarchar(4000)  NOT NULL,
+    [DayCount] int  NOT NULL,
+    [BoardType] nvarchar(4000)  NOT NULL,
+    [CountryId] int  NOT NULL,
+    [ImgPath] nvarchar(4000)  NOT NULL
+);
+GO
+
+-- Creating table 'CountrySet'
+CREATE TABLE [CountrySet] (
+    [CountryId] int IDENTITY(1,1) NOT NULL,
+    [CountryName] nvarchar(4000)  NOT NULL
+);
+GO
+
+-- Creating table 'ExtendedInformationSet'
+CREATE TABLE [ExtendedInformationSet] (
+    [ExtendetInformationId] int IDENTITY(1,1) NOT NULL,
+    [Information] nvarchar(4000)  NOT NULL,
+    [OfferId] int  NOT NULL
+);
+GO
+
+-- --------------------------------------------------
+-- Creating all PRIMARY KEY constraints
+-- --------------------------------------------------
+
+-- Creating primary key on [OfferId] in table 'TravelOfferSet'
+ALTER TABLE [TravelOfferSet]
+ADD CONSTRAINT [PK_TravelOfferSet]
+    PRIMARY KEY ([OfferId] );
+GO
+
+-- Creating primary key on [CountryId] in table 'CountrySet'
+ALTER TABLE [CountrySet]
+ADD CONSTRAINT [PK_CountrySet]
+    PRIMARY KEY ([CountryId] );
+GO
+
+-- Creating primary key on [ExtendetInformationId] in table 'ExtendedInformationSet'
+ALTER TABLE [ExtendedInformationSet]
+ADD CONSTRAINT [PK_ExtendedInformationSet]
+    PRIMARY KEY ([ExtendetInformationId] );
+GO
+
+-- --------------------------------------------------
+-- Creating all FOREIGN KEY constraints
+-- --------------------------------------------------
+
+-- Creating foreign key on [CountryId] in table 'TravelOfferSet'
+ALTER TABLE [TravelOfferSet]
+ADD CONSTRAINT [FK_TravelOfferCountry]
+    FOREIGN KEY ([CountryId])
+    REFERENCES [CountrySet]
+        ([CountryId])
+    ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- Creating non-clustered index for FOREIGN KEY 'FK_TravelOfferCountry'
+CREATE INDEX [IX_FK_TravelOfferCountry]
+ON [TravelOfferSet]
+    ([CountryId]);
+GO
+
+-- Creating foreign key on [OfferId] in table 'ExtendedInformationSet'
+ALTER TABLE [ExtendedInformationSet]
+ADD CONSTRAINT [FK_TravelOfferExtendedInformation]
+    FOREIGN KEY ([OfferId])
+    REFERENCES [TravelOfferSet]
+        ([OfferId])
+    ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- Creating non-clustered index for FOREIGN KEY 'FK_TravelOfferExtendedInformation'
+CREATE INDEX [IX_FK_TravelOfferExtendedInformation]
+ON [ExtendedInformationSet]
+    ([OfferId]);
+GO
+
+-- --------------------------------------------------
+-- Script has ended
+-- --------------------------------------------------

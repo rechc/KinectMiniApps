@@ -16,7 +16,15 @@ namespace HtwKinect
     public partial class FrameWindow : Window
     {
         private PeoplePositionDetector _peopleDetector;
-        private int _oldstate = 1;
+        private int _oldstate = 1; // durch enum noch ersetzen
+        public enum ScreenMode
+        {
+            Splash,
+            Walk,
+            WalkandLook,
+            MainScreen,
+            Unknown
+        }
 
         private MainWindow _mainWindow = null;
         private HtwKinect.StateViews.SplashScreen _sscreen = null;

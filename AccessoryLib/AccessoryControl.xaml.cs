@@ -21,7 +21,7 @@ namespace AccessoryLib
             AccessoryItems = new List<AccessoryItem>();
         }
 
-        public void InvalidateVisual(Skeleton[] skeletons)
+        public void SetSkeletons(Skeleton[] skeletons)
         {
             _skeletons = skeletons;
             InvalidateVisual();
@@ -41,7 +41,7 @@ namespace AccessoryLib
                 return;
 
             // Nicht ueber den Rand des Controls hinaus zeichnen.
-            drawingContext.PushClip(new RectangleGeometry(new Rect(0, 0, ActualWidth, ActualHeight)));
+            //drawingContext.PushClip(new RectangleGeometry(new Rect(0, 0, ActualWidth, ActualHeight)));
 
             // Items fuer alle Personen zeichnen.
             foreach (Skeleton person in _skeletons)
@@ -64,13 +64,14 @@ namespace AccessoryLib
         private void RenderAccessoryItem(DrawingContext drawingContext, Skeleton person, AccessoryItem item)
         {
             SkeletonPoint headPos = person.Joints[JointType.Head].Position;
-            ColorImagePoint cloc = _sensor.CoordinateMapper.MapSkeletonPointToColorPoint(
-                headPos, _sensor.ColorStream.Format);
 
-            //const double px = 120; // Objektgroesse: 120 px bei 1 m Abstand.
+            ColorImagePoint colorImagePoint = _sensor.CoordinateMapper.MapSkeletonPointToColorPoint(headPos,
+                                                                                                    _sensor.ColorStream
+                                                                                                           .Format);
+
             double g = item.Width; // Objektgroesse in m.
             double r = headPos.Z;  // Entfernung in m.
-            double imgWidth = 2 * Math.Atan(g / (2 * r)) * _sensor.ColorStream.FrameWidth;
+            double imgWidth = 2 * Math.Atan(g / (2 * r)) * ActualWidth;
             double aspectRatio = item.Image.Width / item.Image.Height;
             double imgHeight = imgWidth / aspectRatio;
 
@@ -78,19 +79,18 @@ namespace AccessoryLib
             switch (item.Position)
             {
                 case AccessoryPositon.Hat:
-                    offsetY = -1.5*imgHeight;
+                    offsetY = -imgHeight;
                     break;
                 case AccessoryPositon.Beard:
                     offsetY = imgHeight/4;
                     break;
             }
 
-            double headX = cloc.X + offsetX;
-            double headY = cloc.Y + offsetY;
+            double headX = colorImagePoint.X * (ActualWidth / _sensor.ColorStream.FrameWidth) + offsetX;
+            double headY = colorImagePoint.Y * (ActualHeight / _sensor.ColorStream.FrameHeight) + offsetY;
 
-            //Console.WriteLine("Z: {0}, imgW: {1} , imgH {2}", headPos.Z, imgWidth, imgHeight);
-
-            drawingContext.DrawImage(item.Image, new Rect(headX - imgWidth/2, headY, imgWidth, imgHeight));
+            //Console.WriteLine("Z: {0}, imgW: {1}, imgH: {2}, X: {3}, Y: {4}", headPos.Z, imgWidth, imgHeight, cloc.X, cloc.Y);
+            drawingContext.DrawImage(item.Image, new Rect(headX - imgWidth / 2, headY, imgWidth, imgHeight));
         }
     }
 }
