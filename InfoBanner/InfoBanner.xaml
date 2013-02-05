@@ -6,8 +6,8 @@
              mc:Ignorable="d" 
              d:DesignHeight="505.367" d:DesignWidth="441.297">
     <Grid>
-        <Rectangle Fill="#FF9DA2A1" HorizontalAlignment="Left" Height="495" Stroke="Black" VerticalAlignment="Top" Width="251"/>
-        <Label Name="Categorie" Content="Categorie" HorizontalAlignment="Left" Height="61" Margin="19,18,0,0" VerticalAlignment="Top" Width="200" FontSize="36"/>
+        <Rectangle Fill="#FF9DA2A1" HorizontalAlignment="Left" Height="495" Stroke="Black" VerticalAlignment="Top" Width="251" Opacity="0.25" IsHitTestVisible="False"/>
+        <Label Name="Categorie" Content="Categorie" HorizontalAlignment="Left" Height="61" Margin="10,19,0,0" VerticalAlignment="Top" Width="230" FontSize="36"/>
 
     </Grid>
 </UserControl>

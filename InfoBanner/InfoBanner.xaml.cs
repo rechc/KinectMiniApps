@@ -21,30 +21,12 @@ namespace InfoBanner
     /// </summary>
     public partial class UserControl1 : UserControl
     {
-        private TravelOfferDao _offerDao;
-
         public UserControl1()
         {
             InitializeComponent();
-            _offerDao = new TravelOfferDao();
-        }
-
-        public void InvalidateVisual()
-        {
-            base.InvalidateVisual();
-        }
-
-        protected override void OnRender(DrawingContext drawingContext)
-        {
-            base.OnRender(drawingContext);
-            GetDbData(drawingContext);
-        }
-
-        private void GetDbData(DrawingContext drawingContext)
-        {
+            var _offerDao = new TravelOfferDao();
             string categorie = _offerDao.SelectAllOffers().First().Country.CountryName;
             Categorie.Content = categorie;
-
         }
     }
 }
