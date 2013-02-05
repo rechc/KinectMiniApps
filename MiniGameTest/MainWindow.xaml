@@ -6,7 +6,7 @@
     <!--<MiniGameControl:MainWindow />-->
     <Grid Name="MiniGameGrid">
         <Grid.Background>
-            <ImageBrush ImageSource="Bilder/Skipiste.jpg"/>
+            <ImageBrush ImageSource="Bilder/Summer/background.jpg" />
         </Grid.Background>
         <Grid.RowDefinitions>
             <RowDefinition Height="15*"/>
@@ -23,8 +23,6 @@
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
 
-        <Image Name="BeachBall" Source="Bilder/BeachBall.png" Grid.Row="1" Grid.Column="2"/>
-        <Button Name="Event" Content="Event" Grid.Row="5" Click="Event_Click" />
+        <Button Name="Status" Visibility="Hidden" Content="GameOver" Click="Status_Click_1"/>
     </Grid>
-    
 </Window>
