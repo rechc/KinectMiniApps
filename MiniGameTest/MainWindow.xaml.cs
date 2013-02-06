@@ -1,6 +1,9 @@
-﻿using System;
+﻿using HtwKinect;
+using Microsoft.Kinect;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -27,7 +30,7 @@ namespace MiniGameTest
 
         private FallWorker fallWorker;
 
-        private Image player;
+        private Viewbox playerBox;
 
         private String path;
 
@@ -38,6 +41,11 @@ namespace MiniGameTest
 
         private Thread fallThread;
 
+        private KinectHelper kh;
+
+        private Skeleton playerSkeleton = null;
+      
+
         /**
          * Konstruktor
          */
@@ -46,7 +54,7 @@ namespace MiniGameTest
             InitializeComponent();
 
             this.KeyDown += new KeyEventHandler(KeyDownHandler);
-
+            kh  = KinectHelper.Instance;
             GameStart(1);
         }
 
@@ -57,16 +65,16 @@ namespace MiniGameTest
         {
             if (e.Key == Key.Right)
             {
-                if (Grid.GetColumn(this.player) != 3)
+                if (Grid.GetColumn(this.playerBox) != 3)
                 {
-                    Grid.SetColumn(this.player, Grid.GetColumn(this.player) + 1);
+                    Grid.SetColumn(this.playerBox, Grid.GetColumn(this.playerBox) + 1);
                 }
             }
             else if (e.Key == Key.Left)
             {
-                if (Grid.GetColumn(this.player) != 1)
+                if (Grid.GetColumn(this.playerBox) != 1)
                 {
-                    Grid.SetColumn(this.player, Grid.GetColumn(this.player) - 1);
+                    Grid.SetColumn(this.playerBox, Grid.GetColumn(this.playerBox) - 1);
                 }
             }
         }
@@ -76,7 +84,13 @@ namespace MiniGameTest
          */
         private void GameStart(int mode)
         {
-
+            playerSkeleton = null;
+            while (playerSkeleton == null)
+            {
+                playerSkeleton = kh.GetFixedSkeleton();
+            }
+           
+            
             RemoveAllObjects();
             RemovePlayer();
             switch (mode)
@@ -182,7 +196,7 @@ namespace MiniGameTest
         {
             foreach (GridObjects go in gridObjects)
             {
-                if (go.row == 4 && go.column == Grid.GetColumn(this.player))
+                if (go.row == 4 && go.column == Grid.GetColumn(this.playerBox))
                 {
                     fallWorker.GameOver=true;
                     break;
@@ -249,24 +263,53 @@ namespace MiniGameTest
          */
         private void AddPlayer()
         {
-            BitmapImage bi = new BitmapImage();
-            bi.BeginInit();
-            bi.UriSource = new Uri(path + "/" + "player.png", UriKind.Relative);
-            bi.EndInit();
-            this.player = new Image();
-            this.player.Source = bi;
-            this.player.SetValue(Panel.ZIndexProperty, 10);
-            MiniGameGrid.Children.Add(this.player);
-            Grid.SetColumn(this.player, 2);
-            Grid.SetRow(this.player, 4);
+            var gsc = new GreenScreenControl.GreenScreenControl(); 
+            gsc.RenderTransform = kh.CreateTransform();
+            gsc.Width = kh.Sensor.ColorStream.FrameWidth;
+            gsc.Height = kh.Sensor.ColorStream.FrameHeight;
+            gsc.Start(kh.Sensor, false);
+
+            playerBox = new Viewbox();
+            playerBox.Child = gsc;
+            playerBox.Stretch = Stretch.Fill;
+
+            kh.ReadyEvent += (sender, args) => RenderGreenScreen(gsc);
+            this.playerBox.SetValue(Panel.ZIndexProperty, 1);
+            MiniGameGrid.Children.Add(playerBox);
+
+            if (playerSkeleton.Joints[JointType.ShoulderCenter].Position.X < -0.5)
+            {
+                Grid.SetColumn(playerBox, 1);
+            }
+            else if (playerSkeleton.Joints[JointType.ShoulderCenter].Position.X > 0.5)
+            {
+                Grid.SetColumn(playerBox, 3);
+            }
+            else
+            {
+                Grid.SetColumn(playerBox, 2);
+            }
+
+           
+            Grid.SetRow(playerBox, 4);
+
         }
 
+        private void RenderGreenScreen(GreenScreenControl.GreenScreenControl greenScreenControl)
+        {
+            if (((FrameworkElement)((FrameworkElement)greenScreenControl.Parent).Parent).Parent == null)
+            {
+                return; //nur auf dingen die auch angezeigt werden bitte, danke.
+            }
+            var instance = KinectHelper.Instance;
+            greenScreenControl.InvalidateVisual(instance.DepthImagePixels, instance.ColorPixels);
+        }
         /**
          * Löscht den Player vom Grid
          */
         private void RemovePlayer()
         {
-            MiniGameGrid.Children.Remove(this.player);
+            MiniGameGrid.Children.Remove(this.playerBox);
         }
 
         /**
