@@ -34,6 +34,10 @@ namespace MiniGameTest
         private const String winter = "Bilder/Winter";
         private const String summer = "Bilder/Summer";
 
+        private bool twoObjectsInOneColumn = false;
+
+        private Thread fallThread;
+
         /**
          * Konstruktor
          */
@@ -72,6 +76,9 @@ namespace MiniGameTest
          */
         private void GameStart(int mode)
         {
+
+            RemoveAllObjects();
+            RemovePlayer();
             switch (mode)
             {
                 case 0:
@@ -81,11 +88,14 @@ namespace MiniGameTest
                     path = summer;
                     break;
             }
-            SetBackground();
+            twoObjectsInOneColumn = false;
+            SetBackgroundImage();
             AddPlayer();
             fallWorker = new FallWorker(false);
             fallWorker.eventFallen += new MiniGameTest.FallWorker.FallWorkerEventHandler(FallHandler);
-            new Thread(fallWorker.InvokeFalling).Start();
+            fallThread = new Thread(fallWorker.InvokeFalling);
+            fallThread.Start();
+            //new Thread(fallWorker.InvokeFalling).Start();
         }
 
         /**
@@ -94,8 +104,8 @@ namespace MiniGameTest
         private void GameStop()
         {
             this.Status.Visibility = Visibility.Visible;
-            RemoveAllObjects();
-            RemovePlayer();
+            fallThread.Abort();
+            
         }
 
         /**
@@ -108,31 +118,42 @@ namespace MiniGameTest
                 // GameOver überprüfen
                 CheckGameOver();
                 // Objekte nach unten setzen
-                if (gridObjects.Count() > 0 && !fallWorker.getGameOver())
+                if (gridObjects.Count() > 0 && !fallWorker.GameOver)
                 {
-                    ShiftObjects();
+                    ShiftObjects(true);
                 }
                 // GameOver überprüfen
                 CheckGameOver();
                 // Neue Objekte generieren
-                if (!fallWorker.getGameOver())
+                if (!fallWorker.GameOver)
                 {
-                    if (gridObjects.Count() < 3)
+                    if (gridObjects.Count() < 5)
                     {
                         AddObjects();
                     }
                 }
+                
+            }));
+
+            Thread.Sleep(200);
+            Dispatcher.BeginInvoke((Action)(() =>
+            {
+                if (!fallWorker.GameOver)
+                {                     
+                    ShiftObjects(false);
+                }
                 else
                 {
-                    GameStop();
+                GameStop();
                 }
             }));
+
         }
 
         /**
          * Schiebt die Objekte um eins nach unten im Grid
          */
-        private void ShiftObjects()
+        private void ShiftObjects(bool withShift)
         {
             List<GridObjects> tempGridObjects = new List<GridObjects>();
             foreach (GridObjects go in gridObjects)
@@ -143,8 +164,11 @@ namespace MiniGameTest
                 }
                 else
                 {
-                    go.row++;
-                    Grid.SetRow(go.image, go.row);
+                    if (withShift)
+                    {
+                        go.row++;
+                        Grid.SetRow(go.image, go.row);
+                    }
                     tempGridObjects.Add(go);
                 }
             }
@@ -160,7 +184,7 @@ namespace MiniGameTest
             {
                 if (go.row == 4 && go.column == Grid.GetColumn(this.player))
                 {
-                    fallWorker.setGameOver(true);
+                    fallWorker.GameOver=true;
                     break;
                 }
             }
@@ -171,17 +195,41 @@ namespace MiniGameTest
          */
         private void AddObjects()
         {
+            int x = AddObject(new Random().Next(1, 4));
+            if (twoObjectsInOneColumn == false && 0== new Random().Next(0,2))
+            {
+                
+                int y = new Random().Next(1, 4);
+                while (x == y)
+                {
+                    y = new Random().Next(1, 4);
+                }
+                x = AddObject(y);
+                twoObjectsInOneColumn = true;
+
+            }
+            else
+            {
+                twoObjectsInOneColumn = false;
+            }
+        }
+
+        private int AddObject( int column)
+        {
             Image i = new Image();
             BitmapImage bi = new BitmapImage();
             bi.BeginInit();
-            bi.UriSource = new Uri(path + "/" + new Random().Next(1,3) + ".png", UriKind.Relative);
+            bi.UriSource = new Uri(path + "/" + new Random().Next(1, 3) + ".png", UriKind.Relative);
             bi.EndInit();
             i.Source = bi;
             MiniGameGrid.Children.Add(i);
-            int column = new Random().Next(1, 4);
+            
             Grid.SetColumn(i, column);
             Grid.SetRow(i, 1);
             gridObjects.Add(new GridObjects(i, column, 1));
+            
+            return column;
+
         }
 
         /**
@@ -207,6 +255,7 @@ namespace MiniGameTest
             bi.EndInit();
             this.player = new Image();
             this.player.Source = bi;
+            this.player.SetValue(Panel.ZIndexProperty, 10);
             MiniGameGrid.Children.Add(this.player);
             Grid.SetColumn(this.player, 2);
             Grid.SetRow(this.player, 4);
@@ -223,7 +272,7 @@ namespace MiniGameTest
         /**
          * Setzt das Backgroundbild abhängig vom Modus
          */
-        private void SetBackground()
+        private void SetBackgroundImage()
         {
             String p = System.IO.Directory.GetCurrentDirectory();
             p = p.Replace("\\bin\\Debug", "");

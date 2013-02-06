@@ -13,30 +13,20 @@ namespace MiniGameTest
         public delegate void FallWorkerEventHandler(object sender, EventArgs e);
         public event FallWorkerEventHandler eventFallen;
 
-        private bool gameOver;
+        public bool GameOver { get; set; }
 
         public FallWorker(bool gameOver)
         {
-            this.gameOver = gameOver;
+            this.GameOver = gameOver;
         }
 
         public void InvokeFalling()
         {
-            while (!gameOver)
+            while (!this.GameOver)
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(800);
                 eventFallen(this, null);
             }
-        }
-
-        public bool getGameOver()
-        {
-            return this.gameOver;
-        }
-
-        public void setGameOver(bool gameOver)
-        {
-            this.gameOver = gameOver;
         }
     }
 }
