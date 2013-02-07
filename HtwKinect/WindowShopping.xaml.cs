@@ -15,6 +15,8 @@ namespace HtwKinect
     /// </summary>
     public partial class FrameWindow : Window
     {
+        private bool _DebugOnlyScreen1 = false;
+
         private PeoplePositionDetector _peopleDetector;
         private ScreenMode _currentScreen = ScreenMode.Splash; // durch enum noch ersetzen
         public enum ScreenMode
@@ -39,6 +41,18 @@ namespace HtwKinect
 
         private void ChangeScreen()
         {
+            if (_DebugOnlyScreen1) {
+                if (!(_currentScreen == ScreenMode.MainScreen)) {
+                    RemoveOldScreen();
+                    _currentScreen = ScreenMode.MainScreen;
+                    if (_mainWindow == null) { _mainWindow = new MainWindow(); }
+                    Grid.SetRow(_mainWindow, 1);
+                    GridX.Children.Add(_mainWindow);
+                }
+                return;
+            }
+
+
             if (_peopleDetector.GetPositionOnlyPeople().Count == 0 && _peopleDetector.GetTrackedPeople().Count == 0 && _currentScreen != ScreenMode.Splash) //Zustand 1
             {
                 StartFirstScreen();
@@ -106,6 +120,11 @@ namespace HtwKinect
                     {
                         case Key.Escape:
                             Application.Current.Shutdown();
+                            e.Handled = true;
+                            break;
+                        case Key.Space:
+                            _DebugOnlyScreen1 = !_DebugOnlyScreen1;
+                            ChangeScreen();
                             e.Handled = true;
                             break;
                         default:
