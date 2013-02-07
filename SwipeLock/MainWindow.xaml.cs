@@ -90,21 +90,17 @@ using System.Timers;
         private SolidColorBrush blue = new SolidColorBrush(Colors.Blue);
         private SolidColorBrush red = new SolidColorBrush(Colors.Red);
         private Vector handDirection = new Vector(0, 0);
-        
+        private Lock lockElement;
+        private bool isInRectLastFrame;
         private bool isInRect;
-
-        private bool isInInnerRect = false;
-        private bool wasInLastFrameInInnerRect = false;
-        private bool isInOuterRect = false;
-        private bool wasInLastFrameInOuterRect = false;
-
         Point rectMiddlePoint = new Point(0, 0);
+        SkeletonPoint entryPoint = new SkeletonPoint();
         int colorId = 0;
         int colorBlockId = 0;
         Brush[,] colors = { { Brushes.LightGreen, Brushes.Green, Brushes.DarkGreen }, { Brushes.LightBlue, Brushes.Blue, Brushes.DarkBlue }, { Brushes.LightSalmon, Brushes.Salmon, Brushes.DarkSalmon } };
         Point handRightPoint = new Point(0, 0);
-        Rect innerRect;
-        Rect outerRect;
+        Rect startRect;
+        Boolean isInGestureRect = false;
 
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
@@ -161,6 +157,9 @@ using System.Timers;
         /// <param name="e">event arguments</param>
         private void WindowLoaded(object sender, RoutedEventArgs e)
         {
+            lockElement = new Lock(LockCircle, LockCanvas, LockRectangle.Width);
+            this.AnimateHandPoint(new Point(0,0), new Point(100, 100));
+
             // Create the drawing group we'll use for drawing
             this.drawingGroup = new DrawingGroup();
 
@@ -242,7 +241,7 @@ using System.Timers;
             using (DrawingContext dc = this.drawingGroup.Open())
             {
                 // Draw a transparent background to set the render size
-                dc.DrawRectangle(Brushes.White, null, new Rect(0.0, 0.0, RenderWidth, RenderHeight));
+                dc.DrawRectangle(colors[colorBlockId, colorId], null, new Rect(0.0, 0.0, RenderWidth, RenderHeight));
 
                 if (skeletons.Length != 0)
                 {
@@ -273,13 +272,6 @@ using System.Timers;
             }
         }
 
-        private bool wasInInnerRect = false;
-
-        // Rectangle Fade out variables
-        private int rectFadeOutTimer = 2000; // Miliseconds   -> Time when Fade-out animation starts
-        private long enterInnerRectTimestamp = 0;
-        private bool _isAnimating = false;
-
         private void GestureRecognition(Skeleton[] skeletons)
         {
             if (skeletons.Count(t => t.TrackingState == SkeletonTrackingState.Tracked) >= 1)
@@ -289,172 +281,75 @@ using System.Timers;
                 Joint hipRight = skel.Joints[JointType.HipRight];
                 Joint spine = skel.Joints[JointType.Spine];
                 
-                innerRect = GetInnerRect(skel);
-                outerRect = GetOuterRect(innerRect);
-                TransformRectangles();
-                TransformHand();
+                startRect = GetGestureRect(skel);
+                TransformRectangle();
                 handRightPoint = SkeletonPointToScreen(handRight.Position);
 
-                isInRect = innerRect.Contains(handRightPoint);
-
-                isInInnerRect = innerRect.Contains(handRightPoint);
-                isInOuterRect = outerRect.Contains(handRightPoint);
-
-                // Inneres Rechteck wurde betreten oder verlassen
-                if(isInInnerRect != wasInLastFrameInInnerRect)
+                isInRect = startRect.Contains(SkeletonPointToScreen(handRight.Position));
+                if (isInRect != isInRectLastFrame)
                 {
-                    // Inneres Rechteck wurde betreten
-                    if (isInInnerRect)
+                    if (isInRect)
                     {
-                        // Fade-out: Save timestamp when enter the inner rect
-                        enterInnerRectTimestamp = getTimeStamp();
-                        wasInInnerRect = true;
+                        Hand.Visibility = Visibility.Hidden;
+                        lockElement.Show();
+                        entryPoint = handRight.Position;
+                        isInGestureRect = true;
                     }
-                    // Inneres Rechteck wurde verlassen
                     else
                     {
-                        // Fade-out: Stop animation
-                        //if ()
-                        if (handRightPoint.X > innerRect.TopRight.X) //leave right
+                        if(handRightPoint.X > startRect.TopRight.X) //leave right
+                        { 
+                            HandleRectLeave();
+                        } 
+                        else if (handRightPoint.Y > startRect.BottomLeft.Y) //leave bottom
                         {
-                            BackColor.Fill = NextColor();
+                            HandleRectLeave();
                         }
-                        else if (handRightPoint.X < innerRect.TopLeft.X) //leave left
+                        else if(handRightPoint.Y < startRect.TopLeft.Y) //leave top
                         {
-                            BackColor.Fill = PrevColor();
-                        }
-                        else if (handRightPoint.Y > innerRect.BottomLeft.Y) //leave bottom
-                        {
-                            BackColor.Fill = NextColorBlock();
-                        }
-                        else if (handRightPoint.Y < innerRect.TopLeft.Y) //leave top
-                        {
-                            BackColor.Fill = PrevColorBlock();
+                            HandleRectLeave();
                         }
                     }
-                    wasInLastFrameInInnerRect = isInInnerRect;
                 }
+                isInRectLastFrame = isInRect;
 
-                // Aeusseres Rechteck wurde betreten oder verlassen
-                if (isInOuterRect != wasInLastFrameInOuterRect)
+                if (isInGestureRect)
                 {
-                    // Aeusseres Rechteck wurde betreten
-                    if (isInOuterRect)
+                    if (handRight.Position.X < entryPoint.X)
                     {
+                        lockElement.Position = Math.Abs(entryPoint.X - handRight.Position.X) / Math.Abs(entryPoint.X - spine.Position.X);
                     }
-                    // Aeusseres Rechteck wurde verlassen
                     else
                     {
-                        if (wasInInnerRect)
-                        {
-                            if (handRightPoint.X > outerRect.TopRight.X) //leave right
-                            {
-                                SwipeRight();
-                            }
-                            else if (handRightPoint.X < outerRect.TopLeft.X) //leave left
-                            {
-                                SwipeLeft();
-                            }
-                            else if (handRightPoint.Y > outerRect.BottomLeft.Y) //leave bottom
-                            {
-                                SwipeDown();
-                            }
-                            else if (handRightPoint.Y < outerRect.TopLeft.Y) //leave top
-                            {
-                                SwipeUp();
-                            }
-                            wasInInnerRect = false;
-                            FrontColor.Fill = CurrentColor();
-                            TransformFrontColor(0, 0);
-                        }
+                        entryPoint = handRight.Position;
                     }
-                }
-                wasInLastFrameInOuterRect = isInOuterRect;
-
-                if (isInOuterRect && !isInInnerRect && wasInInnerRect)
-                {
-                    double swipeLeft = GetPercentageSwipeLeft(handRightPoint);
-                    double swipeRight = GetPercentageSwipeRight(handRightPoint);
-                    double swipeTop = GetPercentageSwipeTop(handRightPoint);
-                    double swipeBottom = GetPercentageSwipeBottom(handRightPoint);
-                    if(swipeLeft >= 0)
+                    if (handRight.Position.X <= spine.Position.X)
                     {
-                        TransformFrontColor(-swipeLeft, 0);
+                        SwipeRight();
+                        HandleRectLeave();
                     }
-                    if (swipeRight >= 0)
-                    {
-                        TransformFrontColor(swipeRight, 0);
-                    }
-                    if (swipeTop >= 0)
-                    {
-                        TransformFrontColor(0, -swipeTop);
-                    }
-                    if (swipeBottom >= 0)
-                    {
-                        TransformFrontColor(0, swipeBottom);
-                    }
-                }
-
-                //Fade-out: If true, start fade animation
-                if (getTimeStamp() - enterInnerRectTimestamp > rectFadeOutTimer && isInInnerRect)
-                {
-                    wasInInnerRect = false;
                 }
             }
         }
 
-        private void Animate(String name, DependencyProperty property, int from, int to)
+        private void HandleRectLeave()
         {
-            if (!_isAnimating)
-            {
-                _isAnimating = true;
-                DoubleAnimation doubleAnimation = new DoubleAnimation
-                {
-                    Duration = new Duration(TimeSpan.FromSeconds(2)),
-                    To = to,
-                    From = from
-                };
-                Storyboard storyboard = new Storyboard();
-                storyboard.Children.Add(doubleAnimation);
-                Storyboard.SetTargetName(doubleAnimation, name);
-                Storyboard.SetTargetProperty(doubleAnimation, new PropertyPath(property));
-                storyboard.Begin(this);
-
-            }
+            isInGestureRect = false;
+            Hand.Visibility = Visibility.Visible;
+            lockElement.Hide();
+            lockElement.Reset();
         }
 
-        private long getTimeStamp()
-        {
-            return DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-        }
-
-        private Rect GetInnerRect(Skeleton skeleton)
+        private Rect GetGestureRect(Skeleton skeleton)
         {
             Point spine = SkeletonPointToScreen(skeleton.Joints[JointType.Spine].Position);
             Point hipRight = SkeletonPointToScreen(skeleton.Joints[JointType.HipRight].Position);
-            Point shoulderCenter = SkeletonPointToScreen(skeleton.Joints[JointType.ShoulderCenter].Position);
+            Point head = SkeletonPointToScreen(skeleton.Joints[JointType.Head].Position);
             double x = hipRight.X;
-            double y = shoulderCenter.Y;
+            double y = head.Y;
+            double width = Math.Abs(spine.Y - y);
+            double height = width;
 
-            // Rechteck verschieben
-            int offsetX = 20;
-            int offsetY = 0;
-
-            // inneres Rechteck verkleinern
-            double height = Math.Abs(spine.Y - y);
-
-            double width = height;
-
-            return new Rect(x  + offsetX, y + offsetY, width, height);
-        }
-
-        private Rect GetOuterRect(Rect innerRect)
-        {
-            double border = 30;
-            double x = innerRect.X - border;
-            double y = innerRect.Y - border;
-            double width = innerRect.Width + border * 2;
-            double height = innerRect.Height + border * 2;
             return new Rect(x, y, width, height);
         }
 
@@ -472,136 +367,73 @@ using System.Timers;
 
         private void AnimationCompleted(object sender, EventArgs e)
         {
-            AnimateHandPoint(handRightPoint, innerRect.TopLeft);
+            AnimateHandPoint(handRightPoint, startRect.TopLeft);
         }
 
-        private void TransformHand()
+        private void TransformRectangle()
         {
-            TranslateTransform transform = new TranslateTransform();
-            Hand.RenderTransform = transform;
-            transform.X = handRightPoint.X - (Hand.Width / 2);
-            transform.Y = handRightPoint.Y - (Hand.Height / 2);
-        }
-
-        private void TransformRectangles()
-        {
-            TranslateTransform transformInnerRect = (TranslateTransform)InnerRect.RenderTransform;
-            transformInnerRect.X = innerRect.X;
-            transformInnerRect.Y = innerRect.Y;
-            InnerRect.Width = innerRect.Width;
-            InnerRect.Height = innerRect.Height;
-
-            TranslateTransform transformOuterRect = (TranslateTransform)OuterRect.RenderTransform;
-            transformOuterRect.X = outerRect.X;
-            transformOuterRect.Y = outerRect.Y;
-            OuterRect.Width = outerRect.Width;
-            OuterRect.Height = outerRect.Height;
-        }
-
-        private void TransformFrontColor(double left, double top)
-        {
-            TranslateTransform transform = new TranslateTransform();
-            FrontColor.RenderTransform = transform;
-            transform.X = (left * FrontColor.Width) / 2;
-            transform.Y = (top * FrontColor.Height) / 2;
-            
+            TranslateTransform translateTranform = (TranslateTransform)StartRect.RenderTransform;
+            translateTranform.X = startRect.X;
+            translateTranform.Y = startRect.Y;
+            StartRect.Width = startRect.Width;
+            StartRect.Height = startRect.Height;
         }
 
         private void SwipeRight()
         {
-            TransformFrontColor(1, 0);
+            NextColor();
         }
 
         private void SwipeLeft()
         {
-            TransformFrontColor(-1, 0);
-        }
-
-        private double GetPercentageSwipeLeft(Point hand)
-        {
-
-            double rectDistance = innerRect.X - outerRect.X;
-            double handDistance = innerRect.X - hand.X;
-            return handDistance / rectDistance;
-        }
-
-        private double GetPercentageSwipeRight(Point hand)
-        {
-
-            double rectDistance = (outerRect.X + outerRect.Width) - (innerRect.X + innerRect.Width);
-            double handDistance = hand.X - (innerRect.X + innerRect.Width);
-            return handDistance / rectDistance;
-        }
-
-        private double GetPercentageSwipeTop(Point hand)
-        {
-
-            double rectDistance = innerRect.Y - outerRect.Y;
-            double handDistance = innerRect.Y - hand.Y;
-            return handDistance / rectDistance;
-        }
-
-        private double GetPercentageSwipeBottom(Point hand)
-        {
-
-            double rectDistance = (outerRect.Y + outerRect.Height) - (innerRect.Y + innerRect.Height);
-            double handDistance = hand.Y - (innerRect.Y + innerRect.Height);
-            return handDistance / rectDistance;
+            PrevColor();
         }
 
         private void SwipeUp()
         {
-            TransformFrontColor(0, -1);
+            NextColorBlock();
         }
 
         private void SwipeDown()
         {
-            TransformFrontColor(0, 1);
+            PrevColorBlock();
         }
 
-        private Brush CurrentColor()
-        {
-            return colors[colorBlockId, colorId]; 
-        }
 
-        private Brush NextColor()
+        private void NextColor()
         {
             colorId++;
             if (colorId >= colors.GetLength(1))
             {
                 colorId = 0;
             }
-            return colors[colorBlockId, colorId];
         }
 
-        private Brush PrevColor()
+        private void PrevColor()
         {
             colorId--;
             if (colorId < 0)
             {
                 colorId = colors.GetLength(1) - 1;
             }
-            return colors[colorBlockId, colorId];
         }
 
-        private Brush NextColorBlock()
+        private void NextColorBlock()
         {
             colorBlockId++;
             if (colorBlockId >= colors.GetLength(0))
             {
                 colorBlockId = 0;
             }
-            return colors[colorBlockId, colorId];
         }
 
-        private Brush PrevColorBlock()
+        private void PrevColorBlock()
         {
             colorBlockId--;
             if (colorBlockId < 0)
             {
                 colorBlockId = colors.GetLength(0) - 1;
             }
-            return colors[colorBlockId, colorId];
         }
 
 

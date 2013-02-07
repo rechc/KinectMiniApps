@@ -61,24 +61,25 @@
         <Viewbox Grid.Row="1" Stretch="Uniform" HorizontalAlignment="Center" Width="640" Height="480">
             <Image Name="Image" Width="640" Height="480"/>
         </Viewbox>
-        <Canvas Grid.Row="1" Width="640" Height="480" ClipToBounds="true" Opacity="0.5">
-            <Rectangle Name="BackColor" Width="640" Height="480" Fill="Black"></Rectangle>
-            <Rectangle Name="FrontColor" Width="640" Height="480" Fill="LightGreen"></Rectangle>
-        </Canvas>
         <Canvas Grid.Row="1" Width="640" Height="480">
             <Ellipse Name="Hand" Width="30" Height="30" Fill="Gray"></Ellipse>
-            <Rectangle Name="Border" Width="640" Height="480" Stroke="Black" StrokeThickness="2"></Rectangle>
-            <Rectangle Name="InnerRect" Width="50" Height="50" Stroke="Gray" StrokeThickness="2">
-                <Rectangle.RenderTransform>
-                    <TranslateTransform></TranslateTransform>
-                </Rectangle.RenderTransform>
-            </Rectangle>
-            <Rectangle Name="OuterRect" Width="100" Height="100" Stroke="Orange" StrokeThickness="2">
+            <Rectangle Name="StartRect" Width="100" Height="100" Stroke="Gray" StrokeThickness="2" Opacity="0.2">
                 <Rectangle.RenderTransform>
                     <TranslateTransform></TranslateTransform>
                 </Rectangle.RenderTransform>
             </Rectangle>
         </Canvas>
+        <Canvas Name="LockCanvas" Grid.Row="1" Width="640" Height="480" Visibility="Hidden">
+            <Ellipse Canvas.Bottom="100" Canvas.Left="200" Width="30" Height="30" Fill="Gray"> </Ellipse>
+            <Ellipse Canvas.Bottom="100" Canvas.Left="400" Width="30" Height="30" Fill="Gray"></Ellipse>
+            <Rectangle Name="LockRectangle" Canvas.Bottom="100" Canvas.Left="215" Width="200" Height="30" Fill="Gray"></Rectangle>
+            <Ellipse Name="LockCircle"  Canvas.Bottom="100" Canvas.Left="400" Width="30" Height="30" Fill="DarkGray">
+                <Ellipse.RenderTransform>
+                    <TranslateTransform></TranslateTransform>
+                </Ellipse.RenderTransform>
+            </Ellipse>
+        </Canvas>
+        
         <CheckBox Grid.Row="2" Style="{StaticResource SquareCheckBox}" Content="Seated Mode" Height="Auto" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0 10 10 10" Name="checkBoxSeatedMode" Checked="CheckBoxSeatedModeChanged" Unchecked="CheckBoxSeatedModeChanged"/>
         <StatusBar Grid.Row="3" HorizontalAlignment="Stretch" Name="statusBar" VerticalAlignment="Bottom" Background="White" Foreground="{StaticResource MediumGreyBrush}">
             <StatusBarItem Padding="0 0 0 10">
