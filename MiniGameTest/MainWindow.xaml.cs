@@ -69,7 +69,7 @@ namespace MiniGameTest
         {
             playerSkeleton = kh.GetFixedSkeleton();
 
-            if (play)
+            if (play && playerSkeleton != null)
             {
                 PlayerHandler();
             }
