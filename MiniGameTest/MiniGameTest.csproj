@@ -34,10 +34,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Kinect, Version=1.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\Program Files\Microsoft SDKs\Kinect\v1.6\Assemblies\Microsoft.Kinect.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -65,8 +61,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="FallWorker.cs" />
-    <Compile Include="GridObjects.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -100,29 +94,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\GreenScreenControl\GreenScreenLib.csproj">
-      <Project>{b2aace14-c7f6-4615-9f1f-228f13780687}</Project>
-      <Name>GreenScreenLib</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\HtwKinect\HtwKinect.csproj">
-      <Project>{b658191c-9e09-44f6-a3a5-eb7a28e412d7}</Project>
-      <Name>HtwKinect</Name>
-    </ProjectReference>
     <ProjectReference Include="..\MiniGame\MiniGame.csproj">
       <Project>{76af13bc-d9eb-41fa-9c5e-26ee2f2e8a6b}</Project>
       <Name>MiniGame</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Bilder\Summer\1.png" />
-    <Resource Include="Bilder\Summer\2.png" />
-    <Resource Include="Bilder\Summer\background.jpg" />
-    <Resource Include="Bilder\Summer\background2.jpg" />
-    <Resource Include="Bilder\Summer\player.png" />
-    <Resource Include="Bilder\Winter\1.png" />
-    <Resource Include="Bilder\Winter\2.png" />
-    <Resource Include="Bilder\Winter\background.jpg" />
-    <Resource Include="Bilder\Winter\player.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
