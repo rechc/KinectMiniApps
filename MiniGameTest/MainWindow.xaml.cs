@@ -44,6 +44,9 @@ namespace MiniGameTest
         private KinectHelper kh;
 
         private Skeleton playerSkeleton = null;
+
+        private  Skeleton[] skeletonArray;
+
       
 
         /**
@@ -55,7 +58,13 @@ namespace MiniGameTest
 
             this.KeyDown += new KeyEventHandler(KeyDownHandler);
             kh  = KinectHelper.Instance;
+            kh.ReadyEvent += this.MinigameSkeletonEvent;
             GameStart(1);
+        }
+
+        private void MinigameSkeletonEvent(object sender, EventArgs e)
+        {
+            skeletonArray = KinectHelper.Instance.Skeletons;
         }
 
         /**
@@ -84,12 +93,10 @@ namespace MiniGameTest
          */
         private void GameStart(int mode)
         {
-            playerSkeleton = null;
-            while (playerSkeleton == null)
+            while (skeletonArray == null)
             {
-                playerSkeleton = kh.GetFixedSkeleton();
+                    playerSkeleton = skeletonArray.FirstOrDefault();
             }
-           
             
             RemoveAllObjects();
             RemovePlayer();
@@ -299,7 +306,7 @@ namespace MiniGameTest
         {
             if (((FrameworkElement)((FrameworkElement)greenScreenControl.Parent).Parent).Parent == null)
             {
-                return; //nur auf dingen die auch angezeigt werden bitte, danke.
+                return;
             }
             var instance = KinectHelper.Instance;
             greenScreenControl.InvalidateVisual(instance.DepthImagePixels, instance.ColorPixels);

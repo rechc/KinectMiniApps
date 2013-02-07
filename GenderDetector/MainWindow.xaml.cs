@@ -75,7 +75,7 @@ namespace GenderDetector
             new Thread((ThreadStart)delegate
             {
                 // Rest Service initaliesieren
-                InitializeService();
+                //InitializeService();
 
                 // Bild speichern
                 String path = "";
