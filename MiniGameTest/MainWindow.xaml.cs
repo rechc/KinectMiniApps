@@ -45,9 +45,7 @@ namespace MiniGameTest
 
         private Skeleton playerSkeleton = null;
 
-        private  Skeleton[] skeletonArray;
-
-      
+        private bool play = false;
 
         /**
          * Konstruktor
@@ -55,16 +53,31 @@ namespace MiniGameTest
         public MainWindow()
         {
             InitializeComponent();
+            // Keyboard Handler
+            //this.KeyDown += new KeyEventHandler(KeyDownHandler);
+            // Kinect Sensor initalisieren
+            InitializeSensor();
+        }
 
-            this.KeyDown += new KeyEventHandler(KeyDownHandler);
-            kh  = KinectHelper.Instance;
+        private void InitializeSensor()
+        {
+            kh = KinectHelper.Instance;
             kh.ReadyEvent += this.MinigameSkeletonEvent;
-            GameStart(1);
         }
 
         private void MinigameSkeletonEvent(object sender, EventArgs e)
         {
-            skeletonArray = KinectHelper.Instance.Skeletons;
+            playerSkeleton = kh.GetFixedSkeleton();
+
+            if (play)
+            {
+                PlayerHandler();
+            }
+            if (!play && playerSkeleton != null)
+            {
+                GameStart(1);
+                play = true;
+            }
         }
 
         /**
@@ -87,17 +100,31 @@ namespace MiniGameTest
                 }
             }
         }
+
+        /**
+         * Player-Handler zum Bewegen des Players
+         */
+        private void PlayerHandler()
+        {
+            if (playerSkeleton.Joints[JointType.ShoulderCenter].Position.X < -0.25)
+            {
+                Grid.SetColumn(this.playerBox, 1);
+            }
+            else if (playerSkeleton.Joints[JointType.ShoulderCenter].Position.X > 0.25)
+            {
+                Grid.SetColumn(this.playerBox, 3);
+            }
+            else
+            {
+                Grid.SetColumn(this.playerBox, 2);
+            }
+        }
         
         /**
          * Startet das Spiel
          */
         private void GameStart(int mode)
-        {
-            while (skeletonArray == null)
-            {
-                    playerSkeleton = skeletonArray.FirstOrDefault();
-            }
-            
+        {            
             RemoveAllObjects();
             RemovePlayer();
             switch (mode)
@@ -126,7 +153,6 @@ namespace MiniGameTest
         {
             this.Status.Visibility = Visibility.Visible;
             fallThread.Abort();
-            
         }
 
         /**
@@ -136,6 +162,8 @@ namespace MiniGameTest
         {
             Dispatcher.BeginInvoke((Action)(() =>
             {
+                // Position checken
+                PlayerHandler();
                 // GameOver überprüfen
                 CheckGameOver();
                 // Objekte nach unten setzen
@@ -284,11 +312,12 @@ namespace MiniGameTest
             this.playerBox.SetValue(Panel.ZIndexProperty, 1);
             MiniGameGrid.Children.Add(playerBox);
 
-            if (playerSkeleton.Joints[JointType.ShoulderCenter].Position.X < -0.5)
+            Debug.WriteLine(playerSkeleton.Joints[JointType.ShoulderCenter].Position.X);
+            if (playerSkeleton.Joints[JointType.ShoulderCenter].Position.X < -0.25)
             {
                 Grid.SetColumn(playerBox, 1);
             }
-            else if (playerSkeleton.Joints[JointType.ShoulderCenter].Position.X > 0.5)
+            else if (playerSkeleton.Joints[JointType.ShoulderCenter].Position.X > 0.25)
             {
                 Grid.SetColumn(playerBox, 3);
             }
@@ -304,12 +333,7 @@ namespace MiniGameTest
 
         private void RenderGreenScreen(GreenScreenControl.GreenScreenControl greenScreenControl)
         {
-            if (((FrameworkElement)((FrameworkElement)greenScreenControl.Parent).Parent).Parent == null)
-            {
-                return;
-            }
-            var instance = KinectHelper.Instance;
-            greenScreenControl.InvalidateVisual(instance.DepthImagePixels, instance.ColorPixels);
+            greenScreenControl.InvalidateVisual(kh.DepthImagePixels, kh.ColorPixels);
         }
         /**
          * Löscht den Player vom Grid
@@ -337,7 +361,7 @@ namespace MiniGameTest
          */
         private void Status_Click_1(object sender, RoutedEventArgs e)
         {
-            GameStart(0);
+            play = false;
             this.Status.Visibility = Visibility.Hidden;
         }
     }
