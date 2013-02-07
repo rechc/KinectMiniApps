@@ -14,7 +14,7 @@ namespace HtwKinect
     /// <summary>
     /// Interaktionslogik für MainWindow.xaml
     /// </summary>
-    public partial class MainWindow
+    public partial class MainWindow : UserControl, SwitchableUserControl
     {
         private Point? _oldMovePoint;
         private bool _doDrag;
@@ -299,5 +299,14 @@ namespace HtwKinect
             myLoopList_MouseUp_1(null, null);
         }
 
+        Database.TravelOffer SwitchableUserControl.stopDisplay()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void startDisplay(Database.TravelOffer lastTravel)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

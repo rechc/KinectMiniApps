@@ -18,11 +18,21 @@ namespace HtwKinect.StateViews
     /// <summary>
     /// Interaktionslogik für SplashScreen.xaml
     /// </summary>
-    public partial class SplashScreen : UserControl
+    public partial class SplashScreen : UserControl, SwitchableUserControl
     {
         public SplashScreen()
         {
             InitializeComponent();
+        }
+
+        public Database.TravelOffer stopDisplay()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void startDisplay(Database.TravelOffer lastTravel)
+        {
+            throw new NotImplementedException();
         }
     }
 }
