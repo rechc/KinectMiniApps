@@ -138,6 +138,10 @@
       <Project>{e7cee4bd-1956-4199-9525-4b5583557d56}</Project>
       <Name>AccessoryLib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Database\Database.csproj">
+      <Project>{da6c1fa9-f984-4fb5-9998-0907b6f044eb}</Project>
+      <Name>Database</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GreenScreenControl\GreenScreenLib.csproj">
       <Project>{b2aace14-c7f6-4615-9f1f-228f13780687}</Project>
       <Name>GreenScreenLib</Name>
@@ -145,6 +149,10 @@
     <ProjectReference Include="..\HandDetection\HandDetection.csproj">
       <Project>{5329d417-7747-4e92-8f9a-296aa39035bd}</Project>
       <Name>HandDetection</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\InfoBanner\InfoBanner.csproj">
+      <Project>{9956b89b-396e-465e-a8bd-19f6dc48b978}</Project>
+      <Name>InfoBanner</Name>
     </ProjectReference>
     <ProjectReference Include="..\LoopList\LoopList.csproj">
       <Project>{0ef01833-063f-498f-b8ac-7744902a2efd}</Project>
