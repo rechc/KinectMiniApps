@@ -1,32 +1,20 @@
-﻿using HtwKinect;
-using Microsoft.Kinect;
+﻿using Microsoft.Kinect;
 using SkyBiometry.Client.FC;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace GenderDetector
 {
     /**
      * Klasse zur Alterbestimmung
      */
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
-        private KinectHelper kh;
-
+        private KinectSensor _kinectSensor;
         private WriteableBitmap colorBitmap;
 
         private FCClient client;
@@ -37,34 +25,36 @@ namespace GenderDetector
 
         private String confidence { get; set; }
 
+        private Skeleton activeSkeleton;
+
         public MainWindow()
         {
             InitializeComponent();
-            InitializeSensor();
         }
 
-        /**
-         * Initialisiert die verschiedenen Sensoren und Attribute
-         */
-        private void InitializeSensor()
+
+
+        public void Start(KinectSensor sensor)
         {
-            kh = KinectHelper.Instance;
-            this.colorBitmap = new WriteableBitmap(kh.Sensor.ColorStream.FrameWidth, kh.Sensor.ColorStream.FrameHeight, 96.0, 96.0, PixelFormats.Bgr32, null);
+            _kinectSensor = sensor;
+            this.colorBitmap = new WriteableBitmap(sensor.ColorStream.FrameWidth, sensor.ColorStream.FrameHeight, 96.0, 96.0, PixelFormats.Bgr32, null);
             this.Image.Source = this.colorBitmap;
-            kh.ReadyEvent += SensorColorFrameReady;
         }
 
         /**
          * EventHandler zum Zeichnen des Bildes
          */
-        private void SensorColorFrameReady(object sender, EventArgs e)
+        public void SensorColorFrameReady(Skeleton skeleton, byte[] colorImagePoints)
         {
             // Write the pixel data into our bitmap
+
             this.colorBitmap.WritePixels(
                 new Int32Rect(0, 0, this.colorBitmap.PixelWidth, this.colorBitmap.PixelHeight),
-                kh.ColorPixels,
+                colorImagePoints,
                 this.colorBitmap.PixelWidth * sizeof(int),
                 0);
+            activeSkeleton = skeleton;
+
         }
 
         /**
@@ -125,25 +115,21 @@ namespace GenderDetector
             int width = 120;
             int height = 120;
 
-            if (kh.Skeletons.Count(t => t.TrackingState == SkeletonTrackingState.Tracked) > 0)
+            // Ersten Player selektieren
+            if (activeSkeleton != null)
             {
-                // Ersten Player selektieren
-                Skeleton player = kh.Skeletons.First(p => p.TrackingState == SkeletonTrackingState.Tracked);
-                if (player != null)
-                {
-                    // Punkte des Kopfes auf ColorPoints mappen
-                    var point = kh.Sensor.CoordinateMapper.MapSkeletonPointToColorPoint(player.Joints[JointType.Head].Position, ColorImageFormat.RgbResolution640x480Fps30);
+                // Punkte des Kopfes auf ColorPoints mappen
+                var point = _kinectSensor.CoordinateMapper.MapSkeletonPointToColorPoint(activeSkeleton.Joints[JointType.Head].Position, ColorImageFormat.RgbResolution640x480Fps30);
                     
-                    // Überprüfung das nicht außerhalb des Bildes ausgenschnitten wird
-                    if ((int)point.X - 70 <= 0 || (int)point.Y - 70 >= 470)
-                        return null;
-                    // Array für auszuschneidendes Bild initialisierne
-                    Int32Rect cropRect =
-                     new Int32Rect((int)point.X - 70, (int)point.Y - 70, width, height + 20);
+                // Überprüfung das nicht außerhalb des Bildes ausgenschnitten wird
+                if ((int)point.X - 70 <= 0 || (int)point.Y - 70 >= 470)
+                    return null;
+                // Array für auszuschneidendes Bild initialisierne
+                Int32Rect cropRect =
+                    new Int32Rect((int)point.X - 70, (int)point.Y - 70, width, height + 20);
 
-                    // Neues Bild erstellen und zurückliefern
-                    return new CroppedBitmap(this.colorBitmap, cropRect);
-                }
+                // Neues Bild erstellen und zurückliefern
+                return new CroppedBitmap(this.colorBitmap, cropRect);
             }
             return null;
         }
