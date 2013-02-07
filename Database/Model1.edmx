@@ -102,9 +102,9 @@
           <Property Type="String" Name="TravelType" Nullable="false" />
           <Property Type="Int32" Name="DayCount" Nullable="false" />
           <Property Type="String" Name="BoardType" Nullable="false" />
-          <NavigationProperty Name="ExtendedInformation" Relationship="Model1.TravelOfferExtendedInformation" FromRole="TravelOffer" ToRole="ExtendedInformation" />
           <Property Type="Int32" Name="CategoryId" Nullable="false" />
           <Property Type="String" Name="ImgPath" Nullable="false" />
+          <NavigationProperty Name="ExtendedInformation" Relationship="Model1.TravelOfferExtendedInformation" FromRole="TravelOffer" ToRole="ExtendedInformation" />
         </EntityType>
         <EntityType Name="Categorie">
           <Key>
@@ -133,7 +133,7 @@
           <Property Type="Int32" Name="ExtendetInformationId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Type="String" Name="Information" Nullable="false" />
           <Property Type="Int32" Name="OfferId" Nullable="false" />
-          <NavigationProperty Name="TravelOffer" Relationship="Model1.TravelOfferExtendedInformation" FromRole="ExtendedInformation" ToRole="TravelOffer" cg:GetterAccess="Private" cg:SetterAccess="Private" />
+          <NavigationProperty Name="TravelOffer" Relationship="Model1.TravelOfferExtendedInformation" FromRole="ExtendedInformation" ToRole="TravelOffer" cg:SetterAccess="Private" cg:GetterAccess="Private" />
         </EntityType>
         <Association Name="TravelOfferExtendedInformation">
           <End Type="Model1.TravelOffer" Role="TravelOffer" Multiplicity="1" />

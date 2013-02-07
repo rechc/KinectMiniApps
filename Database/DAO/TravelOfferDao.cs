@@ -41,7 +41,7 @@ namespace Database.DAO
             using (var con = new Model1Container())
             {
 
-                return (from offer in con.TravelOfferSet.Include("Country")
+                return (from offer in con.TravelOfferSet.Include("Category")
                         select offer).ToList();
             } 
         }
@@ -51,7 +51,9 @@ namespace Database.DAO
             using (var con = new Model1Container())
             {
 
-                var obj = (from offer in con.TravelOfferSet.Include("Country")
+                var obj = (from offer in con.TravelOfferSet
+                                         .Include("Category")
+                                         .Include("ExtendedInformation")
                            where offerId == offer.OfferId
                            select offer).FirstOrDefault();
                 if (obj == null)

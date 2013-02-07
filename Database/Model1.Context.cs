@@ -18,6 +18,7 @@ namespace Database
         public Model1Container()
             : base("name=Model1Container")
         {
+            //this.Configuration.LazyLoadingEnabled = false;
         }
     
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
