@@ -17,14 +17,16 @@ namespace InfoBanner
 
         public void Start(TravelOffer offer)
         {
-            Categorie.Content = offer.Category.CategoryName;
-            Rating.Content = "Bewertung: " + offer.HotelRating;
-            HotelName.Content = offer.HotelName;
-            Place.Content = offer.Place;
-            PricePerPerson.Content = offer.PricePerPerson + "€\n pro Person";
-            TravelInfo.Content = offer.DayCount + " tägige " + offer.TravelType + "\ninkl. " + offer.BoardType;
-            string extInfo = offer.ExtendedInformation.Aggregate("", (current, info) => current + ("-" + info.Information + "\n"));
-            ExtendetInfo.Content = extInfo;
+            Category.Text = offer.Category.CategoryName;
+            Rating.Text = "Bewertung: " + offer.HotelRating;
+            HotelName.Text = offer.HotelName;
+            Place.Text = offer.Place;
+            PricePerPerson.Text = offer.PricePerPerson + "€\n pro Person";
+            TravelInfo.Text = offer.DayCount + " tägige " + offer.TravelType + "\ninkl. " + offer.BoardType;
+            string extInfo = "";
+            foreach (ExtendedInformation information in offer.ExtendedInformation)
+                extInfo += ("-" + information.Information + "\n");
+            ExtendetInfo.Text = extInfo;
         }
     }
 }
