@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using AccessoryLib;
+using Database.DAO;
 
 namespace HtwKinect
 {
@@ -22,6 +23,7 @@ namespace HtwKinect
                 BuildBackground(grid, paths[i]);
                 BuildGreenScreen(grid);
                 BuildAccessoryScreen(grid);
+                BuildInfoBox(grid, i);
                 list.Add(grid);
             }
             kinectProjectUiBuilder.AddRow("Top", list);
@@ -34,6 +36,7 @@ namespace HtwKinect
                 BuildBackground(grid, paths[i]);
                 BuildGreenScreen(grid);
                 BuildAccessoryScreen(grid);
+                BuildInfoBox(grid, i);
                 list.Add(grid);
             }
             kinectProjectUiBuilder.AddRow("Beach", list);
@@ -47,6 +50,7 @@ namespace HtwKinect
                 BuildBackground(grid, paths[i]);
                 BuildGreenScreen(grid);
                 BuildAccessoryScreen(grid);
+                BuildInfoBox(grid, i);
                 list.Add(grid);
             }
             kinectProjectUiBuilder.AddRow("Snow", list);
@@ -124,6 +128,24 @@ namespace HtwKinect
             accessoryControl.SetSkeletons(instance.Skeletons);
             TansformFrameworkElement(accessoryControl);
         }
+        #endregion
+
+        #region InfoBox
+        private void BuildInfoBox(Grid grid, int dbId)
+        {
+            try
+            {
+                var infoBanner = new InfoBanner.InfoBanner();
+                infoBanner.HorizontalAlignment = HorizontalAlignment.Left;
+                var offer = new TravelOfferDao().SelectById(dbId + 1);
+                infoBanner.Start(offer);
+                grid.Children.Add(infoBanner);
+            }
+            catch
+            {
+            }
+        }
+
         #endregion
 
         private void TansformFrameworkElement(FrameworkElement frameworkElement)
