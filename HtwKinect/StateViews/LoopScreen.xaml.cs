@@ -1,6 +1,4 @@
-﻿using System.IO;
-using System.Windows.Media.Imaging;
-using HandDetection;
+﻿using HandDetection;
 using LoopList;
 using Microsoft.Kinect;
 using System;
@@ -9,12 +7,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace HtwKinect
+namespace HtwKinect.StateViews
 {
     /// <summary>
     /// Interaktionslogik für MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : UserControl, SwitchableUserControl
+    public partial class MainWindow : UserControl, ISwitchableUserControl
     {
         private Point? _oldMovePoint;
         private bool _doDrag;
@@ -299,12 +297,12 @@ namespace HtwKinect
             myLoopList_MouseUp_1(null, null);
         }
 
-        Database.TravelOffer SwitchableUserControl.stopDisplay()
+        Database.TravelOffer ISwitchableUserControl.StopDisplay()
         {
             throw new NotImplementedException();
         }
 
-        public void startDisplay(Database.TravelOffer lastTravel)
+        public void StartDisplay(Database.TravelOffer lastTravel)
         {
             throw new NotImplementedException();
         }

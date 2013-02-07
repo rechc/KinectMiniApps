@@ -1,7 +1,6 @@
 ﻿<Window x:Class="HtwKinect.FrameWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:loopl="clr-namespace:LoopList;assembly=LoopList"
        Title="MainWindow" WindowStyle="None" WindowState="Maximized" Loaded="WindowLoaded" Closing="WindowClosing">
     <Grid x:Name="GridX">
         <Grid.RowDefinitions>

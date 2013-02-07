@@ -1,24 +1,19 @@
 ﻿using Database;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HtwKinect
 {
-    interface SwitchableUserControl
+    interface ISwitchableUserControl
     {
         /**
          * stops showing this UserControl in GUI
          * @returns the lastTravel
          */
-        TravelOffer stopDisplay();
+        TravelOffer StopDisplay();
 
         /**
          * starts showing this UserControl with specified Travel
          */
-        void startDisplay(TravelOffer lastTravel);
+        void StartDisplay(TravelOffer lastTravel);
 
     }
 }

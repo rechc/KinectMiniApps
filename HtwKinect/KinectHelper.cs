@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using AccessoryLib;
 using Microsoft.Kinect;
 using Microsoft.Kinect.Toolkit.FaceTracking;

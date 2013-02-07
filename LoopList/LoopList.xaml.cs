@@ -23,6 +23,7 @@ namespace LoopList
     /// Die Einfuegemethoden sind AddNewToLeft usw.. Diese erzeugen neue Nodes.
     /// Muss auf einen bereits existierenden Node verlinkt werden, so muss dies in den jeweiligen Nodes gesetzt werden (z.B node.Right = otherNode).
     /// 
+    /// Siehe Projekt-Dokumentation für genauere Beschreibung
     /// </summary>
     public partial class LoopList
     {
@@ -173,6 +174,12 @@ namespace LoopList
 
             Loaded += LoopList_Loaded;
 
+            SizeChanged += LoopList_SizeChanged;
+        }
+
+        void LoopList_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            RootGrid.Clip = new RectangleGeometry(new Rect(0, 0, ActualWidth, ActualHeight));
         }
 
         private void FireScrolled(LoopListArgs args)
@@ -205,6 +212,7 @@ namespace LoopList
 
             ttAbove.Y = -_right.ActualHeight*4;
             ttLeft.X = -_right.ActualWidth*4;
+
         }
 
         public void SetDuration(Duration duration)

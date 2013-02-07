@@ -1,8 +1,5 @@
-﻿using LoopList;
-using Microsoft.Kinect;
-using System.Windows;
+﻿using System.Windows;
 using PeopleDetector;
-using System.IO;
 using HtwKinect.StateViews;
 using System.Windows.Controls;
 using System;
@@ -15,7 +12,7 @@ namespace HtwKinect
     /// </summary>
     public partial class FrameWindow : Window
     {
-        private bool _DebugOnlyScreen1 = false;
+        private bool _debugOnlyScreen1;
 
         private PeoplePositionDetector _peopleDetector;
         private ScreenMode _currentScreen = ScreenMode.Splash; // durch enum noch ersetzen
@@ -28,10 +25,10 @@ namespace HtwKinect
             Unknown
         }
 
-        private MainWindow _mainWindow = null;
-        private HtwKinect.StateViews.SplashScreen _sscreen = null;
-        private WalkScreen _walkScreen = null;
-        private WalkAndLookScreen _walkLookScreen = null;
+        private MainWindow _mainWindow;
+        private StateViews.SplashScreen _sscreen;
+        private WalkScreen _walkScreen;
+        private WalkAndLookScreen _walkLookScreen;
 
         public FrameWindow()
         {
@@ -41,8 +38,8 @@ namespace HtwKinect
 
         private void ChangeScreen()
         {
-            if (_DebugOnlyScreen1) {
-                if (!(_currentScreen == ScreenMode.MainScreen)) {
+            if (_debugOnlyScreen1) {
+                if (_currentScreen != ScreenMode.MainScreen) {
                     RemoveOldScreen();
                     _currentScreen = ScreenMode.MainScreen;
                     if (_mainWindow == null) { _mainWindow = new MainWindow(); }
@@ -90,7 +87,7 @@ namespace HtwKinect
         {
             RemoveOldScreen();
             _currentScreen = ScreenMode.Splash;
-            if (_sscreen == null) { _sscreen = new HtwKinect.StateViews.SplashScreen(); }
+            if (_sscreen == null) { _sscreen = new StateViews.SplashScreen(); }
             Grid.SetRow(_sscreen, 1);
             GridX.Children.Add(_sscreen);
         }
@@ -123,11 +120,9 @@ namespace HtwKinect
                             e.Handled = true;
                             break;
                         case Key.Space:
-                            _DebugOnlyScreen1 = !_DebugOnlyScreen1;
+                            _debugOnlyScreen1 = true;
                             ChangeScreen();
                             e.Handled = true;
-                            break;
-                        default:
                             break;
                     }
                 }
@@ -152,7 +147,7 @@ namespace HtwKinect
         {
             _peopleDetector = new PeoplePositionDetector();
             KinectHelper kh = KinectHelper.Instance;
-            kh.ReadyEvent+= this.PeopleDetectorSkeletonEvent;
+            kh.ReadyEvent += PeopleDetectorSkeletonEvent;
         }
 
         /**
