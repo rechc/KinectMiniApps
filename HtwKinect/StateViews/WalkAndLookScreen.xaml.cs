@@ -18,11 +18,21 @@ namespace HtwKinect.StateViews
     /// <summary>
     /// Interaktionslogik für WalkAndLookScreen.xaml
     /// </summary>
-    public partial class WalkAndLookScreen : UserControl
+    public partial class WalkAndLookScreen : UserControl, SwitchableUserControl
     {
         public WalkAndLookScreen()
         {
             InitializeComponent();
+        }
+
+        public Database.TravelOffer stopDisplay()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void startDisplay(Database.TravelOffer lastTravel)
+        {
+            throw new NotImplementedException();
         }
     }
 }
