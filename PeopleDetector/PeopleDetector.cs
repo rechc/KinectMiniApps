@@ -5,8 +5,23 @@ using System.Linq;
 
 namespace PeopleDetector
 {
-    public class PeopleDetector
+    public class PeoplePositionDetector
     {
+
+      /*  #region Event
+        public event EventHandler ChangeEvent;
+
+        private void FireChangeEvent()
+        {
+            if (ChangeEvent != null)
+            {
+                ChangeEvent(this, EventArgs.Empty);
+            }
+        }
+
+        #endregion Event*/
+        //
+
         private Dictionary<int, List<SkeletonTimestamp>> _skeletonsDict = new Dictionary<int, List<SkeletonTimestamp>>();
         private const int _maxNumberOfFramesInSkeletonList = 20;
 
@@ -14,11 +29,11 @@ namespace PeopleDetector
         private const double _walkingDistance = 0.22;
         private const int _walkingDuration = 500; // Time in miliseconds
 
-        public PeopleDetector()
+        public PeoplePositionDetector()
         {
         }
 
-        public PeopleDetector(Skeleton[] skeletons)
+        public PeoplePositionDetector(Skeleton[] skeletons)
         {
             AddSkeletonsToDictionary(skeletons);
         }
@@ -211,26 +226,28 @@ namespace PeopleDetector
         /// </summary>
         private void AddSkeletonsToDictionary(Skeleton[] skeletons)
         {
-            foreach (Skeleton skeleton in skeletons)
-            {
-                if (skeleton.TrackingState != SkeletonTrackingState.NotTracked)
+            if (skeletons!=null){
+                foreach (Skeleton skeleton in skeletons)
                 {
-                    if (_skeletonsDict.ContainsKey(skeleton.TrackingId))
+                    if (skeleton.TrackingState != SkeletonTrackingState.NotTracked)
                     {
-                        List<SkeletonTimestamp> skeletonList = _skeletonsDict[skeleton.TrackingId];
-                        if (skeletonList.Count >= _maxNumberOfFramesInSkeletonList)
+                        if (_skeletonsDict.ContainsKey(skeleton.TrackingId))
                         {
-                            skeletonList.RemoveAt(skeletonList.Count - 1);
-                        }
-                        skeletonList.Insert(0, new SkeletonTimestamp(skeleton));
-                        _skeletonsDict[skeleton.TrackingId] = skeletonList;
+                            List<SkeletonTimestamp> skeletonList = _skeletonsDict[skeleton.TrackingId];
+                            if (skeletonList.Count >= _maxNumberOfFramesInSkeletonList)
+                            {
+                                skeletonList.RemoveAt(skeletonList.Count - 1);
+                            }
+                            skeletonList.Insert(0, new SkeletonTimestamp(skeleton));
+                            _skeletonsDict[skeleton.TrackingId] = skeletonList;
 
-                    }
-                    else
-                    {
-                        List<SkeletonTimestamp> skeletonList = new List<SkeletonTimestamp>();
-                        skeletonList.Add(new SkeletonTimestamp(skeleton));
-                        _skeletonsDict.Add(skeleton.TrackingId, skeletonList);
+                        }
+                        else
+                        {
+                            List<SkeletonTimestamp> skeletonList = new List<SkeletonTimestamp>();
+                            skeletonList.Add(new SkeletonTimestamp(skeleton));
+                            _skeletonsDict.Add(skeleton.TrackingId, skeletonList);
+                        }
                     }
                 }
             }

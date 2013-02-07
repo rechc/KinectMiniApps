@@ -82,7 +82,7 @@ namespace HtwKinect
         private void HelperReady()
         {
             Skeleton skeleton = KinectHelper.Instance.GetFixedSkeleton();
-            //ProcessSkeleton(skeleton);
+            ProcessSkeleton(skeleton);
         }
 
         private void ProcessSkeleton(Skeleton skeleton)
@@ -256,6 +256,10 @@ namespace HtwKinect
             KinectFocusedRectangle.Visibility = Visibility.Visible;
         }
 
+        public void DelegateKeyEvent(KeyEventArgs e) 
+        {
+            OnKeyDown(e);
+        }
         /*Tastensteuerung der LoopList*/
         protected override void OnKeyDown(KeyEventArgs e)
         {
@@ -277,11 +281,10 @@ namespace HtwKinect
                         if (!_waitForTextList)
                             MyLoopList.AnimV(false);
                         break;
-                    case Key.Escape:
-                        Application.Current.Shutdown();
+                    default:
+                        //Environment.Exit(0);
                         break;
                 }
-
                 e.Handled = true;
             }
             catch (Exception exc)
