@@ -477,11 +477,6 @@ namespace LoopList
             
             if ((int)Math.Abs(ttRight.Y) != 0) return true; // diagonales scrollen gibts nicht
             
-            ttLeft.X = (double)ttLeft.GetValue(TranslateTransform.XProperty);
-            ttRight.X = (double)ttRight.GetValue(TranslateTransform.XProperty);
-
-            ttLeft.BeginAnimation(TranslateTransform.XProperty, null);
-            ttRight.BeginAnimation(TranslateTransform.XProperty, null);
             
             ttRight.X += xDistance;
             ttLeft.X += xDistance;
@@ -570,12 +565,6 @@ namespace LoopList
             {
                 return true;
             }
-
-            ttAbove.Y = (double)ttAbove.GetValue(TranslateTransform.YProperty);
-            ttRight.Y = (double)ttRight.GetValue(TranslateTransform.YProperty);
-
-            ttAbove.BeginAnimation(TranslateTransform.YProperty, null);
-            ttRight.BeginAnimation(TranslateTransform.YProperty, null);
 
             ttRight.Y += yDistance;
             ttAbove.Y += yDistance;
@@ -714,11 +703,20 @@ namespace LoopList
             }
             _animating = 2;
 
-            DoubleAnimation doubleAnimationCenter = new DoubleAnimation {From = ttRight.X};
+            DoubleAnimation doubleAnimationCenter = new DoubleAnimation {
+                From = ttRight.X,
+                FillBehavior = FillBehavior.Stop
+            };
             if (leftDir)
+            {
                 doubleAnimationCenter.To = -_right.ActualWidth;
+                ttRight.X = -_right.ActualWidth;
+            }
             else
+            {
                 doubleAnimationCenter.To = _right.ActualWidth;
+                ttRight.X = _right.ActualWidth;
+            }
             doubleAnimationCenter.Duration = _duration;
             doubleAnimationCenter.Completed += (s, _) => AnimCompletedX();
             ttRight.BeginAnimation(TranslateTransform.XProperty, doubleAnimationCenter);
@@ -727,9 +725,11 @@ namespace LoopList
                 {
                     From = ttLeft.X,
                     To = 0,
-                    Duration = _duration
+                    Duration = _duration,
+                    FillBehavior = FillBehavior.Stop
                 };
             doubleAnimationLeft.Completed += (s, _) => AnimCompletedX();
+            ttLeft.X = 0;
             ttLeft.BeginAnimation(TranslateTransform.XProperty, doubleAnimationLeft);
 
 
@@ -765,17 +765,32 @@ namespace LoopList
             }
             _animating = 2;
 
-            DoubleAnimation doubleAnimationCenter = new DoubleAnimation {From = ttRight.Y};
+            DoubleAnimation doubleAnimationCenter = new DoubleAnimation {
+                From = ttRight.Y,
+                FillBehavior = FillBehavior.Stop
+            };
             if (upDir)
+            {
                 doubleAnimationCenter.To = -_right.ActualHeight;
+                ttRight.Y = -_right.ActualHeight;
+            }
             else
+            {
                 doubleAnimationCenter.To = _right.ActualHeight;
+                ttRight.Y = _right.ActualHeight;
+            }
             doubleAnimationCenter.Duration = _duration;
             doubleAnimationCenter.Completed += (s, _) => AnimCompletedY();
             ttRight.BeginAnimation(TranslateTransform.YProperty, doubleAnimationCenter);
 
-            DoubleAnimation doubleAnimationLeft = new DoubleAnimation {From = ttAbove.Y, To = 0, Duration = _duration};
+            DoubleAnimation doubleAnimationLeft = new DoubleAnimation {
+                From = ttAbove.Y,
+                To = 0,
+                Duration = _duration,
+                FillBehavior = FillBehavior.Stop
+            };
             doubleAnimationLeft.Completed += (s, _) => AnimCompletedY();
+            ttAbove.Y = 0;
             ttAbove.BeginAnimation(TranslateTransform.YProperty, doubleAnimationLeft);
 
 
@@ -806,16 +821,26 @@ namespace LoopList
                     {
                         From = ttRight.X,
                         To = 0,
-                        Duration = _duration
+                        Duration = _duration,
+                        FillBehavior = FillBehavior.Stop
                     };
                 doubleAnimationCenter.Completed += (s, _) => AnimCompletedBack();
-                
+                ttRight.X = 0;
 
-                DoubleAnimation doubleAnimationLeft = new DoubleAnimation {From = ttLeft.X};
+                DoubleAnimation doubleAnimationLeft = new DoubleAnimation {
+                    From = ttLeft.X,
+                    FillBehavior = FillBehavior.Stop
+                };
                 if (_lastX < 0)
+                {
                     doubleAnimationLeft.To = _right.ActualWidth;
+                    ttLeft.X = _right.ActualWidth;
+                }
                 if (_lastX > 0)
+                {
                     doubleAnimationLeft.To = -_right.ActualWidth;
+                    ttLeft.X = -_right.ActualWidth;
+                }
                 doubleAnimationLeft.Duration = _duration;
                 doubleAnimationLeft.Completed += (s, _) => AnimCompletedBack();
                 
@@ -837,16 +862,26 @@ namespace LoopList
                         {
                             From = ttRight.Y,
                             To = 0,
-                            Duration = _duration
+                            Duration = _duration,
+                            FillBehavior = FillBehavior.Stop
                         };
                     doubleAnimationCenter.Completed += (s, _) => AnimCompletedBack();
-                    
+                    ttRight.Y = 0;
 
-                    DoubleAnimation doubleAnimationLeft = new DoubleAnimation {From = ttAbove.Y};
+                    DoubleAnimation doubleAnimationLeft = new DoubleAnimation {
+                        From = ttAbove.Y,
+                        FillBehavior = FillBehavior.Stop
+                    };
                     if (_lastY < 0)
+                    {
                         doubleAnimationLeft.To = _right.ActualHeight;
+                        ttAbove.Y = _right.ActualHeight;
+                    }
                     if (_lastY > 0)
+                    {
                         doubleAnimationLeft.To = -_right.ActualHeight;
+                        ttAbove.Y = -_right.ActualHeight;
+                    }
                     doubleAnimationLeft.Duration = _duration;
                     doubleAnimationLeft.Completed += (s, _) => AnimCompletedBack();
                     

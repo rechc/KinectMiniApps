@@ -67,6 +67,9 @@ namespace LoopListTest
             MyTextLoopList.Add("käse");
             MyTextLoopList.Add("Test");
             MyTextLoopList.Add("Ahjo");
+            MyTextLoopList.Add("a");
+            MyTextLoopList.Add("b");
+            MyTextLoopList.Add("c");
         }
 
 

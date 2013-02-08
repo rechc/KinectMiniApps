@@ -108,9 +108,6 @@ namespace LoopList
             TranslateTransform ttCenter = (TranslateTransform)_center.RenderTransform;
             TranslateTransform ttBottom = (TranslateTransform)_bottom.RenderTransform;
 
-            ttTop.BeginAnimation(TranslateTransform.YProperty, null);
-            ttCenter.BeginAnimation(TranslateTransform.YProperty, null);
-            ttBottom.BeginAnimation(TranslateTransform.YProperty, null);
 
             _topYPos = -RootGrid.ActualHeight/3.5 + _top.ActualHeight/2.0;
             _bottomYPos = RootGrid.ActualHeight/3.5 - _bottom.ActualHeight/2.0;
@@ -160,26 +157,33 @@ namespace LoopList
                     {
                         From = ttTop.Y,
                         To = _topYPos*2,
-                        Duration = _duration
+                        Duration = _duration,
+                        FillBehavior = FillBehavior.Stop
                     };
+                ttTop.Y = _topYPos * 2;
                 ttTop.BeginAnimation(TranslateTransform.YProperty, doubleAnimationTop);
 
                 DoubleAnimation doubleAnimationCenter = new DoubleAnimation
                     {
                         From = ttCenter.Y,
                         To = _topYPos,
-                        Duration = _duration
+                        Duration = _duration,
+                        FillBehavior = FillBehavior.Stop
                     };
                 doubleAnimationCenter.Completed += (s, _) => AnimCompleted();
+                ttCenter.Y = _topYPos;
                 ttCenter.BeginAnimation(TranslateTransform.YProperty, doubleAnimationCenter);
 
                 DoubleAnimation doubleAnimationBottom = new DoubleAnimation
                     {
                         From = ttBottom.Y,
                         To = 0,
-                        Duration = _duration
+                        Duration = _duration,
+                        FillBehavior = FillBehavior.Stop
                     };
                 doubleAnimationBottom.Completed += (s, _) => AnimCompleted();
+
+                ttBottom.Y = 0;
                 ttBottom.BeginAnimation(TranslateTransform.YProperty, doubleAnimationBottom);
                 _lastY = 1;
                 Border tmp = _top;
@@ -194,26 +198,32 @@ namespace LoopList
                 {
                     From = ttTop.Y,
                     To = 0,
-                    Duration = _duration
+                    Duration = _duration,
+                    FillBehavior = FillBehavior.Stop
                 };
                 doubleAnimationTop.Completed += (s, _) => AnimCompleted();
+                ttTop.Y = 0;
                 ttTop.BeginAnimation(TranslateTransform.YProperty, doubleAnimationTop);
 
                 DoubleAnimation doubleAnimationCenter = new DoubleAnimation
                 {
                     From = ttCenter.Y,
                     To = _bottomYPos,
-                    Duration = _duration
+                    Duration = _duration,
+                    FillBehavior = FillBehavior.Stop
                 };
                 doubleAnimationCenter.Completed += (s, _) => AnimCompleted();
+                ttCenter.Y = _bottomYPos;
                 ttCenter.BeginAnimation(TranslateTransform.YProperty, doubleAnimationCenter);
 
                 DoubleAnimation doubleAnimationBottom = new DoubleAnimation
                 {
                     From = ttBottom.Y,
                     To = _bottomYPos*2,
-                    Duration = _duration
+                    Duration = _duration,
+                    FillBehavior = FillBehavior.Stop
                 };
+                ttBottom.Y = _bottomYPos * 2;
                 ttBottom.BeginAnimation(TranslateTransform.YProperty, doubleAnimationBottom);
                 
                 _lastY = -1;
@@ -226,9 +236,11 @@ namespace LoopList
             {
                 From = 1,
                 To = 0,
-                Duration = _duration.TimeSpan.Subtract(new TimeSpan((int)(_duration.TimeSpan.Ticks*0.5)))
+                Duration = _duration.TimeSpan.Subtract(new TimeSpan((int)(_duration.TimeSpan.Ticks*0.5))),
+                FillBehavior = FillBehavior.Stop
             };
             fadeOut.Completed += (s, _) => FadeOutAnimCompleted();
+            disappearing.Opacity = 0;
             disappearing.BeginAnimation(OpacityProperty, fadeOut);
             return true;
         }
@@ -261,9 +273,11 @@ namespace LoopList
                 {
                     From = _bottomYPos * 2,
                     To = _bottomYPos,
-                    Duration = _duration
+                    Duration = _duration,
+                    FillBehavior = FillBehavior.Stop
                 };
                 doubleAnimationBottom.Completed += (s, _) => AnimCompleted();
+                ttBottom.Y = _bottomYPos;
                 ttBottom.BeginAnimation(TranslateTransform.YProperty, doubleAnimationBottom);
 
             }
@@ -291,9 +305,11 @@ namespace LoopList
                 {
                     From = _topYPos * 2,
                     To = _topYPos,
-                    Duration = _duration
+                    Duration = _duration,
+                    FillBehavior = FillBehavior.Stop
                 };
                 doubleAnimationBottom.Completed += (s, _) => AnimCompleted();
+                ttBottom.Y = _topYPos;
                 ttBottom.BeginAnimation(TranslateTransform.YProperty, doubleAnimationBottom);
 
             }
@@ -301,8 +317,10 @@ namespace LoopList
             {
                 From = 0,
                 To = 1,
-                Duration = _duration
+                Duration = _duration,
+                FillBehavior = FillBehavior.Stop
             };
+            appearing.Opacity = 1;
             fadeIn.Completed += (s, _) => AnimCompleted();
             appearing.BeginAnimation(OpacityProperty, fadeIn);
 
