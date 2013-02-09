@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Database.Utils;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -49,19 +50,40 @@ namespace Database.DAO
 
         public TravelOffer SelectById(int offerId)
         {
-            using (var con = new Model1Container())
+            try
             {
+                using (var con = new Model1Container())
+                {
 
-                var obj = (from offer in con.TravelOfferSet
-                                         .Include("Category")
-                                         .Include("ExtendedInformation")
-                           where offerId == offer.OfferId
-                           select offer).FirstOrDefault();
-                if (obj == null)
-                    //throw new Exception("No entry found. Wrong Id");
-                    return CreateDefaultObject();
-                return obj;
-            } 
+                    var obj = (from offer in con.TravelOfferSet
+                                             .Include("Category")
+                                             .Include("ExtendedInformation")
+                               where offerId == offer.OfferId
+                               select offer).FirstOrDefault();
+                    if (obj == null)
+                        throw new Exception("No entry found. Wrong Id");
+                    return obj;
+                }
+            }
+            catch (Exception)
+            {
+                return CreateDefaultObject();
+            }
+        }
+
+        public TravelOffer SelectRandomTopOffer()
+        {
+            using(var con = new Model1Container())
+	        {
+                var topOfferlist = (from offer in con.TravelOfferSet
+                                           .Include("Category")
+                                           .Include("ExtendedInformation")
+                             where offer.TopOffer == true
+                             select offer).ToList();
+                if (topOfferlist.Count <= 0)
+                    throw new Exception("No top offer found");
+                return topOfferlist.ElementAt(Helper.GetRandomInteger(0, topOfferlist.Count));
+	        }
         }
 
         private TravelOffer CreateDefaultObject()
@@ -70,18 +92,18 @@ namespace Database.DAO
                             {new ExtendedInformation() {Information = "please fill database"}};
             return new TravelOffer()
                        {
-                           Category = new Categorie(){CategoryName = "No Db data", CategoryId = 0},
+                           Category = new Category(){CategoryName = "No Db data", CategoryId = 0},
                            BoardType = "no data",
                            CategoryId = 0,
                            DayCount = 0,
                            HotelName = "no data",
                            HotelRating = 0,
-                           ImgPath = "empty",
                            OfferId = 0,
                            Place = "no data",
                            PricePerPerson = 123.4,
                            TravelType = "no data",
-                           ExtendedInformation = exInf
+                           ExtendedInformation = exInf,
+                           TopOffer = false
                        };
         }
 
