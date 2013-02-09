@@ -473,11 +473,19 @@ namespace LoopList
         {
             TranslateTransform ttRight = (TranslateTransform)_right.RenderTransform;
             double way = _right.ActualWidth * _autoDrag;
-            return HDrag((int)(way * xPercent/100.0));
+            return HDrag(way * xPercent);
 
         }
 
-        public bool HDrag(int xDistance)
+        public bool VDragPercent(double yPercent)
+        {
+            TranslateTransform ttRight = (TranslateTransform)_right.RenderTransform;
+            double way = _right.ActualHeight * _autoDrag;
+            return VDrag(way * yPercent);
+
+        }
+
+        public bool HDrag(double xDistance)
         {
             if (_animating != 0) return false;
             
@@ -499,7 +507,6 @@ namespace LoopList
                 {
                     if (_lastX != -1)
                     {
-                        Debug.WriteLine("links");
                         ttLeft.X = _right.ActualWidth + ttRight.X;
                         SetChild(_left, _currentNode.Right.FrameworkElement, _currentNode.Right);
                         _lastX = -1;
@@ -532,7 +539,6 @@ namespace LoopList
                 {
                     if (_lastX != 1)
                     {
-                        Debug.WriteLine("rechts");
                         ttLeft.X = -_right.ActualWidth + ttRight.X;
                         SetChild(_left, _currentNode.Left.FrameworkElement, _currentNode.Left);
                         _lastX = 1;
@@ -597,7 +603,7 @@ namespace LoopList
                     AnimH(false);
                     return false;
                 }
-                if (ttRight.X < -_right.ActualWidth * (_autoDrag))
+                if (ttRight.X <= -_right.ActualWidth * (_autoDrag))
                 {
                     AnimH(true);
                     return false;
@@ -606,7 +612,7 @@ namespace LoopList
             return true;
         }
 
-        public bool VDrag(int yDistance)
+        public bool VDrag(double yDistance)
         {
             if (_animating != 0) return false;
             TranslateTransform ttRight = (TranslateTransform)_right.RenderTransform;
@@ -631,7 +637,6 @@ namespace LoopList
                 {
                     if (_lastY != -1)
                     {
-                        Debug.WriteLine("unten");
                         ttAbove.Y = _right.ActualHeight + ttRight.Y;
                         SetChild(_above, _currentNode.Below.FrameworkElement, _currentNode.Below);
                         _lastY = -1;
@@ -664,7 +669,6 @@ namespace LoopList
                 {
                     if (_lastY != 1)
                     {
-                        Debug.WriteLine("oben");
                         ttAbove.Y = -_right.ActualHeight + ttRight.Y;
                         SetChild(_above, _currentNode.Above.FrameworkElement, _currentNode.Above);
                         _lastY = 1;

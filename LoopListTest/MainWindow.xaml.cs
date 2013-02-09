@@ -39,7 +39,7 @@ namespace LoopListTest
 
         private void InitList()
         {
-            MyLoopList.SetAutoDragOffset(1);
+            MyLoopList.SetAutoDragOffset(0.5);
             MyLoopList.SetDuration(new Duration(new TimeSpan(3000000))); //300m
             MyLoopList.Scrolled += MyLoopListOnScrolled;
             MyTextLoopList.Scrolled += MyTextLoopList_Scrolled;
@@ -224,7 +224,7 @@ namespace LoopListTest
         /*Tastensteuerung der LoopList*/
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            //try
+            try
             {
                 switch (e.Key)
                 {
@@ -243,10 +243,18 @@ namespace LoopListTest
                             MyLoopList.AnimV(false);
                         break;
                     case Key.NumPad4:
-                        MyLoopList.HDragPercent(-100);
+                        MyLoopList.HDragPercent(-0.25);
                         break;
                     case Key.NumPad6:
-                        MyLoopList.HDragPercent(100);
+                        MyLoopList.HDragPercent(0.25);
+                        break;
+                    case Key.NumPad8:
+                        if (!_waitForTextList)
+                            MyLoopList.VDragPercent(-0.25);
+                        break;
+                    case Key.NumPad2:
+                        if (!_waitForTextList)
+                            MyLoopList.VDragPercent(0.25);
                         break;
                     default:
                         //Environment.Exit(0);
@@ -254,9 +262,9 @@ namespace LoopListTest
                 }
                 e.Handled = true;
             }
-           // catch (Exception exc)
+            catch (Exception exc)
             {
-              //  ExceptionTextBlock.Text = exc.Message + "\r\n" + exc.InnerException;
+                ExceptionTextBlock.Text = exc.Message + "\r\n" + exc.InnerException;
             }
         }
 

@@ -279,6 +279,20 @@ namespace HtwKinect.StateViews
                         if (!_waitForTextList)
                             MyLoopList.AnimV(false);
                         break;
+                    case Key.NumPad4:
+                        MyLoopList.HDragPercent(-0.25);
+                        break;
+                    case Key.NumPad6:
+                        MyLoopList.HDragPercent(0.25);
+                        break;
+                    case Key.NumPad8:
+                        if (!_waitForTextList)
+                            MyLoopList.VDragPercent(-0.25);
+                        break;
+                    case Key.NumPad2:
+                        if (!_waitForTextList)
+                            MyLoopList.VDragPercent(0.25);
+                        break;
                     default:
                         //Environment.Exit(0);
                         break;
