@@ -93,6 +93,18 @@ namespace GreenScreenControl
                 Antialiasing(drawingContext);
         }
 
+        bool PixelsSimilar(int color1, int color2)
+        {
+            int dr = Math.Abs(((color1 >> 16) & 0xff) -
+                              ((color2 >> 16) & 0xff));
+            int dg = Math.Abs(((color1 >> 8) & 0xff) -
+                              ((color2 >> 8) & 0xff));
+            int db = Math.Abs(((color1 >> 0) & 0xff) -
+                              ((color2 >> 0) & 0xff));
+            return ((double)(dr + dg + db) / 3.0) <= 100.0;
+        }
+
+
         public void Antialiasing(DrawingContext drawingContext) //DepthImagePixel[] depthPixels, byte[] colorPixels,DepthImageFormat depthFormat, ColorImageFormat colorFormat)
         {
             // do our processing outside of the using block
@@ -131,12 +143,12 @@ namespace GreenScreenControl
                         int colorInDepthX = colorImagePoint.X / _colorToDepthDivisor;
                         int colorInDepthY = colorImagePoint.Y / _colorToDepthDivisor;
 
-
                         // make sure the depth pixel maps to a valid point in color space
                         // check y > 0 and y < depthHeight to make sure we don't write outside of the array
                         // check x > 0 instead of >= 0 since to fill gaps we set opaque current pixel plus the one to the left
                         // because of how the sensor works it is more correct to do it this way than to set to the right
-                        if (colorInDepthX > 0 && colorInDepthX < _depthWidth && colorInDepthY >= 0 && colorInDepthY < _depthHeight)
+                        //if (colorInDepthX > 0 && colorInDepthX < _depthWidth && colorInDepthY >= 0 && colorInDepthY < _depthHeight)
+                        if (PixelsSimilar(colorInDepthX, colorInDepthY))
                         {
                             // calculate index into the green screen pixel array
                             int greenScreenIndex = colorInDepthX + (colorInDepthY * _depthWidth);
@@ -149,8 +161,14 @@ namespace GreenScreenControl
                             else
                             {
 
-                                _greenScreenPixelData[greenScreenIndex] = OpaquePoint;
-                                _greenScreenPixelData[greenScreenIndex - 1] = OpaquePoint;
+                                try
+                                {
+                                    _greenScreenPixelData[greenScreenIndex] = OpaquePoint;
+                                    _greenScreenPixelData[greenScreenIndex - 1] = OpaquePoint;
+                                }
+                                catch
+                                {
+                                }
                             }
                         }
                     }
