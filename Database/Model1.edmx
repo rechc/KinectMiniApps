@@ -78,10 +78,10 @@
       <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" xmlns:cg="http://schemas.microsoft.com/ado/2006/04/codegeneration" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" Namespace="Model1" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" annotation:UseStrongSpatialTypes="false">
         <EntityContainer Name="Model1Container" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="TravelOfferSet" EntityType="Model1.TravelOffer" />
-          <EntitySet Name="CategorieSet" EntityType="Model1.Categorie" />
+          <EntitySet Name="CategorySet" EntityType="Model1.Category" />
           <AssociationSet Name="TravelOfferCountry" Association="Model1.TravelOfferCountry">
             <End Role="TravelOffer" EntitySet="TravelOfferSet" />
-            <End Role="Country" EntitySet="CategorieSet" />
+            <End Role="Country" EntitySet="CategorySet" />
           </AssociationSet>
           <EntitySet Name="ExtendedInformationSet" EntityType="Model1.ExtendedInformation" />
           <AssociationSet Name="TravelOfferExtendedInformation" Association="Model1.TravelOfferExtendedInformation">
@@ -106,7 +106,7 @@
           <Property Type="String" Name="ImgPath" Nullable="false" />
           <NavigationProperty Name="ExtendedInformation" Relationship="Model1.TravelOfferExtendedInformation" FromRole="TravelOffer" ToRole="ExtendedInformation" />
         </EntityType>
-        <EntityType Name="Categorie">
+        <EntityType Name="Category">
           <Key>
             <PropertyRef Name="CategoryId" />
           </Key>
@@ -116,7 +116,7 @@
         </EntityType>
         <Association Name="TravelOfferCountry">
           <End Type="Model1.TravelOffer" Role="TravelOffer" Multiplicity="*" />
-          <End Type="Model1.Categorie" Role="Country" Multiplicity="1" />
+          <End Type="Model1.Category" Role="Country" Multiplicity="1" />
           <ReferentialConstraint>
             <Principal Role="Country">
               <PropertyRef Name="CategoryId" />
@@ -169,8 +169,8 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
-    <EntitySetMapping Name="CategorieSet">
-      <EntityTypeMapping TypeName="IsTypeOf(Model1.Categorie)">
+    <EntitySetMapping Name="CategorySet">
+      <EntityTypeMapping TypeName="IsTypeOf(Model1.Category)">
         <MappingFragment StoreEntitySet="CountrySet">
           <ScalarProperty Name="CategoryId" ColumnName="CountryId" />
           <ScalarProperty Name="CategoryName" ColumnName="CountryName" />

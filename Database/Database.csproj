@@ -62,7 +62,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Categorie.cs">
+    <Compile Include="Category.cs">
       <DependentUpon>ModelObjects.tt</DependentUpon>
     </Compile>
     <Compile Include="ConnectionStringHelper.cs" />

@@ -76,7 +76,7 @@ namespace Database.DAO
                             {new ExtendedInformation() {Information = "please fill database"}};
             return new TravelOffer()
                        {
-                           Category = new Categorie(){CategoryName = "No Db data", CategoryId = 0},
+                           Category = new Category(){CategoryName = "No Db data", CategoryId = 0},
                            BoardType = "no data",
                            CategoryId = 0,
                            DayCount = 0,

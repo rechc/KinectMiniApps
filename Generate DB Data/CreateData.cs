@@ -78,8 +78,8 @@ namespace Generate_DB_Data
             string[] countries = {"Spanien", "Deutschland", "USA", "Mallorca", "Frankreich"};
             foreach (var countryName in countries)
             {
-                var c = new Categorie() {CategoryName = countryName};
-                _context.CategorieSet.Add(c);
+                var c = new Category() {CategoryName = countryName};
+                _context.CategorySet.Add(c);
             }
         }
 
@@ -96,7 +96,7 @@ namespace Generate_DB_Data
                                 PricePerPerson = GetRandomInteger(50, 1000),
                                 TravelType = travelType[GetRandomInteger(0, travelType.Count() - 1)],
                                 HotelRating = GetRandomInteger(1,5),
-                                CategoryId = GetRandomInteger(1, _context.CategorieSet.Count()),
+                                CategoryId = GetRandomInteger(1, _context.CategorySet.Count()),
                                 ImgPath = "path" //todo set path
                             };
 

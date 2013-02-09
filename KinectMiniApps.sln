@@ -12,9 +12,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoopList", "LoopList\LoopList.csproj", "{0EF01833-063F-498F-B8AC-7744902A2EFD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HtwKinect", "HtwKinect\HtwKinect.csproj", "{B658191C-9E09-44F6-A3A5-EB7A28E412D7}"
-	ProjectSection(ProjectDependencies) = postProject
-		{A6B20949-7A88-4E88-B857-F57F02546A54} = {A6B20949-7A88-4E88-B857-F57F02546A54}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Antialiasing", "Antialiasing\Antialiasing.csproj", "{A1E039C4-0B91-46DC-A556-9A5575E173AB}"
 EndProject
