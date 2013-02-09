@@ -97,7 +97,7 @@ namespace Generate_DB_Data
                                 TravelType = travelType[GetRandomInteger(0, travelType.Count() - 1)],
                                 HotelRating = GetRandomInteger(1,5),
                                 CategoryId = GetRandomInteger(1, _context.CategorySet.Count()),
-                                ImgPath = "path" //todo set path
+                                TopOffer = (GetRandomInteger(1,4) == 4) ? true : false,
                             };
 
             var count = GetRandomInteger(0, 4);

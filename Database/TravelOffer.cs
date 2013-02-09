@@ -29,6 +29,8 @@ namespace Database
         public string BoardType { get; set; }
         public int CategoryId { get; set; }
         public string ImgPath { get; set; }
+        public Nullable<byte> Image { get; set; }
+        public bool TopOffer { get; set; }
     
         public virtual Category Category { get; set; }
         public virtual ICollection<ExtendedInformation> ExtendedInformation { get; set; }

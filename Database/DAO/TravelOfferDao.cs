@@ -82,12 +82,12 @@ namespace Database.DAO
                            DayCount = 0,
                            HotelName = "no data",
                            HotelRating = 0,
-                           ImgPath = "empty",
                            OfferId = 0,
                            Place = "no data",
                            PricePerPerson = 123.4,
                            TravelType = "no data",
-                           ExtendedInformation = exInf
+                           ExtendedInformation = exInf,
+                           TopOffer = false
                        };
         }
 
