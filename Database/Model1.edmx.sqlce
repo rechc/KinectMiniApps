@@ -2,8 +2,8 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server Compact Edition
 -- --------------------------------------------------
--- Date Created: 02/02/2013 19:22:44
--- Generated from EDMX file: C:\Users\RechC_000\workspace\KinectMiniApps\Database\Model1.edmx
+-- Date Created: 02/09/2013 10:01:30
+-- Generated from EDMX file: K:\workspace\KinectMiniApps\Database\Model1.edmx
 -- --------------------------------------------------
 
 
@@ -43,15 +43,17 @@ CREATE TABLE [TravelOfferSet] (
     [TravelType] nvarchar(4000)  NOT NULL,
     [DayCount] int  NOT NULL,
     [BoardType] nvarchar(4000)  NOT NULL,
-    [CountryId] int  NOT NULL,
-    [ImgPath] nvarchar(4000)  NOT NULL
+    [CategoryId] int  NOT NULL,
+    [ImgPath] nvarchar(4000)  NULL,
+    [Image] tinyint  NULL,
+    [TopOffer] bit  NOT NULL
 );
 GO
 
--- Creating table 'CountrySet'
-CREATE TABLE [CountrySet] (
-    [CountryId] int IDENTITY(1,1) NOT NULL,
-    [CountryName] nvarchar(4000)  NOT NULL
+-- Creating table 'CategorySet'
+CREATE TABLE [CategorySet] (
+    [CategoryId] int IDENTITY(1,1) NOT NULL,
+    [CategoryName] nvarchar(4000)  NOT NULL
 );
 GO
 
@@ -73,10 +75,10 @@ ADD CONSTRAINT [PK_TravelOfferSet]
     PRIMARY KEY ([OfferId] );
 GO
 
--- Creating primary key on [CountryId] in table 'CountrySet'
-ALTER TABLE [CountrySet]
-ADD CONSTRAINT [PK_CountrySet]
-    PRIMARY KEY ([CountryId] );
+-- Creating primary key on [CategoryId] in table 'CategorySet'
+ALTER TABLE [CategorySet]
+ADD CONSTRAINT [PK_CategorySet]
+    PRIMARY KEY ([CategoryId] );
 GO
 
 -- Creating primary key on [ExtendetInformationId] in table 'ExtendedInformationSet'
@@ -89,18 +91,18 @@ GO
 -- Creating all FOREIGN KEY constraints
 -- --------------------------------------------------
 
--- Creating foreign key on [CountryId] in table 'TravelOfferSet'
+-- Creating foreign key on [CategoryId] in table 'TravelOfferSet'
 ALTER TABLE [TravelOfferSet]
 ADD CONSTRAINT [FK_TravelOfferCountry]
-    FOREIGN KEY ([CountryId])
-    REFERENCES [CountrySet]
-        ([CountryId])
+    FOREIGN KEY ([CategoryId])
+    REFERENCES [CategorySet]
+        ([CategoryId])
     ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- Creating non-clustered index for FOREIGN KEY 'FK_TravelOfferCountry'
 CREATE INDEX [IX_FK_TravelOfferCountry]
 ON [TravelOfferSet]
-    ([CountryId]);
+    ([CategoryId]);
 GO
 
 -- Creating foreign key on [OfferId] in table 'ExtendedInformationSet'

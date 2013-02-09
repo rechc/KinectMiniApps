@@ -62,7 +62,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Categorie.cs">
+    <Compile Include="Category.cs">
       <DependentUpon>ModelObjects.tt</DependentUpon>
     </Compile>
     <Compile Include="ConnectionStringHelper.cs" />
@@ -105,6 +105,7 @@
     <Compile Include="TravelOffer.cs">
       <DependentUpon>ModelObjects.tt</DependentUpon>
     </Compile>
+    <Compile Include="Utils\Helper.cs" />
   </ItemGroup>
   <ItemGroup>
     <EntityDeploy Include="Model1.edmx">

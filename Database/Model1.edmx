@@ -7,11 +7,11 @@
     <Schema Namespace="Model1.Store" Alias="Self" Provider="System.Data.SqlServerCe.4.0" ProviderManifestToken="4.0" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
   <EntityContainer Name="Model1StoreContainer">
     <EntitySet Name="TravelOfferSet" EntityType="Model1.Store.TravelOfferSet" store:Type="Tables" Schema="dbo" />
-    <EntitySet Name="CountrySet" EntityType="Model1.Store.CountrySet" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="CategorySet" EntityType="Model1.Store.CategorySet" store:Type="Tables" Schema="dbo" />
     <EntitySet Name="ExtendedInformationSet" EntityType="Model1.Store.ExtendedInformationSet" store:Type="Tables" Schema="dbo" />
     <AssociationSet Name="TravelOfferCountry" Association="Model1.Store.TravelOfferCountry">
       <End Role="TravelOffer" EntitySet="TravelOfferSet" />
-      <End Role="Country" EntitySet="CountrySet" />
+      <End Role="Country" EntitySet="CategorySet" />
     </AssociationSet>
     <AssociationSet Name="TravelOfferExtendedInformation" Association="Model1.Store.TravelOfferExtendedInformation">
       <End Role="TravelOffer" EntitySet="TravelOfferSet" />
@@ -30,15 +30,17 @@
     <Property Name="TravelType" Type="nvarchar" Nullable="false" />
     <Property Name="DayCount" Type="int" Nullable="false" />
     <Property Name="BoardType" Type="nvarchar" Nullable="false" />
-    <Property Name="CountryId" Type="int" Nullable="false" />
-    <Property Name="ImgPath" Type="nvarchar" Nullable="false" />
+    <Property Name="CategoryId" Type="int" Nullable="false" />
+    <Property Name="ImgPath" Type="nvarchar" Nullable="true" />
+    <Property Name="Image" Type="tinyint" Nullable="true" />
+    <Property Name="TopOffer" Type="bit" Nullable="false" />
   </EntityType>
-  <EntityType Name="CountrySet">
+  <EntityType Name="CategorySet">
     <Key>
-      <PropertyRef Name="CountryId" />
+      <PropertyRef Name="CategoryId" />
     </Key>
-    <Property Name="CountryId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="CountryName" Type="nvarchar" Nullable="false" />
+    <Property Name="CategoryId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="CategoryName" Type="nvarchar" Nullable="false" />
   </EntityType>
   <EntityType Name="ExtendedInformationSet">
     <Key>
@@ -50,13 +52,13 @@
   </EntityType>
   <Association Name="TravelOfferCountry">
     <End Role="TravelOffer" Type="Model1.Store.TravelOfferSet" Multiplicity="*" />
-    <End Role="Country" Type="Model1.Store.CountrySet" Multiplicity="1" />
+    <End Role="Country" Type="Model1.Store.CategorySet" Multiplicity="1" />
     <ReferentialConstraint>
       <Principal Role="Country">
-        <PropertyRef Name="CountryId" />
+        <PropertyRef Name="CategoryId" />
       </Principal>
       <Dependent Role="TravelOffer">
-        <PropertyRef Name="CountryId" />
+        <PropertyRef Name="CategoryId" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
@@ -78,10 +80,10 @@
       <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" xmlns:cg="http://schemas.microsoft.com/ado/2006/04/codegeneration" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" Namespace="Model1" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" annotation:UseStrongSpatialTypes="false">
         <EntityContainer Name="Model1Container" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="TravelOfferSet" EntityType="Model1.TravelOffer" />
-          <EntitySet Name="CategorieSet" EntityType="Model1.Categorie" />
+          <EntitySet Name="CategorySet" EntityType="Model1.Category" />
           <AssociationSet Name="TravelOfferCountry" Association="Model1.TravelOfferCountry">
             <End Role="TravelOffer" EntitySet="TravelOfferSet" />
-            <End Role="Country" EntitySet="CategorieSet" />
+            <End Role="Country" EntitySet="CategorySet" />
           </AssociationSet>
           <EntitySet Name="ExtendedInformationSet" EntityType="Model1.ExtendedInformation" />
           <AssociationSet Name="TravelOfferExtendedInformation" Association="Model1.TravelOfferExtendedInformation">
@@ -103,10 +105,12 @@
           <Property Type="Int32" Name="DayCount" Nullable="false" />
           <Property Type="String" Name="BoardType" Nullable="false" />
           <Property Type="Int32" Name="CategoryId" Nullable="false" />
-          <Property Type="String" Name="ImgPath" Nullable="false" />
+          <Property Type="String" Name="ImgPath" Nullable="true" />
           <NavigationProperty Name="ExtendedInformation" Relationship="Model1.TravelOfferExtendedInformation" FromRole="TravelOffer" ToRole="ExtendedInformation" />
+          <Property Type="Byte" Name="Image" Nullable="true" />
+          <Property Type="Boolean" Name="TopOffer" Nullable="false" />
         </EntityType>
-        <EntityType Name="Categorie">
+        <EntityType Name="Category">
           <Key>
             <PropertyRef Name="CategoryId" />
           </Key>
@@ -116,7 +120,7 @@
         </EntityType>
         <Association Name="TravelOfferCountry">
           <End Type="Model1.TravelOffer" Role="TravelOffer" Multiplicity="*" />
-          <End Type="Model1.Categorie" Role="Country" Multiplicity="1" />
+          <End Type="Model1.Category" Role="Country" Multiplicity="1" />
           <ReferentialConstraint>
             <Principal Role="Country">
               <PropertyRef Name="CategoryId" />
@@ -164,16 +168,18 @@
           <ScalarProperty Name="TravelType" ColumnName="TravelType" />
           <ScalarProperty Name="DayCount" ColumnName="DayCount" />
           <ScalarProperty Name="BoardType" ColumnName="BoardType" />
-          <ScalarProperty Name="CategoryId" ColumnName="CountryId" />
+          <ScalarProperty Name="CategoryId" ColumnName="CategoryId" />
           <ScalarProperty Name="ImgPath" ColumnName="ImgPath" />
+          <ScalarProperty Name="Image" ColumnName="Image" />
+          <ScalarProperty Name="TopOffer" ColumnName="TopOffer" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
-    <EntitySetMapping Name="CategorieSet">
-      <EntityTypeMapping TypeName="IsTypeOf(Model1.Categorie)">
-        <MappingFragment StoreEntitySet="CountrySet">
-          <ScalarProperty Name="CategoryId" ColumnName="CountryId" />
-          <ScalarProperty Name="CategoryName" ColumnName="CountryName" />
+    <EntitySetMapping Name="CategorySet">
+      <EntityTypeMapping TypeName="IsTypeOf(Model1.Category)">
+        <MappingFragment StoreEntitySet="CategorySet">
+          <ScalarProperty Name="CategoryId" ColumnName="CategoryId" />
+          <ScalarProperty Name="CategoryName" ColumnName="CategoryName" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
