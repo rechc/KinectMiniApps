@@ -49,19 +49,25 @@ namespace Database.DAO
 
         public TravelOffer SelectById(int offerId)
         {
-            using (var con = new Model1Container())
+            try
             {
+                using (var con = new Model1Container())
+                {
 
-                var obj = (from offer in con.TravelOfferSet
-                                         .Include("Category")
-                                         .Include("ExtendedInformation")
-                           where offerId == offer.OfferId
-                           select offer).FirstOrDefault();
-                if (obj == null)
-                    //throw new Exception("No entry found. Wrong Id");
-                    return CreateDefaultObject();
-                return obj;
-            } 
+                    var obj = (from offer in con.TravelOfferSet
+                                             .Include("Category")
+                                             .Include("ExtendedInformation")
+                               where offerId == offer.OfferId
+                               select offer).FirstOrDefault();
+                    if (obj == null)
+                        throw new Exception("No entry found. Wrong Id");
+                    return obj;
+                }
+            }
+            catch (Exception)
+            {
+                return CreateDefaultObject();
+            }
         }
 
         private TravelOffer CreateDefaultObject()
