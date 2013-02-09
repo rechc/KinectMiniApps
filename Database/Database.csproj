@@ -105,6 +105,7 @@
     <Compile Include="TravelOffer.cs">
       <DependentUpon>ModelObjects.tt</DependentUpon>
     </Compile>
+    <Compile Include="Utils\Helper.cs" />
   </ItemGroup>
   <ItemGroup>
     <EntityDeploy Include="Model1.edmx">

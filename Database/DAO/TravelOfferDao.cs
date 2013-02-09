@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Database.Utils;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -68,6 +69,21 @@ namespace Database.DAO
             {
                 return CreateDefaultObject();
             }
+        }
+
+        public TravelOffer SelectRandomTopOffer()
+        {
+            using(var con = new Model1Container())
+	        {
+                var topOfferlist = (from offer in con.TravelOfferSet
+                                           .Include("Category")
+                                           .Include("ExtendedInformation")
+                             where offer.TopOffer == true
+                             select offer).ToList();
+                if (topOfferlist.Count <= 0)
+                    throw new Exception("No top offer found");
+                return topOfferlist.ElementAt(Helper.GetRandomInteger(0, topOfferlist.Count));
+	        }
         }
 
         private TravelOffer CreateDefaultObject()
