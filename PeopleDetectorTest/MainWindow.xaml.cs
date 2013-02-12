@@ -22,7 +22,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         /// </summary>
         private KinectSensor sensor;
 
-        private PeopleDetector peopleDetector = new PeopleDetector();
+        private PeoplePositionDetector peopleDetector = new PeoplePositionDetector();
 
         /// <summary>
         /// Initializes a new instance of the MainWindow class.

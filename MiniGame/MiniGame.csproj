@@ -107,10 +107,6 @@
       <Project>{b2aace14-c7f6-4615-9f1f-228f13780687}</Project>
       <Name>GreenScreenLib</Name>
     </ProjectReference>
-    <ProjectReference Include="..\HtwKinect\HtwKinect.csproj">
-      <Project>{b658191c-9e09-44f6-a3a5-eb7a28e412d7}</Project>
-      <Name>HtwKinect</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

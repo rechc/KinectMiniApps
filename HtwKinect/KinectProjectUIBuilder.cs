@@ -26,7 +26,7 @@ namespace HtwKinect
             Node first = null;
             foreach (var frameworkElement in row)
             {
-                anchor = _loopList.AddToRight(anchor, frameworkElement);
+                anchor = _loopList.AddNewToRight(anchor, frameworkElement);
                 if (first == null)
                     first = anchor;
             }

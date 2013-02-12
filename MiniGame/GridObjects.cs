@@ -9,13 +9,13 @@ namespace MiniGame
 {
     class GridObjects
     {
-        public Image image;
+        public Grid image;
 
         public int column;
 
         public int row;
 
-        public GridObjects(Image image, int column, int row)
+        public GridObjects(Grid image, int column, int row)
         {
             this.image = image;
             this.column = column;

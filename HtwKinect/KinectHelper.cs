@@ -1,15 +1,20 @@
 ﻿using System;
 using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using AccessoryLib;
 using Microsoft.Kinect;
 using Microsoft.Kinect.Toolkit.FaceTracking;
 using System.Windows.Media;
+using Rect = System.Windows.Rect;
 
 namespace HtwKinect
 {
-    /*Diese Klasse verwaltet die elementaren Kinect-Resourcen*/
+    /// <summary>
+    /// Verwaltet die elementaren Kinect-Ressourcen.
+    /// </summary>
     public class KinectHelper 
     {
-
         private readonly KinectSensor _kinectSensor;
         private readonly FaceTracker _faceTracker;
         private FaceTrackFrame _faceFrame;
@@ -18,16 +23,17 @@ namespace HtwKinect
 
         public static KinectHelper Instance {
             get
-            {
+            { //test
                 if (_instance == null)
-                    _instance = new KinectHelper(new TransformSmoothParameters
-                    {
-                        Correction = 0,
-                        JitterRadius = 0,
-                        MaxDeviationRadius = 0.8f,
-                        Prediction = 0,
-                        Smoothing = 0.8f
-                    },
+                    _instance = new KinectHelper(
+                        new TransformSmoothParameters
+                        {
+                            Correction = 0,
+                            JitterRadius = 0,
+                            MaxDeviationRadius = 0.8f,
+                            Prediction = 0,
+                            Smoothing = 0.8f
+                        },
                         false,
                         ColorImageFormat.RgbResolution1280x960Fps12,
                         DepthImageFormat.Resolution640x480Fps30);
@@ -72,7 +78,9 @@ namespace HtwKinect
         }
 
 
-        /*Diese Methode sorgt dafür, dass immer zuverlaessig immer nur der Skeleton der selben Person zurückgegeben wird*/
+        /// <summary>
+        /// Sorgt dafür, dass immer zuverlaessig immer nur der Skeleton der selben Person zurückgegeben wird.
+        /// </summary>
         public Skeleton GetFixedSkeleton()
         {
             Skeleton skeleton = null;
@@ -99,7 +107,6 @@ namespace HtwKinect
                         else
                         {
                             _id = -1;
-
                         }
                     }
                 }
@@ -109,15 +116,11 @@ namespace HtwKinect
 
         private void AllFramesReady(object sender, AllFramesReadyEventArgs e)
         {
-            using (SkeletonFrame skeletonFrame = e.OpenSkeletonFrame())
+            using (ColorImageFrame colorImageFrame = e.OpenColorImageFrame())
             {
-                if (skeletonFrame != null)
+                using (DepthImageFrame depthImageFrame = e.OpenDepthImageFrame())
                 {
-                    if (Skeletons == null)
-                        Skeletons = new Skeleton[skeletonFrame.SkeletonArrayLength];
-                    skeletonFrame.CopySkeletonDataTo(Skeletons);
-                    //CorrectRoomCoords();
-                    using (ColorImageFrame colorImageFrame = e.OpenColorImageFrame())
+                    using (SkeletonFrame skeletonFrame = e.OpenSkeletonFrame())
                     {
                         if (colorImageFrame != null)
                         {
@@ -125,28 +128,38 @@ namespace HtwKinect
                                 ColorPixels = new byte[colorImageFrame.PixelDataLength];
                             colorImageFrame.CopyPixelDataTo(ColorPixels);
                             ColorImageFrame = colorImageFrame;
-                            using (DepthImageFrame depthImageFrame = e.OpenDepthImageFrame())
-                            {
-                                if (depthImageFrame != null)
-                                {
-                                    if (DepthImagePixels == null)
-                                        DepthImagePixels = new DepthImagePixel[depthImageFrame.PixelDataLength];
-                                    depthImageFrame.CopyDepthImagePixelDataTo(DepthImagePixels);
-                                    if (DepthPixels == null)
-                                        DepthPixels = new short[depthImageFrame.PixelDataLength];
-                                    depthImageFrame.CopyPixelDataTo(DepthPixels);
-                                    DepthImageFrame = depthImageFrame;
-                                    _faceFrame = null;
-                                    FireAllFramesDispatched();
-                                }
-                            }
                         }
+
+                        if (depthImageFrame != null)
+                        {
+                            if (DepthImagePixels == null)
+                                DepthImagePixels = new DepthImagePixel[depthImageFrame.PixelDataLength];
+                            depthImageFrame.CopyDepthImagePixelDataTo(DepthImagePixels);
+                            if (DepthPixels == null)
+                                DepthPixels = new short[depthImageFrame.PixelDataLength];
+                            depthImageFrame.CopyPixelDataTo(DepthPixels);
+                            DepthImageFrame = depthImageFrame;
+                            _faceFrame = null;
+                            
+                        }
+
+                        if (skeletonFrame != null)
+                        {
+                            if (Skeletons == null)
+                                Skeletons = new Skeleton[skeletonFrame.SkeletonArrayLength];
+                            skeletonFrame.CopySkeletonDataTo(Skeletons);
+                            //CorrectRoomCoords();
+                        }
+
+                        FireAllFramesDispatched();
                     }
                 }
             }
         }
 
-        /*Korrigiert die Raumverzerrung bei geneigter Kinect*/
+        /// <summary>
+        /// Korrigiert die Raumverzerrung bei geneigter Kinect.
+        /// </summary>
         private void CorrectRoomCoords()
         {
             if (_kinectSensor.IsRunning)
@@ -173,9 +186,10 @@ namespace HtwKinect
 
         private void FireAllFramesDispatched()
         {
-            if (ReadyEvent != null)
+            var handler = ReadyEvent;
+            if (handler != null)
             {
-                ReadyEvent(this, EventArgs.Empty);
+                handler(this, EventArgs.Empty);
             }
         }
 
@@ -186,24 +200,58 @@ namespace HtwKinect
             return _faceFrame;
         }
 
-        public Transform CreateTransform()
+        /// <summary>
+        /// Erstellt ein Transform-Objekt, das den Bildbereich auf den aktiven
+        /// Bereich des Tiefensensors begrenzt.
+        /// </summary>
+        /// <param name="frameworkElement"></param>
+        /// <param name="depthmm">Entfernung, die fuer das Mapping von
+        /// Tiefeninformation auf das Farbbild verwendet wird.
+        /// Standard: 1000</param>
+        public void SetTransform(FrameworkElement frameworkElement)
         {
+            int depthHandLeft = 1000;
+            int depthHandRight = 1000;
+            int depthHead = 1000;
+            int depthFoot = 1000;
+            Skeleton skeleton = GetFixedSkeleton();
+            if (skeleton != null)
+            {
+                depthHandLeft = (int)(skeleton.Joints[JointType.HandLeft].Position.Z * 1000);
+                depthHandRight = (int)(skeleton.Joints[JointType.HandLeft].Position.Z * 1000);
+                depthHead = (int)(skeleton.Joints[JointType.Head].Position.Z * 1000);
+                depthFoot = (int)(skeleton.Joints[JointType.FootLeft].Position.Z * 1000);
+            }
             var transforms = new TransformGroup();
             var mapper = Sensor.CoordinateMapper;
-            var pt0 = mapper.MapDepthPointToColorPoint(DepthImageFormat,
-                new DepthImagePoint() { X = 0, Y = 0, Depth = 1000 }, ColorImageFormat);
-            var pt1 = mapper.MapDepthPointToColorPoint(DepthImageFormat,
-                new DepthImagePoint()
-                {
-                    X = Sensor.DepthStream.FrameWidth,
-                    Y = Sensor.DepthStream.FrameHeight, Depth = 1000
-                },
-                ColorImageFormat);
-            transforms.Children.Add(new TranslateTransform(-pt0.X, -pt0.Y));
-            transforms.Children.Add(new ScaleTransform(
-                (double)(Sensor.ColorStream.FrameWidth + pt0.X) / (double)pt1.X,
-                (double)(Sensor.ColorStream.FrameHeight + pt0.Y) / (double)pt1.Y));
-            return transforms;
+            int w = Sensor.DepthStream.FrameWidth;
+            int h = Sensor.DepthStream.FrameHeight;
+            double y0 = mapper.MapDepthPointToColorPoint(
+                DepthImageFormat,
+                new DepthImagePoint { X = w/2, Y = 0, Depth = depthHead },
+                ColorImageFormat).Y;
+            double yh = mapper.MapDepthPointToColorPoint(
+                DepthImageFormat,
+                new DepthImagePoint { X = w/2, Y = h, Depth = depthFoot },
+                ColorImageFormat).Y;
+            double x0 = mapper.MapDepthPointToColorPoint(
+                DepthImageFormat,
+                new DepthImagePoint { X = 0, Y = h/2, Depth = depthHandLeft },
+                ColorImageFormat).X;
+            double xw = mapper.MapDepthPointToColorPoint(
+                DepthImageFormat,
+                new DepthImagePoint() { X = w, Y = h/2, Depth = depthHandRight },
+                ColorImageFormat).X;
+            x0 *= frameworkElement.ActualWidth / Sensor.ColorStream.FrameWidth;
+            xw *= frameworkElement.ActualWidth / Sensor.ColorStream.FrameWidth;
+            y0 *= frameworkElement.ActualHeight / Sensor.ColorStream.FrameHeight;
+            yh *= frameworkElement.ActualHeight / Sensor.ColorStream.FrameHeight;
+            double factorX = (frameworkElement.ActualWidth/(xw - x0));
+            double factorY = (frameworkElement.ActualHeight / (yh - y0));
+            transforms.Children.Add(new TranslateTransform(-x0 * factorX, -y0 * factorY));
+            transforms.Children.Add(new ScaleTransform(factorX, factorY));
+            frameworkElement.RenderTransform = transforms;
+            frameworkElement.Clip = new RectangleGeometry(new Rect(x0 * factorX, y0 * factorY, frameworkElement.ActualWidth / factorX, frameworkElement.ActualHeight / factorY));
         }
     } 
 }

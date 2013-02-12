@@ -1,5 +1,4 @@
-﻿using HtwKinect;
-using Microsoft.Kinect;
+﻿using Microsoft.Kinect;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -30,21 +29,26 @@ namespace MiniGame
         private FallWorker fallWorker;
 
         private Viewbox playerBox;
+        private Viewbox objectBox;
 
         private String path;
 
-        private const String winter = "Bilder/Winter";
-        private const String summer = "Bilder/Summer";
+        private const String winter = "images/Bilder/Winter";
+        private const String summer = "images/Bilder/Summer";
 
         private bool twoObjectsInOneColumn = false;
 
         private Thread fallThread;
 
-        private KinectHelper kh;
+        private KinectSensor _sensor;
 
         private Skeleton playerSkeleton = null;
 
         private bool play = false;
+
+        private GreenScreenControl.GreenScreenControl _gsc;
+        private DepthImagePixel[] _depthImagePixels;
+        private byte[] _colorPixels;
 
         /**
          * Konstruktor
@@ -55,19 +59,18 @@ namespace MiniGame
 	        // Keyboard Handler
             //this.KeyDown += new KeyEventHandler(KeyDownHandler);
             // Kinect Sensor initalisieren
-            InitializeSensor();
         }
 
-	    private void InitializeSensor()
+	    public void Start(KinectSensor sensor)
         {
-            kh = KinectHelper.Instance;
-            kh.ReadyEvent += this.MinigameSkeletonEvent;
+            _sensor = sensor;
         }
 
-        private void MinigameSkeletonEvent(object sender, EventArgs e)
+        public void MinigameSkeletonEvent(Skeleton activeSkeleton, DepthImagePixel[] depthImagePixels, byte[] colorPixels)
         {
-            playerSkeleton = kh.GetFixedSkeleton();
-
+            playerSkeleton = activeSkeleton;
+            _depthImagePixels = depthImagePixels;
+            _colorPixels = colorPixels;
             if (play && playerSkeleton != null)
             {
                 PlayerHandler();
@@ -77,6 +80,8 @@ namespace MiniGame
                 GameStart(1);
                 play = true;
             }
+            if (_gsc != null)
+                RenderGreenScreen();
         }
 
         /**
@@ -264,14 +269,16 @@ namespace MiniGame
 
         private int AddObject( int column)
         {
-            Image i = new Image();
-            BitmapImage bi = new BitmapImage();
-            bi.BeginInit();
-            bi.UriSource = new Uri(path + "/" + new Random().Next(1, 3) + ".png", UriKind.Relative);
-            bi.EndInit();
-            i.Source = bi;
-            MiniGameGrid.Children.Add(i);
+            Grid i = new Grid();
+            BitmapImage bi = new BitmapImage(new Uri(path + "/" + new Random().Next(1, 3) + ".png", UriKind.RelativeOrAbsolute));
+            ImageBrush ib = new ImageBrush();
+            ib.Stretch = Stretch.Uniform;
+            ib.ImageSource = bi;
+            i.Background = ib;
+          
             
+            MiniGameGrid.Children.Add(i);
+
             Grid.SetColumn(i, column);
             Grid.SetRow(i, 1);
             gridObjects.Add(new GridObjects(i, column, 1));
@@ -297,17 +304,16 @@ namespace MiniGame
          */
         private void AddPlayer()
         {
-            var gsc = new GreenScreenControl.GreenScreenControl(); 
-            gsc.RenderTransform = kh.CreateTransform();
-            gsc.Width = kh.Sensor.ColorStream.FrameWidth;
-            gsc.Height = kh.Sensor.ColorStream.FrameHeight;
-            gsc.Start(kh.Sensor, false);
+            _gsc = new GreenScreenControl.GreenScreenControl(); 
+            //gsc.RenderTransform = kh.CreateTransform();
+            _gsc.Width = _sensor.ColorStream.FrameWidth;
+            _gsc.Height = _sensor.ColorStream.FrameHeight;
+            _gsc.Start(_sensor, false);
 
             playerBox = new Viewbox();
-            playerBox.Child = gsc;
+            playerBox.Child = _gsc;
             playerBox.Stretch = Stretch.Fill;
 
-            kh.ReadyEvent += (sender, args) => RenderGreenScreen(gsc);
             this.playerBox.SetValue(Panel.ZIndexProperty, 1);
             MiniGameGrid.Children.Add(playerBox);
 
@@ -330,9 +336,9 @@ namespace MiniGame
 
         }
 
-        private void RenderGreenScreen(GreenScreenControl.GreenScreenControl greenScreenControl)
+        private void RenderGreenScreen()
         {
-            greenScreenControl.InvalidateVisual(kh.DepthImagePixels, kh.ColorPixels);
+            _gsc.InvalidateVisual(_depthImagePixels, _colorPixels);
         }
         /**
          * Löscht den Player vom Grid
@@ -347,11 +353,10 @@ namespace MiniGame
          */
         private void SetBackgroundImage()
         {
-            String p = System.IO.Directory.GetCurrentDirectory();
-            p = p.Replace("\\bin\\Debug", "");
 
             ImageBrush img = new ImageBrush();
-            img.ImageSource = (ImageSource)new ImageSourceConverter().ConvertFromString(p + "\\" + path + "\\" + "background.jpg");
+            //img.ImageSource = (ImageSource)new ImageSourceConverter().ConvertFromString(p + "\\" + path + "\\" + "background.jpg");
+            img.ImageSource = new BitmapImage(new Uri(path + "/background.jpg", UriKind.RelativeOrAbsolute));
             MiniGameGrid.Background = img;
         }
 

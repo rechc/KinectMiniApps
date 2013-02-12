@@ -5,20 +5,35 @@ using System.Linq;
 
 namespace PeopleDetector
 {
-    public class PeopleDetector
+    public class PeoplePositionDetector
     {
-        private Dictionary<int, List<Skeleton>> skeletonsDict = new Dictionary<int, List<Skeleton>>();
-        private const int maxNumberOfFramesInSkeletonList = 30;
 
-        // walking People constants
-        private const double walkingDistance = 0.22;
-        private const int compareLastFrames = 16; // nice to have: duration of gesture in milis instead of frames
+      /*  #region Event
+        public event EventHandler ChangeEvent;
 
-        public PeopleDetector()
+        private void FireChangeEvent()
+        {
+            if (ChangeEvent != null)
+            {
+                ChangeEvent(this, EventArgs.Empty);
+            }
+        }
+
+        #endregion Event*/
+        //
+
+        private Dictionary<int, List<SkeletonTimestamp>> _skeletonsDict = new Dictionary<int, List<SkeletonTimestamp>>();
+        private const int _maxNumberOfFramesInSkeletonList = 20;
+
+        // Define the walking gesture
+        private const double _walkingDistance = 0.22;
+        private const int _walkingDuration = 500; // Time in miliseconds
+
+        public PeoplePositionDetector()
         {
         }
 
-        public PeopleDetector(Skeleton[] skeletons)
+        public PeoplePositionDetector(Skeleton[] skeletons)
         {
             AddSkeletonsToDictionary(skeletons);
         }
@@ -28,8 +43,8 @@ namespace PeopleDetector
         /// </summary>
         public List<Skeleton> GetPositionOnlyPeople()
         {
-            return skeletonsDict.Values
-                    .Select(list => list[0])
+            return _skeletonsDict.Values
+                    .Select(list => list[0].Skeleton)
                     .Where(le => le.TrackingState == SkeletonTrackingState.PositionOnly).ToList();
         }
 
@@ -38,8 +53,8 @@ namespace PeopleDetector
         /// </summary>
         public List<Skeleton> GetTrackedPeople()
         {
-            return skeletonsDict.Values
-                .Select(list => list[0])
+            return _skeletonsDict.Values
+                .Select(list => list[0].Skeleton)
                 .Where(le => le.TrackingState == SkeletonTrackingState.Tracked).ToList();
 
             // alternativ mit LINQ
@@ -59,28 +74,36 @@ namespace PeopleDetector
             return recognizedPeople;
         }
 
+
         /// <summary>
         /// Returns a Skeleton-List of People which are currently walkting in front of the Kinect.
         /// </summary>
         public List<Skeleton> GetWalkingPeople()
         {
             List<Skeleton> walkingPeople = new List<Skeleton>();
-
-            foreach (List<Skeleton> skeletonList in skeletonsDict.Values)
+            foreach (List<SkeletonTimestamp> skeletonList in _skeletonsDict.Values)
             {
-                double distance = 0.0;
-
-                for (int i = 0; i < (skeletonList.Count < compareLastFrames ? skeletonList.Count : compareLastFrames) - 1; i++)
+                if (checkWalkingGesture(skeletonList))
                 {
-                    distance += Math.Abs(skeletonList[i].Position.X - skeletonList[i + 1].Position.X);
-                }
-
-                if (distance > walkingDistance)
-                {
-                    walkingPeople.Add(skeletonList[0]);
+                    walkingPeople.Add(skeletonList[0].Skeleton);
                 }
             }
             return walkingPeople;
+        }
+
+        private bool checkWalkingGesture(List<SkeletonTimestamp> skeletonList)
+        {
+            double currentDistance = 0.0;
+            int currentDuration = 0;
+            DateTime now = DateTime.Now;
+
+            for (int i = 0; i < skeletonList.Count -1 && currentDuration < _walkingDuration; i++)
+            {
+                currentDistance += Math.Abs(skeletonList[i].Skeleton.Position.X - skeletonList[i + 1].Skeleton.Position.X);
+                currentDuration = (now - skeletonList[i].Timestamp).Milliseconds;
+            }
+
+            return currentDistance > _walkingDistance;
         }
 
         /// <summary>
@@ -105,10 +128,10 @@ namespace PeopleDetector
         public List<Skeleton> GetLookingPeople()
         {
             List<Skeleton> lookingPeople = new List<Skeleton>();
-            foreach (List<Skeleton> skeletonList in skeletonsDict.Values)
+            foreach (List<SkeletonTimestamp> skeletonList in _skeletonsDict.Values)
             {
                 // newest Skeleton
-                Skeleton skeleton = skeletonList[0];
+                Skeleton skeleton = skeletonList[0].Skeleton;
 
                 if (skeleton.TrackingState != SkeletonTrackingState.Tracked)
                     continue;
@@ -132,6 +155,17 @@ namespace PeopleDetector
             }
             return lookingPeople;
         }
+
+        /// <summary>
+        /// returns true if people is Tracked
+        /// </summary>
+        /// <param name="TrackingId"></param>
+        /// <returns></returns>
+        public bool IsPeopleTracked(int TrackingId)
+        {
+            return GetTrackedPeople().Any(skel => skel.TrackingId == TrackingId);
+        }
+
 
         /// <summary>
         /// returns true if people with transfered TrackingId is currently walking
@@ -179,48 +213,50 @@ namespace PeopleDetector
         /// Key: SkeletonTrackingId
         /// Value: A list of Skeletons of the last x frames
         /// </summary>
-        public Dictionary<int, List<Skeleton>> SkeletonsDict
+        public Dictionary<int, List<SkeletonTimestamp>> SkeletonsDict
         {
             get
             {
-                return skeletonsDict;
+                return _skeletonsDict;
             }
         }
 
         /// <summary>
-        /// Store valid Skeletons with TrackingId as Key from last 30 Frames in a Dictionary. Newest Frame from a Skeleton is at Index 0
+        /// Store valid Skeletons with TrackingId as Key from last 20 Frames in a Dictionary. Newest Frame from a Skeleton is at Index 0
         /// </summary>
         private void AddSkeletonsToDictionary(Skeleton[] skeletons)
         {
-            foreach (Skeleton skeleton in skeletons)
-            {
-                if (skeleton.TrackingState != SkeletonTrackingState.NotTracked)
+            if (skeletons!=null){
+                foreach (Skeleton skeleton in skeletons)
                 {
-                    if (skeletonsDict.ContainsKey(skeleton.TrackingId))
+                    if (skeleton.TrackingState != SkeletonTrackingState.NotTracked)
                     {
-                        List<Skeleton> skeletonList = skeletonsDict[skeleton.TrackingId];
-                        if (skeletonList.Count >= maxNumberOfFramesInSkeletonList)
+                        if (_skeletonsDict.ContainsKey(skeleton.TrackingId))
                         {
-                            skeletonList.RemoveAt(skeletonList.Count - 1);
-                        }
-                        skeletonList.Insert(0, skeleton);
-                        skeletonsDict[skeleton.TrackingId] = skeletonList;
+                            List<SkeletonTimestamp> skeletonList = _skeletonsDict[skeleton.TrackingId];
+                            if (skeletonList.Count >= _maxNumberOfFramesInSkeletonList)
+                            {
+                                skeletonList.RemoveAt(skeletonList.Count - 1);
+                            }
+                            skeletonList.Insert(0, new SkeletonTimestamp(skeleton));
+                            _skeletonsDict[skeleton.TrackingId] = skeletonList;
 
-                    }
-                    else
-                    {
-                        List<Skeleton> skeletonList = new List<Skeleton>();
-                        skeletonList.Add(skeleton);
-                        skeletonsDict.Add(skeleton.TrackingId, skeletonList);
+                        }
+                        else
+                        {
+                            List<SkeletonTimestamp> skeletonList = new List<SkeletonTimestamp>();
+                            skeletonList.Add(new SkeletonTimestamp(skeleton));
+                            _skeletonsDict.Add(skeleton.TrackingId, skeletonList);
+                        }
                     }
                 }
             }
 
             // remove deprecated TrackingIds from Dictionary
-            if (skeletonsDict.Count > 0)
+            if (_skeletonsDict.Count > 0)
             {
                 List<int> removeSkeletonList = new List<int>();
-                foreach (KeyValuePair<int, List<Skeleton>> dictEntry in skeletonsDict)
+                foreach (KeyValuePair<int, List<SkeletonTimestamp>> dictEntry in _skeletonsDict)
                 {
                     Skeleton s = skeletons.FirstOrDefault((skeleton) => skeleton.TrackingId == dictEntry.Key);
                     if (s == null)
@@ -230,7 +266,7 @@ namespace PeopleDetector
                 }
                 foreach (int index in removeSkeletonList)
                 {
-                    skeletonsDict.Remove(index);
+                    _skeletonsDict.Remove(index);
                 }
             }
         }

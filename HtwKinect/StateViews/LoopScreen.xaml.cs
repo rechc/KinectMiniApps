@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System.IO;
+using System.Windows.Media.Imaging;
 using HandDetection;
 using LoopList;
-using System;
-using System.Windows;
-using System.Windows.Input;
 using Microsoft.Kinect;
+using System;
+using System.Collections.Generic;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace HtwKinect
 {
@@ -19,7 +22,7 @@ namespace HtwKinect
         private bool _mouseIsUp;
         private KinectProjectUiBuilder _kinectProjectUiBuilder;
 
-        private readonly List<int> _savedDirections = new List<int>();
+        private readonly List<Orientation> _savedDirections = new List<Orientation>();
         private bool _dragDirectionIsObvious;
 
         
@@ -35,13 +38,13 @@ namespace HtwKinect
             }
             catch (Exception exc)
             {
-                ExceptionTextBlock.Text = exc.Message + "\n\r" + exc.InnerException;
+                ExceptionTextBlock.Text = exc.Message + "\r\n" + exc.InnerException;
             }
         }
 
         private void InitList()
         {
-            MyLoopList.SetAutoDragOffset(0.20);
+            MyLoopList.SetAutoDragOffset(0.50);
             MyLoopList.SetDuration(new Duration(new TimeSpan(3000000))); //300m
             MyLoopList.Scrolled += MyLoopListOnScrolled;
             MyTextLoopList.Scrolled += MyTextLoopList_Scrolled;
@@ -51,10 +54,22 @@ namespace HtwKinect
             LoadPictures(new LocalPictureUiLoader());
         }
 
+
+
         private void LoadPictures(IUiLoader uiLoader)
         {
             _kinectProjectUiBuilder = new KinectProjectUiBuilder(MyLoopList, MyTextLoopList);
             uiLoader.LoadElementsIntoList(_kinectProjectUiBuilder);
+            //string[] paths = Directory.GetFiles(Environment.CurrentDirectory + @"\images\Top");
+            //Image img = new Image {Source = new BitmapImage(new Uri(paths[0], UriKind.RelativeOrAbsolute)) };
+            //Node node1 = MyLoopList.AddNewToLeft(null, img);
+            //img = new Image { Source = new BitmapImage(new Uri(paths[1], UriKind.RelativeOrAbsolute)) };
+            //Node node2 = MyLoopList.AddNewToLeft(null, img);
+            //node1.Right = node2;
+            //node2.Left = node1;
+            //node2.Below = node1;
+            //node2.Right = node1;
+            //MyTextLoopList.Add("lol");
         }
 
         private void InitKinect()
@@ -67,7 +82,7 @@ namespace HtwKinect
         private void HelperReady()
         {
             Skeleton skeleton = KinectHelper.Instance.GetFixedSkeleton();
-            //ProcessSkeleton(skeleton);
+            ProcessSkeleton(skeleton);
         }
 
         private void ProcessSkeleton(Skeleton skeleton)
@@ -132,66 +147,74 @@ namespace HtwKinect
         {
             try
             {
-                if (!_doDrag) goto exit;
+                if (!_doDrag)
+                    return;
                 if (!_oldMovePoint.HasValue)
                     _oldMovePoint = currentPos;
                 if (Math.Abs(_oldMovePoint.Value.X - currentPos.X) < 0.000000001 &&
-                    Math.Abs(_oldMovePoint.Value.Y - currentPos.Y) < 0.000000001) goto exit; //keine Bewegung?
-
+                    Math.Abs(_oldMovePoint.Value.Y - currentPos.Y) < 0.000000001)
+                    return; //keine Bewegung?
 
                 int xDistance = (int) (currentPos.X - _oldMovePoint.Value.X);
                 int yDistance = (int) (currentPos.Y - _oldMovePoint.Value.Y);
 
-                int dragDirection = Math.Abs(xDistance) >= Math.Abs(yDistance) ? 1 : 2;
+                Orientation dragDirection = Math.Abs(xDistance) >= Math.Abs(yDistance) ? Orientation.Horizontal : Orientation.Vertical;
                 if (!_dragDirectionIsObvious)
                 {
                     if (_savedDirections.Count < 4)
                     {
                         _savedDirections.Add(dragDirection);
-                        goto exit;
+                        return;
                     }
                     int xCount = 0;
                     int yCount = 0;
-                    foreach (int dir in _savedDirections)
+                    foreach (Orientation dir in _savedDirections)
                     {
-                        if (dir == 1)
-                            xCount++;
-                        else if (dir == 2)
-                            yCount++;
+                        switch (dir)
+                        {
+                            case Orientation.Horizontal:
+                                xCount++;
+                                break;
+                            case Orientation.Vertical:
+                                yCount++;
+                                break;
+                        }
                     }
                     int greater = Math.Max(xCount, yCount);
                     int lower = Math.Min(xCount, yCount);
                     if (lower/(double) greater < 0.15) //x- und y-Entwicklung unterscheiden sich deutlich.
                     {
                         _dragDirectionIsObvious = true;
-                        dragDirection = greater == xCount ? 1 : 2;
+                        dragDirection = greater == xCount ? Orientation.Horizontal : Orientation.Vertical;
                         KinectVibratingRectangle.Visibility = Visibility.Collapsed;
                     }
                     _savedDirections.Clear();
                     if (!_dragDirectionIsObvious)
                     {
                         KinectVibratingRectangle.Visibility = Visibility.Visible;
-                        goto exit;
+                        return;
                     }
                 }
 
                 bool mayDragOn = false;
-                if (dragDirection == 1)
+                if (dragDirection == Orientation.Horizontal)
                 {
                     mayDragOn = MyLoopList.HDrag(xDistance);
                 }
-                if (dragDirection == 2)
+                else
                 {
-                    if (!_waitForTextList)
+                    if (!_waitForTextList) //<-- nervt doch nur ... <-- nein das dient der synchronisation zwischen linkem text und looplist.
                         mayDragOn = MyLoopList.VDrag(yDistance);
                 }
                 if (!mayDragOn) _doDrag = false;
-                exit:
-                _oldMovePoint = currentPos;
             }
             catch (Exception exc)
             {
-                ExceptionTextBlock.Text = exc.Message + "\n\r" + exc.InnerException;
+                ExceptionTextBlock.Text = exc.Message + "\r\n" + exc.InnerException;
+            }
+            finally
+            {
+                _oldMovePoint = currentPos;
             }
         }
 
@@ -215,7 +238,7 @@ namespace HtwKinect
             }
             catch (Exception exc)
             {
-                ExceptionTextBlock.Text = exc.Message + "\n\r" + exc.InnerException;
+                ExceptionTextBlock.Text = exc.Message + "\r\n" + exc.InnerException;
             }
         }
 
@@ -233,6 +256,10 @@ namespace HtwKinect
             KinectFocusedRectangle.Visibility = Visibility.Visible;
         }
 
+        public void DelegateKeyEvent(KeyEventArgs e) 
+        {
+            OnKeyDown(e);
+        }
         /*Tastensteuerung der LoopList*/
         protected override void OnKeyDown(KeyEventArgs e)
         {
@@ -254,20 +281,15 @@ namespace HtwKinect
                         if (!_waitForTextList)
                             MyLoopList.AnimV(false);
                         break;
-                    case Key.Escape:
-                        Application.Current.Shutdown();
-                        break;
                     default:
                         //Environment.Exit(0);
-                        //Application.Current.Shutdown();
                         break;
                 }
-
                 e.Handled = true;
             }
             catch (Exception exc)
             {
-                ExceptionTextBlock.Text = exc.Message + "\n\r" + exc.InnerException;
+                ExceptionTextBlock.Text = exc.Message + "\r\n" + exc.InnerException;
             }
         }
 

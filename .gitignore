@@ -25,7 +25,6 @@ obj/
 _ReSharper*
 .Ds_Store
 /ipch/
-*.sdf
 *.vcxproj.user
 FaceTrackData.dll
 FaceTrackLib.dll

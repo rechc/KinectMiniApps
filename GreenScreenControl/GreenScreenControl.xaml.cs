@@ -62,9 +62,9 @@ namespace GreenScreenControl
             InitializeComponent();
         }
 
-        public void Start(KinectSensor sensor, bool antialiassing)
+        public void Start(KinectSensor sensor, bool antialiasing)
         {
-            _antialiasing = antialiassing;
+            _antialiasing = antialiasing;
             _sensor = sensor;
 
             _depthWidth = _sensor.DepthStream.FrameWidth;
@@ -88,7 +88,7 @@ namespace GreenScreenControl
         {
             base.OnRender(drawingContext);
             // Nicht ueber den Rand des Controls hinaus zeichnen.
-            drawingContext.PushClip(new RectangleGeometry(new Rect(0, 0, ActualWidth, ActualHeight)));
+            //drawingContext.PushClip(new RectangleGeometry(new Rect(0, 0, ActualWidth, ActualHeight)));
             if(_depthPixels != null && _colorPixels != null)
                 Antialiasing(drawingContext);
         }
@@ -130,6 +130,7 @@ namespace GreenScreenControl
                         // scale color coordinates to depth resolution
                         int colorInDepthX = colorImagePoint.X / _colorToDepthDivisor;
                         int colorInDepthY = colorImagePoint.Y / _colorToDepthDivisor;
+
 
                         // make sure the depth pixel maps to a valid point in color space
                         // check y > 0 and y < depthHeight to make sure we don't write outside of the array
@@ -185,12 +186,10 @@ namespace GreenScreenControl
             _playerOpacityMaskImage.WritePixels(
                 new Int32Rect(0, 0, _depthWidth, _depthHeight),
                 _greenScreenPixelData,
-                _depthWidth * ((_playerOpacityMaskImage.Format.BitsPerPixel + 7) / 8),
+                _depthWidth * ((_playerOpacityMaskImage.Format.BitsPerPixel) / 8),
                 0);
 
             drawingContext.PushOpacityMask(new ImageBrush { ImageSource = _playerOpacityMaskImage});
-            //drawingContext.PushTransform(new ScaleTransform { ScaleX = 1.075, ScaleY = 1.075 });
-            //drawingContext.PushTransform(new TranslateTransform {X = -ActualWidth*0.05, Y = -ActualHeight*0.085});
             drawingContext.DrawImage(_colorBitmap, new Rect(0, 0, ActualWidth, ActualHeight)); 
                 
         }
