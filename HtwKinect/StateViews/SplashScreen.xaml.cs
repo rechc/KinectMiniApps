@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Database;
+using Database.DAO;
+using System;
 using System.Windows.Controls;
 
 namespace HtwKinect.StateViews
@@ -11,6 +13,21 @@ namespace HtwKinect.StateViews
         public SplashScreen()
         {
             InitializeComponent();
+            SetSpashScreenOffer(new TravelOfferDao().SelectRandomTopOffer());
+        }
+
+        public void SetSpashScreenOffer(TravelOffer offer)
+        {
+            Category.Text = offer.Category.CategoryName;
+            Rating.Text = "Bewertung: " + offer.HotelRating;
+            HotelName.Text = offer.HotelName;
+            Place.Text = offer.Place;
+            PricePerPerson.Text = offer.PricePerPerson + "€\n pro Person";
+            TravelInfo.Text = offer.DayCount + " tägige " + offer.TravelType + ", inkl. " + offer.BoardType;
+            string extInfo = "";
+            foreach (ExtendedInformation information in offer.ExtendedInformation)
+                extInfo += ("-" + information.Information + "\n");
+            ExtendetInfo.Text = extInfo;
         }
 
         public Database.TravelOffer StopDisplay()
