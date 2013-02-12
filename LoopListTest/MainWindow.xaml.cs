@@ -39,7 +39,7 @@ namespace LoopListTest
 
         private void InitList()
         {
-            MyLoopList.SetAutoDragOffset(0.50);
+            MyLoopList.SetAutoDragOffset(0.5);
             MyLoopList.SetDuration(new Duration(new TimeSpan(3000000))); //300m
             MyLoopList.Scrolled += MyLoopListOnScrolled;
             MyTextLoopList.Scrolled += MyTextLoopList_Scrolled;
@@ -194,7 +194,7 @@ namespace LoopListTest
 
                 _doDrag = false;
                 _oldMovePoint = null;
-                MyLoopList.AnimBack(); //zurueckspringen des Bildes
+               // MyLoopList.AnimBack(); //zurueckspringen des Bildes
 
             }
             catch (Exception exc)
@@ -241,6 +241,20 @@ namespace LoopListTest
                     case Key.Down:
                         if (!_waitForTextList)
                             MyLoopList.AnimV(false);
+                        break;
+                    case Key.NumPad4:
+                        MyLoopList.HDragPercent(-0.25);
+                        break;
+                    case Key.NumPad6:
+                        MyLoopList.HDragPercent(0.25);
+                        break;
+                    case Key.NumPad8:
+                        if (!_waitForTextList)
+                            MyLoopList.VDragPercent(-0.25);
+                        break;
+                    case Key.NumPad2:
+                        if (!_waitForTextList)
+                            MyLoopList.VDragPercent(0.25);
                         break;
                     default:
                         //Environment.Exit(0);
