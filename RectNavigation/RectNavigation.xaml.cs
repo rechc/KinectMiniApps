@@ -1,17 +1,16 @@
 ﻿using System.Windows;
 using System.Windows.Media;
 using Microsoft.Kinect;
-using System.Linq;
 using System;
 using System.Windows.Media.Animation;
 
-namespace Microsoft.Samples.Kinect.SkeletonBasics
+namespace RectNavigation
 {
     public class SwipeArgs : EventArgs
     {
         public double Progress { get; set; }
     }
-    public partial class MainWindow
+    public partial class RectNavigation
     {
         /// <summary>
         /// Active Kinect sensor
@@ -47,7 +46,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         {
             if (SwipeLeftEvent != null)
             {
-                SwipeArgs e = new SwipeArgs {Progress = progress};
+                SwipeArgs e = new SwipeArgs { Progress = progress };
                 SwipeLeftEvent(this, e);
             }
         }
@@ -84,99 +83,95 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             _sensor = sensor;
         }
 
-        public void GestureRecognition(Skeleton[] skeletons)
+        public void GestureRecognition(Skeleton skel)
         {
-            if (skeletons.Count(t => t.TrackingState == SkeletonTrackingState.Tracked) >= 1)
+            Joint handRight = skel.Joints[JointType.HandRight];
+
+            _innerRect = GetInnerRect(skel);
+            _outerRect = GetOuterRect(_innerRect);
+            TransformRectangles();
+            TransformHand();
+            _handRightPoint = SkeletonPointToScreen(handRight.Position);
+
+            _isInInnerRect = _innerRect.Contains(_handRightPoint);
+            _isInOuterRect = _outerRect.Contains(_handRightPoint);
+
+            // Inneres Rechteck wurde betreten oder verlassen
+            if (_isInInnerRect != _wasInLastFrameInInnerRect)
             {
-                Skeleton skel = skeletons.First(s => s.TrackingState == SkeletonTrackingState.Tracked);
-                Joint handRight = skel.Joints[JointType.HandRight];
-                
-                _innerRect = GetInnerRect(skel);
-                _outerRect = GetOuterRect(_innerRect);
-                TransformRectangles();
-                TransformHand();
-                _handRightPoint = SkeletonPointToScreen(handRight.Position);
-
-                _isInInnerRect = _innerRect.Contains(_handRightPoint);
-                _isInOuterRect = _outerRect.Contains(_handRightPoint);
-
-                // Inneres Rechteck wurde betreten oder verlassen
-                if(_isInInnerRect != _wasInLastFrameInInnerRect)
+                // Inneres Rechteck wurde betreten
+                if (_isInInnerRect)
                 {
-                    // Inneres Rechteck wurde betreten
-                    if (_isInInnerRect)
-                    {
-                        // Fade-out: Save timestamp when enter the inner rect
-                        _enterInnerRectTimestamp = getTimeStamp();
-                        _wasInInnerRect = true;
-                    }
-                    
-                    _wasInLastFrameInInnerRect = _isInInnerRect;
+                    // Fade-out: Save timestamp when enter the inner rect
+                    _enterInnerRectTimestamp = getTimeStamp();
+                    _wasInInnerRect = true;
                 }
 
-                // Aeusseres Rechteck wurde betreten oder verlassen
-                if (_isInOuterRect != _wasInLastFrameInOuterRect)
+                _wasInLastFrameInInnerRect = _isInInnerRect;
+            }
+
+            // Aeusseres Rechteck wurde betreten oder verlassen
+            if (_isInOuterRect != _wasInLastFrameInOuterRect)
+            {
+                // Aeusseres Rechteck wurde betreten
+                if (_isInOuterRect)
                 {
-                    // Aeusseres Rechteck wurde betreten
-                    if (_isInOuterRect)
+                }
+                // Aeusseres Rechteck wurde verlassen
+                else
+                {
+                    if (_wasInInnerRect)
                     {
-                    }
-                    // Aeusseres Rechteck wurde verlassen
-                    else
-                    {
-                        if (_wasInInnerRect)
+                        if (_handRightPoint.X > _outerRect.TopRight.X) //leave right
                         {
-                            if (_handRightPoint.X > _outerRect.TopRight.X) //leave right
-                            {
-                                FireSwipeLeft(1);
-                            }
-                            else if (_handRightPoint.X < _outerRect.TopLeft.X) //leave left
-                            {
-                                FireSwipeRight(1);
-                            }
-                            else if (_handRightPoint.Y > _outerRect.BottomLeft.Y) //leave bottom
-                            {
-                                FireSwipeDown(1);
-                            }
-                            else if (_handRightPoint.Y < _outerRect.TopLeft.Y) //leave top
-                            {
-                                FireSwipeUp(1);
-                            }
-                            _wasInInnerRect = false;
+                            FireSwipeLeft(1);
                         }
+                        else if (_handRightPoint.X < _outerRect.TopLeft.X) //leave left
+                        {
+                            FireSwipeRight(1);
+                        }
+                        else if (_handRightPoint.Y > _outerRect.BottomLeft.Y) //leave bottom
+                        {
+                            FireSwipeDown(1);
+                        }
+                        else if (_handRightPoint.Y < _outerRect.TopLeft.Y) //leave top
+                        {
+                            FireSwipeUp(1);
+                        }
+                        _wasInInnerRect = false;
                     }
                 }
-                _wasInLastFrameInOuterRect = _isInOuterRect;
+            }
+            _wasInLastFrameInOuterRect = _isInOuterRect;
 
-                if (_isInOuterRect && !_isInInnerRect && _wasInInnerRect)
+            if (_isInOuterRect && !_isInInnerRect && _wasInInnerRect)
+            {
+                double swipeLeft = GetPercentageSwipeLeft(_handRightPoint);
+                double swipeRight = GetPercentageSwipeRight(_handRightPoint);
+                double swipeUp = GetPercentageSwipeTop(_handRightPoint);
+                double swipeDown = GetPercentageSwipeBottom(_handRightPoint);
+                if (swipeLeft >= 0)
                 {
-                    double swipeLeft = GetPercentageSwipeLeft(_handRightPoint);
-                    double swipeRight = GetPercentageSwipeRight(_handRightPoint);
-                    double swipeUp = GetPercentageSwipeTop(_handRightPoint);
-                    double swipeDown = GetPercentageSwipeBottom(_handRightPoint);
-                    if(swipeLeft >= 0)
-                    {
-                        FireSwipeLeft(swipeLeft);
-                    }
-                    if (swipeRight >= 0)
-                    {
-                        FireSwipeRight(swipeRight);
-                    }
-                    if (swipeUp >= 0)
-                    {
-                        FireSwipeUp(swipeUp);
-                    }
-                    if (swipeDown >= 0)
-                    {
-                        FireSwipeDown(swipeDown);
-                    }
+                    FireSwipeLeft(swipeLeft);
                 }
+                if (swipeRight >= 0)
+                {
+                    FireSwipeRight(swipeRight);
+                }
+                if (swipeUp >= 0)
+                {
+                    FireSwipeUp(swipeUp);
+                }
+                if (swipeDown >= 0)
+                {
+                    FireSwipeDown(swipeDown);
+                }
+            }
 
-                //Fade-out: If true, start fade animation
-                if (getTimeStamp() - _enterInnerRectTimestamp > RectFadeOutTimer && _isInInnerRect)
-                {
-                    _wasInInnerRect = false;
-                }
+            //Fade-out: If true, start fade animation
+            if (getTimeStamp() - _enterInnerRectTimestamp > RectFadeOutTimer && _isInInnerRect)
+            {
+                _wasInInnerRect = false;
             }
         }
 
@@ -202,7 +197,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
 
             double width = height;
 
-            return new Rect(x  + offsetX, y + offsetY, width, height);
+            return new Rect(x + offsetX, y + offsetY, width, height);
         }
 
         private Rect GetOuterRect(Rect innerRect)
@@ -255,7 +250,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             OuterRect.Height = _outerRect.Height;
         }
 
-  
+
 
         private double GetPercentageSwipeLeft(Point hand)
         {

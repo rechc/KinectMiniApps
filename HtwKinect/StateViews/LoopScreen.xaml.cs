@@ -36,7 +36,7 @@ namespace HtwKinect.StateViews
             }
             catch (Exception exc)
             {
-                ExceptionTextBlock.Text = exc.Message + "\r\n" + exc.InnerException;
+                //ExceptionTextBlock.Text = exc.Message + "\r\n" + exc.InnerException;
             }
         }
 
@@ -80,7 +80,8 @@ namespace HtwKinect.StateViews
         private void HelperReady()
         {
             Skeleton skeleton = KinectHelper.Instance.GetFixedSkeleton();
-            ProcessSkeleton(skeleton);
+            //ProcessSkeleton(skeleton);
+            //RectNavigation.GestureRecognition(KinectHelper.Instance.GetFixedSkeleton());
         }
 
         private void ProcessSkeleton(Skeleton skeleton)

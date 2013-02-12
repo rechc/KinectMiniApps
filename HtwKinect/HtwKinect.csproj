@@ -163,6 +163,10 @@
       <Project>{a6b20949-7a88-4e88-b857-f57f02546a54}</Project>
       <Name>PeopleDetector</Name>
     </ProjectReference>
+    <ProjectReference Include="..\RectNavigation\RectNavigation.csproj">
+      <Project>{e41cc635-31df-4243-bf47-dfa75d5c26da}</Project>
+      <Name>RectNavigation</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="FaceTrackData.dll">
