@@ -87,7 +87,11 @@ namespace HtwKinect
         {
             RemoveOldScreen();
             _currentScreen = ScreenMode.Splash;
-            if (_sscreen == null) { _sscreen = new StateViews.SplashScreen(); }
+            if (_sscreen == null) 
+            { 
+                _sscreen = new StateViews.SplashScreen();
+                _sscreen.StartNewOfferTimer(600000); //todo set better time intervall, now its 10 minutes
+            }
             Grid.SetRow(_sscreen, 1);
             GridX.Children.Add(_sscreen);
         }

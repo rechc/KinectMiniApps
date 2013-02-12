@@ -1,7 +1,19 @@
 ﻿<UserControl x:Class="HtwKinect.StateViews.SplashScreen"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Grid>
-        <Image Source="..\images\ScreenDummies\Screen1.jpg.png" HorizontalAlignment="Left" Margin="10,10,10,10" VerticalAlignment="Top" />
+    <Grid Height="788" Width="1165" Background="White" Unloaded="UnloadWindow">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0*"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <!--<Image Source="..\images\ScreenDummies\Screen1.jpg.png" HorizontalAlignment="Left" Margin="10,10,10,10" VerticalAlignment="Top" />-->
+        <TextBlock Name="Category" Text ="Category" FontWeight="Bold" Margin="325,46,291,579" FontSize="110" Grid.RowSpan="2" />
+        <TextBlock Name="Place" Text="Place" Margin="29,619,650,107" Grid.Row="1" FontSize="22" />
+        <TextBlock Name="Rating" Text="Rating" Margin="29,485,890,245" Grid.Row="1" FontSize="22" />
+        <TextBlock Name="PricePerPerson" Text="PricePerPerson" Margin="798,534,52,-62" Grid.Row="1" FontSize="48"/>
+        <TextBlock Name ="HotelName" Text="HotelName" Margin="29,548,734,169" Grid.Row="1" FontSize="48"/>
+        <TextBlock Name="TravelInfo" Text="TravelInfo" Margin="359,255,352,217" Grid.Row="1" FontSize="24" />
+        <TextBlock Name="ExtendetInfo" Text="ExtendetInfo" TextWrapping="Wrap" Margin="359,336,331,136" Grid.Row="1" FontSize="24" />
+
     </Grid>
 </UserControl>

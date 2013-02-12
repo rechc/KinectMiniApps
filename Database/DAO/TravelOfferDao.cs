@@ -82,7 +82,7 @@ namespace Database.DAO
                              select offer).ToList();
                 if (topOfferlist.Count <= 0)
                     throw new Exception("No top offer found");
-                return topOfferlist.ElementAt(Helper.GetRandomInteger(0, topOfferlist.Count));
+                return topOfferlist.ElementAt(Helper.GetRandomInteger(0, topOfferlist.Count -1));
 	        }
         }
 
