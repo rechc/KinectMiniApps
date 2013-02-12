@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E41CC635-31DF-4243-BF47-DFA75D5C26DA}</ProjectGuid>
+    <ProjectGuid>{0403DFBC-A535-4713-BD81-B824F69E7BC1}</ProjectGuid>
     <OutputType>library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>RectNavigation</RootNamespace>
@@ -48,12 +48,12 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="RectNavigation.xaml">
+    <Page Include="RectNavigationControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="RectNavigation.xaml.cs">
-      <DependentUpon>RectNavigation.xaml</DependentUpon>
+    <Compile Include="RectNavigationControl.xaml.cs">
+      <DependentUpon>RectNavigationControl.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

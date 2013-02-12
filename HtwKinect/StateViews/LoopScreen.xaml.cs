@@ -31,12 +31,14 @@ namespace HtwKinect.StateViews
             InitializeComponent();
             try
             {
+                
+                RectNavigationControl.Start(KinectHelper.Instance.Sensor);
                 InitList();
                 InitKinect();
             }
             catch (Exception exc)
             {
-                //ExceptionTextBlock.Text = exc.Message + "\r\n" + exc.InnerException;
+                ExceptionTextBlock.Text = exc.Message + "\r\n" + exc.InnerException;
             }
         }
 
@@ -80,8 +82,9 @@ namespace HtwKinect.StateViews
         private void HelperReady()
         {
             Skeleton skeleton = KinectHelper.Instance.GetFixedSkeleton();
-            //ProcessSkeleton(skeleton);
-            //RectNavigation.GestureRecognition(KinectHelper.Instance.GetFixedSkeleton());
+            //KinectHelper.Instance.SetTransform(RectNavigationControl);
+            if (skeleton != null)
+                RectNavigationControl.GestureRecognition(skeleton);
         }
 
         private void ProcessSkeleton(Skeleton skeleton)
