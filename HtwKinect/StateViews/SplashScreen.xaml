@@ -1,7 +1,7 @@
 ﻿<UserControl x:Class="HtwKinect.StateViews.SplashScreen"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Grid Height="788" Width="1165" Background="White">
+    <Grid Height="788" Width="1165" Background="White" Unloaded="UnloadWindow">
         <Grid.RowDefinitions>
             <RowDefinition Height="0*"/>
             <RowDefinition/>
