@@ -92,21 +92,26 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Bilder\Summer\1.png" />
-    <Resource Include="Bilder\Summer\2.png" />
-    <Resource Include="Bilder\Summer\background.jpg" />
-    <Resource Include="Bilder\Summer\background2.jpg" />
-    <Resource Include="Bilder\Summer\player.png" />
-    <Resource Include="Bilder\Winter\1.png" />
-    <Resource Include="Bilder\Winter\2.png" />
-    <Resource Include="Bilder\Winter\background.jpg" />
-    <Resource Include="Bilder\Winter\player.png" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\GreenScreenControl\GreenScreenLib.csproj">
       <Project>{b2aace14-c7f6-4615-9f1f-228f13780687}</Project>
       <Name>GreenScreenLib</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Bilder\Summer\SummerBackground1.jpg" />
+    <Resource Include="Bilder\Summer\SummerBackground2.jpg" />
+    <Resource Include="Bilder\Summer\SummerObject1.png" />
+    <Resource Include="Bilder\Summer\SummerObject2.png" />
+    <Resource Include="Bilder\Summer\SummerObject3.png" />
+    <Resource Include="Bilder\Summer\SummerObject4.png" />
+    <Resource Include="Bilder\Summer\SummerObject5.png" />
+    <Resource Include="Bilder\Summer\SummerObject6.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Bilder\Winter\WinterBackground1.jpg" />
+    <Resource Include="Bilder\Winter\WinterBackground2.jpg" />
+    <Resource Include="Bilder\Winter\WinterObject1.png" />
+    <Resource Include="Bilder\Winter\WinterObject2.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

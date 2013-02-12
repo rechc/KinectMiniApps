@@ -29,12 +29,16 @@ namespace MiniGame
         private FallWorker fallWorker;
 
         private Viewbox playerBox;
-        private Viewbox objectBox;
 
         private String path;
 
-        private const String winter = "images/Bilder/Winter";
-        private const String summer = "images/Bilder/Summer";
+        private const String winter = "images/Bilder/Winter/Winter";
+        private const String summer = "images/Bilder/Summer/Summer";
+        private const String street = "images/Bilder/Street/Street";
+        private const String mountain = "images/Bilder/Mountain/Mountain";
+
+        //private const String winter = "Bilder/Winter/Winter";
+        //private const String summer = "Bilder/Summer/Summer";
 
         private bool twoObjectsInOneColumn = false;
 
@@ -69,19 +73,27 @@ namespace MiniGame
         public void MinigameSkeletonEvent(Skeleton activeSkeleton, DepthImagePixel[] depthImagePixels, byte[] colorPixels)
         {
             playerSkeleton = activeSkeleton;
-            _depthImagePixels = depthImagePixels;
-            _colorPixels = colorPixels;
-            if (play && playerSkeleton != null)
+            if (playerSkeleton == null)
             {
-                PlayerHandler();
+                GameStop();
             }
-            if (!play && playerSkeleton != null)
+            else
             {
-                GameStart(1);
-                play = true;
+
+                _depthImagePixels = depthImagePixels;
+                _colorPixels = colorPixels;
+                if (play && playerSkeleton != null)
+                {
+                    PlayerHandler();
+                }
+                if (!play && playerSkeleton != null)
+                {
+                    GameStart(new Random().Next(0, 4));
+                    play = true;
+                }
+                if (_gsc != null)
+                    RenderGreenScreen();
             }
-            if (_gsc != null)
-                RenderGreenScreen();
         }
 
         /**
@@ -138,6 +150,12 @@ namespace MiniGame
                     break;
                 case 1:
                     path = summer;
+                    break;
+                case 2:
+                    path = mountain;
+                    break;
+                case 3:
+                    path = street;
                     break;
             }
             twoObjectsInOneColumn = false;
@@ -270,7 +288,7 @@ namespace MiniGame
         private int AddObject( int column)
         {
             Grid i = new Grid();
-            BitmapImage bi = new BitmapImage(new Uri(path + "/" + new Random().Next(1, 3) + ".png", UriKind.RelativeOrAbsolute));
+            BitmapImage bi = new BitmapImage(new Uri(path + "Object" + new Random().Next(1, 7) + ".png", UriKind.RelativeOrAbsolute));
             ImageBrush ib = new ImageBrush();
             ib.Stretch = Stretch.Uniform;
             ib.ImageSource = bi;
@@ -356,7 +374,7 @@ namespace MiniGame
 
             ImageBrush img = new ImageBrush();
             //img.ImageSource = (ImageSource)new ImageSourceConverter().ConvertFromString(p + "\\" + path + "\\" + "background.jpg");
-            img.ImageSource = new BitmapImage(new Uri(path + "/background.jpg", UriKind.RelativeOrAbsolute));
+            img.ImageSource = new BitmapImage(new Uri(path + "Background" + new Random().Next(1, 3) + ".jpg", UriKind.RelativeOrAbsolute));
             MiniGameGrid.Background = img;
         }
 
