@@ -151,7 +151,10 @@ namespace MiniGame
         private void GameStop()
         {
             this.Status.Visibility = Visibility.Visible;
-            _fallThread.Abort();
+            if (_fallThread != null)
+            {
+                _fallThread.Abort();
+            }
         }
 
         /**
@@ -339,7 +342,7 @@ namespace MiniGame
 
         private void RenderGreenScreen()
         {
-            _gsc.InvalidateVisual(_depthImagePixels, _colorPixels);
+            _gsc.RenderImageData(_depthImagePixels, _colorPixels);
         }
         
         /**

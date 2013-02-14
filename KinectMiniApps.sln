@@ -47,7 +47,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InfoBanner", "InfoBanner\In
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoopListTest", "LoopListTest\LoopListTest.csproj", "{47B7AF20-7938-40D6-8EA8-30B425ADC275}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RectNavigation", "RectNavigation\RectNavigation.csproj", "{057D7DAB-A640-483E-8F0B-700767F663A3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RectNavigation", "RectNavigation\RectNavigation.csproj", "{0403DFBC-A535-4713-BD81-B824F69E7BC1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateRealDB", "CreateRealDB\CreateRealDB.csproj", "{E87F4F4C-749F-4A09-8915-0DBB0BFD1D2B}"
 EndProject
@@ -323,6 +323,16 @@ Global
 		{049FF75C-AF23-4AB1-A59A-86F61060F408}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{049FF75C-AF23-4AB1-A59A-86F61060F408}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{049FF75C-AF23-4AB1-A59A-86F61060F408}.Release|x86.ActiveCfg = Release|Any CPU
+		{0403DFBC-A535-4713-BD81-B824F69E7BC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0403DFBC-A535-4713-BD81-B824F69E7BC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0403DFBC-A535-4713-BD81-B824F69E7BC1}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{0403DFBC-A535-4713-BD81-B824F69E7BC1}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{0403DFBC-A535-4713-BD81-B824F69E7BC1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0403DFBC-A535-4713-BD81-B824F69E7BC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0403DFBC-A535-4713-BD81-B824F69E7BC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0403DFBC-A535-4713-BD81-B824F69E7BC1}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{0403DFBC-A535-4713-BD81-B824F69E7BC1}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{0403DFBC-A535-4713-BD81-B824F69E7BC1}.Release|x86.ActiveCfg = Release|Any CPU
 		{D583B325-E9EC-459F-BE46-95440C51EB97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D583B325-E9EC-459F-BE46-95440C51EB97}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D583B325-E9EC-459F-BE46-95440C51EB97}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
