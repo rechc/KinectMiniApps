@@ -26,6 +26,11 @@ namespace HtwKinect
                 BuildInfoBox(grid, i);
                 list.Add(grid);
             }
+            MiniGame.MainWindow mg = new MiniGame.MainWindow();
+            mg.Start(KinectHelper.Instance.Sensor);
+            KinectHelper.Instance.ReadyEvent += (sender, _) => Instance_ReadyEvent(mg);
+            list.Add(mg);
+
             kinectProjectUiBuilder.AddRow("Top", list);
 
             list = new List<FrameworkElement>();
@@ -54,6 +59,12 @@ namespace HtwKinect
                 list.Add(grid);
             }
             kinectProjectUiBuilder.AddRow("Snow", list);
+        }
+
+        void Instance_ReadyEvent(MiniGame.MainWindow mg)
+        {
+            mg.MinigameSkeletonEvent(KinectHelper.Instance.GetFixedSkeleton(), KinectHelper.Instance.DepthImagePixels, KinectHelper.Instance.ColorPixels);
+            TansformFrameworkElement(mg);
         }
 
         #region BackgroundPicture
@@ -90,6 +101,7 @@ namespace HtwKinect
 
         private void RenderGreenScreen(GreenScreenControl.GreenScreenControl greenScreenControl)
         {
+
             if (((FrameworkElement)greenScreenControl.Parent).Parent == null)
             {
                 return; //nur auf dingen die auch angezeigt werden bitte, danke.
