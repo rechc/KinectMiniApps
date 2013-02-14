@@ -7,8 +7,8 @@
              d:DesignHeight="650" Width="280">
     <!--<Grid Background="White" Opacity="0.60" IsHitTestVisible="True" Width="100" HorizontalAlignment="Left" VerticalAlignment="Top">-->
     <StackPanel Background="SlateGray" Opacity="0.60" IsHitTestVisible="True" Width="280" HorizontalAlignment="Left" Margin="0,0,0,-0">
-        <TextBlock x:Name="Category" Text="Categorie" HorizontalAlignment="Left" Margin="10,20,0,0" Height="50"  Width="230" FontSize="40" FontWeight="Bold" />
-        <TextBlock x:Name="Place" Text="Place" HorizontalAlignment="Left" Margin="10,0,0,0" Width="241" FontSize="18" Height="31"/>
+        <TextBlock x:Name="Place" Text="Place" HorizontalAlignment="Left" Margin="10,20,0,0" Height="50"  Width="230" FontSize="40" FontWeight="Bold" />
+        <TextBlock x:Name="Category" Text="Categorie" HorizontalAlignment="Left" Margin="10,0,0,0" Width="241" FontSize="18" Height="31"/>
         <TextBlock x:Name="Rating" Text="Rating" HorizontalAlignment="Left" Height="33" Margin="10,0,0,0" Width="142"/>
         <TextBlock x:Name ="HotelName" Text="HotelName" HorizontalAlignment="Left" Height="64" Margin="10,0,0,0" Width="230" FontSize="24" FontWeight="Bold"/>
         <TextBlock x:Name ="PricePerPerson" Text="PricePerPerson" HorizontalAlignment="Left" Margin="10,0,0,0" Height="93" Width="230" FontSize="24" FontStyle="Italic" FontWeight="Bold"/>

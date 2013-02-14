@@ -14,7 +14,7 @@ namespace CreateRealDB
 
         private void CreateCountryEntries()
         {
-            //string[] countries = {"Spanien", "Deutschland", "USA", "Mallorca", "Frankreich"};
+
             foreach (var countryName in Enum.GetNames(typeof(CategoryEnum)))
             {
                 if (countryName == "City")

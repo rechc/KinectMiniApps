@@ -7,8 +7,8 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <!--<Image Source="..\images\ScreenDummies\Screen1.jpg.png" HorizontalAlignment="Left" Margin="10,10,10,10" VerticalAlignment="Top" />-->
-        <TextBlock Name="Category" Text ="Category" FontWeight="Bold" Margin="325,46,291,579" FontSize="110" Grid.RowSpan="2" />
-        <TextBlock Name="Place" Text="Place" Margin="29,619,650,107" Grid.Row="1" FontSize="22" />
+        <TextBlock Name="Place" Text ="Place" FontWeight="Bold" Margin="325,46,291,579" FontSize="110" Grid.RowSpan="2" />
+        <TextBlock Name="Category" Text="Category" Margin="29,619,650,107" Grid.Row="1" FontSize="22" />
         <TextBlock Name="Rating" Text="Rating" Margin="29,485,890,245" Grid.Row="1" FontSize="22" />
         <TextBlock Name="PricePerPerson" Text="PricePerPerson" Margin="798,534,52,-62" Grid.Row="1" FontSize="48"/>
         <TextBlock Name="HotelName" Text="HotelName" Margin="29,548,734,169" Grid.Row="1" FontSize="48"/>
