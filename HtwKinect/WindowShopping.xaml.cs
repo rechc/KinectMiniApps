@@ -167,7 +167,7 @@ namespace HtwKinect
          */ 
         private void PeopleDetectorSkeletonEvent(object sender, EventArgs e)
         {
-            _peopleDetector.Skeletons = KinectHelper.Instance.Skeletons;
+            _peopleDetector.TrackSkeletons(KinectHelper.Instance.Skeletons);
             OutputLabelX.Content =
             "Erkannt:" + _peopleDetector.GetPositionOnlyPeople().Count +
                 " Tracked:" + _peopleDetector.GetTrackedPeople().Count +
