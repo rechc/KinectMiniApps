@@ -15,17 +15,13 @@ namespace GenderDetector
     public partial class MainWindow
     {
         private KinectSensor _kinectSensor;
-        private WriteableBitmap colorBitmap;
+        private WriteableBitmap _colorBitmap;
+        private FCClient _client;
+        private FCResult _result;
+        private Skeleton _activeSkeleton;
 
-        private FCClient client;
-
-        private FCResult result;
-
-        private String gender { get; set; }
-
-        private String confidence { get; set; }
-
-        private Skeleton activeSkeleton;
+        public String Gender { get; set; }
+        public String Confidence { get; set; }
 
         public MainWindow()
         {
@@ -37,8 +33,8 @@ namespace GenderDetector
         public void Start(KinectSensor sensor)
         {
             _kinectSensor = sensor;
-            this.colorBitmap = new WriteableBitmap(sensor.ColorStream.FrameWidth, sensor.ColorStream.FrameHeight, 96.0, 96.0, PixelFormats.Bgr32, null);
-            this.Image.Source = this.colorBitmap;
+            _colorBitmap = new WriteableBitmap(sensor.ColorStream.FrameWidth, sensor.ColorStream.FrameHeight, 96.0, 96.0, PixelFormats.Bgr32, null);
+            this.Image.Source = _colorBitmap;
         }
 
         /**
@@ -48,12 +44,12 @@ namespace GenderDetector
         {
             // Write the pixel data into our bitmap
 
-            this.colorBitmap.WritePixels(
-                new Int32Rect(0, 0, this.colorBitmap.PixelWidth, this.colorBitmap.PixelHeight),
+            _colorBitmap.WritePixels(
+                new Int32Rect(0, 0, _colorBitmap.PixelWidth, _colorBitmap.PixelHeight),
                 colorImagePoints,
-                this.colorBitmap.PixelWidth * sizeof(int),
+                _colorBitmap.PixelWidth * sizeof(int),
                 0);
-            activeSkeleton = skeleton;
+            _activeSkeleton = skeleton;
 
         }
 
@@ -71,10 +67,10 @@ namespace GenderDetector
                 String path = "";
                 Dispatcher.BeginInvoke((Action)(() =>
                 {
-                    CroppedBitmap colorBitmap = CropBitmap(this.colorBitmap);
+                    CroppedBitmap colorBitmap = CropBitmap(_colorBitmap);
                     if (colorBitmap == null)
                     {
-                        path = SaveScreenshot(this.colorBitmap);
+                        path = SaveScreenshot(_colorBitmap);
                     }
                     else
                     {
@@ -103,8 +99,8 @@ namespace GenderDetector
          */
         private void InitializeService()
         {
-            client = new FCClient("5f228f0a0ce14e86a7c901f62ca5a569", "1231e9f2e95d4d90adf436e3de20f0f6");
-            result = client.Account.EndAuthenticate(client.Account.BeginAuthenticate(null, null));
+            _client = new FCClient("5f228f0a0ce14e86a7c901f62ca5a569", "1231e9f2e95d4d90adf436e3de20f0f6");
+            _result = _client.Account.EndAuthenticate(_client.Account.BeginAuthenticate(null, null));
         }
 
         /**
@@ -116,10 +112,10 @@ namespace GenderDetector
             int height = 120;
 
             // Ersten Player selektieren
-            if (activeSkeleton != null)
+            if (_activeSkeleton != null)
             {
                 // Punkte des Kopfes auf ColorPoints mappen
-                var point = _kinectSensor.CoordinateMapper.MapSkeletonPointToColorPoint(activeSkeleton.Joints[JointType.Head].Position, ColorImageFormat.RgbResolution640x480Fps30);
+                var point = _kinectSensor.CoordinateMapper.MapSkeletonPointToColorPoint(_activeSkeleton.Joints[JointType.Head].Position, ColorImageFormat.RgbResolution640x480Fps30);
                     
                 // Überprüfung das nicht außerhalb des Bildes ausgenschnitten wird
                 if ((int)point.X - 70 <= 0 || (int)point.Y - 70 >= 470)
@@ -129,7 +125,7 @@ namespace GenderDetector
                     new Int32Rect((int)point.X - 70, (int)point.Y - 70, width, height + 20);
 
                 // Neues Bild erstellen und zurückliefern
-                return new CroppedBitmap(this.colorBitmap, cropRect);
+                return new CroppedBitmap(_colorBitmap, cropRect);
             }
             return null;
         }
@@ -167,7 +163,7 @@ namespace GenderDetector
         private void CalculateGender(String path)
         {
             Stream stream = System.IO.File.OpenRead(path);
-            result = client.Faces.EndDetect(client.Faces.BeginDetect(null, new Stream[] { stream }, Detector.Normal, Attributes.Gender, null, null));
+            _result = _client.Faces.EndDetect(_client.Faces.BeginDetect(null, new Stream[] { stream }, Detector.Normal, Attributes.Gender, null, null));
             stream.Close();
         }
 
@@ -176,16 +172,16 @@ namespace GenderDetector
          */
         private void SetAttributes()
         {
-            if (result.Photos[0].Tags.Count == 0)
+            if (_result.Photos[0].Tags.Count == 0)
             {
                 this.GenderText.Text = "No face tracked";
             }
             else
             {
-                this.gender = result.Photos[0].Tags[0].Attributes.Gender.Value + "";
-                this.confidence = result.Photos[0].Tags[0].Attributes.Gender.Confidence + "";
+                Gender = _result.Photos[0].Tags[0].Attributes.Gender.Value + "";
+                Confidence = _result.Photos[0].Tags[0].Attributes.Gender.Confidence + "";
 
-                this.GenderText.Text = this.gender + "\t" + this.confidence;
+                this.GenderText.Text = Gender + "\t" + Confidence;
             }
         }
     }
