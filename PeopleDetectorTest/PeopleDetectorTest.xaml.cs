@@ -1,5 +1,5 @@
 ﻿//------------------------------------------------------------------------------
-// <copyright file="MainWindow.xaml.cs" company="Microsoft">
+// <copyright file="PeopleDetectorTest.xaml.cs" company="Microsoft">
 //     Copyright (c) Microsoft Corporation.  All rights reserved.
 // </copyright>
 //------------------------------------------------------------------------------
@@ -13,9 +13,9 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
     using PeopleDetector;
 
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for PeopleDetectorTest.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class PeopleDetectorTest : Window
     {
         /// <summary>
         /// Active Kinect sensor
@@ -25,9 +25,9 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         private PeoplePositionDetector peopleDetector = new PeoplePositionDetector();
 
         /// <summary>
-        /// Initializes a new instance of the MainWindow class.
+        /// Initializes a new instance of the PeopleDetectorTest class.
         /// </summary>
-        public MainWindow()
+        public PeopleDetectorTest()
         {
             InitializeComponent();
         }
@@ -41,7 +41,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         {
             // Look through all sensors and start the first connected one.
             // This requires that a Kinect is connected at the time of app startup.
-            // To make your app robust against plug/unplug, 
+            // To make your app robust against plug/unplug,
             // it is recommended to use KinectSensorChooser provided in Microsoft.Kinect.Toolkit
             foreach (var potentialSensor in KinectSensor.KinectSensors)
             {
@@ -99,7 +99,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             Skeleton[] skeletons = new Skeleton[0];
 
             using (SkeletonFrame skeletonFrame = e.OpenSkeletonFrame())
-            {                
+            {
                 if (skeletonFrame != null)
                 {
                     skeletons = new Skeleton[skeletonFrame.SkeletonArrayLength];

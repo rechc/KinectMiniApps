@@ -11,9 +11,9 @@ using RectNavigation;
 namespace HtwKinect.StateViews
 {
     /// <summary>
-    /// Interaktionslogik für MainWindow.xaml
+    /// Interaktionslogik für LoopScreen.xaml
     /// </summary>
-    public partial class MainWindow : UserControl, ISwitchableUserControl
+    public partial class LoopScreen : UserControl, ISwitchableUserControl
     {
         private Point _oldMovePoint = new Point(0, 0);
         private bool _doDrag;
@@ -23,8 +23,8 @@ namespace HtwKinect.StateViews
 
         private readonly List<Orientation> _savedDirections = new List<Orientation>();
         private bool _dragDirectionIsObvious;
-  
-        public MainWindow()
+
+        public LoopScreen()
         {
             try
             {

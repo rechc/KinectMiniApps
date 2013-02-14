@@ -1,5 +1,5 @@
 ﻿//------------------------------------------------------------------------------
-// <copyright file="MainWindow.xaml.cs" company="Microsoft">
+// <copyright file="AccessorySampleMain.xaml.cs" company="Microsoft">
 //     Copyright (c) Microsoft Corporation.  All rights reserved.
 // </copyright>
 //------------------------------------------------------------------------------
@@ -16,9 +16,9 @@ namespace AccessorySample
     using AccessoryLib;
 
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for AccessorySampleMain.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class AccessorySampleMain : Window
     {
         /// <summary>
         /// Active Kinect sensor
@@ -36,9 +36,9 @@ namespace AccessorySample
         private byte[] colorPixels;
 
         /// <summary>
-        /// Initializes a new instance of the MainWindow class.
+        /// Initializes a new instance of the AccessorySample class.
         /// </summary>
-        public MainWindow()
+        public AccessorySampleMain()
         {
             InitializeComponent();
         }
@@ -52,7 +52,7 @@ namespace AccessorySample
         {
             // Look through all sensors and start the first connected one.
             // This requires that a Kinect is connected at the time of app startup.
-            // To make your app robust against plug/unplug, 
+            // To make your app robust against plug/unplug,
             // it is recommended to use KinectSensorChooser provided in Microsoft.Kinect.Toolkit
             foreach (var potentialSensor in KinectSensor.KinectSensors)
             {

@@ -19,11 +19,11 @@ using System.Windows.Shapes;
 namespace MiniGameTest
 {
     /// <summary>
-    /// Interaktionslogik für MainWindow.xaml
+    /// Interaktionslogik für MiniGameTestMain.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MiniGameTestMain : Window
     {
-        public MainWindow()
+        public MiniGameTestMain()
         {
             InitializeComponent();
         }

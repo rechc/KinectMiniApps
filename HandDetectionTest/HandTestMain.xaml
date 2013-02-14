@@ -1,7 +1,7 @@
-﻿<Window x:Class="HandDetectionTest.MainWindow"
+﻿<Window x:Class="HandDetectionTest.HandTestMain"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="550" Width="925" Loaded="WindowLoaded" Closing="WindowClosing">
+        Title="Hand Detection Test" Height="550" Width="925" Loaded="WindowLoaded" Closing="WindowClosing">
     <Grid>
         <TextBox Name="HandDescriptionTBox" HorizontalAlignment="Left" Height="63" Margin="49,447,0,0" TextWrapping="Wrap" Text="Open or close your hand" VerticalAlignment="Top" Width="456" FontSize="36"/>
         <Image Name="DepthImage" Height="166" Margin="35,43,524,0" VerticalAlignment="Top"/>

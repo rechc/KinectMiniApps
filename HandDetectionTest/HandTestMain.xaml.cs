@@ -22,9 +22,9 @@ using Microsoft.Kinect;
 namespace HandDetectionTest
 {
     /// <summary>
-    /// Interaktionslogik für MainWindow.xaml
+    /// Interaktionslogik für HandTestMain.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class HandTestMain : Window
     {
 
         public SkeletonPoint RightHand { get; set; }
@@ -54,7 +54,7 @@ namespace HandDetectionTest
         private Skeleton[] skeletons = new Skeleton[0];
 
         //init gui
-        public MainWindow()
+        public HandTestMain()
         {
             InitializeComponent();
         }
@@ -66,7 +66,7 @@ namespace HandDetectionTest
 
             // Look through all sensors and start the first connected one.
             // This requires that a Kinect is connected at the time of app startup.
-            // To make your app robust against plug/unplug, 
+            // To make your app robust against plug/unplug,
             // it is recommended to use KinectSensorChooser provided in Microsoft.Kinect.Toolkit
             foreach (var potentialSensor in KinectSensor.KinectSensors)
             {
@@ -210,7 +210,7 @@ namespace HandDetectionTest
 
 
                                 if ((handPos.X + HandTracker.EpsilonTolerance + handausschnitt / 2) > 640 || handPos.X - HandTracker.EpsilonTolerance - handausschnitt / 2 <= 0) return; // epsilon +2 wegen möglichem -1  von handPosX/Y
-                                if ((handPos.Y + HandTracker.EpsilonTolerance + handausschnitt / 2) > 480 || handPos.Y - HandTracker.EpsilonTolerance - handausschnitt / 2 <= 0) return; 
+                                if ((handPos.Y + HandTracker.EpsilonTolerance + handausschnitt / 2) > 480 || handPos.Y - HandTracker.EpsilonTolerance - handausschnitt / 2 <= 0) return;
 
                                 ImageSource imgRightHandSource =
                                     new CroppedBitmap((BitmapSource)DepthImage.Source.CloneCurrentValue(), new Int32Rect(
@@ -220,7 +220,7 @@ namespace HandDetectionTest
                                 RightHandImage.Source = imgRightHandSource; //paints
 
                                 DepthImagePixel[] depthPixels = new DepthImagePixel[sensor.DepthStream.FramePixelDataLength];
-                                depthFrame.CopyDepthImagePixelDataTo(depthPixels);         
+                                depthFrame.CopyDepthImagePixelDataTo(depthPixels);
 
                                 //var handStatus = handDection.GetHandOpenedClosedStatus(depthPixels, handJoint, sensor, DepthImageFormat.Resolution640x480Fps30);
                                 var handStatus = handDection.GetBufferedHandStatus(depthPixels, handJoint, sensor, DepthImageFormat.Resolution640x480Fps30);

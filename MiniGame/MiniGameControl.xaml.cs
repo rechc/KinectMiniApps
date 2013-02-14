@@ -19,9 +19,9 @@ using System.Windows.Shapes;
 namespace MiniGame
 {
     /// <summary>
-    /// Interaktionslogik für MainWindow.xaml
+    /// Interaktionslogik für MiniGameControl.xaml
     /// </summary>
-    public partial class MainWindow
+    public partial class MiniGameControl
     {
 
         private List<GridObjects> _gridObjects= new List<GridObjects>();
@@ -56,7 +56,7 @@ namespace MiniGame
         /**
          * Konstruktor
          */
-        public MainWindow()
+        public MiniGameControl()
         {
             InitializeComponent();
         }

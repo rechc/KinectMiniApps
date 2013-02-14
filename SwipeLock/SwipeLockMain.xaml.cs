@@ -1,22 +1,26 @@
 ﻿//------------------------------------------------------------------------------
-// <copyright file="MainWindow.xaml.cs" company="Microsoft">
+// <copyright file="SwipeLockMain.xaml.cs" company="Microsoft">
 //     Copyright (c) Microsoft Corporation.  All rights reserved.
 // </copyright>
 //------------------------------------------------------------------------------
-
-namespace ReadySteadyBang
+namespace Microsoft.Samples.Kinect.SkeletonBasics
 {
     using System.IO;
-    using System.Linq;
     using System.Windows;
     using System.Windows.Media;
     using Microsoft.Kinect;
+    using System.Diagnostics;
+    using System.Linq;
     using System;
+    using System.Windows.Media.Animation;
+    using System.Windows.Shapes;
+    using System.Windows.Controls;
+    using System.Timers;
 
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for SwipeLockMain.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class SwipeLockMain : Window
     {
         /// <summary>
         /// Width of output drawing
@@ -83,24 +87,27 @@ namespace ReadySteadyBang
         /// </summary>
         private DrawingImage imageSource;
 
+        private SolidColorBrush blue = new SolidColorBrush(Colors.Blue);
+        private SolidColorBrush red = new SolidColorBrush(Colors.Red);
+        private Vector handDirection = new Vector(0, 0);
+        private Lock lockElement;
+        private bool isInRectLastFrame;
+        private bool isInRect;
+        Point rectMiddlePoint = new Point(0, 0);
+        SkeletonPoint entryPoint = new SkeletonPoint();
+        int colorId = 0;
+        int colorBlockId = 0;
+        Brush[,] colors = { { Brushes.LightGreen, Brushes.Green, Brushes.DarkGreen }, { Brushes.LightBlue, Brushes.Blue, Brushes.DarkBlue }, { Brushes.LightSalmon, Brushes.Salmon, Brushes.DarkSalmon } };
+        Point handRightPoint = new Point(0, 0);
+        Rect startRect;
+        Boolean isInGestureRect = false;
+
         /// <summary>
-        /// Initializes a new instance of the MainWindow class.
+        /// Initializes a new instance of the SwipeLockMain class.
         /// </summary>
-
-        private Skeleton player1;
-        private Skeleton player2;
-        private Boolean ingame = false;
-        private Boolean player1shot = false;
-        private Boolean player2shot = false;
-        private Boolean bang = false;
-        private int start;
-        private int end;
-
-
-        public MainWindow()
+        public SwipeLockMain()
         {
             InitializeComponent();
-            WindowLoaded();
         }
 
         /// <summary>
@@ -148,8 +155,11 @@ namespace ReadySteadyBang
         /// </summary>
         /// <param name="sender">object sending the event</param>
         /// <param name="e">event arguments</param>
-        private void WindowLoaded()
+        private void WindowLoaded(object sender, RoutedEventArgs e)
         {
+            lockElement = new Lock(LockCircle, LockCanvas, LockRectangle.Width);
+            this.AnimateHandPoint(new Point(0,0), new Point(100, 100));
+
             // Create the drawing group we'll use for drawing
             this.drawingGroup = new DrawingGroup();
 
@@ -157,7 +167,7 @@ namespace ReadySteadyBang
             this.imageSource = new DrawingImage(this.drawingGroup);
 
             // Display the drawing using our image control
-            Colorimage.Source = this.imageSource;
+            Image.Source = this.imageSource;
 
             // Look through all sensors and start the first connected one.
             // This requires that a Kinect is connected at the time of app startup.
@@ -193,7 +203,7 @@ namespace ReadySteadyBang
 
             if (null == this.sensor)
             {
-                Console.WriteLine("Keine Kinect angeschlossen");
+                this.statusBarText.Text = Properties.Resources.NoKinectReady;
             }
         }
 
@@ -210,85 +220,6 @@ namespace ReadySteadyBang
             }
         }
 
-        private Boolean Shot(Skeleton player)
-        {
-            end = Environment.TickCount;
-            return player.Joints[JointType.HandRight].Position.Y > player.Joints[JointType.Head].Position.Y;
-        }
-
-        private void BangLogik()
-        {
-                if (bang == false)
-                {
-                    Random random = new Random();
-                    int zahl = random.Next(0, 100);
-
-                    if (zahl == 0)
-                    {
-                        Bang.Text = "Bang!!!";
-                        start = Environment.TickCount;
-                        bang = true;
-                    }
-                }
-
-                Boolean player1Shooted = false; 
-                Boolean player2Shooted = false;
-                if (player1shot == false)
-                {
-                    player1Shooted = Shot(player1);
-                }
-                if (player2shot == false)
-                {
-                    player2Shooted = Shot(player2);
-                }
-
-
-                if (player1Shooted && player2Shooted)
-                {
-                    int time = end - start;
-                    Winner.Text = "Unentschieden in " + time + " ms";
-                    ScorePlayer1.Text = (Convert.ToInt32(ScorePlayer1.Text) + 1) + "";
-                    ScorePlayer2.Text = (Convert.ToInt32(ScorePlayer2.Text) + 1) + "";
-                    ingame = false;
-                }
-                else if (player1Shooted)
-                {
-                    if (bang == true && player1shot == false)
-                    {
-                        int time = end - start;
-                        Winner.Text = "Player1 Wins in " + time + " ms";
-                        ScorePlayer1.Text = (Convert.ToInt32(ScorePlayer1.Text) + 1) + "";
-                        ingame = false;
-                    }
-                    else if (player1shot == false && bang == false)
-                    {
-
-                        Winner.Text = "Player1 to early!!!";
-                        player1shot = true;
-                    }
-                }
-                else if (player2Shooted)
-                {
-                    if (bang == true && player2shot == false)
-                    {
-                        int time = end - start;
-                        Winner.Text = "Player2 Wins " + time + " ms";
-                        ScorePlayer2.Text = (Convert.ToInt32(ScorePlayer2.Text) + 1) + "";
-                        ingame = false;
-                    }
-                    else if (player2shot == false && bang == false)
-                    {
-                        Winner.Text = "Player2 to early!!!";
-                        player2shot = true;
-                    }
-                }
-                if (player1shot == true && player2shot == true && ingame == true)
-                {
-                    Winner.Text = "LoOoser";
-                    ingame = false;
-                }
-        }
-
         /// <summary>
         /// Event handler for Kinect sensor's SkeletonFrameReady event
         /// </summary>
@@ -297,7 +228,7 @@ namespace ReadySteadyBang
         private void SensorSkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e)
         {
             Skeleton[] skeletons = new Skeleton[0];
-          
+
             using (SkeletonFrame skeletonFrame = e.OpenSkeletonFrame())
             {
                 if (skeletonFrame != null)
@@ -310,34 +241,10 @@ namespace ReadySteadyBang
             using (DrawingContext dc = this.drawingGroup.Open())
             {
                 // Draw a transparent background to set the render size
-                dc.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, RenderWidth, RenderHeight));
+                dc.DrawRectangle(colors[colorBlockId, colorId], null, new Rect(0.0, 0.0, RenderWidth, RenderHeight));
 
                 if (skeletons.Length != 0)
                 {
-                    
-                    if (skeletons.Count(t => t.TrackingState == SkeletonTrackingState.Tracked) == 2)
-                    {
-                        player1 = skeletons.First(p => p.TrackingState == SkeletonTrackingState.Tracked);
-                        player2 = skeletons.Last(p => p.TrackingState == SkeletonTrackingState.Tracked);
-
-                        if (ingame == true)
-                        {
-                            BangLogik();
-                        }
-
-                        if (player1.Joints[JointType.HandRight].Position.Y < player1.Joints[JointType.Head].Position.Y &&
-                            player2.Joints[JointType.HandRight].Position.Y < player2.Joints[JointType.Head].Position.Y &&
-                            ingame == false)
-                        {
-                            Bang.Text = "Ready";
-                            ingame = true;
-                            player1shot = false;
-                            player2shot = false;
-                            bang = false;
-                        }
-
-                    }
-
                     foreach (Skeleton skel in skeletons)
                     {
                         RenderClippedEdges(skel, dc);
@@ -358,8 +265,174 @@ namespace ReadySteadyBang
                     }
                 }
 
+                GestureRecognition(skeletons);
+
                 // prevent drawing outside of our render area
                 this.drawingGroup.ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, RenderWidth, RenderHeight));
+            }
+        }
+
+        private void GestureRecognition(Skeleton[] skeletons)
+        {
+            if (skeletons.Count(t => t.TrackingState == SkeletonTrackingState.Tracked) >= 1)
+            {
+                Skeleton skel = skeletons.First(s => s.TrackingState == SkeletonTrackingState.Tracked);
+                Joint handRight = skel.Joints[JointType.HandRight];
+                Joint hipRight = skel.Joints[JointType.HipRight];
+                Joint spine = skel.Joints[JointType.Spine];
+                
+                startRect = GetGestureRect(skel);
+                TransformRectangle();
+                handRightPoint = SkeletonPointToScreen(handRight.Position);
+
+                isInRect = startRect.Contains(SkeletonPointToScreen(handRight.Position));
+                if (isInRect != isInRectLastFrame)
+                {
+                    if (isInRect)
+                    {
+                        Hand.Visibility = Visibility.Hidden;
+                        lockElement.Show();
+                        entryPoint = handRight.Position;
+                        isInGestureRect = true;
+                    }
+                    else
+                    {
+                        if(handRightPoint.X > startRect.TopRight.X) //leave right
+                        { 
+                            HandleRectLeave();
+                        } 
+                        else if (handRightPoint.Y > startRect.BottomLeft.Y) //leave bottom
+                        {
+                            HandleRectLeave();
+                        }
+                        else if(handRightPoint.Y < startRect.TopLeft.Y) //leave top
+                        {
+                            HandleRectLeave();
+                        }
+                    }
+                }
+                isInRectLastFrame = isInRect;
+
+                if (isInGestureRect)
+                {
+                    if (handRight.Position.X < entryPoint.X)
+                    {
+                        lockElement.Position = Math.Abs(entryPoint.X - handRight.Position.X) / Math.Abs(entryPoint.X - spine.Position.X);
+                    }
+                    else
+                    {
+                        entryPoint = handRight.Position;
+                    }
+                    if (handRight.Position.X <= spine.Position.X)
+                    {
+                        SwipeRight();
+                        HandleRectLeave();
+                    }
+                }
+            }
+        }
+
+        private void HandleRectLeave()
+        {
+            isInGestureRect = false;
+            Hand.Visibility = Visibility.Visible;
+            lockElement.Hide();
+            lockElement.Reset();
+        }
+
+        private Rect GetGestureRect(Skeleton skeleton)
+        {
+            Point spine = SkeletonPointToScreen(skeleton.Joints[JointType.Spine].Position);
+            Point hipRight = SkeletonPointToScreen(skeleton.Joints[JointType.HipRight].Position);
+            Point head = SkeletonPointToScreen(skeleton.Joints[JointType.Head].Position);
+            double x = hipRight.X;
+            double y = head.Y;
+            double width = Math.Abs(spine.Y - y);
+            double height = width;
+
+            return new Rect(x, y, width, height);
+        }
+
+        private void AnimateHandPoint(Point from, Point to)
+        {
+            Duration duration = new Duration(TimeSpan.FromSeconds(1));
+            DoubleAnimation animationX = new DoubleAnimation(from.X, to.X + 75, duration);
+            DoubleAnimation animationY = new DoubleAnimation(from.Y, to.Y, duration);
+            animationX.Completed += AnimationCompleted;
+            TranslateTransform trans = new TranslateTransform();
+            Hand.RenderTransform = trans;
+            trans.BeginAnimation(TranslateTransform.XProperty, animationX);
+            trans.BeginAnimation(TranslateTransform.YProperty, animationY);
+        }
+
+        private void AnimationCompleted(object sender, EventArgs e)
+        {
+            AnimateHandPoint(handRightPoint, startRect.TopLeft);
+        }
+
+        private void TransformRectangle()
+        {
+            TranslateTransform translateTranform = (TranslateTransform)StartRect.RenderTransform;
+            translateTranform.X = startRect.X;
+            translateTranform.Y = startRect.Y;
+            StartRect.Width = startRect.Width;
+            StartRect.Height = startRect.Height;
+        }
+
+        private void SwipeRight()
+        {
+            NextColor();
+        }
+
+        private void SwipeLeft()
+        {
+            PrevColor();
+        }
+
+        private void SwipeUp()
+        {
+            NextColorBlock();
+        }
+
+        private void SwipeDown()
+        {
+            PrevColorBlock();
+        }
+
+
+        private void NextColor()
+        {
+            colorId++;
+            if (colorId >= colors.GetLength(1))
+            {
+                colorId = 0;
+            }
+        }
+
+        private void PrevColor()
+        {
+            colorId--;
+            if (colorId < 0)
+            {
+                colorId = colors.GetLength(1) - 1;
+            }
+        }
+
+        private void NextColorBlock()
+        {
+            colorBlockId++;
+            if (colorBlockId >= colors.GetLength(0))
+            {
+                colorBlockId = 0;
+            }
+        }
+
+        private void PrevColorBlock()
+        {
+            colorBlockId--;
+            if (colorBlockId < 0)
+            {
+                colorBlockId = colors.GetLength(0) - 1;
             }
         }
 
@@ -399,7 +472,7 @@ namespace ReadySteadyBang
             this.DrawBone(skeleton, drawingContext, JointType.HipRight, JointType.KneeRight);
             this.DrawBone(skeleton, drawingContext, JointType.KneeRight, JointType.AnkleRight);
             this.DrawBone(skeleton, drawingContext, JointType.AnkleRight, JointType.FootRight);
-
+ 
             // Render Joints
             foreach (Joint joint in skeleton.Joints)
             {
@@ -407,11 +480,11 @@ namespace ReadySteadyBang
 
                 if (joint.TrackingState == JointTrackingState.Tracked)
                 {
-                    drawBrush = this.trackedJointBrush;
+                    drawBrush = this.trackedJointBrush;                    
                 }
                 else if (joint.TrackingState == JointTrackingState.Inferred)
                 {
-                    drawBrush = this.inferredJointBrush;
+                    drawBrush = this.inferredJointBrush;                    
                 }
 
                 if (drawBrush != null)
@@ -479,10 +552,14 @@ namespace ReadySteadyBang
         {
             if (null != this.sensor)
             {
-               
-                
+                if (this.checkBoxSeatedMode.IsChecked.GetValueOrDefault())
+                {
+                    this.sensor.SkeletonStream.TrackingMode = SkeletonTrackingMode.Seated;
+                }
+                else
+                {
                     this.sensor.SkeletonStream.TrackingMode = SkeletonTrackingMode.Default;
-                
+                }
             }
         }
     }

@@ -10,9 +10,9 @@ using System.Windows.Media.Imaging;
 namespace LoopListTest
 {
     /// <summary>
-    /// Interaktionslogik für MainWindow.xaml
+    /// Interaktionslogik für LoopListTestMain.xaml
     /// </summary>
-    public partial class MainWindow
+    public partial class LoopListTestMain
     {
         private Point? _oldMovePoint;
         private bool _doDrag;
@@ -24,7 +24,7 @@ namespace LoopListTest
 
 
 
-        public MainWindow()
+        public LoopListTestMain()
         {
             InitializeComponent();
             try

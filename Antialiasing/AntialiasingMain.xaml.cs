@@ -25,9 +25,9 @@ namespace Antialiasing
     using Microsoft.Kinect;
 
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for AntialiasingMain.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class AntialiasingMain : Window
     {
         /// <summary>
         /// Format we will use for the depth stream
@@ -100,9 +100,9 @@ namespace Antialiasing
         private double opaqueRange;
 
         /// <summary>
-        /// Initializes a new instance of the MainWindow class.
+        /// Initializes a new instance of the AntialiasingMain class.
         /// </summary>
-        public MainWindow()
+        public AntialiasingMain()
         {
             InitializeComponent();
             opaqueMatrixLenghtSqrt = Convert.ToInt32(Math.Sqrt(opaqueMatrix.Length));

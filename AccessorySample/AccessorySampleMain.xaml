@@ -1,4 +1,4 @@
-﻿<Window xmlns:AccessoryLib="clr-namespace:AccessoryLib;assembly=AccessoryLib"  x:Class="AccessorySample.MainWindow"
+﻿<Window xmlns:AccessoryLib="clr-namespace:AccessoryLib;assembly=AccessoryLib"  x:Class="AccessorySample.AccessorySampleMain"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Title="Accessory Sample" Height="735" Width="770" Loaded="WindowLoaded" Closing="WindowClosing">

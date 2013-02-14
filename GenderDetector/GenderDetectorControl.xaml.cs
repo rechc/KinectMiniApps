@@ -12,7 +12,7 @@ namespace GenderDetector
     /// <summary>
     /// Klasse zur Alterbestimmung.
     /// </summary>
-    public partial class MainWindow
+    public partial class GenderDetectorControl
     {
         private KinectSensor _kinectSensor;
         private WriteableBitmap colorBitmap;
@@ -27,7 +27,7 @@ namespace GenderDetector
 
         private Skeleton activeSkeleton;
 
-        public MainWindow()
+        public GenderDetectorControl()
         {
             InitializeComponent();
         }

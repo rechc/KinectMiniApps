@@ -25,7 +25,7 @@ namespace HtwKinect
             Unknown
         }
 
-        private MainWindow _mainWindow;
+        private LoopScreen _mainWindow;
         private StateViews.SplashScreen _sscreen;
         private WalkScreen _walkScreen;
         private WalkAndLookScreen _walkLookScreen;
@@ -42,7 +42,7 @@ namespace HtwKinect
                 if (_currentScreen != ScreenMode.MainScreen) {
                     RemoveOldScreen();
                     _currentScreen = ScreenMode.MainScreen;
-                    if (_mainWindow == null) { _mainWindow = new MainWindow(); }
+                    if (_mainWindow == null) { _mainWindow = new LoopScreen(); }
                     Grid.SetRow(_mainWindow, 1);
                     GridX.Children.Add(_mainWindow);
                 }
@@ -76,7 +76,7 @@ namespace HtwKinect
                 {
                     RemoveOldScreen();
                     _currentScreen = ScreenMode.MainScreen;
-                    if (_mainWindow == null) { _mainWindow = new MainWindow(); }
+                    if (_mainWindow == null) { _mainWindow = new LoopScreen(); }
                     Grid.SetRow(_mainWindow, 1);
                     GridX.Children.Add(_mainWindow);
                 }

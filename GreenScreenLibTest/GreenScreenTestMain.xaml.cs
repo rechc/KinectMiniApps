@@ -13,23 +13,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace GenderDetectorTest
+namespace GreenScreenLibTest
 {
     /// <summary>
-    /// Interaktionslogik für MainWindow.xaml
+    /// Interaktionslogik für GreenScreenTestMain.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class GreenScreenTestMain : Window
     {
-        public MainWindow()
+        public GreenScreenTestMain()
         {
             InitializeComponent();
-            detector.Start(KinectHelper.Instance.Sensor);
-            KinectHelper.Instance.ReadyEvent += Instance_ReadyEvent;
-        }
-
-        void Instance_ReadyEvent(object sender, EventArgs e)
-        {
-            detector.SensorColorFrameReady(KinectHelper.Instance.GetFixedSkeleton(), KinectHelper.Instance.ColorPixels);
         }
     }
 }

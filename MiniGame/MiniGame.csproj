@@ -56,14 +56,14 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="MainWindow.xaml">
+    <Page Include="MiniGameControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
     <Compile Include="FallWorker.cs" />
     <Compile Include="GridObjects.cs" />
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
+    <Compile Include="MiniGameControl.xaml.cs">
+      <DependentUpon>MiniGameControl.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

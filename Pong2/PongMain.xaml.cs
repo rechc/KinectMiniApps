@@ -1,5 +1,5 @@
 ﻿//------------------------------------------------------------------------------
-// <copyright file="MainWindow.xaml.cs" company="Microsoft">
+// <copyright file="PongMain.xaml.cs" company="Microsoft">
 //     Copyright (c) Microsoft Corporation.  All rights reserved.
 // </copyright>
 //------------------------------------------------------------------------------
@@ -15,9 +15,9 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
     using Microsoft.Kinect;
 
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for PongMain.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class PongMain : Window
     {
         /// <summary>
         /// Width of output drawing
@@ -56,7 +56,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
 
         /// <summary>
         /// Brush used for drawing joints that are currently inferred
-        /// </summary>        
+        /// </summary>
         private readonly Brush inferredJointBrush = Brushes.Yellow;
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
 
         /// <summary>
         /// Pen used for drawing bones that are currently inferred
-        /// </summary>        
+        /// </summary>
         private readonly Pen inferredBonePen = new Pen(Brushes.Gray, 1);
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         /// </summary>
         private DrawingImage imageSource;
 
-        public MainWindow()
+        public PongMain()
         {
             InitializeComponent();
             float paddleWidth = 15;
@@ -166,7 +166,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
 
             // Look through all sensors and start the first connected one.
             // This requires that a Kinect is connected at the time of app startup.
-            // To make your app robust against plug/unplug, 
+            // To make your app robust against plug/unplug,
             // it is recommended to use KinectSensorChooser provided in Microsoft.Kinect.Toolkit
             foreach (var potentialSensor in KinectSensor.KinectSensors)
             {
@@ -288,7 +288,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                         }
                     }
                 }
-                
+
                 // prevent drawing outside of our render area
                 this.drawingGroup.ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, RenderWidth, RenderHeight));
             }
@@ -329,18 +329,18 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             this.DrawBone(skeleton, drawingContext, JointType.HipRight, JointType.KneeRight);
             this.DrawBone(skeleton, drawingContext, JointType.KneeRight, JointType.AnkleRight);
             this.DrawBone(skeleton, drawingContext, JointType.AnkleRight, JointType.FootRight);
- 
+
             // Render Joints
             foreach (Joint joint in skeleton.Joints)
             {
                 Brush drawBrush = null;
                 if (joint.TrackingState == JointTrackingState.Tracked)
                 {
-                    drawBrush = this.trackedJointBrush;                    
+                    drawBrush = this.trackedJointBrush;
                 }
                 else if (joint.TrackingState == JointTrackingState.Inferred)
                 {
-                    drawBrush = this.inferredJointBrush;                    
+                    drawBrush = this.inferredJointBrush;
                 }
 
                 if (drawBrush != null)
@@ -357,7 +357,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         /// <returns>mapped point</returns>
         private Point SkeletonPointToScreen(SkeletonPoint skelpoint)
         {
-            // Convert point to depth space.  
+            // Convert point to depth space.
             // We are not using depth directly, but we do want the points in our 640x480 output resolution.
             DepthImagePoint depthPoint = this.sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(skelpoint, DepthImageFormat.Resolution640x480Fps30);
             return new Point(depthPoint.X, depthPoint.Y);

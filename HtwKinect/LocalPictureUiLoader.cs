@@ -28,7 +28,7 @@ namespace HtwKinect
             }
             try
             {
-                MiniGame.MainWindow mg = new MiniGame.MainWindow();
+                MiniGame.MiniGameControl mg = new MiniGame.MiniGameControl();
                 mg.Start(KinectHelper.Instance.Sensor);
                 KinectHelper.Instance.ReadyEvent += (sender, _) => Instance_ReadyEvent(mg);
                 list.Add(mg);
@@ -64,7 +64,7 @@ namespace HtwKinect
             kinectProjectUiBuilder.AddRow("Snow", list);
         }
 
-        void Instance_ReadyEvent(MiniGame.MainWindow mg)
+        void Instance_ReadyEvent(MiniGame.MiniGameControl mg)
         {
             mg.MinigameSkeletonEvent(KinectHelper.Instance.GetFixedSkeleton(), KinectHelper.Instance.DepthImagePixels, KinectHelper.Instance.ColorPixels);
             KinectHelper.Instance.SetTransform(mg);

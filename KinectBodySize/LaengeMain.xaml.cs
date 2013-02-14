@@ -23,9 +23,9 @@ using System.Diagnostics;
 namespace KinectTutorial
 {
     /// <summary>
-    /// Interaktionslogik für MainWindow.xaml
+    /// Interaktionslogik für LaengeMain.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class LaengeMain : Window
     {
         private KinectSensor _kinectSensor { get; set; }
         private Skeleton[] _skeletons;
@@ -34,7 +34,7 @@ namespace KinectTutorial
         private WriteableBitmap _outputImageColor;
         private int _id = -1;
 
-        public MainWindow()
+        public LaengeMain()
         {
             InitializeComponent();
             _kinectSensor = KinectSensor.KinectSensors.FirstOrDefault(s => s.Status == KinectStatus.Connected);
@@ -138,7 +138,7 @@ namespace KinectTutorial
                 {
 
                     short pixel = _depthPixelData[i];
-                   
+
                     if ((pixel & DepthImageFrame.PlayerIndexBitmask) == skeletonIndex)
                     {
                         DepthImagePoint dip = new DepthImagePoint();
@@ -201,7 +201,7 @@ namespace KinectTutorial
             {
                 Bitmap circlesBitmap = new Bitmap(CFrame.Width, CFrame.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
                 Skeleton skeleton = getCurrentSkeleton();
-                
+
                 Graphics g = Graphics.FromImage(circlesBitmap);
                 if (skeleton != null)
                 {
