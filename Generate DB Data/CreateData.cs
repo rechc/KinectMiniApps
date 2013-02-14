@@ -94,7 +94,6 @@ namespace Generate_DB_Data
                 }
                 catch (Exception ex)
                 {
-                    transaction.Dispose();
                     Console.WriteLine(ex.ToString());
                     Console.WriteLine("Error in entry. Start db rollback");
                 }
