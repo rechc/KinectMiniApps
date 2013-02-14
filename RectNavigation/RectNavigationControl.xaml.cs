@@ -101,6 +101,8 @@ namespace RectNavigation
         public void Start(KinectSensor sensor)
         {
             _sensor = sensor;
+            DrawingCanvas.Width = sensor.ColorStream.FrameWidth;
+            DrawingCanvas.Height = sensor.ColorStream.FrameHeight;
         }
 
         public void GestureRecognition(Skeleton skel)
@@ -251,21 +253,21 @@ namespace RectNavigation
         {
             TranslateTransform transform = new TranslateTransform();
             Hand.RenderTransform = transform;
-            transform.X = _handRightPoint.X - (Hand.Width / 2) - ActualWidth/2;
-            transform.Y = _handRightPoint.Y - (Hand.Height / 2) - ActualHeight/2;
+            transform.X = _handRightPoint.X - (Hand.Width / 2);
+            transform.Y = _handRightPoint.Y - (Hand.Height / 2);
         }
 
         private void TransformRectangles()
         {
             TranslateTransform transformInnerRect = (TranslateTransform)InnerRect.RenderTransform;
-            transformInnerRect.X = _innerRect.X - ActualWidth / 2;
-            transformInnerRect.Y = _innerRect.Y - ActualHeight / 2;
+            transformInnerRect.X = _innerRect.X;
+            transformInnerRect.Y = _innerRect.Y;
             InnerRect.Width = _innerRect.Width;
             InnerRect.Height = _innerRect.Height;
 
             TranslateTransform transformOuterRect = (TranslateTransform)OuterRect.RenderTransform;
-            transformOuterRect.X = _outerRect.X - ActualWidth / 2;
-            transformOuterRect.Y = _outerRect.Y - ActualHeight / 2;
+            transformOuterRect.X = _outerRect.X;
+            transformOuterRect.Y = _outerRect.Y;
             OuterRect.Width = _outerRect.Width;
             OuterRect.Height = _outerRect.Height;
         }
@@ -311,11 +313,7 @@ namespace RectNavigation
         /// <returns>mapped point</returns>
         private Point SkeletonPointToScreen(SkeletonPoint skelpoint)
         {
-            // Convert point to depth space.  
-            // We are not using depth directly, but we do want the points in our 640x480 output resolution.
             ColorImagePoint colorPoint = _sensor.CoordinateMapper.MapSkeletonPointToColorPoint(skelpoint, _sensor.ColorStream.Format);
-            colorPoint.X = (int)(colorPoint.X * (this.ActualWidth / _sensor.ColorStream.FrameWidth));
-            colorPoint.Y = (int)(colorPoint.Y * (this.ActualHeight / _sensor.ColorStream.FrameHeight));
             return new Point(colorPoint.X, colorPoint.Y);
         }
     }

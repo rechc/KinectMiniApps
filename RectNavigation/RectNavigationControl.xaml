@@ -4,18 +4,22 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="480" d:DesignWidth="640">
     <Grid Name="LayoutGrid">
-        <Ellipse Name="Hand" Width="30" Height="30" Fill="Gray"></Ellipse>
-        <Rectangle Name="InnerRect" Width="50" Height="50" Stroke="Gray" StrokeThickness="2">
-            <Rectangle.RenderTransform>
-                <TranslateTransform></TranslateTransform>
-            </Rectangle.RenderTransform>
-        </Rectangle>
-        <Rectangle Name="OuterRect" Width="100" Height="100" Stroke="Orange" StrokeThickness="2">
-            <Rectangle.RenderTransform>
-                <TranslateTransform></TranslateTransform>
-            </Rectangle.RenderTransform>
-        </Rectangle>
+        <Viewbox>
+            <Canvas Name="DrawingCanvas" Width="640" Height="480">
+                <Ellipse Name="Hand" Width="30" Height="30" Fill="Gray"></Ellipse>
+                <Rectangle Name="InnerRect" Width="50" Height="50" Stroke="Gray" StrokeThickness="2">
+                    <Rectangle.RenderTransform>
+                        <TranslateTransform></TranslateTransform>
+                    </Rectangle.RenderTransform>
+                </Rectangle>
+                <Rectangle Name="OuterRect" Width="100" Height="100" Stroke="Orange" StrokeThickness="2">
+                    <Rectangle.RenderTransform>
+                        <TranslateTransform></TranslateTransform>
+                    </Rectangle.RenderTransform>
+                </Rectangle>
+            </Canvas>
+        </Viewbox>
     </Grid>
 </UserControl>

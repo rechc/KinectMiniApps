@@ -97,6 +97,7 @@ namespace HtwKinect.StateViews
             Accessories.SetSkeletons(helper.Skeletons);
             KinectHelper.Instance.SetTransform(GreenScreen);
             KinectHelper.Instance.SetTransform(Accessories);
+            KinectHelper.Instance.SetTransform(RectNavigationControl);
         }
 
         private void ProcessSkeleton(Skeleton skeleton)
