@@ -151,7 +151,10 @@ namespace MiniGame
         private void GameStop()
         {
             this.Status.Visibility = Visibility.Visible;
-            _fallThread.Abort();
+            if (_fallThread != null)
+            {
+                _fallThread.Abort();
+            }
         }
 
         /**
