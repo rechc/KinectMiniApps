@@ -88,7 +88,7 @@ namespace HtwKinect.StateViews
             var helper = KinectHelper.Instance;
             Skeleton skeleton = helper.GetFixedSkeleton();
             ProcessSkeleton(skeleton);
-            GreenScreen.InvalidateVisual(helper.DepthImagePixels, helper.ColorPixels);
+            GreenScreen.RenderImageData(helper.DepthImagePixels, helper.ColorPixels);
             Accessories.SetSkeletons(helper.Skeletons);
             KinectHelper.Instance.SetTransform(GreenScreen);
             KinectHelper.Instance.SetTransform(Accessories);
