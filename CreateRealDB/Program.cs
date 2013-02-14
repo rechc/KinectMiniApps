@@ -31,7 +31,7 @@ namespace CreateRealDB
 
         public void CreateMyOffers() 
         {
-            CreateOffers(100, "Amsterdam", 3 , "HotelAmsterdam", "Bus", 3, "Halbpension", CategoryEnum.City, "Citys\amsterdam.jpg", false);
+            CreateOffers(110, "Amsterdam", 3 , "Hotel-Amsterdam", "Bus", 3, "Halbpension", CategoryEnum.City, "Citys\amsterdam.jpg", false);
         
         }
 

@@ -26,3 +26,6 @@ _ReSharper*
 .Ds_Store
 /ipch/
 *.vcxproj.user
+FaceTrackData.dll
+FaceTrackLib.dll
+Microsoft.Kinect.Toolkit.FaceTracking.dll

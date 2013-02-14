@@ -75,10 +75,10 @@ namespace Generate_DB_Data
 
         private void CreateCountryEntries()
         {
-            string[] countries = {"Spanien", "Deutschland", "USA", "Mallorca", "Frankreich"};
-            foreach (var countryName in countries)
+            //string[] countries = {"Spanien", "Deutschland", "USA", "Mallorca", "Frankreich"};
+            foreach (var countryName in Enum.GetNames(typeof(CategoryEnum)))
             {
-                var c = new Category() {CategoryName = countryName};
+                var c = new Category() { CategoryName = countryName };
                 _context.CategorySet.Add(c);
             }
         }

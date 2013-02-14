@@ -79,6 +79,7 @@ namespace AccessoryLib
             switch (item.Position)
             {
                 case AccessoryPositon.Hat:
+
                     offsetY = -1.1*imgHeight;
                     break;
                 case AccessoryPositon.Beard:
