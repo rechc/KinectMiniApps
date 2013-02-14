@@ -4,6 +4,8 @@
         xmlns:stas="clr-namespace:LoopList;assembly=LoopList"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:GreenScreenControl="clr-namespace:GreenScreenControl;assembly=GreenScreenControl"
+        xmlns:AccessoryLib="clr-namespace:AccessoryLib;assembly=AccessoryLib"
         xmlns:RectNavigation="clr-namespace:RectNavigation;assembly=RectNavigation" 
         mc:Ignorable="d" 
         x:Class="HtwKinect.StateViews.MainWindow"
@@ -13,13 +15,13 @@
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-
-        <stas:LoopList x:Name="MyLoopList" Background="Beige"  MouseDown="myLoopList_MouseDown_1" MouseMove="myLoopList_MouseMove_1" MouseUp="myLoopList_MouseUp_1" MouseLeave="myLoopList_MouseLeave_1" Grid.Column="1" />
+        <stas:LoopList x:Name="MyLoopList" Background="Beige" MouseDown="myLoopList_MouseDown_1" MouseMove="myLoopList_MouseMove_1" MouseUp="myLoopList_MouseUp_1" MouseLeave="myLoopList_MouseLeave_1" Grid.Column="1" />
         <stas:TextLoopList x:Name="MyTextLoopList" Background="BlueViolet" Width="200"/>
         <RectNavigation:RectNavigationControl Grid.Column="1" x:Name="RectNavigationControl"/>
         <TextBlock x:Name="ExceptionTextBlock" Grid.ColumnSpan="2" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Foreground="White" Background="Red" TextWrapping="Wrap"/>
         <Rectangle x:Name="KinectFocusedRectangle" Width="50" Height="50" Fill="Green" Stroke="Black" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="50,50,0,0" Visibility="Collapsed"/>
         <Rectangle x:Name="KinectVibratingRectangle" Width="50" Height="50" Fill="Red" Stroke="Black" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="150,50,0,0" Visibility="Collapsed"/>
-        
+        <GreenScreenControl:GreenScreenControl x:Name="GreenScreen" Grid.Column="1" Margin="25" IsHitTestVisible="False"/>
+        <AccessoryLib:AccessoryControl x:Name="Accessories" Grid.Column="1" Margin="25" IsHitTestVisible="False"/>
     </Grid>
 </UserControl>

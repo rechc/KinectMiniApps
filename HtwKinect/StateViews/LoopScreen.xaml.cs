@@ -1,4 +1,5 @@
-﻿using HandDetection;
+﻿using AccessoryLib;
+using HandDetection;
 using LoopList;
 using Microsoft.Kinect;
 using System;
@@ -35,6 +36,11 @@ namespace HtwKinect.StateViews
                 RectNavigationControl.Start(KinectHelper.Instance.Sensor);
                 InitList();
                 InitKinect();
+                var helper = KinectHelper.Instance;
+                GreenScreen.Start(helper.Sensor, true);
+                AccessoryItem hat = new AccessoryItem(AccessoryPositon.Hat, @"images\Accessories\Hat.png", 0.25);
+                Accessories.AccessoryItems.Add(hat);
+                Accessories.Start(helper.Sensor);
             }
             catch (Exception exc)
             {
@@ -81,10 +87,16 @@ namespace HtwKinect.StateViews
         /*Callback fur ein fertiges Frame vom Kinect-Sensor*/
         private void HelperReady()
         {
-            Skeleton skeleton = KinectHelper.Instance.GetFixedSkeleton();
+            var helper = KinectHelper.Instance;
+            Skeleton skeleton = helper.GetFixedSkeleton();
             //KinectHelper.Instance.SetTransform(RectNavigationControl);
             if (skeleton != null)
                 RectNavigationControl.GestureRecognition(skeleton);
+            ProcessSkeleton(skeleton);
+            GreenScreen.RenderImageData(helper.DepthImagePixels, helper.ColorPixels);
+            Accessories.SetSkeletons(helper.Skeletons);
+            KinectHelper.Instance.SetTransform(GreenScreen);
+            KinectHelper.Instance.SetTransform(Accessories);
         }
 
         private void ProcessSkeleton(Skeleton skeleton)
