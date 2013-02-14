@@ -25,7 +25,7 @@ namespace HtwKinect
             Unknown
         }
 
-        private MainWindow _mainWindow;
+        private LoopScreen _mainWindow;
         private StateViews.SplashScreen _sscreen;
         private WalkScreen _walkScreen;
         private WalkAndLookScreen _walkLookScreen;
@@ -42,7 +42,7 @@ namespace HtwKinect
                 if (_currentScreen != ScreenMode.MainScreen) {
                     RemoveOldScreen();
                     _currentScreen = ScreenMode.MainScreen;
-                    if (_mainWindow == null) { _mainWindow = new MainWindow(); }
+                    if (_mainWindow == null) { _mainWindow = new LoopScreen(); }
                     Grid.SetRow(_mainWindow, 1);
                     GridX.Children.Add(_mainWindow);
                 }
@@ -76,7 +76,7 @@ namespace HtwKinect
                 {
                     RemoveOldScreen();
                     _currentScreen = ScreenMode.MainScreen;
-                    if (_mainWindow == null) { _mainWindow = new MainWindow(); }
+                    if (_mainWindow == null) { _mainWindow = new LoopScreen(); }
                     Grid.SetRow(_mainWindow, 1);
                     GridX.Children.Add(_mainWindow);
                 }
@@ -87,7 +87,11 @@ namespace HtwKinect
         {
             RemoveOldScreen();
             _currentScreen = ScreenMode.Splash;
-            if (_sscreen == null) { _sscreen = new StateViews.SplashScreen(); }
+            if (_sscreen == null) 
+            { 
+                _sscreen = new StateViews.SplashScreen();       
+            }
+            _sscreen.StartNewOfferTimer(180000/50); //todo set better time intervall, now its 3/50 minutes
             Grid.SetRow(_sscreen, 1);
             GridX.Children.Add(_sscreen);
         }
@@ -140,30 +144,37 @@ namespace HtwKinect
 
         #region PeopleDetector and Window start exit
 
-        /**
-         * Wird beim Windowstart aufgerufen
-         */
+        /// <summary>
+        /// Wird nach dem Laden des Fensters aufgerufen.
+        /// </summary>
         private void WindowLoaded(object sender, RoutedEventArgs e)
         {
             _peopleDetector = new PeoplePositionDetector();
-            KinectHelper kh = KinectHelper.Instance;
-            kh.ReadyEvent += PeopleDetectorSkeletonEvent;
+            try
+            {
+                KinectHelper kh = KinectHelper.Instance;
+                kh.ReadyEvent += PeopleDetectorSkeletonEvent;
+            }
+            catch (Exception exc)
+            {
+                Console.WriteLine(exc.Message);
+            }
         }
 
-        /**
-         * Wird beim beenden aufgerufen
-         */
+        /// <summary>
+        /// Wird beim Schliessen des Fensters aufgerufen.
+        /// </summary>
         private void WindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Console.WriteLine("Joke: Fenster Klose");
         }
 
-        /**
-         * Event Skeleton für PeopleDetector
-         */ 
+        /// <summary>
+        /// Event Skeleton für PeopleDetector.
+        /// </summary>
         private void PeopleDetectorSkeletonEvent(object sender, EventArgs e)
         {
-            _peopleDetector.Skeletons = KinectHelper.Instance.Skeletons;
+            _peopleDetector.TrackSkeletons(KinectHelper.Instance.Skeletons);
             OutputLabelX.Content =
             "Erkannt:" + _peopleDetector.GetPositionOnlyPeople().Count +
                 " Tracked:" + _peopleDetector.GetTrackedPeople().Count +

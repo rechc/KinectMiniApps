@@ -1,56 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data.EntityClient;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Transactions;
 using Database;
 
 namespace Generate_DB_Data
 {
-    class CreateData
+    partial class CreateData
     {
-        private static string ConnectionString
-        {
-            get
-            {
-                // Specify the provider name, server and database.
-                string providerName = "System.Data.SqlClient";
-                string serverName = "localhost";
-                string databaseName = "AdventureWorks";
-
-                // Initialize the connection string builder for the
-                // underlying provider.
-                SqlConnectionStringBuilder sqlBuilder =
-                    new SqlConnectionStringBuilder();
-
-                // Set the properties for the data source.
-                sqlBuilder.DataSource = serverName;
-                sqlBuilder.InitialCatalog = databaseName;
-                sqlBuilder.IntegratedSecurity = true;
-
-                // Build the SqlConnection connection string.
-                string providerString = sqlBuilder.ToString();
-
-                // Initialize the EntityConnectionStringBuilder.
-                EntityConnectionStringBuilder entityBuilder =
-                    new EntityConnectionStringBuilder();
-
-                //Set the provider name.
-                entityBuilder.Provider = providerName;
-
-                // Set the provider-specific connection string.
-                entityBuilder.ProviderConnectionString = providerString;
-
-                // Set the Metadata location.
-                entityBuilder.Metadata = "res://*/";
-
-                return entityBuilder.ToString();
-            }
-        }
-
         private Model1Container _context;
         private readonly Random _random = new Random();
 
@@ -75,10 +31,10 @@ namespace Generate_DB_Data
 
         private void CreateCountryEntries()
         {
-            string[] countries = {"Spanien", "Deutschland", "USA", "Mallorca", "Frankreich"};
-            foreach (var countryName in countries)
+            //string[] countries = {"Spanien", "Deutschland", "USA", "Mallorca", "Frankreich"};
+            foreach (var countryName in Enum.GetNames(typeof(CategoryEnum)))
             {
-                var c = new Category() {CategoryName = countryName};
+                var c = new Category() { CategoryName = countryName };
                 _context.CategorySet.Add(c);
             }
         }
@@ -97,7 +53,8 @@ namespace Generate_DB_Data
                                 TravelType = travelType[GetRandomInteger(0, travelType.Count() - 1)],
                                 HotelRating = GetRandomInteger(1,5),
                                 CategoryId = GetRandomInteger(1, _context.CategorySet.Count()),
-                                TopOffer = (GetRandomInteger(1,4) == 4) ? true : false,
+                                TopOffer = (GetRandomInteger(1,4) == 4),
+                                ImgPath = "imagepath",
                             };
 
             var count = GetRandomInteger(0, 4);
@@ -137,7 +94,6 @@ namespace Generate_DB_Data
                 }
                 catch (Exception ex)
                 {
-                    transaction.Dispose();
                     Console.WriteLine(ex.ToString());
                     Console.WriteLine("Error in entry. Start db rollback");
                 }

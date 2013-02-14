@@ -4,16 +4,28 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             d:DesignHeight="505.367" Width="276.297">
+             d:DesignHeight="650" Width="280">
     <!--<Grid Background="White" Opacity="0.60" IsHitTestVisible="True" Width="100" HorizontalAlignment="Left" VerticalAlignment="Top">-->
-    <StackPanel VerticalAlignment="Stretch" Background="White" Opacity="0.60" IsHitTestVisible="True" Width="250" HorizontalAlignment="Left">
-        <TextBlock Name="Category" Text="Categorie" HorizontalAlignment="Left" Margin="10,0,0,0" Height="50"  VerticalAlignment="Top" Width="230" FontSize="36" FontWeight="Bold" />
-        <TextBlock Name="Place" Text="Place" HorizontalAlignment="Left" Margin="10,0,-1,0" VerticalAlignment="Top" Width="241" FontSize="14" Height="31"/>
-        <TextBlock Name="Rating" Text="Rating" HorizontalAlignment="Left" Height="33" Margin="10,0,0,0" VerticalAlignment="Top" Width="142"/>
-        <TextBlock Name ="HotelName" Text="HotelName" HorizontalAlignment="Left" Height="41" Margin="10,0,0,0" VerticalAlignment="Top" Width="230" FontSize="18" FontWeight="Bold"/>
-        <TextBlock Name ="PricePerPerson" Text="PricePerPerson" HorizontalAlignment="Left" Margin="10,0,0,0" Height="60" VerticalAlignment="Top" Width="230" FontSize="18" FontStyle="Italic" FontWeight="Bold"/>
-        <TextBlock Name="TravelInfo" Text="TravelInfo" HorizontalAlignment="Left" Height="49" Margin="10,0,0,0" VerticalAlignment="Top" Width="230" FontSize="16"/>
-            <TextBlock Name="ExtendetInfo" Text="ExtendetInfo" TextWrapping="Wrap" HorizontalAlignment="Left" Height="181" Margin="10,0,0,0" VerticalAlignment="Top" Width="230" FontSize="14" />
-        </StackPanel>
+    <StackPanel Background="SlateGray" Opacity="0.60" IsHitTestVisible="True" Width="280" HorizontalAlignment="Left" Margin="0,0,0,-0">
+        <TextBlock x:Name="Place" Text="Place" HorizontalAlignment="Left" Margin="10,20,0,0" Height="50"  Width="230" FontSize="40" FontWeight="Bold" />
+        <TextBlock x:Name="Category" Text="Categorie" HorizontalAlignment="Left" Margin="10,0,0,0" Width="241" FontSize="18" Height="31"/>
+        <TextBlock x:Name="Rating" Text="Rating" HorizontalAlignment="Left" Height="33" Margin="10,0,0,0" Width="142"/>
+        <TextBlock x:Name ="HotelName" Text="HotelName" HorizontalAlignment="Left" Height="64" Margin="10,0,0,0" Width="230" FontSize="24" FontWeight="Bold"/>
+        <TextBlock x:Name ="PricePerPerson" Text="PricePerPerson" HorizontalAlignment="Left" Margin="10,0,0,0" Height="93" Width="230" FontSize="24" FontStyle="Italic" FontWeight="Bold"/>
+        <TextBlock x:Name="TravelInfo" Text="TravelInfo" HorizontalAlignment="Left" Height="82" Margin="10,0,0,0" Width="230" FontSize="22"/>
+        <TextBlock Name="ExtendetInfo" Text="ExtendetInfo" TextWrapping="Wrap" HorizontalAlignment="Left" Height="181" Margin="10,0,0,0" VerticalAlignment="Top" Width="230" FontSize="14" />
+        <!--<ListViewItem Name="ListViewExtendedInformations">
+            <StackPanel Orientation="Vertical">
+                <Image Name="ExtendetInfoImg1" Source="Images/Arrow.png" Height="15" VerticalAlignment="Top" HorizontalAlignment="Left" />
+                <TextBlock x:Name="ExtendetInfo1" Text="ExtendetInfo1" TextWrapping="Wrap" HorizontalAlignment="Left" Margin="10,0,0,0" Width="230" FontSize="20" />
+                <Image Source="Images/Arrow.png" Height="15" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                <TextBlock x:Name="ExtendetInfo2" Text="ExtendetInfo1" TextWrapping="Wrap" HorizontalAlignment="Left" Margin="10,0,0,0" Width="230" FontSize="20" />
+                <Image Source="Images/Arrow.png" Height="15" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                <TextBlock x:Name="ExtendetInfo3" Text="ExtendetInfo1" TextWrapping="Wrap" HorizontalAlignment="Left" Margin="10,0,0,0" Width="230" FontSize="20" />
+                <Image Source="Images/Arrow.png" Height="15" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                <TextBlock x:Name="ExtendetInfo4" Text="ExtendetInfo1" TextWrapping="Wrap" HorizontalAlignment="Left" Margin="10,0,0,0" Width="230" FontSize="20" />
+            </StackPanel>
+        </ListViewItem>-->
+    </StackPanel>
     <!--</Grid>-->
 </UserControl>

@@ -49,7 +49,7 @@ namespace GreenScreenControl
         private bool _antialiasing;
 
 
-        public void InvalidateVisual(DepthImagePixel[] depthPixels, byte[] colorPixels)
+        public void RenderImageData(DepthImagePixel[] depthPixels, byte[] colorPixels)
         {
             _depthPixels = depthPixels;
             _colorPixels = colorPixels;
@@ -58,7 +58,6 @@ namespace GreenScreenControl
 
         public GreenScreenControl()
         {
-            
             InitializeComponent();
         }
 

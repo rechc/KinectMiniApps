@@ -65,6 +65,7 @@
     <Compile Include="Category.cs">
       <DependentUpon>ModelObjects.tt</DependentUpon>
     </Compile>
+    <Compile Include="CategoryEnum.cs" />
     <Compile Include="ConnectionStringHelper.cs" />
     <Compile Include="DAO\ExtendedInformationDao.cs" />
     <Compile Include="DAO\TravelOfferDao.cs" />

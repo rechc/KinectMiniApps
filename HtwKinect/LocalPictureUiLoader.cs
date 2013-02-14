@@ -11,7 +11,9 @@ using Database.DAO;
 
 namespace HtwKinect
 {
-    /*Diese Klasse lädt lokale Testbilder in die LoopList*/
+    /// <summary>
+    /// Diese Klasse lädt lokale Testbilder in die LoopList.
+    /// </summary>
     class LocalPictureUiLoader : IUiLoader
     {
         public void LoadElementsIntoList(KinectProjectUiBuilder kinectProjectUiBuilder)
@@ -21,11 +23,21 @@ namespace HtwKinect
             for (int i = 0; i < paths.Count(); i++) {
                 Grid grid = new Grid();
                 BuildBackground(grid, paths[i]);
-                BuildGreenScreen(grid);
-                BuildAccessoryScreen(grid);
                 BuildInfoBox(grid, i);
                 list.Add(grid);
             }
+            try
+            {
+                MiniGame.MiniGameControl mg = new MiniGame.MiniGameControl();
+                mg.Start(KinectHelper.Instance.Sensor);
+                KinectHelper.Instance.ReadyEvent += (sender, _) => Instance_ReadyEvent(mg);
+                list.Add(mg);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
             kinectProjectUiBuilder.AddRow("Top", list);
 
             list = new List<FrameworkElement>();
@@ -34,8 +46,6 @@ namespace HtwKinect
             {
                 Grid grid = new Grid();
                 BuildBackground(grid, paths[i]);
-                BuildGreenScreen(grid);
-                BuildAccessoryScreen(grid);
                 BuildInfoBox(grid, i);
                 list.Add(grid);
             }
@@ -48,12 +58,16 @@ namespace HtwKinect
             {
                 Grid grid = new Grid();
                 BuildBackground(grid, paths[i]);
-                BuildGreenScreen(grid);
-                BuildAccessoryScreen(grid);
                 BuildInfoBox(grid, i);
                 list.Add(grid);
             }
             kinectProjectUiBuilder.AddRow("Snow", list);
+        }
+
+        void Instance_ReadyEvent(MiniGame.MiniGameControl mg)
+        {
+            mg.MinigameSkeletonEvent(KinectHelper.Instance.GetFixedSkeleton(), KinectHelper.Instance.DepthImagePixels, KinectHelper.Instance.ColorPixels);
+            KinectHelper.Instance.SetTransform(mg);
         }
 
         #region BackgroundPicture
@@ -67,66 +81,6 @@ namespace HtwKinect
             catch
             {
             }
-        }
-        #endregion
-
-        #region GreenScreen
-        private void BuildGreenScreen(Grid grid)
-        {
-            try
-            {
-                var instance = KinectHelper.Instance;
-                var gsc = new GreenScreenControl.GreenScreenControl();
-                gsc.Start(instance.Sensor, false);
-                instance.ReadyEvent += (sender, args) => RenderGreenScreen(gsc);
-                grid.Children.Add(gsc);
-            }
-            catch
-            {
-                //TODO logging
-                //Dieser Try Catch ist dazu da, damit die Bilder geladen werden können, auch wenn kein Kinectsensor angeschloßen ist.
-            }
-        }
-
-        private void RenderGreenScreen(GreenScreenControl.GreenScreenControl greenScreenControl)
-        {
-            if (((FrameworkElement)greenScreenControl.Parent).Parent == null)
-            {
-                return; //nur auf dingen die auch angezeigt werden bitte, danke.
-            }
-            var instance = KinectHelper.Instance;
-            greenScreenControl.InvalidateVisual(instance.DepthImagePixels, instance.ColorPixels);
-            TansformFrameworkElement(greenScreenControl);
-        }
-        #endregion
-
-        #region AccessoryLib
-        private void BuildAccessoryScreen(Grid grid)
-        {
-            try
-            {
-                var kinectHelper = KinectHelper.Instance;
-                AccessoryItem hat = new AccessoryItem(AccessoryPositon.Hat, @"images\Accessories\Hat.png", 0.25);
-                var accessoryControl = new AccessoryControl();
-                accessoryControl.AccessoryItems.Add(hat);
-                accessoryControl.Start(kinectHelper.Sensor);
-                kinectHelper.ReadyEvent += (sender, args) => RenderAccessoryItems(accessoryControl);
-                grid.Children.Add(accessoryControl);
-            }
-            catch
-            {
-            }
-        }
-
-        private void RenderAccessoryItems(AccessoryControl accessoryControl)
-        {
-            if (((FrameworkElement)accessoryControl.Parent).Parent == null)
-            {
-                return; //nur auf dingen die auch angezeigt werden bitte, danke.
-            }
-            var instance = KinectHelper.Instance;
-            accessoryControl.SetSkeletons(instance.Skeletons);
-            TansformFrameworkElement(accessoryControl);
         }
         #endregion
 
@@ -147,11 +101,6 @@ namespace HtwKinect
         }
 
         #endregion
-
-        private void TansformFrameworkElement(FrameworkElement frameworkElement)
-        {
-            KinectHelper.Instance.SetTransform(frameworkElement);
-        }
 
     }
 }

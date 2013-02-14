@@ -147,10 +147,6 @@
       <Project>{b2aace14-c7f6-4615-9f1f-228f13780687}</Project>
       <Name>GreenScreenLib</Name>
     </ProjectReference>
-    <ProjectReference Include="..\HandDetection\HandDetection.csproj">
-      <Project>{5329d417-7747-4e92-8f9a-296aa39035bd}</Project>
-      <Name>HandDetection</Name>
-    </ProjectReference>
     <ProjectReference Include="..\InfoBanner\InfoBanner.csproj">
       <Project>{9956b89b-396e-465e-a8bd-19f6dc48b978}</Project>
       <Name>InfoBanner</Name>
@@ -159,9 +155,17 @@
       <Project>{0ef01833-063f-498f-b8ac-7744902a2efd}</Project>
       <Name>LoopList</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MiniGame\MiniGame.csproj">
+      <Project>{76af13bc-d9eb-41fa-9c5e-26ee2f2e8a6b}</Project>
+      <Name>MiniGame</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PeopleDetector\PeopleDetector.csproj">
       <Project>{a6b20949-7a88-4e88-b857-f57f02546a54}</Project>
       <Name>PeopleDetector</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RectNavigation\RectNavigation.csproj">
+      <Project>{0403dfbc-a535-4713-bd81-b824f69e7bc1}</Project>
+      <Name>RectNavigation</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -189,6 +193,123 @@
     <Content Include="images\Beach\BeachPescara %287%29.JPG">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="images\Beach\blankenberge.jpg" />
+    <Resource Include="images\Beach\domrep.jpg" />
+    <Resource Include="images\Beach\fuerteventura.jpg" />
+    <Resource Include="images\Beach\grancanaria.jpg" />
+    <Resource Include="images\Snow\greatdivide.jpg" />
+    <Resource Include="images\Beach\haweii.jpg" />
+    <Resource Include="images\Beach\ibiza.jpg" />
+    <Resource Include="images\Beach\mallorca.jpg" />
+    <Resource Include="images\Beach\mauritius.jpg" />
+    <Resource Include="images\Beach\nordsee.jpg" />
+    <Resource Include="images\Beach\ruegen.jpg" />
+    <Content Include="images\Bilder\Street\StreetBackground1.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Bilder\Street\StreetBackground2.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Bilder\Street\StreetObject1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Bilder\Street\StreetObject2.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Bilder\Street\StreetObject3.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Bilder\Street\StreetObject4.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Bilder\Street\StreetObject5.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Bilder\Street\StreetObject6.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Bilder\Mountain\MountainBackground1.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Bilder\Mountain\MountainBackground2.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Bilder\Mountain\MountainObject1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Bilder\Mountain\MountainObject2.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Bilder\Mountain\MountainObject3.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Bilder\Mountain\MountainObject4.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Bilder\Mountain\MountainObject5.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Bilder\Mountain\MountainObject6.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Bilder\Summer\SummerBackground1.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Bilder\Summer\SummerBackground2.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Bilder\Summer\SummerObject1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Bilder\Summer\SummerObject2.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Bilder\Summer\SummerObject3.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Bilder\Summer\SummerObject4.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Bilder\Summer\SummerObject5.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Bilder\Summer\SummerObject6.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Bilder\Winter\WinterBackground1.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Bilder\Winter\WinterBackground2.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Bilder\Winter\WinterObject1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Bilder\Winter\WinterObject2.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Bilder\Winter\WinterObject3.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Bilder\Winter\WinterObject4.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Bilder\Winter\WinterObject5.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Bilder\Winter\WinterObject6.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Resource Include="images\City\amsterdam.jpg" />
+    <Resource Include="images\City\berlin.jpg" />
+    <Resource Include="images\City\hamburg.jpg" />
+    <Resource Include="images\City\lasvegas.jpg" />
+    <Resource Include="images\City\london.jpg" />
+    <Resource Include="images\City\newyork.jpg" />
+    <Resource Include="images\City\paris.jpg" />
+    <Resource Include="images\City\sanfrancisco.jpg" />
+    <Resource Include="images\City\sydney.jpg" />
+    <Resource Include="images\City\wien.jpg" />
     <Content Include="images\ScreenDummies\Screen1.jpg.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -198,6 +319,15 @@
     <Content Include="images\ScreenDummies\ws-mockups.006.jpg.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="images\Snow\banff.jpg" />
+    <Resource Include="images\Snow\ischgl.jpg" />
+    <Resource Include="images\Snow\kitzbuehl.jpg" />
+    <Resource Include="images\Snow\lesarcs.jpg" />
+    <Resource Include="images\Snow\schladming.jpg" />
+    <Resource Include="images\Snow\verbier.jpg" />
+    <Resource Include="images\Snow\wallis.jpg" />
+    <Resource Include="images\Snow\whistler.jpg" />
+    <Resource Include="images\Snow\zermatt.jpg" />
     <Content Include="images\Top\mokup.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -216,6 +346,15 @@
     <Content Include="images\Top\IMG_0844.JPG">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="images\Wander\adeche.jpg" />
+    <Resource Include="images\Wander\andalusien.jpg" />
+    <Resource Include="images\Wander\badlandsnationalpark.jpg" />
+    <Resource Include="images\Wander\bayrischerwald.jpg" />
+    <Resource Include="images\Wander\china.jpg" />
+    <Resource Include="images\Wander\grandcanyon.jpg" />
+    <Resource Include="images\Wander\ireland.jpg" />
+    <Resource Include="images\Wander\plälzerwald.jpg" />
+    <Resource Include="images\Wander\yellowstone.jpg" />
     <Content Include="Microsoft.Kinect.Toolkit.FaceTracking.dll" />
   </ItemGroup>
   <ItemGroup>
