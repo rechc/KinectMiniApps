@@ -339,7 +339,7 @@ namespace MiniGame
 
         private void RenderGreenScreen()
         {
-            _gsc.InvalidateVisual(_depthImagePixels, _colorPixels);
+            _gsc.RenderImageData(_depthImagePixels, _colorPixels);
         }
         
         /**
