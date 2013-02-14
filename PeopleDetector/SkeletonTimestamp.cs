@@ -3,33 +3,19 @@ using System;
 
 namespace PeopleDetector
 {
-    public class SkeletonTimestamp
+    public struct SkeletonTimestamp
     {
-        private Skeleton skeleton;
+        private Skeleton _skeleton;
+        private DateTime _timestamp;
 
-        public SkeletonTimestamp(Skeleton skeleton) : this(skeleton,DateTime.Now)
+        public SkeletonTimestamp(Skeleton skeleton)
         {
+            _skeleton = skeleton;
+            _timestamp = DateTime.Now;
         }
 
-        public SkeletonTimestamp(Skeleton skeleton, DateTime timestamp)
-        {
-            this.Skeleton = skeleton;
-            this.Timestamp = DateTime.Now;
-        }
+        public Skeleton Skeleton { get { return _skeleton; } }
 
-        public Skeleton Skeleton
-        {
-            get
-            {
-                return skeleton;
-            }
-            set
-            {
-                skeleton = value;
-                Timestamp = DateTime.Now;
-            }
-        }
-
-        public DateTime Timestamp { get; private set; }
+        public DateTime Timestamp { get { return _timestamp; } }
     }
 }
