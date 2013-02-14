@@ -108,7 +108,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                 }
             }
 
-            peopleDetector.Skeletons = skeletons;
+            peopleDetector.TrackSkeletons(skeletons);
 
             this.LblErkanntOutput.Content = peopleDetector.GetPositionOnlyPeople().Count;
             this.LblTrackedOutput.Content = peopleDetector.GetTrackedPeople().Count;

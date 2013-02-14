@@ -249,7 +249,7 @@ namespace Antialiasing
             // so that we return resources to the kinect as soon as possible
             if (depthReceived && colorReceived)
             {
-                GreenScreen.InvalidateVisual(depthPixels, colorPixels);
+                GreenScreen.RenderImageData(depthPixels, colorPixels);
             }
         }
 
