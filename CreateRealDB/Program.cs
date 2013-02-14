@@ -88,16 +88,16 @@ namespace CreateRealDB
             CreateOffers(659, "SanFrancisco", 4, "Hotel Blondie", "Flugreise", 7, "Halbpension", CategoryEnum.City, "images/City/sanfrancisco.jpg", false, "", "", "");
             CreateOffers(899, "Sidney", 5, "Hotel Kängurus", "Flugreise", 14, "Halbpension", CategoryEnum.City, "images/City/sidney.jpg", true, "", "", "");
 
-            CreateOffers(150, "Blankenberge", 3, "Hotel", "eigene Anreise", 5, "Halbpension", CategoryEnum.Beach, "images/Beach/blankenberge.jpg", true, "", "", "");
-            CreateOffers(299, "DominikanischeRepublik", 3, "Hotel", "Flugreise", 6, "Halbpension", CategoryEnum.Beach, "images/Beach/domrep.jpg", true, "", "", "");
-            CreateOffers(329, "Fuerteventura", 3, "Hotel", "Flugreise", 5, "Vollpension", CategoryEnum.Beach, "images/Beach/fuerteventura.jpg", true, "", "", "");
-            CreateOffers(199, "grancanaria", 3, "Hotel", "Flugreise", 5, "Halbpension", CategoryEnum.Beach, "images/Beach/grancanaria.jpg", true, "", "", "");
-            CreateOffers(199, "haweii", 3, "Hotel", "Flugreise", 5, "Halbpension", CategoryEnum.Beach, "images/Beach/haweii.jpg", true, "", "", "");
-            CreateOffers(199, "ibiza", 3, "Hotel", "Flugreise", 5, "Halbpension", CategoryEnum.Beach, "images/Beach/ibiza.jpg", true, "", "", "");
-            CreateOffers(199, "mallorca", 3, "Hotel", "Flugreise", 5, "Halbpension", CategoryEnum.Beach, "images/Beach/mallorca.jpg", true, "", "", "");
-            CreateOffers(199, "mauritius", 3, "Hotel", "Flugreise", 5, "Halbpension", CategoryEnum.Beach, "images/Beach/mauritius.jpg", true, "", "", "");
-            CreateOffers(199, "nordsee", 3, "Hotel", "Flugreise", 5, "Halbpension", CategoryEnum.Beach, "images/Beach/nordsee.jpg", true, "", "", "");
-            CreateOffers(199, "ruegen", 3, "Hotel", "Flugreise", 5, "Halbpension", CategoryEnum.Beach, "images/Beach/ruegen.jpg", true, "", "", "");
+            CreateOffers(150, "Blankenberge", 3, "Hotel Belgie", "eigene Anreise", 5, "Halbpension", CategoryEnum.Beach, "images/Beach/blankenberge.jpg", false, "", "", "");
+            CreateOffers(219, "DominikanischeRepublik", 3, "Apartment de Sol", "Flugreise", 6, "Selbstverpflegung", CategoryEnum.Beach, "images/Beach/domrep.jpg", false, "", "", "");
+            CreateOffers(329, "Fuerteventura", 4, "Hotel Ventura", "Flugreise", 5, "Vollpension", CategoryEnum.Beach, "images/Beach/fuerteventura.jpg", false, "", "", "");
+            CreateOffers(399, "Gran Canaria", 3, "Avenida de Canar", "Schiffsfahrt", 5, "Halbpension", CategoryEnum.Beach, "images/Beach/grancanaria.jpg", false, "", "", "");
+            CreateOffers(199, "Haweii", 3, "Magma Palace", "Flugreise", 5, "Halbpension", CategoryEnum.Beach, "images/Beach/haweii.jpg", true, "", "", "");
+            CreateOffers(349, "Ibiza", 4, "Hotel Itzibitzi", "Flugreise", 4, "Halbpension", CategoryEnum.Beach, "images/Beach/ibiza.jpg", true, "", "", "");
+            CreateOffers(199, "Mallorca", 3, "Motel zum Bierkönig", "Flugreise", 5, "Halbpension", CategoryEnum.Beach, "images/Beach/mallorca.jpg", false, "", "", "");
+            CreateOffers(199, "Mauritius", 3, "Hotel Maurer", "Flugreise", 5, "Halbpension", CategoryEnum.Beach, "images/Beach/mauritius.jpg", true, "", "", "");
+            CreateOffers(99, "Nordsee", 3, "Zum trockenen Watt", "eigene Anreise", 5, "Halbpension", CategoryEnum.Beach, "images/Beach/nordsee.jpg", false, "", "", "");
+            CreateOffers(199, "Rügen", 3, "Zum goldenen Strand", "Fähre", 5, "Vollpension", CategoryEnum.Beach, "images/Beach/ruegen.jpg", false, "", "", "");
 
         }
        
