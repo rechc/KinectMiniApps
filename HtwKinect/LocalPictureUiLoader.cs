@@ -11,7 +11,9 @@ using Database.DAO;
 
 namespace HtwKinect
 {
-    /*Diese Klasse lädt lokale Testbilder in die LoopList*/
+    /// <summary>
+    /// Diese Klasse lädt lokale Testbilder in die LoopList.
+    /// </summary>
     class LocalPictureUiLoader : IUiLoader
     {
         public void LoadElementsIntoList(KinectProjectUiBuilder kinectProjectUiBuilder)
@@ -24,10 +26,17 @@ namespace HtwKinect
                 BuildInfoBox(grid, i);
                 list.Add(grid);
             }
-            MiniGame.MainWindow mg = new MiniGame.MainWindow();
-            mg.Start(KinectHelper.Instance.Sensor);
-            KinectHelper.Instance.ReadyEvent += (sender, _) => Instance_ReadyEvent(mg);
-            list.Add(mg);
+            try
+            {
+                MiniGame.MiniGameControl mg = new MiniGame.MiniGameControl();
+                mg.Start(KinectHelper.Instance.Sensor);
+                KinectHelper.Instance.ReadyEvent += (sender, _) => Instance_ReadyEvent(mg);
+                list.Add(mg);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
 
             kinectProjectUiBuilder.AddRow("Top", list);
 
@@ -55,7 +64,7 @@ namespace HtwKinect
             kinectProjectUiBuilder.AddRow("Snow", list);
         }
 
-        void Instance_ReadyEvent(MiniGame.MainWindow mg)
+        void Instance_ReadyEvent(MiniGame.MiniGameControl mg)
         {
             mg.MinigameSkeletonEvent(KinectHelper.Instance.GetFixedSkeleton(), KinectHelper.Instance.DepthImagePixels, KinectHelper.Instance.ColorPixels);
             KinectHelper.Instance.SetTransform(mg);

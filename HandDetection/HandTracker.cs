@@ -1,14 +1,12 @@
 ﻿using Microsoft.Kinect;
 using System;
 
-/**
- * Mögliche Erweiterungen/ Verbesserungen
- * Handausschnitt über z achse anpassen und variabel halten. --- ok
- * Abweichungswerte nicht Hardcodieren, sondern über static --- ok
- * das proof of concept als queue mit variabler stabilität/länge einbinden --- ok
- * Nun kann eigentlich nur noch der algorithmus zum erkennen verbessert werden ... 
- * eine Möglichkeit Handausrichtung erkennen ... oben seite unten .... und algorithmus diesbezüglich optimieren
- */
+// Mögliche Erweiterungen/ Verbesserungen
+// Handausschnitt über z achse anpassen und variabel halten. --- ok
+// Abweichungswerte nicht Hardcodieren, sondern über static --- ok
+// das proof of concept als queue mit variabler stabilität/länge einbinden --- ok
+// Nun kann eigentlich nur noch der algorithmus zum erkennen verbessert werden ...
+// eine Möglichkeit Handausrichtung erkennen ... oben seite unten .... und algorithmus diesbezüglich optimieren
 
 namespace HandDetection
 {
@@ -103,14 +101,11 @@ namespace HandDetection
             return HandStatus.Closed;
         }
 
-        /**
-         * computes the cout out of the hand, with the help of z position 
-         */
         public int ComputeHandSize(Joint handJoint)
         {
             const double g = 0.22; // Objektgroesse in m.
             double r = handJoint.Position.Z;  // Entfernung in m.
-            double imgWidth = 2 * Math.Atan(g / (2 * r)) * 600/*(px / g)*/;
+            double imgWidth = 2 * Math.Atan(g / (2 * r)) * 600;
             return (int)imgWidth;
         }
 

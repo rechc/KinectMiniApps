@@ -183,6 +183,18 @@ namespace LoopList
             RootGrid.Clip = new RectangleGeometry(new Rect(0, 0, ActualWidth, ActualHeight));
         }
 
+        public double GetDraggableHLength()
+        {
+            return _right.ActualWidth * _autoDrag;
+        }
+
+
+        public double GetDraggableVLength()
+        {
+            return _right.ActualHeight * _autoDrag;
+        }
+
+
         private void FireScrolled(LoopListArgs args)
         {
             if (args == null) throw new ArgumentNullException("args");

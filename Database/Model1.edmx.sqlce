@@ -2,8 +2,8 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server Compact Edition
 -- --------------------------------------------------
--- Date Created: 02/09/2013 10:01:30
--- Generated from EDMX file: K:\workspace\KinectMiniApps\Database\Model1.edmx
+-- Date Created: 02/14/2013 11:34:25
+-- Generated from EDMX file: D:\Development Repos\KinectWindowShopping\KinectMiniApps\Database\Model1.edmx
 -- --------------------------------------------------
 
 
@@ -24,7 +24,7 @@ GO
 
     DROP TABLE [TravelOfferSet];
 GO
-    DROP TABLE [CountrySet];
+    DROP TABLE [CategorySet];
 GO
     DROP TABLE [ExtendedInformationSet];
 GO
