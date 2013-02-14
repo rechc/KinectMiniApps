@@ -24,10 +24,17 @@ namespace HtwKinect
                 BuildInfoBox(grid, i);
                 list.Add(grid);
             }
-            MiniGame.MainWindow mg = new MiniGame.MainWindow();
-            mg.Start(KinectHelper.Instance.Sensor);
-            KinectHelper.Instance.ReadyEvent += (sender, _) => Instance_ReadyEvent(mg);
-            list.Add(mg);
+            try
+            {
+                MiniGame.MainWindow mg = new MiniGame.MainWindow();
+                mg.Start(KinectHelper.Instance.Sensor);
+                KinectHelper.Instance.ReadyEvent += (sender, _) => Instance_ReadyEvent(mg);
+                list.Add(mg);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
 
             kinectProjectUiBuilder.AddRow("Top", list);
 

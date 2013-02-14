@@ -150,8 +150,15 @@ namespace HtwKinect
         private void WindowLoaded(object sender, RoutedEventArgs e)
         {
             _peopleDetector = new PeoplePositionDetector();
-            KinectHelper kh = KinectHelper.Instance;
-            kh.ReadyEvent += PeopleDetectorSkeletonEvent;
+            try
+            {
+                KinectHelper kh = KinectHelper.Instance;
+                kh.ReadyEvent += PeopleDetectorSkeletonEvent;
+            }
+            catch (Exception exc)
+            {
+                Console.WriteLine(exc.Message);
+            }
         }
 
         /**
