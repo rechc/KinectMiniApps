@@ -39,6 +39,7 @@ namespace HtwKinect.StateViews
                 AccessoryItem hat = new AccessoryItem(AccessoryPositon.Hat, @"images\Accessories\Hat.png", 0.25);
                 Accessories.AccessoryItems.Add(hat);
                 Accessories.Start(helper.Sensor);
+                RectNavigationControl.Start(helper.Sensor);
             }
             catch (Exception exc)
             {
@@ -87,11 +88,14 @@ namespace HtwKinect.StateViews
         {
             var helper = KinectHelper.Instance;
             Skeleton skeleton = helper.GetFixedSkeleton();
+            if (skeleton != null)
+                RectNavigationControl.GestureRecognition(skeleton);
             ProcessSkeleton(skeleton);
             GreenScreen.RenderImageData(helper.DepthImagePixels, helper.ColorPixels);
             Accessories.SetSkeletons(helper.Skeletons);
             KinectHelper.Instance.SetTransform(GreenScreen);
             KinectHelper.Instance.SetTransform(Accessories);
+            KinectHelper.Instance.SetTransform(RectNavigationControl);
         }
 
         private void ProcessSkeleton(Skeleton skeleton)

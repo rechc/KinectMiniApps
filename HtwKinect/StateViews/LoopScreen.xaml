@@ -2,9 +2,14 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:LoopList="clr-namespace:LoopList;assembly=LoopList"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:GreenScreenControl="clr-namespace:GreenScreenControl;assembly=GreenScreenControl"
         xmlns:AccessoryLib="clr-namespace:AccessoryLib;assembly=AccessoryLib"
-        x:Class="HtwKinect.StateViews.MainWindow">
+        xmlns:RectNavigation="clr-namespace:RectNavigation;assembly=RectNavigation"
+        mc:Ignorable="d"
+        x:Class="HtwKinect.StateViews.MainWindow"
+        d:DesignHeight="300" d:DesignWidth="600" >
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
@@ -17,5 +22,6 @@
         <Rectangle x:Name="KinectVibratingRectangle" Width="50" Height="50" Fill="Red" Stroke="Black" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="150,50,0,0" Visibility="Collapsed"/>
         <GreenScreenControl:GreenScreenControl x:Name="GreenScreen" Grid.Column="1" Margin="25" IsHitTestVisible="False"/>
         <AccessoryLib:AccessoryControl x:Name="Accessories" Grid.Column="1" Margin="25" IsHitTestVisible="False"/>
+        <RectNavigation:RectNavigationControl Grid.Column="1" x:Name="RectNavigationControl" IsHitTestVisible="False"/>
     </Grid>
 </UserControl>
