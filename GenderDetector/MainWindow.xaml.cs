@@ -151,12 +151,10 @@ namespace GenderDetector
             String path = System.IO.Path.Combine(myPhotos, "KinectSnapshot-" + time + ".png");
 
             // Speichern des Bildes
-            FileStream fs;
-            using (fs = new FileStream(path, FileMode.Create))
+            using (FileStream fs = new FileStream(path, FileMode.Create))
             {
                 encoder.Save(fs);
             }
-            fs.Close();
 
             return path;
         }

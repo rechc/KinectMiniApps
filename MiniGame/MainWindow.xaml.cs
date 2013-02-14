@@ -24,7 +24,7 @@ namespace MiniGame
     public partial class MainWindow
     {
 
-   	    private List<GridObjects> _gridObjects= new List<GridObjects>();
+        private List<GridObjects> _gridObjects= new List<GridObjects>();
         private FallWorker _fallWorker;
         private Viewbox _playerBox;
         private String _imagePath;
@@ -61,7 +61,7 @@ namespace MiniGame
             InitializeComponent();
         }
 
-	    public void Start(KinectSensor sensor)
+        public void Start(KinectSensor sensor)
         {
             _sensor = sensor;
         }
