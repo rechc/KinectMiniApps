@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data.EntityClient;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Transactions;
 using Database;
 
@@ -58,7 +53,8 @@ namespace Generate_DB_Data
                                 TravelType = travelType[GetRandomInteger(0, travelType.Count() - 1)],
                                 HotelRating = GetRandomInteger(1,5),
                                 CategoryId = GetRandomInteger(1, _context.CategorySet.Count()),
-                                TopOffer = (GetRandomInteger(1,4) == 4) ? true : false,
+                                TopOffer = (GetRandomInteger(1,4) == 4),
+                                ImgPath = "imagepath",
                             };
 
             var count = GetRandomInteger(0, 4);

@@ -5,27 +5,36 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 
 namespace Generate_DB_Data
 {
     partial class CreateData
     {
-        public Image ByteArrayToImage(byte[] fileBytes)
+        public BitmapImage ByteToImage(byte bytes)
         {
-            using (MemoryStream memStream = new MemoryStream(fileBytes))
+            BitmapImage btm;
+            using (MemoryStream ms = new MemoryStream(bytes))
             {
-                return Image.FromStream(memStream);
+                btm = new BitmapImage();
+                btm.BeginInit();
+                btm.StreamSource = ms;
+                btm.CacheOption = BitmapCacheOption.OnLoad;
+                btm.EndInit();
+                btm.Freeze();
+            }
+            return btm;
+        }
+
+        public byte ImageToByte(BitmapImage imageSource)
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                imageSource.StreamSource.CopyTo(ms); //todo doesnt work so
+                return Convert.ToByte(ms.ToString());
             }
         }
 
-        public byte[] ImageToByteArray(Image imageIn)
-        {
-            using (MemoryStream memStream = new MemoryStream())
-            {
-                imageIn.Save(memStream, System.Drawing.Imaging.ImageFormat.Gif);
-                return memStream.ToArray();
-            }
-        }
 
     }
 }
