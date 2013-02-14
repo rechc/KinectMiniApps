@@ -8,8 +8,7 @@ namespace Database
 {
     public enum CategoryEnum
     {
-        Top,
-        Beach,
+        Beach =1,
         Ski,
         City,
         Wander
