@@ -144,9 +144,9 @@ namespace HtwKinect
 
         #region PeopleDetector and Window start exit
 
-        /**
-         * Wird beim Windowstart aufgerufen
-         */
+        /// <summary>
+        /// Wird nach dem Laden des Fensters aufgerufen.
+        /// </summary>
         private void WindowLoaded(object sender, RoutedEventArgs e)
         {
             _peopleDetector = new PeoplePositionDetector();
@@ -161,17 +161,17 @@ namespace HtwKinect
             }
         }
 
-        /**
-         * Wird beim beenden aufgerufen
-         */
+        /// <summary>
+        /// Wird beim Schliessen des Fensters aufgerufen.
+        /// </summary>
         private void WindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Console.WriteLine("Joke: Fenster Klose");
         }
 
-        /**
-         * Event Skeleton für PeopleDetector
-         */ 
+        /// <summary>
+        /// Event Skeleton für PeopleDetector.
+        /// </summary>
         private void PeopleDetectorSkeletonEvent(object sender, EventArgs e)
         {
             _peopleDetector.TrackSkeletons(KinectHelper.Instance.Skeletons);

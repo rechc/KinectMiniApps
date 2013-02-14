@@ -4,16 +4,15 @@ namespace HtwKinect
 {
     interface ISwitchableUserControl
     {
-        /**
-         * stops showing this UserControl in GUI
-         * @returns the lastTravel
-         */
+        /// <summary>
+        /// Stops showing this UserControl in GUI.
+        /// </summary>
+        /// <returns>Returns the last travel.</returns>
         TravelOffer StopDisplay();
 
-        /**
-         * starts showing this UserControl with specified Travel
-         */
+        /// <summary>
+        /// Starts showing this UserControl with specified Travel.
+        /// </summary>
         void StartDisplay(TravelOffer lastTravel);
-
     }
 }

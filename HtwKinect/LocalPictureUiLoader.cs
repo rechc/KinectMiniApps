@@ -11,7 +11,9 @@ using Database.DAO;
 
 namespace HtwKinect
 {
-    /*Diese Klasse lädt lokale Testbilder in die LoopList*/
+    /// <summary>
+    /// Diese Klasse lädt lokale Testbilder in die LoopList.
+    /// </summary>
     class LocalPictureUiLoader : IUiLoader
     {
         public void LoadElementsIntoList(KinectProjectUiBuilder kinectProjectUiBuilder)

@@ -9,9 +9,9 @@ using System.Windows.Media.Imaging;
 
 namespace GenderDetector
 {
-    /**
-     * Klasse zur Alterbestimmung
-     */
+    /// <summary>
+    /// Klasse zur Alterbestimmung.
+    /// </summary>
     public partial class MainWindow
     {
         private KinectSensor _kinectSensor;
@@ -41,9 +41,9 @@ namespace GenderDetector
             this.Image.Source = this.colorBitmap;
         }
 
-        /**
-         * EventHandler zum Zeichnen des Bildes
-         */
+        /// <summary>
+        /// EventHandler zum Zeichnen des Bildes.
+        /// </summary>
         public void SensorColorFrameReady(Skeleton skeleton, byte[] colorImagePoints)
         {
             // Write the pixel data into our bitmap
@@ -57,9 +57,9 @@ namespace GenderDetector
 
         }
 
-        /**
-         * Hauptfunction zur Altersbestimmung
-         */
+        /// <summary>
+        /// Hauptfunction zur Altersbestimmung.
+        /// </summary>
         private void GenderCheck(object sender, RoutedEventArgs e)
         {
             new Thread((ThreadStart)delegate
@@ -98,18 +98,18 @@ namespace GenderDetector
             }).Start();
         }
 
-        /**
-         * Initialisiert den Rest Service
-         */
+        /// <summary>
+        /// Initialisiert den Rest Service.
+        /// </summary>
         private void InitializeService()
         {
             client = new FCClient("5f228f0a0ce14e86a7c901f62ca5a569", "1231e9f2e95d4d90adf436e3de20f0f6");
             result = client.Account.EndAuthenticate(client.Account.BeginAuthenticate(null, null));
         }
 
-        /**
-         * Schneidet den Kopf aus der colorBitmap wenn eine Person erkannt wird
-         */
+        /// <summary>
+        /// Schneidet den Kopf aus der colorBitmap wenn eine Person erkannt wird.
+        /// </summary>
         private CroppedBitmap CropBitmap(WriteableBitmap colorBitmap) 
         {
             int width = 120;
@@ -134,9 +134,9 @@ namespace GenderDetector
             return null;
         }
 
-        /**
-         * Speichert den Screenshort zur späteren Verwendung
-         */
+        /// <summary>
+        /// Speichert den Screenshort zur späteren Verwendung.
+        /// </summary>
         private String SaveScreenshot(BitmapSource colorBitmap)
         {
             // Erzeugt den Encoder zum Speichern eines JPG
@@ -159,9 +159,9 @@ namespace GenderDetector
             return path;
         }
 
-        /**
-         * Sendet das Bild an den Rest Service und speichert das Ergebnis
-         */
+        /// <summary>
+        /// Sendet das Bild an den Rest Service und speichert das Ergebnis.
+        /// </summary>
         private void CalculateGender(String path)
         {
             Stream stream = System.IO.File.OpenRead(path);
@@ -169,9 +169,9 @@ namespace GenderDetector
             stream.Close();
         }
 
-        /**
-         * Setzt die Attribute und die WPF Elemente nach einem Request
-         */
+        /// <summary>
+        /// Setzt die Attribute und die WPF Elemente nach einem Request.
+        /// </summary>
         private void SetAttributes()
         {
             if (result.Photos[0].Tags.Count == 0)

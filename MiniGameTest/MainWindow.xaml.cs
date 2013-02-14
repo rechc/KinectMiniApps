@@ -23,10 +23,6 @@ namespace MiniGameTest
     /// </summary>
     public partial class MainWindow : Window
     {
-
-        /**
-         * Konstruktor
-         */
         public MainWindow()
         {
             InitializeComponent();
