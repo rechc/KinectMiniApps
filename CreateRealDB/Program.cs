@@ -14,32 +14,40 @@ namespace CreateRealDB
 
         private void CreateCountryEntries()
         {
-                //string[] countries = {"Spanien", "Deutschland", "USA", "Mallorca", "Frankreich"};
-                foreach (var countryName in Enum.GetNames(typeof(CategoryEnum)))
+            //string[] countries = {"Spanien", "Deutschland", "USA", "Mallorca", "Frankreich"};
+            foreach (var countryName in Enum.GetNames(typeof(CategoryEnum)))
+            {
+                if (countryName == "City")
+                {
+                    var c = new Category() { CategoryName = "Städtereise" };
+                    _context.CategorySet.Add(c);
+                }
+                else
                 {
                     var c = new Category() { CategoryName = countryName };
                     _context.CategorySet.Add(c);
-                } 
+                }
+            }
         }
 
         private void SaveToDb()
         {
-                try
-                {
-                   _context.SaveChanges(); 
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.ToString());
-                    Console.WriteLine("Error in entry. Start db rollback");
-                }
+            try
+            {
+                _context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                Console.WriteLine("Error in entry. Start db rollback");
+            }
         }
 
         public void CreateOffers(int price, String place, int rating, String hotelname, String anfahrt, int daycount, String futtertyp, CategoryEnum category, String image, bool top, String zusatzinf, String zusatz2, String zusatz3)
         {
             var dao = new TravelOfferDao();
-            var offer = new TravelOffer() 
-            { 
+            var offer = new TravelOffer()
+            {
                 PricePerPerson = price,
                 Place = place,
                 HotelRating = rating,
@@ -47,7 +55,7 @@ namespace CreateRealDB
                 TravelType = anfahrt,
                 DayCount = daycount,
                 BoardType = futtertyp,
-                CategoryId = (int) category,
+                CategoryId = (int)category,
                 TopOffer = top,
             };
             ExtendedInformation ei = new ExtendedInformation()
@@ -75,11 +83,11 @@ namespace CreateRealDB
             dao.Save(offer);
         }
 
-        public void CreateMyOffers() 
+        public void CreateMyOffers()
         {
             //City
-            CreateOffers(169, "Amsterdam", 4, "Radisson Red", "Busreise", 3, "Frühstücksbüffet", CategoryEnum.City, "images/City/amsterdam.jpg", false, "Busabfahrt in Birkenfeld","","");
-            CreateOffers(290, "Berlin", 4, "Atlona", "Flugreise", 4, "Vollpension", CategoryEnum.City, "images/City/berlin.jpg", false,"Flug ab Saarbrücken","außer Montags","");
+            CreateOffers(169, "Amsterdam", 4, "Radisson Red", "Busreise", 3, "Frühstücksbüffet", CategoryEnum.City, "images/City/amsterdam.jpg", false, "Busabfahrt in Birkenfeld", "", "");
+            CreateOffers(290, "Berlin", 4, "Atlona", "Flugreise", 4, "Vollpension", CategoryEnum.City, "images/City/berlin.jpg", false, "Flug ab Saarbrücken", "außer Montags", "");
             CreateOffers(182, "Hamburg", 3, "Hotel hinterm Hafen", "Busreise", 3, "Halbpension", CategoryEnum.City, "images/City/hamburg.jpg", false, "vorm Hafen rechts", "", "");
             CreateOffers(205, "Paris", 3, "Best Ostern", "Zugreise", 2, "Halbpension", CategoryEnum.City, "images/City/paris.jpg", true, "Seine Rundfahrt möglich", "", "");
             CreateOffers(310, "Wien", 5, "Hotel Mozarto", "Flugreise", 4, "All Inclusive", CategoryEnum.City, "images/City/wien.jpg", false, "inkl. Besuch des Mozart Museum", "", "");
@@ -120,14 +128,14 @@ namespace CreateRealDB
             CreateOffers(1999, "Whistler", 5, "Five Seasons Resort", "Flugreise", 14, "Halbpension", CategoryEnum.Ski, "images/Snow/whistler.jpg", false, "inkl. Skipass", "inkl. Leihski", "Heliskiing zubuchbar");
             CreateOffers(499, "Zermatt", 3, "Garni Hotel Emma", "Zug", 5, "Frühstück", CategoryEnum.Ski, "images/Snow/zermatt.jpg", false, "Herrlicher Blick auf das Matterhorn", "Skibus Haltestelle direkt vorm Haus", "");
         }
-       
+
         public void FlushDbData()
         {
-                if (_context.Database.Exists())
-                {
-                  _context.Database.Delete();
-                }
-                _context.Database.CreateIfNotExists();
+            if (_context.Database.Exists())
+            {
+                _context.Database.Delete();
+            }
+            _context.Database.CreateIfNotExists();
         }
 
         static void Main(string[] args)
@@ -138,7 +146,7 @@ namespace CreateRealDB
                 dbf._context = con;
                 dbf.FlushDbData();
                 dbf.CreateCountryEntries();
-                dbf.SaveToDb(); 
+                dbf.SaveToDb();
             }
             dbf.CreateMyOffers();
         }
