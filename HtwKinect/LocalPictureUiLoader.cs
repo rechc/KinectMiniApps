@@ -21,8 +21,6 @@ namespace HtwKinect
             for (int i = 0; i < paths.Count(); i++) {
                 Grid grid = new Grid();
                 BuildBackground(grid, paths[i]);
-                BuildGreenScreen(grid);
-                BuildAccessoryScreen(grid);
                 BuildInfoBox(grid, i);
                 list.Add(grid);
             }
@@ -34,8 +32,6 @@ namespace HtwKinect
             {
                 Grid grid = new Grid();
                 BuildBackground(grid, paths[i]);
-                BuildGreenScreen(grid);
-                BuildAccessoryScreen(grid);
                 BuildInfoBox(grid, i);
                 list.Add(grid);
             }
@@ -48,8 +44,6 @@ namespace HtwKinect
             {
                 Grid grid = new Grid();
                 BuildBackground(grid, paths[i]);
-                BuildGreenScreen(grid);
-                BuildAccessoryScreen(grid);
                 BuildInfoBox(grid, i);
                 list.Add(grid);
             }
@@ -70,66 +64,6 @@ namespace HtwKinect
         }
         #endregion
 
-        #region GreenScreen
-        private void BuildGreenScreen(Grid grid)
-        {
-            try
-            {
-                var instance = KinectHelper.Instance;
-                var gsc = new GreenScreenControl.GreenScreenControl();
-                gsc.Start(instance.Sensor, false);
-                instance.ReadyEvent += (sender, args) => RenderGreenScreen(gsc);
-                grid.Children.Add(gsc);
-            }
-            catch
-            {
-                //TODO logging
-                //Dieser Try Catch ist dazu da, damit die Bilder geladen werden können, auch wenn kein Kinectsensor angeschloßen ist.
-            }
-        }
-
-        private void RenderGreenScreen(GreenScreenControl.GreenScreenControl greenScreenControl)
-        {
-            if (((FrameworkElement)greenScreenControl.Parent).Parent == null)
-            {
-                return; //nur auf dingen die auch angezeigt werden bitte, danke.
-            }
-            var instance = KinectHelper.Instance;
-            greenScreenControl.InvalidateVisual(instance.DepthImagePixels, instance.ColorPixels);
-            TansformFrameworkElement(greenScreenControl);
-        }
-        #endregion
-
-        #region AccessoryLib
-        private void BuildAccessoryScreen(Grid grid)
-        {
-            try
-            {
-                var kinectHelper = KinectHelper.Instance;
-                AccessoryItem hat = new AccessoryItem(AccessoryPositon.Hat, @"images\Accessories\Hat.png", 0.25);
-                var accessoryControl = new AccessoryControl();
-                accessoryControl.AccessoryItems.Add(hat);
-                accessoryControl.Start(kinectHelper.Sensor);
-                kinectHelper.ReadyEvent += (sender, args) => RenderAccessoryItems(accessoryControl);
-                grid.Children.Add(accessoryControl);
-            }
-            catch
-            {
-            }
-        }
-
-        private void RenderAccessoryItems(AccessoryControl accessoryControl)
-        {
-            if (((FrameworkElement)accessoryControl.Parent).Parent == null)
-            {
-                return; //nur auf dingen die auch angezeigt werden bitte, danke.
-            }
-            var instance = KinectHelper.Instance;
-            accessoryControl.SetSkeletons(instance.Skeletons);
-            TansformFrameworkElement(accessoryControl);
-        }
-        #endregion
-
         #region InfoBox
         private void BuildInfoBox(Grid grid, int dbId)
         {
@@ -147,11 +81,6 @@ namespace HtwKinect
         }
 
         #endregion
-
-        private void TansformFrameworkElement(FrameworkElement frameworkElement)
-        {
-            KinectHelper.Instance.SetTransform(frameworkElement);
-        }
 
     }
 }
