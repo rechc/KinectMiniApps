@@ -15,12 +15,13 @@ namespace HtwKinect.StateViews
 
         public Database.TravelOffer StopDisplay()
         {
-            throw new NotImplementedException();
+            // TODO implement
+            return null;
         }
 
         public void StartDisplay(Database.TravelOffer lastTravel)
         {
-            throw new NotImplementedException();
+            // TODO implement
         }
     }
 }

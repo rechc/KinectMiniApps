@@ -83,33 +83,33 @@ namespace HtwKinect
         private void StartSplashScreen() 
         {
             RemoveOldScreen();
-            _currentScreen = ScreenMode.Splash;
             if (_sscreen == null) 
             { 
                 _sscreen = new StateViews.SplashScreen();       
             }
             _sscreen.StartDisplay(StopLastScreenAndGetLastTravel());
-            _sscreen.StartNewOfferTimer(60000/6); //todo set better time intervall, now its 1/6 minutes
+            _currentScreen = ScreenMode.Splash;
+            _sscreen.StartNewOfferTimer(Properties.Settings.Default.PictureChangeIntervallMS); 
             Grid.SetRow(_sscreen, 1);
             GridX.Children.Add(_sscreen);
         }
 
         private void StartWalkScreen()
         {
-            RemoveOldScreen();
-            _currentScreen = ScreenMode.Walk;
+            RemoveOldScreen();   
             if (_walkScreen == null) { _walkScreen = new WalkScreen(); }
             _walkScreen.StartDisplay(StopLastScreenAndGetLastTravel());
+            _currentScreen = ScreenMode.Walk;
             Grid.SetRow(_walkScreen, 1);
             GridX.Children.Add(_walkScreen);
         }
 
         private void StartWalkandLookScreen()
         {
-            RemoveOldScreen();
-            _currentScreen = ScreenMode.WalkandLook;
+            RemoveOldScreen();  
             if (_walkLookScreen == null) { _walkLookScreen = new WalkAndLookScreen(); }
             _walkLookScreen.StartDisplay(StopLastScreenAndGetLastTravel());
+            _currentScreen = ScreenMode.WalkandLook;
             Grid.SetRow(_walkLookScreen, 1);
             GridX.Children.Add(_walkLookScreen);
         }
@@ -117,9 +117,9 @@ namespace HtwKinect
         private void StartMainScreen()
         {
             RemoveOldScreen();
-            _currentScreen = ScreenMode.MainScreen;
             if (_mainWindow == null) { _mainWindow = new LoopScreen(); }
             _mainWindow.StartDisplay(StopLastScreenAndGetLastTravel());
+            _currentScreen = ScreenMode.MainScreen;
             Grid.SetRow(_mainWindow, 1);
             GridX.Children.Add(_mainWindow);
         }
@@ -208,7 +208,7 @@ namespace HtwKinect
             }
             catch (Exception exc)
             {
-                Console.WriteLine(exc);
+                Console.WriteLine("Exception in WindowShopping: "+exc);
             }
             if (e.Handled == false && _currentScreen==ScreenMode.MainScreen && _mainWindow!=null) 
             {

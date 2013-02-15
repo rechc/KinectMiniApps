@@ -178,34 +178,41 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="images\Accessories\Hat.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Beach\BeachPescara %281%29.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="images\Beach\blankenberge.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Beach\BeachPescara %282%29.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="images\Beach\domrep.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Beach\BeachPescara %283%29.JPG">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="images\Beach\fuerteventura.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Beach\BeachPescara %286%29.JPG">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="images\Beach\grancanaria.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Beach\BeachPescara %287%29.JPG">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="images\Snow\greatdivide.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Resource Include="images\Beach\blankenberge.jpg" />
-    <Resource Include="images\Beach\domrep.jpg" />
-    <Resource Include="images\Beach\fuerteventura.jpg" />
-    <Resource Include="images\Beach\grancanaria.jpg" />
-    <Resource Include="images\Snow\greatdivide.jpg" />
-    <Resource Include="images\Beach\haweii.jpg" />
-    <Resource Include="images\Beach\ibiza.jpg" />
-    <Resource Include="images\Beach\mallorca.jpg" />
-    <Resource Include="images\Beach\mauritius.jpg" />
-    <Resource Include="images\Beach\nordsee.jpg" />
-    <Resource Include="images\Beach\ruegen.jpg" />
+    <Content Include="images\Beach\haweii.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Beach\ibiza.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Beach\mallorca.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Beach\mauritius.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Beach\nordsee.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Beach\ruegen.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="images\Bilder\Street\StreetBackground1.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -302,16 +309,36 @@
     <Content Include="images\Bilder\Winter\WinterObject6.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Resource Include="images\City\amsterdam.jpg" />
-    <Resource Include="images\City\berlin.jpg" />
-    <Resource Include="images\City\hamburg.jpg" />
-    <Resource Include="images\City\lasvegas.jpg" />
-    <Resource Include="images\City\london.jpg" />
-    <Resource Include="images\City\newyork.jpg" />
-    <Resource Include="images\City\paris.jpg" />
-    <Resource Include="images\City\sanfrancisco.jpg" />
-    <Resource Include="images\City\sydney.jpg" />
-    <Resource Include="images\City\wien.jpg" />
+    <Content Include="images\City\amsterdam.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\City\berlin.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\City\hamburg.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\City\lasvegas.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\City\london.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\City\newyork.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\City\paris.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\City\sanfrancisco.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\City\sydney.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\City\wien.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="images\ScreenDummies\Screen1.jpg.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -321,42 +348,66 @@
     <Content Include="images\ScreenDummies\ws-mockups.006.jpg.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Resource Include="images\Snow\banff.jpg" />
-    <Resource Include="images\Snow\ischgl.jpg" />
-    <Resource Include="images\Snow\kitzbuehl.jpg" />
-    <Resource Include="images\Snow\lesarcs.jpg" />
-    <Resource Include="images\Snow\schladming.jpg" />
-    <Resource Include="images\Snow\verbier.jpg" />
-    <Resource Include="images\Snow\wallis.jpg" />
-    <Resource Include="images\Snow\whistler.jpg" />
-    <Resource Include="images\Snow\zermatt.jpg" />
+    <Content Include="images\Snow\banff.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Snow\ischgl.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Snow\kitzbuehl.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Snow\lesarcs.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Snow\schladming.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Snow\verbier.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Snow\wallis.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Snow\whistler.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Snow\zermatt.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="images\Top\mokup.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="images\Snow\snow %281%29.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="images\Snow\snow %282%29.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="images\Snow\snow %283%29.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="images\Snow\snow %284%29.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="images\Top\IMG_0844.JPG">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Resource Include="images\Wander\adeche.jpg" />
-    <Resource Include="images\Wander\andalusien.jpg" />
-    <Resource Include="images\Wander\badlandsnationalpark.jpg" />
-    <Resource Include="images\Wander\bayrischerwald.jpg" />
-    <Resource Include="images\Wander\china.jpg" />
-    <Resource Include="images\Wander\grandcanyon.jpg" />
-    <Resource Include="images\Wander\ireland.jpg" />
-    <Resource Include="images\Wander\plälzerwald.jpg" />
-    <Resource Include="images\Wander\yellowstone.jpg" />
+    <Content Include="images\Wander\adeche.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Wander\andalusien.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Wander\badlandsnationalpark.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Wander\bayrischerwald.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Wander\china.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Wander\grandcanyon.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Wander\ireland.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Wander\plälzerwald.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="images\Wander\yellowstone.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Microsoft.Kinect.Toolkit.FaceTracking.dll" />
   </ItemGroup>
   <ItemGroup>

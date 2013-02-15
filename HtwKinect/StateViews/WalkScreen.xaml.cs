@@ -21,12 +21,12 @@ namespace HtwKinect.StateViews
         }
 
 
-        private void BuildBackground(Grid grid, string imgPath)
+        private void PaintImage(string imgPath)
         {
             try
             {
-                var img = new Image { Source = new BitmapImage(new Uri(imgPath, UriKind.RelativeOrAbsolute)), Stretch = Stretch.Fill };
-                grid.Children.Add(img);
+                var img = new Image { Source = new BitmapImage(new Uri(Environment.CurrentDirectory + "/"+imgPath)), Stretch = Stretch.Fill };
+                BgImage.Source = img.Source; 
             }
             catch
             {
@@ -43,7 +43,10 @@ namespace HtwKinect.StateViews
         public void StartDisplay(Database.TravelOffer lastTravel)
         {
             _currentOffer = lastTravel;
-            BuildBackground(GridW, _currentOffer.ImgPath);
+            PaintImage(_currentOffer.ImgPath);
+           
         }
+
+
     }
 }
