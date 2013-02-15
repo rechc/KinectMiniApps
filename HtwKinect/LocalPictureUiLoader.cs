@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using AccessoryLib;
+using Database;
 using Database.DAO;
 
 namespace HtwKinect
@@ -18,12 +19,15 @@ namespace HtwKinect
     {
         public void LoadElementsIntoList(KinectProjectUiBuilder kinectProjectUiBuilder)
         {
-            string[] paths = Directory.GetFiles(Environment.CurrentDirectory + @"\images\Top");
+            var offerDao = new TravelOfferDao();
+            //string[] paths = Directory.GetFiles(Environment.CurrentDirectory + @"\images\Top");
+            List<TravelOffer> dbList = offerDao.SelectAllTopOffers();
             List<FrameworkElement> list = new List<FrameworkElement> ();
-            for (int i = 0; i < paths.Count(); i++) {
+            foreach (var offer in dbList)
+            {
                 Grid grid = new Grid();
-                BuildBackground(grid, paths[i]);
-                BuildInfoBox(grid, i);
+                BuildBackground(grid, offer.ImgPath);
+                BuildInfoBox(grid, offer);
                 list.Add(grid);
             }
             try
@@ -40,28 +44,20 @@ namespace HtwKinect
 
             kinectProjectUiBuilder.AddRow("Top", list);
 
-            list = new List<FrameworkElement>();
-            paths = Directory.GetFiles(Environment.CurrentDirectory + @"\images\Beach");
-            for (int i = 0; i < paths.Count(); i++)
+            //todo maybe ask db for categories and not enum
+            foreach (CategoryEnum category in Enum.GetValues(typeof(CategoryEnum)).Cast<CategoryEnum>()) 
             {
-                Grid grid = new Grid();
-                BuildBackground(grid, paths[i]);
-                BuildInfoBox(grid, i);
-                list.Add(grid);
+                list = new List<FrameworkElement>();
+                dbList = offerDao.SelectOfferyByCategory(category);
+                foreach (var offer in dbList)
+                {
+                    Grid grid = new Grid();
+                    BuildBackground(grid, offer.ImgPath);
+                    BuildInfoBox(grid, offer);
+                    list.Add(grid);
+                }
+                kinectProjectUiBuilder.AddRow(dbList.First().Category.CategoryName, list);
             }
-            kinectProjectUiBuilder.AddRow("Beach", list);
-
-            list = new List<FrameworkElement>();
-            paths = Directory.GetFiles(Environment.CurrentDirectory + @"\images\Snow");
-
-            for (int i = 0; i < paths.Count(); i++)
-            {
-                Grid grid = new Grid();
-                BuildBackground(grid, paths[i]);
-                BuildInfoBox(grid, i);
-                list.Add(grid);
-            }
-            kinectProjectUiBuilder.AddRow("Snow", list);
         }
 
         void Instance_ReadyEvent(MiniGame.MiniGameControl mg)
@@ -85,13 +81,12 @@ namespace HtwKinect
         #endregion
 
         #region InfoBox
-        private void BuildInfoBox(Grid grid, int dbId)
+        private void BuildInfoBox(Grid grid, TravelOffer offer)
         {
             try
             {
                 var infoBanner = new InfoBanner.InfoBanner();
                 infoBanner.HorizontalAlignment = HorizontalAlignment.Left;
-                var offer = new TravelOfferDao().SelectById(dbId + 1);
                 infoBanner.Start(offer);
                 grid.Children.Add(infoBanner);
             }
