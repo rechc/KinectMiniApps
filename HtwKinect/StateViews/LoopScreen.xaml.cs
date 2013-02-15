@@ -313,7 +313,7 @@ namespace HtwKinect.StateViews
             myLoopList_MouseUp_1(null, null);
         }
 
-        Database.TravelOffer ISwitchableUserControl.StopDisplay()
+        public Database.TravelOffer StopDisplay()
         {
             throw new NotImplementedException();
         }

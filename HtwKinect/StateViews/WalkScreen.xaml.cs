@@ -44,9 +44,6 @@ namespace HtwKinect.StateViews
         {
             _currentOffer = lastTravel;
             if (_currentOffer == null)
-            {
-                _currentOffer = new TravelOfferDao().SelectRandomTopOffer();
-            }
             BuildBackground(GridX, _currentOffer.ImgPath);
         }
     }

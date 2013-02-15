@@ -66,14 +66,7 @@ namespace HtwKinect.StateViews
 
         public void StartDisplay(Database.TravelOffer lastTravel)
         {
-            if (lastTravel != null)
-            {
-                SetSpashScreenOffer(lastTravel);
-            }
-            else 
-            {
-                SetSpashScreenOffer(new TravelOfferDao().SelectRandomTopOffer());
-            }
+            SetSpashScreenOffer(lastTravel);
         }
 
         private void UnloadWindow(object sender, System.Windows.RoutedEventArgs e)

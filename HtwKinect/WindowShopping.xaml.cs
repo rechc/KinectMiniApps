@@ -4,6 +4,8 @@ using HtwKinect.StateViews;
 using System.Windows.Controls;
 using System;
 using System.Windows.Input;
+using Database;
+using Database.DAO;
 
 namespace HtwKinect
 {
@@ -16,7 +18,8 @@ namespace HtwKinect
         private bool _debugOnlyScreen2;
 
         private PeoplePositionDetector _peopleDetector;
-        private ScreenMode _currentScreen = ScreenMode.Splash; // durch enum noch ersetzen
+        private ScreenMode _currentScreen = ScreenMode.Splash;
+
         public enum ScreenMode
         {
             Splash,
@@ -41,11 +44,7 @@ namespace HtwKinect
         {
             if (_debugOnlyScreen4) {
                 if (_currentScreen != ScreenMode.MainScreen) {
-                    RemoveOldScreen();
-                    _currentScreen = ScreenMode.MainScreen;
-                    if (_mainWindow == null) { _mainWindow = new LoopScreen(); }
-                    Grid.SetRow(_mainWindow, 1);
-                    GridX.Children.Add(_mainWindow);
+                    StartMainScreen();
                 }
                 return;
             }
@@ -54,11 +53,7 @@ namespace HtwKinect
             {
                 if (_currentScreen != ScreenMode.Walk)
                 {
-                    RemoveOldScreen();
-                    _currentScreen = ScreenMode.Walk;
-                    if (_walkScreen == null) { _walkScreen = new WalkScreen(); }
-                    Grid.SetRow(_walkScreen, 1);
-                    GridX.Children.Add(_walkScreen);
+                    StartWalkScreen();
                 }
                 return;
             }
@@ -72,27 +67,15 @@ namespace HtwKinect
             {
                 if (_peopleDetector.GetWalkingPeople().Count != 0 && _peopleDetector.GetLookingPeople().Count == 0 && _currentScreen != ScreenMode.Walk) // Zustand 2
                 {
-                    RemoveOldScreen();
-                    _currentScreen = ScreenMode.Walk;
-                    if (_walkScreen == null) { _walkScreen = new WalkScreen(); }
-                    Grid.SetRow(_walkScreen, 1);
-                    GridX.Children.Add(_walkScreen);
+                    StartWalkScreen();
                 }
                 else if (_peopleDetector.GetWalkingPeople().Count != 0 && _peopleDetector.GetLookingPeople().Count != 0 && _currentScreen != ScreenMode.WalkandLook) // Zustand 3
                 {
-                    RemoveOldScreen();
-                    _currentScreen = ScreenMode.WalkandLook;
-                    if (_walkLookScreen == null) { _walkLookScreen = new WalkAndLookScreen(); }
-                    Grid.SetRow(_walkLookScreen, 1);
-                    GridX.Children.Add(_walkLookScreen);
+                    StartWalkandLookScreen();
                 }
                 else if (_peopleDetector.GetStayingPeople().Count != 0 && _peopleDetector.GetLookingPeople().Count != 0 && _currentScreen != ScreenMode.MainScreen) // Zustand 4
                 {
-                    RemoveOldScreen();
-                    _currentScreen = ScreenMode.MainScreen;
-                    if (_mainWindow == null) { _mainWindow = new LoopScreen(); }
-                    Grid.SetRow(_mainWindow, 1);
-                    GridX.Children.Add(_mainWindow);
+                    StartMainScreen();
                 }
             }
         }
@@ -113,42 +96,64 @@ namespace HtwKinect
         private void StartWalkScreen()
         {
             RemoveOldScreen();
-            _currentScreen = ScreenMode.Splash;
-            if (_sscreen == null)
-            {
-                _sscreen = new StateViews.SplashScreen();
-            }
-            _sscreen.StartNewOfferTimer(180000 / 50); //todo set better time intervall, now its 3/50 minutes
-            Grid.SetRow(_sscreen, 1);
-            GridX.Children.Add(_sscreen);
+            _currentScreen = ScreenMode.Walk;
+            if (_walkScreen == null) { _walkScreen = new WalkScreen(); }
+            Grid.SetRow(_walkScreen, 1);
+            GridX.Children.Add(_walkScreen);
         }
 
         private void StartWalkandLookScreen()
         {
             RemoveOldScreen();
-            _currentScreen = ScreenMode.Splash;
-            if (_sscreen == null)
-            {
-                _sscreen = new StateViews.SplashScreen();
-            }
-            _sscreen.StartNewOfferTimer(180000 / 50); //todo set better time intervall, now its 3/50 minutes
-            Grid.SetRow(_sscreen, 1);
-            GridX.Children.Add(_sscreen);
+            _currentScreen = ScreenMode.WalkandLook;
+            if (_walkLookScreen == null) { _walkLookScreen = new WalkAndLookScreen(); }
+            Grid.SetRow(_walkLookScreen, 1);
+            GridX.Children.Add(_walkLookScreen);
         }
 
         private void StartMainScreen()
         {
             RemoveOldScreen();
-            _currentScreen = ScreenMode.Splash;
-            if (_sscreen == null)
-            {
-                _sscreen = new StateViews.SplashScreen();
-            }
-            _sscreen.StartNewOfferTimer(180000 / 50); //todo set better time intervall, now its 3/50 minutes
-            Grid.SetRow(_sscreen, 1);
-            GridX.Children.Add(_sscreen);
+            _currentScreen = ScreenMode.MainScreen;
+            if (_mainWindow == null) { _mainWindow = new LoopScreen(); }
+            Grid.SetRow(_mainWindow, 1);
+            GridX.Children.Add(_mainWindow);
         }
-        
+
+        /**
+         * returns last Offer, if nothing available Random Top-TravelOffer 
+         */
+        private TravelOffer StopLastScreenAndGetLastTravel()
+        {
+            TravelOffer lastOffer = null;
+            switch (_currentScreen)
+            {
+                case ScreenMode.Splash:
+                    lastOffer = _sscreen.StopDisplay();
+                    break;
+                case ScreenMode.Walk:
+                    lastOffer = _walkScreen.StopDisplay();
+                    break;
+                case ScreenMode.WalkandLook:
+                    lastOffer = _walkLookScreen.StopDisplay();
+                    break;
+                case ScreenMode.MainScreen:
+                    lastOffer = _mainWindow.StopDisplay();
+                    break;
+                default:
+                    break;
+            }
+
+            if (lastOffer != null)
+            { 
+                return lastOffer; 
+            }
+            else
+            {
+                return new TravelOfferDao().SelectRandomTopOffer();
+            }
+        }
+
         private void RemoveOldScreen()
         {
             if (GridX.Children.Count > 1)
