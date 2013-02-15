@@ -88,7 +88,8 @@ namespace HtwKinect
             { 
                 _sscreen = new StateViews.SplashScreen();       
             }
-            _sscreen.StartNewOfferTimer(180000/50); //todo set better time intervall, now its 3/50 minutes
+            _sscreen.StartDisplay(StopLastScreenAndGetLastTravel());
+            _sscreen.StartNewOfferTimer(60000/6); //todo set better time intervall, now its 1/6 minutes
             Grid.SetRow(_sscreen, 1);
             GridX.Children.Add(_sscreen);
         }
@@ -98,6 +99,7 @@ namespace HtwKinect
             RemoveOldScreen();
             _currentScreen = ScreenMode.Walk;
             if (_walkScreen == null) { _walkScreen = new WalkScreen(); }
+            _walkScreen.StartDisplay(StopLastScreenAndGetLastTravel());
             Grid.SetRow(_walkScreen, 1);
             GridX.Children.Add(_walkScreen);
         }
@@ -107,6 +109,7 @@ namespace HtwKinect
             RemoveOldScreen();
             _currentScreen = ScreenMode.WalkandLook;
             if (_walkLookScreen == null) { _walkLookScreen = new WalkAndLookScreen(); }
+            _walkLookScreen.StartDisplay(StopLastScreenAndGetLastTravel());
             Grid.SetRow(_walkLookScreen, 1);
             GridX.Children.Add(_walkLookScreen);
         }
@@ -116,6 +119,7 @@ namespace HtwKinect
             RemoveOldScreen();
             _currentScreen = ScreenMode.MainScreen;
             if (_mainWindow == null) { _mainWindow = new LoopScreen(); }
+            _mainWindow.StartDisplay(StopLastScreenAndGetLastTravel());
             Grid.SetRow(_mainWindow, 1);
             GridX.Children.Add(_mainWindow);
         }

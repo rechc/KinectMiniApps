@@ -43,8 +43,7 @@ namespace HtwKinect.StateViews
         public void StartDisplay(Database.TravelOffer lastTravel)
         {
             _currentOffer = lastTravel;
-            if (_currentOffer == null)
-            BuildBackground(GridX, _currentOffer.ImgPath);
+            BuildBackground(GridW, _currentOffer.ImgPath);
         }
     }
 }
