@@ -12,7 +12,8 @@ namespace HtwKinect
     /// </summary>
     public partial class FrameWindow : Window
     {
-        private bool _debugOnlyScreen1;
+        private bool _debugOnlyScreen4;
+        private bool _debugOnlyScreen2;
 
         private PeoplePositionDetector _peopleDetector;
         private ScreenMode _currentScreen = ScreenMode.Splash; // durch enum noch ersetzen
@@ -33,12 +34,12 @@ namespace HtwKinect
         public FrameWindow()
         {
             InitializeComponent();
-            StartFirstScreen();           
+            StartSplashScreen();           
         }
 
         private void ChangeScreen()
         {
-            if (_debugOnlyScreen1) {
+            if (_debugOnlyScreen4) {
                 if (_currentScreen != ScreenMode.MainScreen) {
                     RemoveOldScreen();
                     _currentScreen = ScreenMode.MainScreen;
@@ -49,10 +50,23 @@ namespace HtwKinect
                 return;
             }
 
+            if (_debugOnlyScreen2)
+            {
+                if (_currentScreen != ScreenMode.Walk)
+                {
+                    RemoveOldScreen();
+                    _currentScreen = ScreenMode.Walk;
+                    if (_walkScreen == null) { _walkScreen = new WalkScreen(); }
+                    Grid.SetRow(_walkScreen, 1);
+                    GridX.Children.Add(_walkScreen);
+                }
+                return;
+            }
+
 
             if (_peopleDetector.GetPositionOnlyPeople().Count == 0 && _peopleDetector.GetTrackedPeople().Count == 0 && _currentScreen != ScreenMode.Splash) //Zustand 1
             {
-                StartFirstScreen();
+                StartSplashScreen();
             }
             else  // Zustand 2-4
             {
@@ -83,7 +97,7 @@ namespace HtwKinect
             }
         }
 
-        private void StartFirstScreen() 
+        private void StartSplashScreen() 
         {
             RemoveOldScreen();
             _currentScreen = ScreenMode.Splash;
@@ -92,6 +106,45 @@ namespace HtwKinect
                 _sscreen = new StateViews.SplashScreen();       
             }
             _sscreen.StartNewOfferTimer(180000/50); //todo set better time intervall, now its 3/50 minutes
+            Grid.SetRow(_sscreen, 1);
+            GridX.Children.Add(_sscreen);
+        }
+
+        private void StartWalkScreen()
+        {
+            RemoveOldScreen();
+            _currentScreen = ScreenMode.Splash;
+            if (_sscreen == null)
+            {
+                _sscreen = new StateViews.SplashScreen();
+            }
+            _sscreen.StartNewOfferTimer(180000 / 50); //todo set better time intervall, now its 3/50 minutes
+            Grid.SetRow(_sscreen, 1);
+            GridX.Children.Add(_sscreen);
+        }
+
+        private void StartWalkandLookScreen()
+        {
+            RemoveOldScreen();
+            _currentScreen = ScreenMode.Splash;
+            if (_sscreen == null)
+            {
+                _sscreen = new StateViews.SplashScreen();
+            }
+            _sscreen.StartNewOfferTimer(180000 / 50); //todo set better time intervall, now its 3/50 minutes
+            Grid.SetRow(_sscreen, 1);
+            GridX.Children.Add(_sscreen);
+        }
+
+        private void StartMainScreen()
+        {
+            RemoveOldScreen();
+            _currentScreen = ScreenMode.Splash;
+            if (_sscreen == null)
+            {
+                _sscreen = new StateViews.SplashScreen();
+            }
+            _sscreen.StartNewOfferTimer(180000 / 50); //todo set better time intervall, now its 3/50 minutes
             Grid.SetRow(_sscreen, 1);
             GridX.Children.Add(_sscreen);
         }
@@ -124,7 +177,20 @@ namespace HtwKinect
                             e.Handled = true;
                             break;
                         case Key.Space:
-                            _debugOnlyScreen1 = true;
+                            _debugOnlyScreen4 = !_debugOnlyScreen4;
+                            _debugOnlyScreen2 = false;
+                            ChangeScreen();
+                            e.Handled = true;
+                            break;
+                        case Key.NumPad4:
+                            _debugOnlyScreen4 = !_debugOnlyScreen4;
+                            _debugOnlyScreen2 = false;
+                            ChangeScreen();
+                            e.Handled = true;
+                            break;
+                        case Key.NumPad2:
+                            _debugOnlyScreen4 = false;
+                            _debugOnlyScreen2 = !_debugOnlyScreen2;
                             ChangeScreen();
                             e.Handled = true;
                             break;

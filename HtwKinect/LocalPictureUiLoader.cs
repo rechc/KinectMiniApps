@@ -76,6 +76,7 @@ namespace HtwKinect
             }
             catch
             {
+                Console.WriteLine("can't load or display the background image: " + imgPath);
             }
         }
         #endregion

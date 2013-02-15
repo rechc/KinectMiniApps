@@ -13,6 +13,7 @@ namespace HtwKinect.StateViews
     public partial class SplashScreen : UserControl, ISwitchableUserControl
     {
         private DispatcherTimer _timer = new DispatcherTimer();
+        private TravelOffer _currentOffer;
 
         public SplashScreen()
         {
@@ -41,6 +42,10 @@ namespace HtwKinect.StateViews
 
         public void SetSpashScreenOffer(TravelOffer offer)
         {
+            if (offer != null) 
+            {
+                _currentOffer = offer;
+            }
             Category.Text = offer.Category.CategoryName;
             Rating.Text = "Bewertung: " + offer.HotelRating;
             HotelName.Text = offer.HotelName;
@@ -55,12 +60,20 @@ namespace HtwKinect.StateViews
 
         public Database.TravelOffer StopDisplay()
         {
-            throw new NotImplementedException();
+            //TODO could anything be disposed ? 
+            return _currentOffer;
         }
 
         public void StartDisplay(Database.TravelOffer lastTravel)
         {
-            throw new NotImplementedException();
+            if (lastTravel != null)
+            {
+                SetSpashScreenOffer(lastTravel);
+            }
+            else 
+            {
+                SetSpashScreenOffer(new TravelOfferDao().SelectRandomTopOffer());
+            }
         }
 
         private void UnloadWindow(object sender, System.Windows.RoutedEventArgs e)

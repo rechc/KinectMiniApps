@@ -1,5 +1,9 @@
-﻿using System;
+﻿using Database;
+using Database.DAO;
+using System;
 using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace HtwKinect.StateViews
 {
@@ -8,19 +12,42 @@ namespace HtwKinect.StateViews
     /// </summary>
     public partial class WalkScreen : UserControl , ISwitchableUserControl
     {
+
+        private TravelOffer _currentOffer;
+
         public WalkScreen()
         {
             InitializeComponent();
         }
 
+
+        private void BuildBackground(Grid grid, string imgPath)
+        {
+            try
+            {
+                var img = new Image { Source = new BitmapImage(new Uri(imgPath, UriKind.RelativeOrAbsolute)), Stretch = Stretch.Fill };
+                grid.Children.Add(img);
+            }
+            catch
+            {
+                Console.WriteLine("can't load or display the background image: " + imgPath);
+            }
+        }
+
         public Database.TravelOffer StopDisplay()
         {
-            throw new NotImplementedException();
+            //TODO could anything be disposed ? 
+            return _currentOffer;
         }
 
         public void StartDisplay(Database.TravelOffer lastTravel)
         {
-            throw new NotImplementedException();
+            _currentOffer = lastTravel;
+            if (_currentOffer == null)
+            {
+                _currentOffer = new TravelOfferDao().SelectRandomTopOffer();
+            }
+            BuildBackground(GridX, _currentOffer.ImgPath);
         }
     }
 }
