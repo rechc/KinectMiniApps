@@ -76,13 +76,12 @@ namespace HtwKinect
         #endregion
 
         #region InfoBox
-        private void BuildInfoBox(Grid grid, int dbId)
+        private void BuildInfoBox(Grid grid, TravelOffer offer)
         {
             try
             {
                 var infoBanner = new InfoBanner.InfoBanner();
                 infoBanner.HorizontalAlignment = HorizontalAlignment.Left;
-                var offer = new TravelOfferDao().SelectById(dbId + 1);
                 infoBanner.Start(offer);
                 grid.Children.Add(infoBanner);
             }

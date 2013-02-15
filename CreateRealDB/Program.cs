@@ -42,6 +42,7 @@ namespace CreateRealDB
             { 
                 PricePerPerson = price,
                 Place = place,
+                ImgPath = image,
                 HotelRating = rating,
                 HotelName = hotelname,
                 TravelType = anfahrt,

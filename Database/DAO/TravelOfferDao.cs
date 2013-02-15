@@ -38,6 +38,28 @@ namespace Database.DAO
             } 
         }
 
+        public List<TravelOffer> SelectOfferyByCategory(CategoryEnum category)
+        {
+            try
+            {
+                using (var con = new Model1Container())
+                {
+                    var list = (from offer in con.TravelOfferSet
+                                               .Include("Category")
+                                               .Include("ExtendedInformation")
+                                        where offer.CategoryId == (int) category
+                                        select offer).ToList();
+                    if (list.Count <= 0)
+                        throw new Exception("No top offer found");
+                    return list;
+                }
+            }
+            catch (Exception)
+            {
+                return new List<TravelOffer>() { CreateDefaultObject() };
+            }
+        }
+
         public List<TravelOffer> SelectAllOffers()
         {
             using (var con = new Model1Container())
@@ -73,6 +95,12 @@ namespace Database.DAO
 
         public TravelOffer SelectRandomTopOffer()
         {
+            var list = SelectAllTopOffers();
+            return list.ElementAt(Helper.GetRandomInteger(0, list.Count - 1));
+        }
+
+        public List<TravelOffer> SelectAllTopOffers()
+        {
             try
             {
                 using (var con = new Model1Container())
@@ -84,14 +112,14 @@ namespace Database.DAO
                                         select offer).ToList();
                     if (topOfferlist.Count <= 0)
                         throw new Exception("No top offer found");
-                    return topOfferlist.ElementAt(Helper.GetRandomInteger(0, topOfferlist.Count - 1));
+                    return topOfferlist;
                 }
             }
             catch (Exception)
             {
-                return CreateDefaultObject();
+                return new List<TravelOffer>() {CreateDefaultObject()};
             }
-        }
+        } 
 
         private TravelOffer CreateDefaultObject()
         {
