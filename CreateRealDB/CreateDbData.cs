@@ -8,80 +8,97 @@ using System.Threading.Tasks;
 
 namespace CreateRealDB
 {
-    class DBFill
+    class CreateDbData
     {
-        public Model1Container _context;
 
-        private void CreateCountryEntries()
+        private void CreateCountryEntries(Model1Container context)
         {
 
-            foreach (var countryName in Enum.GetNames(typeof(CategoryEnum)))
+            foreach (var category in Enum.GetValues(typeof(CategoryEnum)).Cast<CategoryEnum>())
             {
-                if (countryName == "City")
+                string categoryName = Enum.GetName(typeof(CategoryEnum),category);
+                switch (category)
                 {
-                    var c = new Category() { CategoryName = "Städtereise" };
-                    _context.CategorySet.Add(c);
+                    case CategoryEnum.Beach:
+                        categoryName = "Strandurlaub";
+                        break;
+                    case CategoryEnum.Ski:
+                        categoryName = "Ski-Urlaub";
+                        break;
+                    case CategoryEnum.City:
+                        categoryName = "Städtereise";
+                        break;
+                    case CategoryEnum.Wander:
+                        categoryName = "Wanderurlaub";
+                        break;
                 }
-                else
-                {
-                    var c = new Category() { CategoryName = countryName };
-                    _context.CategorySet.Add(c);
-                }
+
+                var c = new Category() { CategoryName = categoryName };
+                    context.CategorySet.Add(c);
             }
+            SaveToDb(context);
         }
 
-        private void SaveToDb()
+        private void SaveToDb(Model1Container context)
         {
             try
             {
-                _context.SaveChanges();
+                context.SaveChanges();
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
-                Console.WriteLine("Error in entry. Start db rollback");
+                Console.WriteLine("Create Categores: Error in entry.");
             }
         }
 
         public void CreateOffers(int price, String place, int rating, String hotelname, String anfahrt, int daycount, String futtertyp, CategoryEnum category, String image, bool top, String zusatzinf, String zusatz2, String zusatz3)
         {
-            var dao = new TravelOfferDao();
-            var offer = new TravelOffer()
+            try
             {
-                PricePerPerson = price,
-                Place = place,
-                ImgPath = image,
-                HotelRating = rating,
-                HotelName = hotelname,
-                TravelType = anfahrt,
-                DayCount = daycount,
-                BoardType = futtertyp,
-                CategoryId = (int)category,
-                TopOffer = top,
-            };
-            ExtendedInformation ei = new ExtendedInformation()
-            {
-                Information = zusatzinf
-            };
-            offer.ExtendedInformation.Add(ei);
-            if (zusatz2 != "")
-            {
-                ExtendedInformation ei2 = new ExtendedInformation()
+                var dao = new TravelOfferDao();
+                var offer = new TravelOffer()
                 {
-                    Information = zusatz2
+                    PricePerPerson = price,
+                    Place = place,
+                    ImgPath = image,
+                    HotelRating = rating,
+                    HotelName = hotelname,
+                    TravelType = anfahrt,
+                    DayCount = daycount,
+                    BoardType = futtertyp,
+                    CategoryId = (int)category,
+                    TopOffer = top,
                 };
-                offer.ExtendedInformation.Add(ei2);
-            }
-            if (zusatz3 != "")
-            {
-                ExtendedInformation ei3 = new ExtendedInformation()
+                ExtendedInformation ei = new ExtendedInformation()
                 {
-                    Information = zusatz3
+                    Information = zusatzinf
                 };
-                offer.ExtendedInformation.Add(ei3);
+                offer.ExtendedInformation.Add(ei);
+                if (zusatz2 != "")
+                {
+                    ExtendedInformation ei2 = new ExtendedInformation()
+                    {
+                        Information = zusatz2
+                    };
+                    offer.ExtendedInformation.Add(ei2);
+                }
+                if (zusatz3 != "")
+                {
+                    ExtendedInformation ei3 = new ExtendedInformation()
+                    {
+                        Information = zusatz3
+                    };
+                    offer.ExtendedInformation.Add(ei3);
+                }
+                offer.ExtendedInformation.Add(ei);
+                dao.Save(offer);
             }
-            offer.ExtendedInformation.Add(ei);
-            dao.Save(offer);
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                Console.WriteLine("Create Offers: Error in entry.");
+            }
         }
 
         public void CreateMyOffers()
@@ -130,26 +147,25 @@ namespace CreateRealDB
             CreateOffers(499, "Zermatt", 3, "Garni Hotel Emma", "Zug", 5, "Frühstück", CategoryEnum.Ski, "images/Snow/zermatt.jpg", false, "Herrlicher Blick auf das Matterhorn", "Skibus Haltestelle direkt vorm Haus", "");
         }
 
-        public void FlushDbData()
+        public void FlushDbData(Model1Container context)
         {
-            if (_context.Database.Exists())
+            if (context.Database.Exists())
             {
-                _context.Database.Delete();
+                context.Database.Delete();
             }
-            _context.Database.CreateIfNotExists();
+            context.Database.CreateIfNotExists();
         }
 
         static void Main(string[] args)
         {
-            DBFill dbf = new DBFill();
-            using (var con = new Model1Container())
+            CreateDbData dbf = new CreateDbData();
+            using (var context = new Model1Container())
             {
-                dbf._context = con;
-                dbf.FlushDbData();
-                dbf.CreateCountryEntries();
-                dbf.SaveToDb();
+                dbf.FlushDbData(context);
+                dbf.CreateCountryEntries(context);
             }
             dbf.CreateMyOffers();
+            Console.WriteLine("-- Press any key to exit --");
         }
     }
 }
