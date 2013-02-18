@@ -14,8 +14,12 @@ namespace HtwKinect
     /// </summary>
     public partial class FrameWindow : Window
     {
+        #region debug keys
         private bool _debugOnlyScreen4;
         private bool _debugOnlyScreen2;
+        private bool _debugOnlyScreen3;
+        private bool _debugOnlyScreen1;
+        #endregion debug keys
 
         private PeoplePositionDetector _peopleDetector;
         private ScreenMode _currentScreen = ScreenMode.Splash;
@@ -42,6 +46,8 @@ namespace HtwKinect
 
         private void ChangeScreen()
         {
+
+            #region debug keys effect
             if (_debugOnlyScreen4) {
                 if (_currentScreen != ScreenMode.MainScreen) {
                     StartMainScreen();
@@ -58,6 +64,24 @@ namespace HtwKinect
                 return;
             }
 
+            if (_debugOnlyScreen3)
+            {
+                if (_currentScreen != ScreenMode.WalkandLook)
+                {
+                    StartWalkandLookScreen();
+                }
+                return;
+            }
+
+            if (_debugOnlyScreen1)
+            {
+                if (_currentScreen != ScreenMode.Splash)
+                {
+                    StartSplashScreen();
+                }
+                return;
+            }
+            #endregion debug keys effect
 
             if (_peopleDetector.GetPositionOnlyPeople().Count == 0 && _peopleDetector.GetTrackedPeople().Count == 0 && _currentScreen != ScreenMode.Splash) //Zustand 1
             {
@@ -185,24 +209,48 @@ namespace HtwKinect
                             Application.Current.Shutdown();
                             e.Handled = true;
                             break;
+                        #region debug keys trigger
                         case Key.Space:
                             _debugOnlyScreen4 = !_debugOnlyScreen4;
                             _debugOnlyScreen2 = false;
+                            _debugOnlyScreen3 = false;
+                            _debugOnlyScreen1 = false;
                             ChangeScreen();
                             e.Handled = true;
                             break;
                         case Key.NumPad4:
                             _debugOnlyScreen4 = !_debugOnlyScreen4;
                             _debugOnlyScreen2 = false;
+                            _debugOnlyScreen3 = false;
+                            _debugOnlyScreen1 = false;
                             ChangeScreen();
                             e.Handled = true;
                             break;
                         case Key.NumPad2:
                             _debugOnlyScreen4 = false;
+                            _debugOnlyScreen3 = false;
+                            _debugOnlyScreen1 = false;
                             _debugOnlyScreen2 = !_debugOnlyScreen2;
                             ChangeScreen();
                             e.Handled = true;
                             break;
+                        case Key.NumPad1:
+                            _debugOnlyScreen4 = false;
+                            _debugOnlyScreen2 = false;
+                            _debugOnlyScreen3 = false;
+                            _debugOnlyScreen1 = !_debugOnlyScreen1;
+                            ChangeScreen();
+                            e.Handled = true;
+                            break;
+                        case Key.NumPad3:
+                            _debugOnlyScreen4 = false;
+                            _debugOnlyScreen2 = false;
+                            _debugOnlyScreen1 = false;
+                            _debugOnlyScreen3 = !_debugOnlyScreen3;
+                            ChangeScreen();
+                            e.Handled = true;
+                            break;
+                        #endregion debug keys trigger
                     }
                 }
             }
