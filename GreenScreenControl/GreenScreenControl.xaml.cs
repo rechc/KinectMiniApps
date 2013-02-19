@@ -95,18 +95,20 @@ namespace GreenScreenControl
 
         bool PixelsSimilar(int color1, int color2)
         {
+            double epsilon = 3.0;
             int dr = Math.Abs(((color1 >> 16) & 0xff) -
                               ((color2 >> 16) & 0xff));
             int dg = Math.Abs(((color1 >> 8) & 0xff) -
                               ((color2 >> 8) & 0xff));
             int db = Math.Abs(((color1 >> 0) & 0xff) -
                               ((color2 >> 0) & 0xff));
-            return ((double)(dr + dg + db) / 3.0) <= 100.0;
+            return ((double)(dr + dg + db) / epsilon) <= 100.0;
         }
 
 
         public void Antialiasing(DrawingContext drawingContext) //DepthImagePixel[] depthPixels, byte[] colorPixels,DepthImageFormat depthFormat, ColorImageFormat colorFormat)
         {
+            _antialiasing = true;
             // do our processing outside of the using block
             // so that we return resources to the kinect as soon as possible
             _sensor.CoordinateMapper.MapDepthFrameToColorFrame(
@@ -118,14 +120,13 @@ namespace GreenScreenControl
             Array.Clear(_greenScreenPixelData, 0, _greenScreenPixelData.Length);
 
             _borderCounter = 0;
-
             // loop over each row and column of the depth
             for (int y = 0; y < _depthHeight; ++y)
             {
                 for (int x = 0; x < _depthWidth; ++x)
                 {
                     // calculate index into depth array
-                    int depthIndex = x + (y * _depthWidth);
+                    int depthIndex = x + (y * _depthWidth);                 
 
                     DepthImagePixel depthPixel = _depthPixels[depthIndex];
 
@@ -147,8 +148,7 @@ namespace GreenScreenControl
                         // check y > 0 and y < depthHeight to make sure we don't write outside of the array
                         // check x > 0 instead of >= 0 since to fill gaps we set opaque current pixel plus the one to the left
                         // because of how the sensor works it is more correct to do it this way than to set to the right
-                        //if (colorInDepthX > 0 && colorInDepthX < _depthWidth && colorInDepthY >= 0 && colorInDepthY < _depthHeight)
-                        if (PixelsSimilar(colorInDepthX, colorInDepthY))
+                        if (colorInDepthX > 0 && colorInDepthX < _depthWidth && colorInDepthY >= 0 && colorInDepthY < _depthHeight)
                         {
                             // calculate index into the green screen pixel array
                             int greenScreenIndex = colorInDepthX + (colorInDepthY * _depthWidth);
@@ -177,8 +177,9 @@ namespace GreenScreenControl
 
             if (_antialiasing)
             {
-                Antialiasing();
+                //Antialiasing();
                 //HidePixels();
+                CallFloodfill();
             }
 
         // do our processing outside of the using block
@@ -210,6 +211,56 @@ namespace GreenScreenControl
             drawingContext.PushOpacityMask(new ImageBrush { ImageSource = _playerOpacityMaskImage});
             drawingContext.DrawImage(_colorBitmap, new Rect(0, 0, ActualWidth, ActualHeight)); 
                 
+        }
+
+        private void CallFloodfill()
+        {
+            for (int i = 0; i < _greenScreenPixelData.Length; i++)
+            {
+                if (_greenScreenPixelData[i] == -2)
+                {
+                    _border[_borderCounter++] = i;
+                }
+            }
+
+            for (int i = 0; i < _borderCounter; i++)
+            {
+                int idx = _border[i];
+                ColorImagePoint colorImagePoint = _colorCoordinates[idx];
+                int depthInColorX = colorImagePoint.X * _colorToDepthDivisor;
+                int depthInColorY = colorImagePoint.Y * _colorToDepthDivisor;
+                _currentColor = _colorPixels[(depthInColorX * depthInColorY)];
+                Floodfill8(colorImagePoint.X, colorImagePoint.Y);
+            }
+        }
+
+        private int _currentColor;
+
+        private void Floodfill8(int colorX, int colorY)
+        {
+            int newColor = _colorPixels[colorX * colorY];
+            if(PixelsSimilar(_currentColor, newColor))
+            {
+                try
+                {
+                    int colorInDepthX = colorX / _colorToDepthDivisor;
+                    int colorInDepthY = colorY / _colorToDepthDivisor;
+                    _greenScreenPixelData[(colorInDepthX * colorInDepthY)] = OpaquePoint;
+                    Floodfill8(colorX, colorY + 1);
+                    Floodfill8(colorX, colorY - 1);
+                    Floodfill8(colorX + 1, colorY);
+                    Floodfill8(colorX - 1, colorY);
+                    Floodfill8(colorX + 1, colorY + 1);
+                    Floodfill8(colorX + 1, colorY - 1);
+                    Floodfill8(colorX - 1, colorY + 1);
+                    Floodfill8(colorX - 1, colorY + 1);
+                }
+                catch 
+                {
+                    return;
+                }
+            }
+            return;
         }
 
         private void AddBorderPixels(int greenScreenIndex)
