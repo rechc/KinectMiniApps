@@ -93,6 +93,7 @@ namespace HtwKinect
             }
             catch
             {
+                Console.WriteLine("Error in LocalPictureUiLoader");
             }
         }
 

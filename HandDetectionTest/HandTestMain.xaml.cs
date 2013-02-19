@@ -239,6 +239,7 @@ namespace HandDetectionTest
             }
             catch
             {
+                Console.WriteLine("Error HandDetect");
             }
         }
 
@@ -263,7 +264,7 @@ namespace HandDetectionTest
                 ColorImagePoint Cloc = sensor.CoordinateMapper.MapSkeletonPointToColorPoint(Sloc, ColorImageFormat.RgbResolution640x480Fps30);
                 return new System.Drawing.Point(Cloc.X, Cloc.Y);
             }
-            catch { };
+            catch { Console.WriteLine("Error HandD 2 "); };
             return new System.Drawing.Point(0, 0);
         }
 
@@ -310,7 +311,7 @@ namespace HandDetectionTest
             }
             catch (Exception)
             {
-
+                Console.WriteLine("Error H3");
                 throw;
             }
             return BitmapToBitmapSource(bmap);
