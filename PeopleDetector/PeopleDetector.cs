@@ -7,21 +7,6 @@ namespace PeopleDetector
 {
     public class PeoplePositionDetector
     {
-
-      /*  #region Event
-        public event EventHandler ChangeEvent;
-
-        private void FireChangeEvent()
-        {
-            if (ChangeEvent != null)
-            {
-                ChangeEvent(this, EventArgs.Empty);
-            }
-        }
-
-        #endregion Event*/
-        //
-
         private Dictionary<int, List<SkeletonTimestamp>> _skeletonsDict = new Dictionary<int, List<SkeletonTimestamp>>();
         private const int _maxNumberOfFramesInSkeletonList = 20;
 
@@ -29,17 +14,8 @@ namespace PeopleDetector
         private const double _walkingDistance = 0.22;
         private const int _walkingDuration = 500; // Time in miliseconds
 
-        public PeoplePositionDetector()
-        {
-        }
-
-        public PeoplePositionDetector(Skeleton[] skeletons)
-        {
-            AddSkeletonsToDictionary(skeletons);
-        }
-
         /// <summary>
-        /// Returns a Skeleton-List of PositionOnly People.
+        /// Returns a List of PositionOnly Skeletons.
         /// </summary>
         public List<Skeleton> GetPositionOnlyPeople()
         {
@@ -49,7 +25,7 @@ namespace PeopleDetector
         }
 
         /// <summary>
-        /// Returns a Skeleton-List of Tracked People.
+        /// Returns a List of Tracked Skeletons.
         /// </summary>
         public List<Skeleton> GetTrackedPeople()
         {
@@ -65,7 +41,7 @@ namespace PeopleDetector
         }
 
         /// <summary>
-        /// Returns a Skeleton-List of all recognized People.
+        /// Returns a List of all recognized Skeletons.
         /// </summary>
         public List<Skeleton> GetAllPeople()
         {
@@ -76,14 +52,14 @@ namespace PeopleDetector
 
 
         /// <summary>
-        /// Returns a Skeleton-List of People which are currently walkting in front of the Kinect.
+        /// Returns a List of Skeletons which are currently walking in front of the Kinect.
         /// </summary>
         public List<Skeleton> GetWalkingPeople()
         {
             List<Skeleton> walkingPeople = new List<Skeleton>();
             foreach (List<SkeletonTimestamp> skeletonList in _skeletonsDict.Values)
             {
-                if (checkWalkingGesture(skeletonList))
+                if (IsWalking(skeletonList))
                 {
                     walkingPeople.Add(skeletonList[0].Skeleton);
                 }
@@ -91,7 +67,7 @@ namespace PeopleDetector
             return walkingPeople;
         }
 
-        private bool checkWalkingGesture(List<SkeletonTimestamp> skeletonList)
+        private bool IsWalking(List<SkeletonTimestamp> skeletonList)
         {
             double currentDistance = 0.0;
             int currentDuration = 0;
@@ -107,7 +83,7 @@ namespace PeopleDetector
         }
 
         /// <summary>
-        /// Returns a Skeleton-List of People which are currently staying at the Kinect.
+        /// Returns a List of Skeletons which are currently standing still.
         /// </summary>
         public List<Skeleton> GetStayingPeople()
         {
@@ -157,55 +133,35 @@ namespace PeopleDetector
         }
 
         /// <summary>
-        /// returns true if people is Tracked
+        /// Returns true if the given id is tracked.
         /// </summary>
-        /// <param name="TrackingId"></param>
-        /// <returns></returns>
-        public bool IsPeopleTracked(int TrackingId)
+        public bool IsPeopleTracked(int trackingId)
         {
-            return GetTrackedPeople().Any(skel => skel.TrackingId == TrackingId);
-        }
-
-
-        /// <summary>
-        /// returns true if people with transfered TrackingId is currently walking
-        /// </summary>
-        /// <param name="TrackingId"></param>
-        /// <returns></returns>
-        public bool IsPeopleWalking(int TrackingId)
-        {
-            return GetWalkingPeople().Any(skel => skel.TrackingId == TrackingId);
+            return GetTrackedPeople().Exists((skel) => skel.TrackingId == trackingId);
         }
 
         /// <summary>
-        /// returns true if people with transfered TrackingId is currently staying at the Kinect
+        /// Returns true if the given id is currently walking.
         /// </summary>
-        /// <param name="TrackingId"></param>
-        /// <returns></returns>
-        public bool IsPeopleStaying(int TrackingId)
+        public bool IsPeopleWalking(int trackingId)
         {
-            return GetStayingPeople().Any(skel => skel.TrackingId == TrackingId);
+            return GetWalkingPeople().Any(skel => skel.TrackingId == trackingId);
         }
 
         /// <summary>
-        /// returns true if people with transfered TrackingId is currently looking at the Kinect
+        /// Returns true if the given id is currently standing still.
         /// </summary>
-        /// <param name="TrackingId"></param>
-        /// <returns></returns>
-        public bool IsPeopleLooking(int TrackingId)
+        public bool IsPeopleStaying(int trackingId)
         {
-            return GetLookingPeople().Any(skel => skel.TrackingId == TrackingId);
+            return GetStayingPeople().Any(skel => skel.TrackingId == trackingId);
         }
 
         /// <summary>
-        /// The Skeletons property must be set each skeleton frame.
+        /// Returns true if the given id is currently looking at the Kinect.
         /// </summary>
-        public Skeleton[] Skeletons
+        public bool IsPeopleLooking(int trackingId)
         {
-            set
-            {
-                AddSkeletonsToDictionary(value);
-            }
+            return GetLookingPeople().Any(skel => skel.TrackingId == trackingId);
         }
 
         /// <summary>
@@ -222,9 +178,10 @@ namespace PeopleDetector
         }
 
         /// <summary>
-        /// Store valid Skeletons with TrackingId as Key from last 20 Frames in a Dictionary. Newest Frame from a Skeleton is at Index 0
+        /// Store valid Skeletons with TrackingId as Key from last 20 Frames in
+        /// a Dictionary. Newest Frame from a Skeleton is at Index 0.
         /// </summary>
-        private void AddSkeletonsToDictionary(Skeleton[] skeletons)
+        public void TrackSkeletons(Skeleton[] skeletons)
         {
             if (skeletons!=null){
                 foreach (Skeleton skeleton in skeletons)

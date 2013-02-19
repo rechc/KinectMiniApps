@@ -4,6 +4,8 @@ using HtwKinect.StateViews;
 using System.Windows.Controls;
 using System;
 using System.Windows.Input;
+using Database;
+using Database.DAO;
 
 namespace HtwKinect
 {
@@ -12,10 +14,16 @@ namespace HtwKinect
     /// </summary>
     public partial class FrameWindow : Window
     {
+        #region debug keys
+        private bool _debugOnlyScreen4;
+        private bool _debugOnlyScreen2;
+        private bool _debugOnlyScreen3;
         private bool _debugOnlyScreen1;
+        #endregion debug keys
 
         private PeoplePositionDetector _peopleDetector;
-        private ScreenMode _currentScreen = ScreenMode.Splash; // durch enum noch ersetzen
+        private ScreenMode _currentScreen = ScreenMode.Splash;
+
         public enum ScreenMode
         {
             Splash,
@@ -25,7 +33,7 @@ namespace HtwKinect
             Unknown
         }
 
-        private MainWindow _mainWindow;
+        private LoopScreen _mainWindow;
         private StateViews.SplashScreen _sscreen;
         private WalkScreen _walkScreen;
         private WalkAndLookScreen _walkLookScreen;
@@ -33,65 +41,147 @@ namespace HtwKinect
         public FrameWindow()
         {
             InitializeComponent();
-            StartFirstScreen();           
+            StartSplashScreen();           
         }
 
         private void ChangeScreen()
         {
-            if (_debugOnlyScreen1) {
+
+            #region debug keys effect
+            if (_debugOnlyScreen4) {
                 if (_currentScreen != ScreenMode.MainScreen) {
-                    RemoveOldScreen();
-                    _currentScreen = ScreenMode.MainScreen;
-                    if (_mainWindow == null) { _mainWindow = new MainWindow(); }
-                    Grid.SetRow(_mainWindow, 1);
-                    GridX.Children.Add(_mainWindow);
+                    StartMainScreen();
                 }
                 return;
             }
 
+            if (_debugOnlyScreen2)
+            {
+                if (_currentScreen != ScreenMode.Walk)
+                {
+                    StartWalkScreen();
+                }
+                return;
+            }
+
+            if (_debugOnlyScreen3)
+            {
+                if (_currentScreen != ScreenMode.WalkandLook)
+                {
+                    StartWalkandLookScreen();
+                }
+                return;
+            }
+
+            if (_debugOnlyScreen1)
+            {
+                if (_currentScreen != ScreenMode.Splash)
+                {
+                    StartSplashScreen();
+                }
+                return;
+            }
+            #endregion debug keys effect
 
             if (_peopleDetector.GetPositionOnlyPeople().Count == 0 && _peopleDetector.GetTrackedPeople().Count == 0 && _currentScreen != ScreenMode.Splash) //Zustand 1
             {
-                StartFirstScreen();
+                StartSplashScreen();
             }
             else  // Zustand 2-4
             {
                 if (_peopleDetector.GetWalkingPeople().Count != 0 && _peopleDetector.GetLookingPeople().Count == 0 && _currentScreen != ScreenMode.Walk) // Zustand 2
                 {
-                    RemoveOldScreen();
-                    _currentScreen = ScreenMode.Walk;
-                    if (_walkScreen == null) { _walkScreen = new WalkScreen(); }
-                    Grid.SetRow(_walkScreen, 1);
-                    GridX.Children.Add(_walkScreen);
+                    StartWalkScreen();
                 }
                 else if (_peopleDetector.GetWalkingPeople().Count != 0 && _peopleDetector.GetLookingPeople().Count != 0 && _currentScreen != ScreenMode.WalkandLook) // Zustand 3
                 {
-                    RemoveOldScreen();
-                    _currentScreen = ScreenMode.WalkandLook;
-                    if (_walkLookScreen == null) { _walkLookScreen = new WalkAndLookScreen(); }
-                    Grid.SetRow(_walkLookScreen, 1);
-                    GridX.Children.Add(_walkLookScreen);
+                    StartWalkandLookScreen();
                 }
                 else if (_peopleDetector.GetStayingPeople().Count != 0 && _peopleDetector.GetLookingPeople().Count != 0 && _currentScreen != ScreenMode.MainScreen) // Zustand 4
                 {
-                    RemoveOldScreen();
-                    _currentScreen = ScreenMode.MainScreen;
-                    if (_mainWindow == null) { _mainWindow = new MainWindow(); }
-                    Grid.SetRow(_mainWindow, 1);
-                    GridX.Children.Add(_mainWindow);
+                    StartMainScreen();
                 }
             }
         }
 
-        private void StartFirstScreen() 
+        private void StartSplashScreen() 
         {
             RemoveOldScreen();
+            if (_sscreen == null) 
+            { 
+                _sscreen = new StateViews.SplashScreen();       
+            }
+            _sscreen.StartDisplay(StopLastScreenAndGetLastTravel());
             _currentScreen = ScreenMode.Splash;
-            if (_sscreen == null) { _sscreen = new StateViews.SplashScreen(); }
+            _sscreen.StartNewOfferTimer(Properties.Settings.Default.PictureChangeIntervallMS); 
             Grid.SetRow(_sscreen, 1);
             GridX.Children.Add(_sscreen);
         }
-        
+
+        private void StartWalkScreen()
+        {
+            RemoveOldScreen();   
+            if (_walkScreen == null) { _walkScreen = new WalkScreen(); }
+            _walkScreen.StartDisplay(StopLastScreenAndGetLastTravel());
+            _currentScreen = ScreenMode.Walk;
+            Grid.SetRow(_walkScreen, 1);
+            GridX.Children.Add(_walkScreen);
+        }
+
+        private void StartWalkandLookScreen()
+        {
+            RemoveOldScreen();  
+            if (_walkLookScreen == null) { _walkLookScreen = new WalkAndLookScreen(); }
+            _walkLookScreen.StartDisplay(StopLastScreenAndGetLastTravel());
+            _currentScreen = ScreenMode.WalkandLook;
+            Grid.SetRow(_walkLookScreen, 1);
+            GridX.Children.Add(_walkLookScreen);
+        }
+
+        private void StartMainScreen()
+        {
+            RemoveOldScreen();
+            if (_mainWindow == null) { _mainWindow = new LoopScreen(); }
+            _mainWindow.StartDisplay(StopLastScreenAndGetLastTravel());
+            _currentScreen = ScreenMode.MainScreen;
+            Grid.SetRow(_mainWindow, 1);
+            GridX.Children.Add(_mainWindow);
+        }
+
+        /**
+         * returns last Offer, if nothing available Random Top-TravelOffer 
+         */
+        private TravelOffer StopLastScreenAndGetLastTravel()
+        {
+            TravelOffer lastOffer = null;
+            switch (_currentScreen)
+            {
+                case ScreenMode.Splash:
+                    lastOffer = _sscreen.StopDisplay();
+                    break;
+                case ScreenMode.Walk:
+                    lastOffer = _walkScreen.StopDisplay();
+                    break;
+                case ScreenMode.WalkandLook:
+                    lastOffer = _walkLookScreen.StopDisplay();
+                    break;
+                case ScreenMode.MainScreen:
+                    lastOffer = _mainWindow.StopDisplay();
+                    break;
+                default:
+                    break;
+            }
+
+            if (lastOffer != null)
+            { 
+                return lastOffer; 
+            }
+            else
+            {
+                return new TravelOfferDao().SelectRandomTopOffer();
+            }
+        }
+
         private void RemoveOldScreen()
         {
             if (GridX.Children.Count > 1)
@@ -119,17 +209,54 @@ namespace HtwKinect
                             Application.Current.Shutdown();
                             e.Handled = true;
                             break;
+                        #region debug keys trigger
                         case Key.Space:
-                            _debugOnlyScreen1 = true;
+                            _debugOnlyScreen4 = !_debugOnlyScreen4;
+                            _debugOnlyScreen2 = false;
+                            _debugOnlyScreen3 = false;
+                            _debugOnlyScreen1 = false;
                             ChangeScreen();
                             e.Handled = true;
                             break;
+                        case Key.NumPad4:
+                            _debugOnlyScreen4 = !_debugOnlyScreen4;
+                            _debugOnlyScreen2 = false;
+                            _debugOnlyScreen3 = false;
+                            _debugOnlyScreen1 = false;
+                            ChangeScreen();
+                            e.Handled = true;
+                            break;
+                        case Key.NumPad2:
+                            _debugOnlyScreen4 = false;
+                            _debugOnlyScreen3 = false;
+                            _debugOnlyScreen1 = false;
+                            _debugOnlyScreen2 = !_debugOnlyScreen2;
+                            ChangeScreen();
+                            e.Handled = true;
+                            break;
+                        case Key.NumPad1:
+                            _debugOnlyScreen4 = false;
+                            _debugOnlyScreen2 = false;
+                            _debugOnlyScreen3 = false;
+                            _debugOnlyScreen1 = !_debugOnlyScreen1;
+                            ChangeScreen();
+                            e.Handled = true;
+                            break;
+                        case Key.NumPad3:
+                            _debugOnlyScreen4 = false;
+                            _debugOnlyScreen2 = false;
+                            _debugOnlyScreen1 = false;
+                            _debugOnlyScreen3 = !_debugOnlyScreen3;
+                            ChangeScreen();
+                            e.Handled = true;
+                            break;
+                        #endregion debug keys trigger
                     }
                 }
             }
             catch (Exception exc)
             {
-                Console.WriteLine(exc);
+                Console.WriteLine("Exception in WindowShopping: "+exc);
             }
             if (e.Handled == false && _currentScreen==ScreenMode.MainScreen && _mainWindow!=null) 
             {
@@ -140,30 +267,37 @@ namespace HtwKinect
 
         #region PeopleDetector and Window start exit
 
-        /**
-         * Wird beim Windowstart aufgerufen
-         */
+        /// <summary>
+        /// Wird nach dem Laden des Fensters aufgerufen.
+        /// </summary>
         private void WindowLoaded(object sender, RoutedEventArgs e)
         {
             _peopleDetector = new PeoplePositionDetector();
-            KinectHelper kh = KinectHelper.Instance;
-            kh.ReadyEvent += PeopleDetectorSkeletonEvent;
+            try
+            {
+                KinectHelper kh = KinectHelper.Instance;
+                kh.ReadyEvent += PeopleDetectorSkeletonEvent;
+            }
+            catch (Exception exc)
+            {
+                Console.WriteLine(exc.Message);
+            }
         }
 
-        /**
-         * Wird beim beenden aufgerufen
-         */
+        /// <summary>
+        /// Wird beim Schliessen des Fensters aufgerufen.
+        /// </summary>
         private void WindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Console.WriteLine("Joke: Fenster Klose");
         }
 
-        /**
-         * Event Skeleton für PeopleDetector
-         */ 
+        /// <summary>
+        /// Event Skeleton für PeopleDetector.
+        /// </summary>
         private void PeopleDetectorSkeletonEvent(object sender, EventArgs e)
         {
-            _peopleDetector.Skeletons = KinectHelper.Instance.Skeletons;
+            _peopleDetector.TrackSkeletons(KinectHelper.Instance.Skeletons);
             OutputLabelX.Content =
             "Erkannt:" + _peopleDetector.GetPositionOnlyPeople().Count +
                 " Tracked:" + _peopleDetector.GetTrackedPeople().Count +

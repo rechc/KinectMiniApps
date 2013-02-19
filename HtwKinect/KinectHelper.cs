@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Windows;
-using AccessoryLib;
 using Microsoft.Kinect;
 using Microsoft.Kinect.Toolkit.FaceTracking;
 using System.Windows.Media;
@@ -204,9 +203,6 @@ namespace HtwKinect
         /// Bereich des Tiefensensors begrenzt.
         /// </summary>
         /// <param name="frameworkElement"></param>
-        /// <param name="depthmm">Entfernung, die fuer das Mapping von
-        /// Tiefeninformation auf das Farbbild verwendet wird.
-        /// Standard: 1000</param>
         public void SetTransform(FrameworkElement frameworkElement)
         {
             int depthHandLeft = 1000;
@@ -239,7 +235,7 @@ namespace HtwKinect
                 ColorImageFormat).X;
             double xw = mapper.MapDepthPointToColorPoint(
                 DepthImageFormat,
-                new DepthImagePoint() { X = w, Y = h/2, Depth = depthHandRight },
+                new DepthImagePoint { X = w, Y = h/2, Depth = depthHandRight },
                 ColorImageFormat).X;
             x0 *= frameworkElement.ActualWidth / Sensor.ColorStream.FrameWidth;
             xw *= frameworkElement.ActualWidth / Sensor.ColorStream.FrameWidth;

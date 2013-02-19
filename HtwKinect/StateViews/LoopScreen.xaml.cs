@@ -1,4 +1,4 @@
-﻿using HandDetection;
+﻿using AccessoryLib;
 using LoopList;
 using Microsoft.Kinect;
 using System;
@@ -6,15 +6,16 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using RectNavigation;
 
 namespace HtwKinect.StateViews
 {
     /// <summary>
-    /// Interaktionslogik für MainWindow.xaml
+    /// Interaktionslogik für LoopScreen.xaml
     /// </summary>
-    public partial class MainWindow : UserControl, ISwitchableUserControl
+    public partial class LoopScreen : UserControl, ISwitchableUserControl
     {
-        private Point? _oldMovePoint;
+        private Point _oldMovePoint = new Point(0, 0);
         private bool _doDrag;
         private bool _waitForTextList;
         private bool _mouseIsUp;
@@ -23,21 +24,56 @@ namespace HtwKinect.StateViews
         private readonly List<Orientation> _savedDirections = new List<Orientation>();
         private bool _dragDirectionIsObvious;
 
-        
-        private HandTracker _handTracker;
-
-        public MainWindow()
+        public LoopScreen()
         {
-            InitializeComponent();
             try
             {
+                InitializeComponent();
                 InitList();
-                InitKinect();
+                var helper = KinectHelper.Instance;
+                helper.ReadyEvent += (s, _) => HelperReady();
+                GreenScreen.Start(helper.Sensor, true);
+                AccessoryItem hat = new AccessoryItem(AccessoryPositon.Hat, @"images\Accessories\Hat.png", 0.25);
+                Accessories.AccessoryItems.Add(hat);
+                Accessories.Start(helper.Sensor);
+                RectNavigationControl.Start(helper.Sensor);
+                RectNavigationControl.SwipeLeftEvent += SwipeLeft;
+                RectNavigationControl.SwipeRightEvent += SwipeRight;
+                RectNavigationControl.SwipeUpEvent += SwipeUp;
+                RectNavigationControl.SwipeDownEvent += SwipeDown;
             }
             catch (Exception exc)
             {
                 ExceptionTextBlock.Text = exc.Message + "\r\n" + exc.InnerException;
             }
+        }
+
+        public void SwipeLeft(object sender, EventArgs e)
+        {
+            SwipeArgs sa = (SwipeArgs)e;
+            Point newPoint = new Point(-MyLoopList.GetDraggableHLength() * sa.Progress, _oldMovePoint.Y);
+            Drag(newPoint, 0);
+        }
+
+        public void SwipeRight(object sender, EventArgs e)
+        {
+            SwipeArgs sa = (SwipeArgs)e;
+            Point newPoint = new Point(MyLoopList.GetDraggableHLength() * sa.Progress, _oldMovePoint.Y);
+            Drag(newPoint, 0);
+        }
+
+        public void SwipeUp(object sender, EventArgs e)
+        {
+            SwipeArgs sa = (SwipeArgs)e;
+            Point newPoint = new Point( _oldMovePoint.X, MyLoopList.GetDraggableVLength() * sa.Progress);
+            Drag(newPoint, 0);
+        }
+
+        public void SwipeDown(object sender, EventArgs e)
+        {
+            SwipeArgs sa = (SwipeArgs)e;
+            Point newPoint = new Point(_oldMovePoint.X, -MyLoopList.GetDraggableVLength() * sa.Progress);
+            Drag(newPoint, 0);
         }
 
         private void InitList()
@@ -51,8 +87,6 @@ namespace HtwKinect.StateViews
             MyTextLoopList.SetDuration(new Duration(new TimeSpan(5500000)));
             LoadPictures(new LocalPictureUiLoader());
         }
-
-
 
         private void LoadPictures(IUiLoader uiLoader)
         {
@@ -70,48 +104,21 @@ namespace HtwKinect.StateViews
             //MyTextLoopList.Add("lol");
         }
 
-        private void InitKinect()
-        {
-            _handTracker = new HandTracker();
-            KinectHelper.Instance.ReadyEvent += (s, _) => HelperReady();
-        }
+
 
         /*Callback fur ein fertiges Frame vom Kinect-Sensor*/
         private void HelperReady()
         {
-            Skeleton skeleton = KinectHelper.Instance.GetFixedSkeleton();
-            ProcessSkeleton(skeleton);
+            var helper = KinectHelper.Instance;
+            Skeleton skeleton = helper.GetFixedSkeleton();
+            if (skeleton != null)
+                RectNavigationControl.GestureRecognition(skeleton);
+            GreenScreen.RenderImageData(helper.DepthImagePixels, helper.ColorPixels);
+            Accessories.SetSkeletons(helper.Skeletons);
+            KinectHelper.Instance.SetTransform(GreenScreen);
+            KinectHelper.Instance.SetTransform(Accessories);
+            KinectHelper.Instance.SetTransform(RectNavigationControl);
         }
-
-        private void ProcessSkeleton(Skeleton skeleton)
-        {
-            if (skeleton == null)
-            {
-                return;
-            }
-
-            HandStatus handStatus = _handTracker.GetBufferedHandStatus(KinectHelper.Instance.DepthImagePixels,
-                                                                       skeleton.Joints[JointType.HandRight],
-                                                                       KinectHelper.Instance.Sensor,
-                                                                       KinectHelper.Instance.DepthImageFormat);
-            
-            switch (handStatus)
-            {
-                case HandStatus.Closed:
-                    myLoopList_MouseUp_1(null, null);
-                    break;
-                case HandStatus.Opened:
-                    myLoopList_MouseDown_1(null, null);
-                    break;
-                default:
-                    return;
-            }
-            ColorImagePoint cp = KinectHelper.Instance.Sensor.CoordinateMapper.MapSkeletonPointToColorPoint(skeleton.Joints[JointType.HandRight].Position, KinectHelper.Instance.ColorImageFormat);
-
-            Point currentPoint = new Point(cp.X*2, cp.Y*2);
-            Drag(currentPoint);
-        }
-
        
         /*Erst wenn die Scrollanimation der TextLoopList beendet ist, darf die LoopList weiterscrollen (vertical).*/
         private void MyTextLoopList_Scrolled(object sender, EventArgs e)
@@ -141,25 +148,23 @@ namespace HtwKinect.StateViews
             }
         }
 
-        private void Drag(Point currentPos)
+        private void Drag(Point currentPos, int testDirectionTimes)
         {
             try
             {
                 if (!_doDrag)
                     return;
-                if (!_oldMovePoint.HasValue)
-                    _oldMovePoint = currentPos;
-                if (Math.Abs(_oldMovePoint.Value.X - currentPos.X) < 0.000000001 &&
-                    Math.Abs(_oldMovePoint.Value.Y - currentPos.Y) < 0.000000001)
+                if (Math.Abs(_oldMovePoint.X - currentPos.X) < 0.000000001 &&
+                    Math.Abs(_oldMovePoint.Y - currentPos.Y) < 0.000000001)
                     return; //keine Bewegung?
 
-                int xDistance = (int) (currentPos.X - _oldMovePoint.Value.X);
-                int yDistance = (int) (currentPos.Y - _oldMovePoint.Value.Y);
+                int xDistance = (int) (currentPos.X - _oldMovePoint.X);
+                int yDistance = (int) (currentPos.Y - _oldMovePoint.Y);
 
                 Orientation dragDirection = Math.Abs(xDistance) >= Math.Abs(yDistance) ? Orientation.Horizontal : Orientation.Vertical;
-                if (!_dragDirectionIsObvious)
+                if (!_dragDirectionIsObvious && testDirectionTimes > 0)
                 {
-                    if (_savedDirections.Count < 4)
+                    if (_savedDirections.Count < testDirectionTimes)
                     {
                         _savedDirections.Add(dragDirection);
                         return;
@@ -218,7 +223,7 @@ namespace HtwKinect.StateViews
 
         private void myLoopList_MouseMove_1(object sender, MouseEventArgs e)
         {
-            Drag(e.GetPosition(MyLoopList));
+            Drag(e.GetPosition(MyLoopList), 20);
         }
 
         private void myLoopList_MouseUp_1(object sender, MouseButtonEventArgs e)
@@ -230,7 +235,6 @@ namespace HtwKinect.StateViews
                 ResetDragDirectionObvious();
                 
                 _doDrag = false;
-                _oldMovePoint = null;
                 MyLoopList.AnimBack(); //zurueckspringen des Bildes
                 
             }
@@ -252,12 +256,14 @@ namespace HtwKinect.StateViews
             _mouseIsUp = false;
             _doDrag = true;
             KinectFocusedRectangle.Visibility = Visibility.Visible;
+            _oldMovePoint = e.GetPosition(MyLoopList);
         }
 
         public void DelegateKeyEvent(KeyEventArgs e) 
         {
             OnKeyDown(e);
         }
+
         /*Tastensteuerung der LoopList*/
         protected override void OnKeyDown(KeyEventArgs e)
         {
@@ -293,11 +299,7 @@ namespace HtwKinect.StateViews
                         if (!_waitForTextList)
                             MyLoopList.VDragPercent(0.25);
                         break;
-                    default:
-                        //Environment.Exit(0);
-                        break;
                 }
-                e.Handled = true;
             }
             catch (Exception exc)
             {
@@ -311,14 +313,15 @@ namespace HtwKinect.StateViews
             myLoopList_MouseUp_1(null, null);
         }
 
-        Database.TravelOffer ISwitchableUserControl.StopDisplay()
+        public Database.TravelOffer StopDisplay()
         {
-            throw new NotImplementedException();
+           // TODO implement
+            return null;
         }
 
         public void StartDisplay(Database.TravelOffer lastTravel)
         {
-            throw new NotImplementedException();
+            // TODO implement
         }
     }
 }
