@@ -149,6 +149,10 @@
       <Project>{b2aace14-c7f6-4615-9f1f-228f13780687}</Project>
       <Name>GreenScreenLib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\GreenScreenLib2\GreenScreenLib2.csproj">
+      <Project>{cef8124c-a9b0-4aee-837f-ef1134eddc53}</Project>
+      <Name>GreenScreenLib2</Name>
+    </ProjectReference>
     <ProjectReference Include="..\InfoBanner\InfoBanner.csproj">
       <Project>{9956b89b-396e-465e-a8bd-19f6dc48b978}</Project>
       <Name>InfoBanner</Name>
