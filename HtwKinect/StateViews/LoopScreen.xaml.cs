@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using RectNavigation;
+using Database;
 
 namespace HtwKinect.StateViews
 {
@@ -20,33 +21,10 @@ namespace HtwKinect.StateViews
         private bool _waitForTextList;
         private bool _mouseIsUp;
         private KinectProjectUiBuilder _kinectProjectUiBuilder;
+        private TravelOffer _currentOffer;
 
         private readonly List<Orientation> _savedDirections = new List<Orientation>();
         private bool _dragDirectionIsObvious;
-
-        public LoopScreen()
-        {
-            try
-            {
-                InitializeComponent();
-                InitList();
-                var helper = KinectHelper.Instance;
-                helper.ReadyEvent += (s, _) => HelperReady();
-                GreenScreen.Start(helper.Sensor, true);
-                AccessoryItem hat = new AccessoryItem(AccessoryPositon.Hat, @"images\Accessories\Hat.png", 0.25);
-                Accessories.AccessoryItems.Add(hat);
-                Accessories.Start(helper.Sensor);
-                RectNavigationControl.Start(helper.Sensor);
-                RectNavigationControl.SwipeLeftEvent += SwipeLeft;
-                RectNavigationControl.SwipeRightEvent += SwipeRight;
-                RectNavigationControl.SwipeUpEvent += SwipeUp;
-                RectNavigationControl.SwipeDownEvent += SwipeDown;
-            }
-            catch (Exception exc)
-            {
-                ExceptionTextBlock.Text = exc.Message + "\r\n" + exc.InnerException;
-            }
-        }
 
         public void SwipeLeft(object sender, EventArgs e)
         {
@@ -91,7 +69,7 @@ namespace HtwKinect.StateViews
         private void LoadPictures(IUiLoader uiLoader)
         {
             _kinectProjectUiBuilder = new KinectProjectUiBuilder(MyLoopList, MyTextLoopList);
-            uiLoader.LoadElementsIntoList(_kinectProjectUiBuilder);
+            uiLoader.LoadElementsIntoList(_kinectProjectUiBuilder, _currentOffer);
             //string[] paths = Directory.GetFiles(Environment.CurrentDirectory + @"\images\Top");
             //Image img = new Image {Source = new BitmapImage(new Uri(paths[0], UriKind.RelativeOrAbsolute)) };
             //Node node1 = MyLoopList.AddNewToLeft(null, img);
@@ -313,15 +291,34 @@ namespace HtwKinect.StateViews
             myLoopList_MouseUp_1(null, null);
         }
 
-        public Database.TravelOffer StopDisplay()
+        public TravelOffer StopDisplay()
         {
-           // TODO implement
-            return null;
+            return _currentOffer;
         }
 
-        public void StartDisplay(Database.TravelOffer lastTravel)
+        public void StartDisplay(TravelOffer lastTravel)
         {
-            // TODO implement
+            _currentOffer = lastTravel;
+            try
+            {
+                InitializeComponent();
+                InitList();
+                var helper = KinectHelper.Instance;
+                helper.ReadyEvent += (s, _) => HelperReady();
+                GreenScreen.Start(helper.Sensor, true);
+                AccessoryItem hat = new AccessoryItem(AccessoryPositon.Hat, @"images\Accessories\Hat.png", 0.25);
+                Accessories.AccessoryItems.Add(hat);
+                Accessories.Start(helper.Sensor);
+                RectNavigationControl.Start(helper.Sensor);
+                RectNavigationControl.SwipeLeftEvent += SwipeLeft;
+                RectNavigationControl.SwipeRightEvent += SwipeRight;
+                RectNavigationControl.SwipeUpEvent += SwipeUp;
+                RectNavigationControl.SwipeDownEvent += SwipeDown;
+            }
+            catch (Exception exc)
+            {
+                ExceptionTextBlock.Text = exc.Message + "\r\n" + exc.InnerException;
+            }
         }
     }
 }

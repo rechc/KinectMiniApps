@@ -1,8 +1,9 @@
 ﻿
+using Database;
 namespace HtwKinect
 {
     interface IUiLoader
     {
-        void LoadElementsIntoList(KinectProjectUiBuilder kinectProjectUiBuilder);
+        void LoadElementsIntoList(KinectProjectUiBuilder kinectProjectUiBuilder, TravelOffer firstShownOffer);
     }
 }

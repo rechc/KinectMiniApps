@@ -17,18 +17,25 @@ namespace HtwKinect
     /// </summary>
     class LocalPictureUiLoader : IUiLoader
     {
-        public void LoadElementsIntoList(KinectProjectUiBuilder kinectProjectUiBuilder)
+        public void LoadElementsIntoList(KinectProjectUiBuilder kinectProjectUiBuilder, TravelOffer firstShownOffer)
         {
             var offerDao = new TravelOfferDao();
-            //string[] paths = Directory.GetFiles(Environment.CurrentDirectory + @"\images\Top");
-            List<TravelOffer> dbList = offerDao.SelectAllTopOffers();
             List<FrameworkElement> list = new List<FrameworkElement> ();
+            Grid firstGrid = new Grid();
+            BuildBackground(ref firstGrid, firstShownOffer.ImgPath);
+            BuildInfoBox(ref firstGrid, firstShownOffer);
+            list.Add(firstGrid);
+            List<TravelOffer> dbList = offerDao.SelectAllTopOffers();
             foreach (var offer in dbList)
             {
-                Grid grid = new Grid();
-                BuildBackground(grid, offer.ImgPath);
-                BuildInfoBox(grid, offer);
-                list.Add(grid);
+                if(offer.OfferId != firstShownOffer.OfferId)
+                {
+
+                    Grid grid = new Grid();
+                    BuildBackground(ref grid, offer.ImgPath);
+                    BuildInfoBox(ref grid, offer);
+                    list.Add(grid); 
+                }
             }
             try
             {
@@ -52,8 +59,8 @@ namespace HtwKinect
                 foreach (var offer in dbList)
                 {
                     Grid grid = new Grid();
-                    BuildBackground(grid, offer.ImgPath);
-                    BuildInfoBox(grid, offer);
+                    BuildBackground(ref grid, offer.ImgPath);
+                    BuildInfoBox(ref grid, offer);
                     list.Add(grid);
                 }
                 kinectProjectUiBuilder.AddRow(dbList.First().Category.CategoryName, list);
@@ -67,7 +74,7 @@ namespace HtwKinect
         }
 
         #region BackgroundPicture
-        private void BuildBackground(Grid grid, string imgPath)
+        private void BuildBackground(ref Grid grid, string imgPath)
         {
             try
             {
@@ -82,7 +89,7 @@ namespace HtwKinect
         #endregion
 
         #region InfoBox
-        private void BuildInfoBox(Grid grid, TravelOffer offer)
+        private void BuildInfoBox(ref Grid grid, TravelOffer offer)
         {
             try
             {
