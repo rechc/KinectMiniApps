@@ -153,32 +153,18 @@ namespace HtwKinect
          */
         private TravelOffer StopLastScreenAndGetLastTravel()
         {
-            TravelOffer lastOffer = null;
             switch (_currentScreen)
             {
                 case ScreenMode.Splash:
-                    lastOffer = _sscreen.StopDisplay();
-                    break;
+                    return _sscreen.StopDisplay();
                 case ScreenMode.Walk:
-                    lastOffer = _walkScreen.StopDisplay();
-                    break;
+                    return _walkScreen.StopDisplay();
                 case ScreenMode.WalkandLook:
-                    lastOffer = _walkLookScreen.StopDisplay();
-                    break;
+                    return _walkLookScreen.StopDisplay();
                 case ScreenMode.MainScreen:
-                    lastOffer = _mainWindow.StopDisplay();
-                    break;
+                    return _mainWindow.StopDisplay();
                 default:
-                    break;
-            }
-
-            if (lastOffer != null)
-            { 
-                return lastOffer; 
-            }
-            else
-            {
-                return new TravelOfferDao().SelectRandomTopOffer();
+                    return new TravelOfferDao().SelectRandomTopOffer();
             }
         }
 

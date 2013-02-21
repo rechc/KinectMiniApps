@@ -113,7 +113,7 @@ namespace CreateRealDB
             CreateOffers(699, "LasVegas", 5, "Cesarius Palast", "Flugreise", 5, "Vollpension", CategoryEnum.City, "images/City/lasvegas.jpg", false, "Abflug Frankfurt a.M.", "", "");
             CreateOffers(549, "NewYork", 3, "Hotel Staars Residenz", "Flugreise", 6, "Halbpension", CategoryEnum.City, "images/City/newyork.jpg", false, "inkl. Stadtführung", "", "");
             CreateOffers(659, "SanFrancisco", 4, "Hotel Blondie", "Flugreise", 7, "Halbpension", CategoryEnum.City, "images/City/sanfrancisco.jpg", false, "inkl. Cityticket", "", "");
-            CreateOffers(899, "Sidney", 5, "Hotel Kängurus", "Flugreise", 14, "Halbpension", CategoryEnum.City, "images/City/sidney.jpg", true, "Besuch der Australien Open möglich", "Reise zur Kängaru Farm", "");
+            CreateOffers(899, "Sidney", 5, "Hotel Kängurus", "Flugreise", 14, "Halbpension", CategoryEnum.City, "images/City/sydney.jpg", true, "Besuch der Australien Open möglich", "Reise zur Kängaru Farm", "");
             //Beach
             CreateOffers(150, "Blankenberge", 3, "Hotel Belgie", "eigene Anreise", 5, "Halbpension", CategoryEnum.Beach, "images/Beach/blankenberge.jpg", false, "wunderschöne klassische Einrichtung", "", "");
             CreateOffers(219, "DominikanischeRepublik", 3, "Apartment de Sol", "Flugreise", 6, "Selbstverpflegung", CategoryEnum.Beach, "images/Beach/domrep.jpg", false, "", "", "");
