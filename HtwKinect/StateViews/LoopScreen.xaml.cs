@@ -113,7 +113,7 @@ namespace HtwKinect.StateViews
             Skeleton skeleton = helper.GetFixedSkeleton();
             if (skeleton != null)
                 RectNavigationControl.GestureRecognition(skeleton);
-            GreenScreen.RenderImageData(helper.DepthImagePixels, helper.ColorPixels);
+            GreenScreen.RenderImageData(helper.DepthPixels, helper.ColorPixels);
             Accessories.SetSkeletons(helper.Skeletons);
             KinectHelper.Instance.SetTransform(GreenScreen);
             KinectHelper.Instance.SetTransform(Accessories);

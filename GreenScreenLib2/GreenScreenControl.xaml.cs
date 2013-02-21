@@ -34,7 +34,7 @@ namespace GreenScreenLib2
         private WriteableBitmap _colorBitmap;
         private WriteableBitmap _playerOpacityMaskImage;
 
-        private DepthImagePixel[] _depthPixels;
+        private short[] _depthPixels;
         private byte[] _colorPixels;
 
         //Variables for antialiasing
@@ -92,7 +92,7 @@ namespace GreenScreenLib2
         }
 
 
-        public void RenderImageData(DepthImagePixel[] depthPixels, byte[] colorPixels)
+        public void RenderImageData(short[] depthPixels, byte[] colorPixels)
         {
             _depthPixels = depthPixels;
             _colorPixels = colorPixels;
@@ -110,7 +110,7 @@ namespace GreenScreenLib2
 
         public void Antialiasing(DrawingContext drawingContext)
         {
-            _sensor.CoordinateMapper.MapDepthFrameToColorFrame(_sensor.DepthStream.Format, 
+            _sensor.MapDepthFrameToColorFrame(_sensor.DepthStream.Format, 
                                                     _depthPixels, 
                                                     _sensor.ColorStream.Format, 
                                                     _colorCoordinates);
@@ -120,11 +120,10 @@ namespace GreenScreenLib2
 
             for (int i = 0; i < _depthPixels.Length; i++)
             {
-                int depthVal = _depthPixels[i].Depth; // >> DepthImageFrame.PlayerIndexBitmaskWidth;
-                int player = _depthPixels[i].PlayerIndex;
+                int depthVal = _depthPixels[i] >> DepthImageFrame.PlayerIndexBitmaskWidth;
 
                 // Put in the overlay of, say, depth values < 2,5 meters.       
-                if (player > 0 && (depthVal < 2500) && (depthVal > 400))
+                if ((depthVal < 2500) && (depthVal > 400))
                 {
                     ColorImagePoint colorImagePoint = _colorCoordinates[i];
 
