@@ -102,14 +102,18 @@ namespace GreenScreenControl
 
         bool PixelsSimilar(int color1, int color2)
         {
-            double epsilon = 3.0;
-            int dr = Math.Abs(((color1 >> 16) & 0xff) -
-                              ((color2 >> 16) & 0xff));
-            int dg = Math.Abs(((color1 >> 8) & 0xff) -
-                              ((color2 >> 8) & 0xff));
-            int db = Math.Abs(((color1 >> 0) & 0xff) -
-                              ((color2 >> 0) & 0xff));
-            return ((double)(dr + dg + db) / epsilon) <= 100.0;
+            if (color1 != 0 || color2 != 0)
+            {
+                double epsilon = 0.1;
+                int dr = Math.Abs(((color1 >> 16) & 0xff) -
+                                  ((color2 >> 16) & 0xff));
+                int dg = Math.Abs(((color1 >> 8) & 0xff) -
+                                  ((color2 >> 8) & 0xff));
+                int db = Math.Abs(((color1 >> 0) & 0xff) -
+                                  ((color2 >> 0) & 0xff));
+                return ((double)(dr + dg + db) / epsilon) <= 100.0;
+            }
+            return false;
         }
 
 
@@ -167,15 +171,8 @@ namespace GreenScreenControl
                             }
                             else
                             {
-
-                                try
-                                {
-                                    _greenScreenPixelData[greenScreenIndex] = OpaquePoint;
-                                    _greenScreenPixelData[greenScreenIndex - 1] = OpaquePoint;
-                                }
-                                catch
-                                {
-                                }
+                                _greenScreenPixelData[greenScreenIndex] = OpaquePoint;
+                                _greenScreenPixelData[greenScreenIndex - 1] = OpaquePoint;
                             }
                         }
                     }
@@ -246,26 +243,25 @@ namespace GreenScreenControl
         private void Floodfill8(int colorX, int colorY)
         {
             int newColor = _colorPixels[colorX * colorY];
-            if(PixelsSimilar(_currentColor, newColor))
+            //if(PixelsSimilar(_currentColor, newColor))
+            if (_currentColor.Equals(newColor)) 
             {
-                try
+                int colorInDepthX = colorX / _colorToDepthDivisor;
+                int colorInDepthY = colorY / _colorToDepthDivisor;
+                if (colorInDepthX > 0 && colorInDepthX < _depthWidth && colorInDepthY >= 0 && colorInDepthY < _depthHeight)
                 {
-                    int colorInDepthX = colorX / _colorToDepthDivisor;
-                    int colorInDepthY = colorY / _colorToDepthDivisor;
                     _greenScreenPixelData[(colorInDepthX * colorInDepthY)] = OpaquePoint;
                     Floodfill8(colorX, colorY + 1);
+                    Floodfill8(colorX - 1, colorY);
                     Floodfill8(colorX, colorY - 1);
                     Floodfill8(colorX + 1, colorY);
-                    Floodfill8(colorX - 1, colorY);
-                    Floodfill8(colorX + 1, colorY + 1);
-                    Floodfill8(colorX + 1, colorY - 1);
-                    Floodfill8(colorX - 1, colorY + 1);
-                    Floodfill8(colorX - 1, colorY + 1);
+                    
+                    //Floodfill8(colorX + 1, colorY + 1);
+                    //Floodfill8(colorX + 1, colorY - 1);
+                    //Floodfill8(colorX - 1, colorY + 1);
+                    //Floodfill8(colorX - 1, colorY + 1); 
                 }
-                catch 
-                {
-                    return;
-                }
+
             }
             return;
         }
