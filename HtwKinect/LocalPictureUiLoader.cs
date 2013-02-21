@@ -21,21 +21,17 @@ namespace HtwKinect
         {
             var offerDao = new TravelOfferDao();
             List<FrameworkElement> list = new List<FrameworkElement> ();
-            Grid firstGrid = new Grid();
-            BuildBackground(ref firstGrid, firstShownOffer.ImgPath);
-            BuildInfoBox(ref firstGrid, firstShownOffer);
-            list.Add(firstGrid);
             List<TravelOffer> dbList = offerDao.SelectAllTopOffers();
             foreach (var offer in dbList)
             {
-                if(offer.OfferId != firstShownOffer.OfferId)
-                {
+                Grid grid = new Grid();
+                BuildBackground(ref grid, offer.ImgPath);
+                BuildInfoBox(ref grid, offer);
 
-                    Grid grid = new Grid();
-                    BuildBackground(ref grid, offer.ImgPath);
-                    BuildInfoBox(ref grid, offer);
+                if(offer.OfferId == firstShownOffer.OfferId)
+                    list.Insert(0, grid);
+                else
                     list.Add(grid); 
-                }
             }
             try
             {
