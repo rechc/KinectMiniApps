@@ -73,7 +73,8 @@ namespace HtwKinect
         public Node GetRowByRowName(string rowName)
         {
             Node node;
-            _rows.TryGetValue(rowName, out node);
+            if (!_rows.TryGetValue(rowName, out node))
+                throw new Exception("No row with this name exists");
             return node;
         }
     }
