@@ -904,6 +904,8 @@ namespace LoopList
             _above = tmp;
 
             _currentNode = _lastY < 0 ? _currentNode.Below : _currentNode.Above;
+
+
         }
 
         public bool IsAnimating()

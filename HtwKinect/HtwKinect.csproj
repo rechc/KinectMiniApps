@@ -177,9 +177,12 @@
     <Content Include="FaceTrackLib.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Accessories\Hat.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Resource Include="images\Accessories\Hat_Beach.png" />
+    <Resource Include="images\Accessories\Hat_City_Female.png" />
+    <Resource Include="images\Accessories\Hat_City_Male.png" />
+    <Resource Include="images\Accessories\Hat_Default.png" />
+    <Resource Include="images\Accessories\Hat_Ski.png" />
+    <Resource Include="images\Accessories\Hat_Wander.png" />
     <Content Include="images\Beach\blankenberge.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
