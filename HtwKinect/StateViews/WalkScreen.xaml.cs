@@ -62,7 +62,7 @@ namespace HtwKinect.StateViews
         {
             var helper = KinectHelper.Instance;
             GreenScreen.Start(helper.Sensor, false);// TODO wieder auf true sonst kein antialiasing
-            AccessoryItem hat = new AccessoryItem(AccessoryPositon.Hat, @"images\Accessories\Hat.png", 0.25);
+            AccessoryItem hat = new AccessoryItem(AccessoryPositon.Hat, _currentOffer.Category.CategoryId, false);
             Accessories.AccessoryItems.Add(hat);
             Accessories.Start(helper.Sensor);
             helper.ReadyEvent += (s, _) => HelperReady();

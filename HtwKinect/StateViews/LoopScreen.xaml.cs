@@ -82,8 +82,6 @@ namespace HtwKinect.StateViews
             //MyTextLoopList.Add("lol");
         }
 
-
-
         /*Callback fur ein fertiges Frame vom Kinect-Sensor*/
         private void HelperReady()
         {
@@ -306,7 +304,7 @@ namespace HtwKinect.StateViews
                 var helper = KinectHelper.Instance;
                 helper.ReadyEvent += (s, _) => HelperReady();
                 GreenScreen.Start(helper.Sensor, true);
-                AccessoryItem hat = new AccessoryItem(AccessoryPositon.Hat, @"images\Accessories\Hat.png", 0.25);
+                AccessoryItem hat = new AccessoryItem(AccessoryPositon.Hat, lastTravel.Category.CategoryId, false);
                 Accessories.AccessoryItems.Add(hat);
                 Accessories.Start(helper.Sensor);
                 RectNavigationControl.Start(helper.Sensor);

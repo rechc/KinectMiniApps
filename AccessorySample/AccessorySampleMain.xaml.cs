@@ -83,10 +83,8 @@ namespace AccessorySample
                 this.sensor.SkeletonStream.Enable();
                 this.sensor.SkeletonFrameReady += this.SkeletonFrameReady;
 
-                AccessoryItem hat = new AccessoryItem(AccessoryPositon.Hat, @"..\..\Images\Hat.png", 0.25);
-                AccessoryItem beard = new AccessoryItem(AccessoryPositon.Beard, @"..\..\Images\Bart.png", 0.15);
+                AccessoryItem hat = new AccessoryItem(AccessoryPositon.Hat, new Random().Next(1,6), false);
                 Accessories.AccessoryItems.Add(hat);
-                Accessories.AccessoryItems.Add(beard);
 
                 Accessories.Start(sensor);
 
