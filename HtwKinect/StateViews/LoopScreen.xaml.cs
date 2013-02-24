@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using RectNavigation;
 using Database;
+using System.Diagnostics;
 
 namespace HtwKinect.StateViews
 {
@@ -16,7 +17,7 @@ namespace HtwKinect.StateViews
     /// </summary>
     public partial class LoopScreen : UserControl, ISwitchableUserControl
     {
-        private Point _oldMovePoint = new Point(0, 0);
+        private Point? _oldMovePoint;
         private bool _doDrag;
         private bool _waitForTextList;
         private bool _mouseIsUp;
@@ -28,30 +29,51 @@ namespace HtwKinect.StateViews
 
         public void SwipeLeft(object sender, EventArgs e)
         {
+            if (_mouseIsUp)
+            {
+                Click(new Point(0, 0));
+            }
             SwipeArgs sa = (SwipeArgs)e;
-            Point newPoint = new Point(-MyLoopList.GetDraggableHLength() * sa.Progress, _oldMovePoint.Y);
+            Point newPoint = new Point(-MyLoopList.GetDraggableHLength() * sa.Progress, 0);
             Drag(newPoint, 0);
         }
 
         public void SwipeRight(object sender, EventArgs e)
         {
+            if (_mouseIsUp)
+            {
+                Click(new Point(0, 0));
+            }
             SwipeArgs sa = (SwipeArgs)e;
-            Point newPoint = new Point(MyLoopList.GetDraggableHLength() * sa.Progress, _oldMovePoint.Y);
+            Point newPoint = new Point(MyLoopList.GetDraggableHLength() * sa.Progress, 0);
             Drag(newPoint, 0);
         }
 
         public void SwipeUp(object sender, EventArgs e)
         {
+            if (_mouseIsUp)
+            {
+                Click(new Point(0, 0));
+            }
             SwipeArgs sa = (SwipeArgs)e;
-            Point newPoint = new Point( _oldMovePoint.X, MyLoopList.GetDraggableVLength() * sa.Progress);
+            Point newPoint = new Point(0, MyLoopList.GetDraggableVLength() * sa.Progress);
             Drag(newPoint, 0);
         }
 
         public void SwipeDown(object sender, EventArgs e)
         {
+            if (_mouseIsUp)
+            {
+                Click(new Point(0, 0));
+            }
             SwipeArgs sa = (SwipeArgs)e;
-            Point newPoint = new Point(_oldMovePoint.X, -MyLoopList.GetDraggableVLength() * sa.Progress);
+            Point newPoint = new Point(0, -MyLoopList.GetDraggableVLength() * sa.Progress);
             Drag(newPoint, 0);
+        }
+
+        public void NoSwipe(object sender, EventArgs e)
+        {
+            myLoopList_MouseUp_1(null, null);
         }
 
         private void InitList()
@@ -130,12 +152,13 @@ namespace HtwKinect.StateViews
             {
                 if (!_doDrag)
                     return;
-                if (Math.Abs(_oldMovePoint.X - currentPos.X) < 0.000000001 &&
-                    Math.Abs(_oldMovePoint.Y - currentPos.Y) < 0.000000001)
+
+                if (Math.Abs(_oldMovePoint.Value.X - currentPos.X) < 0.000000001 &&
+                    Math.Abs(_oldMovePoint.Value.Y - currentPos.Y) < 0.000000001)
                     return; //keine Bewegung?
 
-                int xDistance = (int) (currentPos.X - _oldMovePoint.X);
-                int yDistance = (int) (currentPos.Y - _oldMovePoint.Y);
+                double xDistance = currentPos.X - _oldMovePoint.Value.X;
+                double yDistance = currentPos.Y - _oldMovePoint.Value.Y;
 
                 Orientation dragDirection = Math.Abs(xDistance) >= Math.Abs(yDistance) ? Orientation.Horizontal : Orientation.Vertical;
                 if (!_dragDirectionIsObvious && testDirectionTimes > 0)
@@ -206,6 +229,7 @@ namespace HtwKinect.StateViews
         {
             try
             {
+                _oldMovePoint = null;
                 KinectFocusedRectangle.Visibility = Visibility.Collapsed;
                 _mouseIsUp = true;
                 ResetDragDirectionObvious();
@@ -229,12 +253,16 @@ namespace HtwKinect.StateViews
 
         private void myLoopList_MouseDown_1(object sender, MouseButtonEventArgs e)
         {
+            Click(e.GetPosition(MyLoopList));
+        }
+
+        private void Click(Point point)
+        {
+            _oldMovePoint = point;
             _mouseIsUp = false;
             _doDrag = true;
             KinectFocusedRectangle.Visibility = Visibility.Visible;
-            _oldMovePoint = e.GetPosition(MyLoopList);
         }
-
         public void DelegateKeyEvent(KeyEventArgs e) 
         {
             OnKeyDown(e);
@@ -312,6 +340,7 @@ namespace HtwKinect.StateViews
                 RectNavigationControl.SwipeRightEvent += SwipeRight;
                 RectNavigationControl.SwipeUpEvent += SwipeUp;
                 RectNavigationControl.SwipeDownEvent += SwipeDown;
+                RectNavigationControl.NoSwipe += NoSwipe;
             }
             catch (Exception exc)
             {
