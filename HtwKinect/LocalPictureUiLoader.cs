@@ -25,8 +25,8 @@ namespace HtwKinect
             foreach (var offer in dbList)
             {
                 Grid grid = new Grid();
-                BuildBackground(ref grid, offer.ImgPath);
-                BuildInfoBox(ref grid, offer);
+                BuildBackground(grid, offer.ImgPath);
+                BuildInfoBox(grid, offer);
 
                 if(offer.OfferId == firstShownOffer.OfferId)
                     list.Insert(0, grid);
@@ -55,8 +55,8 @@ namespace HtwKinect
                 foreach (var offer in dbList)
                 {
                     Grid grid = new Grid();
-                    BuildBackground(ref grid, offer.ImgPath);
-                    BuildInfoBox(ref grid, offer);
+                    BuildBackground(grid, offer.ImgPath);
+                    BuildInfoBox(grid, offer);
                     list.Add(grid);
                 }
                 kinectProjectUiBuilder.AddRow(dbList.First().Category.CategoryName, list);
@@ -70,22 +70,14 @@ namespace HtwKinect
         }
 
         #region BackgroundPicture
-        private void BuildBackground(ref Grid grid, string imgPath)
+        private void BuildBackground(Grid grid, string imgPath)
         {
-            try
-            {
-                var img = new Image { Source = new BitmapImage(new Uri(imgPath, UriKind.RelativeOrAbsolute)), Stretch = Stretch.Fill };
-                grid.Children.Add(img);
-            }
-            catch
-            {
-                Console.WriteLine("can't load or display the background image: " + imgPath);
-            }
+            grid.Background = new ImageBrush(new BitmapImage(new Uri(imgPath, UriKind.RelativeOrAbsolute)));
         }
         #endregion
 
         #region InfoBox
-        private void BuildInfoBox(ref Grid grid, TravelOffer offer)
+        private void BuildInfoBox(Grid grid, TravelOffer offer)
         {
             try
             {
