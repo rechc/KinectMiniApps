@@ -77,5 +77,10 @@ namespace HtwKinect
                 throw new Exception("No row with this name exists");
             return node;
         }
+
+        public LoopList.LoopList GetLoopList()
+        {
+            return _loopList;
+        }
     }
 }

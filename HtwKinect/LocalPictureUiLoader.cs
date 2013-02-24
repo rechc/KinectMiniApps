@@ -9,6 +9,7 @@ using System.Windows.Media.Imaging;
 using AccessoryLib;
 using Database;
 using Database.DAO;
+using System.Diagnostics;
 
 namespace HtwKinect
 {
@@ -37,7 +38,7 @@ namespace HtwKinect
             {
                 MiniGame.MiniGameControl mg = new MiniGame.MiniGameControl();
                 mg.Start(KinectHelper.Instance.Sensor);
-                KinectHelper.Instance.ReadyEvent += (sender, _) => Instance_ReadyEvent(mg);
+                KinectHelper.Instance.ReadyEvent += (sender, _) => Instance_ReadyEvent(mg, kinectProjectUiBuilder.GetLoopList());
                 list.Add(mg);
             }
             catch (Exception e)
@@ -63,10 +64,18 @@ namespace HtwKinect
             }
         }
 
-        void Instance_ReadyEvent(MiniGame.MiniGameControl mg)
+        void Instance_ReadyEvent(MiniGame.MiniGameControl mg, LoopList.LoopList loopList)
         {
-            mg.MinigameSkeletonEvent(KinectHelper.Instance.GetFixedSkeleton(), KinectHelper.Instance.DepthImagePixels, KinectHelper.Instance.ColorPixels);
-            KinectHelper.Instance.SetTransform(mg);
+            if (loopList.IsShowing(mg))
+            {
+                mg.MinigameSkeletonEvent(KinectHelper.Instance.GetFixedSkeleton(), KinectHelper.Instance.DepthImagePixels, KinectHelper.Instance.ColorPixels);
+                KinectHelper.Instance.SetTransform(mg);
+            }
+            else
+            {
+                mg.Stop();
+            }
+           
         }
 
         #region BackgroundPicture
