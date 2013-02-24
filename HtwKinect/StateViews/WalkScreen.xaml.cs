@@ -16,6 +16,9 @@ namespace HtwKinect.StateViews
     {
 
         private TravelOffer _currentOffer;
+        /* For not every frame a new variable to allocate */
+        private KinectHelper helper;
+        private Skeleton skeleton;
 
         public WalkScreen()
         {
@@ -55,7 +58,8 @@ namespace HtwKinect.StateViews
 
         private void StopGreenScreenAndHat()
         {
-            helper.ReadyEvent -= (s, _) => HelperReady();
+            if (helper != null)
+                helper.ReadyEvent -= (s, _) => HelperReady();
         }
 
         private void StartGreenScreenAndHat()
@@ -68,9 +72,7 @@ namespace HtwKinect.StateViews
             helper.ReadyEvent += (s, _) => HelperReady();
         }
 
-        /* For not every frame a new variable to allocate */
-        private KinectHelper helper;
-        private Skeleton skeleton;
+
 
         /*
          * Event
