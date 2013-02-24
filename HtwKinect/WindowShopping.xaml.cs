@@ -204,7 +204,7 @@ namespace HtwKinect
                             ChangeScreen();
                             e.Handled = true;
                             break;
-                        case Key.NumPad4:
+                        case Key.D4:
                             _debugOnlyScreen4 = !_debugOnlyScreen4;
                             _debugOnlyScreen2 = false;
                             _debugOnlyScreen3 = false;
@@ -212,7 +212,7 @@ namespace HtwKinect
                             ChangeScreen();
                             e.Handled = true;
                             break;
-                        case Key.NumPad2:
+                        case Key.D2:
                             _debugOnlyScreen4 = false;
                             _debugOnlyScreen3 = false;
                             _debugOnlyScreen1 = false;
@@ -220,7 +220,7 @@ namespace HtwKinect
                             ChangeScreen();
                             e.Handled = true;
                             break;
-                        case Key.NumPad1:
+                        case Key.D1:
                             _debugOnlyScreen4 = false;
                             _debugOnlyScreen2 = false;
                             _debugOnlyScreen3 = false;
@@ -228,7 +228,7 @@ namespace HtwKinect
                             ChangeScreen();
                             e.Handled = true;
                             break;
-                        case Key.NumPad3:
+                        case Key.D3:
                             _debugOnlyScreen4 = false;
                             _debugOnlyScreen2 = false;
                             _debugOnlyScreen1 = false;
