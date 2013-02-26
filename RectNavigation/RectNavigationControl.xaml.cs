@@ -60,6 +60,9 @@ namespace RectNavigation
         private const int RectFadeOutTimer = 2000; // Miliseconds   -> Time when Fade-out animation starts
         private long _enterInnerRectTimestamp;
 
+        private int DownSwipeBlockTimer = 1000;
+        private long _upSwipeTimestamp;
+
         public event EventHandler SwipeLeftEvent;
         public event EventHandler SwipeRightEvent;
         public event EventHandler SwipeUpEvent;
@@ -98,6 +101,7 @@ namespace RectNavigation
         {
             if (SwipeLeftEvent != null)
             {
+                _upSwipeTimestamp = getTimeStamp();
                 SwipeArgs e = new SwipeArgs { Progress = progress };
                 SwipeUpEvent(this, e);
             }
@@ -107,6 +111,8 @@ namespace RectNavigation
         {
             if (SwipeLeftEvent != null)
             {
+                if (getTimeStamp() - _upSwipeTimestamp < DownSwipeBlockTimer)
+                    return;
                 SwipeArgs e = new SwipeArgs { Progress = progress };
                 SwipeDownEvent(this, e);
             }
