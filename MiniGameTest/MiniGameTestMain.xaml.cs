@@ -26,6 +26,14 @@ namespace MiniGameTest
         public MiniGameTestMain()
         {
             InitializeComponent();
+            miniGame.Start(KinectHelper.Instance.Sensor);
+            KinectHelper.Instance.ReadyEvent += Instance_ReadyEvent;
+        }
+
+        void Instance_ReadyEvent(object sender, EventArgs e)
+        {
+            miniGame.MinigameSkeletonEvent(KinectHelper.Instance.GetFixedSkeleton(), KinectHelper.Instance.DepthImagePixels, KinectHelper.Instance.ColorPixels);
+            KinectHelper.Instance.SetTransform(miniGame);
         }
    }
 }

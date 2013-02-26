@@ -3,5 +3,5 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:MiniGame="clr-namespace:MiniGame;assembly=MiniGame"
         Title="Minigame Test" Height="480" Width="640">
-    <MiniGame:MiniGameControl HorizontalAlignment="Left" Height="480" VerticalAlignment="Top" Width="640"/>
+    <MiniGame:MiniGameControl x:Name="miniGame" HorizontalAlignment="Left" Height="480" VerticalAlignment="Top" Width="640"/>
 </Window>

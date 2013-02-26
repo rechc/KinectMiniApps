@@ -39,19 +39,10 @@ namespace MiniGame
         private DepthImagePixel[] _depthImagePixels;
         private byte[] _colorPixels;
 
-
-        private const String Winter = "images/Bilder/Winter/Winter";
-        private const String Summer = "images/Bilder/Summer/Summer";
-        private const String Street = "images/Bilder/Street/Street";
-        private const String Mountain = "images/Bilder/Mountain/Mountain";
-
-        /**
-         * Variablen zum ausfuehren von MinigameTest 
-         */
-        //private const String Winter = "Bilder/Winter/Winter";
-        //private const String Summer = "Bilder/Summer/Summer";
-        //private const String Street = "images/Bilder/Street/Street";
-        //private const String Mountain = "images/Bilder/Mountain/Mountain";
+        private const String Winter = "../../../HtwKinect/images/MiniGame/Winter/Winter";
+        private const String Summer = "../../../HtwKinect/images/MiniGame/Summer/Summer";
+        private const String Street = "../../../HtwKinect/images/MiniGame/Street/Street";
+        private const String Mountain = "../../../HtwKinect/images/MiniGame/Mountain/Mountain";
 
         /**
          * Konstruktor
@@ -150,7 +141,6 @@ namespace MiniGame
          */
         private void GameStop()
         {
-            this.Status.Visibility = Visibility.Visible;
             if (_fallWorker != null)
             {
                 _fallWorker.GameOver = true;
@@ -200,7 +190,6 @@ namespace MiniGame
                     GameStop();
                 }
             }));
-
         }
 
         /**
@@ -271,7 +260,6 @@ namespace MiniGame
         /**
          * Erstellt ein neues Objekt
          */
-
         private int CreateNewObject( int column)
         {
             Grid i = new Grid();
@@ -281,7 +269,6 @@ namespace MiniGame
             ib.ImageSource = bi;
             i.Background = ib;
           
-            
             MiniGameGrid.Children.Add(i);
 
             Grid.SetColumn(i, column);
@@ -289,7 +276,6 @@ namespace MiniGame
             _gridObjects.Add(new GridObjects(i, column, 1));
             
             return column;
-
         }
 
         /**
@@ -321,7 +307,6 @@ namespace MiniGame
             
             MiniGameGrid.Children.Add(_playerBox);
 
-            Debug.WriteLine(_playerSkeleton.Joints[JointType.ShoulderCenter].Position.X);
             if (_playerSkeleton.Joints[JointType.ShoulderCenter].Position.X < -0.25)
             {
                 Grid.SetColumn(_playerBox, 1);
@@ -333,11 +318,8 @@ namespace MiniGame
             else
             {
                 Grid.SetColumn(_playerBox, 2);
-            }
-
-           
+            }  
             Grid.SetRow(_playerBox, 4);
-
         }
 
         private void RenderGreenScreen()
@@ -358,24 +340,17 @@ namespace MiniGame
          */
         private void SetBackgroundImage()
         {
-
             ImageBrush img = new ImageBrush();
             img.ImageSource = new BitmapImage(new Uri(_imagePath + "Background" + new Random().Next(1, 3) + ".jpg", UriKind.RelativeOrAbsolute));
             MiniGameGrid.Background = img;
         }
 
         /**
-         * Click Handler
+         * 
          */
-        private void Status_Click_1(object sender, RoutedEventArgs e)
-        {
-            _play = false;
-            this.Status.Visibility = Visibility.Hidden;
-        }
-
         public void Stop()
         {
-            Status_Click_1(null, null);
+            _play = false;
         }
     }
 }
