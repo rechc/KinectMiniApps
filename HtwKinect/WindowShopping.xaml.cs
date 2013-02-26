@@ -179,7 +179,7 @@ namespace HtwKinect
             if (_mainWindow == null)
             {
                 OutputLabelX.Content =
-                "Erkannt:" + _peopleDetector.GetPositionOnlyPeople().Count +
+                    "Erkannt:" + _peopleDetector.GetPositionOnlyPeople().Count +
                     " Tracked:" + _peopleDetector.GetTrackedPeople().Count +
                     " Walking:" + _peopleDetector.GetWalkingPeople().Count +
                     " Standing:" + _peopleDetector.GetStayingPeople().Count +
@@ -188,12 +188,12 @@ namespace HtwKinect
             else
             {
                 OutputLabelX.Content =
-            "Erkannt:" + _peopleDetector.GetPositionOnlyPeople().Count +
-                " Tracked:" + _peopleDetector.GetTrackedPeople().Count +
-                " Walking:" + _peopleDetector.GetWalkingPeople().Count +
-                " Standing:" + _peopleDetector.GetStayingPeople().Count +
-                " Looking:" + _peopleDetector.GetLookingPeople().Count +
-                " Gender:" + _mainWindow.Gender;
+                    "Erkannt:" + _peopleDetector.GetPositionOnlyPeople().Count +
+                    " Tracked:" + _peopleDetector.GetTrackedPeople().Count +
+                    " Walking:" + _peopleDetector.GetWalkingPeople().Count +
+                    " Standing:" + _peopleDetector.GetStayingPeople().Count +
+                    " Looking:" + _peopleDetector.GetLookingPeople().Count +
+                    " Gender:" + _mainWindow.Gender;
             }
             ChangeScreen();
         }

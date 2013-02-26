@@ -50,11 +50,7 @@ namespace HtwKinect.StateViews
                 RectNavigationControl.SwipeUpEvent += SwipeUp;
                 RectNavigationControl.SwipeDownEvent += SwipeDown;
 
-                _gd = new GenderDetector.GenderDetectorControl();
-                _gd.Start(KinectHelper.Instance.Sensor);
-                _gd.SensorColorFrameReady(KinectHelper.Instance.GetFixedSkeleton(), KinectHelper.Instance.ColorPixels);
-                
-
+                InitGenderDetection();
             }
             catch (Exception exc)
             {
@@ -100,6 +96,13 @@ namespace HtwKinect.StateViews
             MyTextLoopList.SetFontFamily("Miriam Fixed");
             MyTextLoopList.SetDuration(new Duration(new TimeSpan(5500000)));
             LoadPictures(new LocalPictureUiLoader());
+        }
+
+        private void InitGenderDetection()
+        {
+            _gd = new GenderDetector.GenderDetectorControl();
+            _gd.Start(KinectHelper.Instance.Sensor);
+            _gd.SensorColorFrameReady(KinectHelper.Instance.GetFixedSkeleton(), KinectHelper.Instance.ColorPixels);
         }
 
         private void LoadPictures(IUiLoader uiLoader)

@@ -34,8 +34,6 @@ namespace GenderDetector
         public void Start(KinectSensor sensor)
         {
             _kinectSensor = sensor;
-            _colorBitmap = new WriteableBitmap(sensor.ColorStream.FrameWidth, sensor.ColorStream.FrameHeight, 96.0, 96.0, PixelFormats.Bgr32, null);
-            //this.Image.Source = _colorBitmap;
         }
 
         /// <summary>
@@ -43,8 +41,9 @@ namespace GenderDetector
         /// </summary>
         public void SensorColorFrameReady(Skeleton skeleton, byte[] colorImagePoints)
         {
+            
             // Write the pixel data into our bitmap
-
+            _colorBitmap = new WriteableBitmap(_kinectSensor.ColorStream.FrameWidth, _kinectSensor.ColorStream.FrameHeight, 96.0, 96.0, PixelFormats.Bgr32, null);
             _colorBitmap.WritePixels(
                 new Int32Rect(0, 0, _colorBitmap.PixelWidth, _colorBitmap.PixelHeight),
                 colorImagePoints,
@@ -163,7 +162,6 @@ namespace GenderDetector
         private void CalculateGender(String path)
         {
             Stream stream = System.IO.File.OpenRead(path);
-            //_result = null;
             _result = _client.Faces.EndDetect(_client.Faces.BeginDetect(null, new Stream[] { stream }, Detector.Normal, Attributes.Gender, null, null));
             stream.Close();
         }
@@ -184,8 +182,6 @@ namespace GenderDetector
                 {
                     Gender = _result.Photos[0].Tags[0].Attributes.Gender.Value + "";
                     Confidence = _result.Photos[0].Tags[0].Attributes.Gender.Confidence + "";
-
-                    //this.GenderText.Text = Gender + "\t" + Confidence;
                 }
             }
             else
