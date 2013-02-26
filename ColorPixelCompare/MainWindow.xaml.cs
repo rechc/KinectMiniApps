@@ -73,8 +73,8 @@ namespace Microsoft.Samples.Kinect.ColorBasics
             {
                 // Turn on the color stream to receive color frames
                 this.sensor.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
-                width = 640;
-                height = 480;
+                //width = 1280;
+                //height = 960;
 
                 _greenScreenPixelData = new int[sensor.ColorStream.FramePixelDataLength / 4];
 
@@ -132,6 +132,8 @@ namespace Microsoft.Samples.Kinect.ColorBasics
             {
                 if (colorFrame != null)
                 {
+                    width = colorFrame.Width;
+                    height = colorFrame.Height;
                     Array.Clear(_greenScreenPixelData, 0, _greenScreenPixelData.Length);
 
                     if (!visited)
@@ -142,10 +144,9 @@ namespace Microsoft.Samples.Kinect.ColorBasics
 
                     // Copy the pixel data from the image to a temporary array
                     colorFrame.CopyPixelDataTo(this.colorPixels);
-
+                    int tolerance = 30;
                     for (int i = 0; i < colorPixels.Length; i++)
                     {
-                        int tolerance = 30;
                         if(!IsEqual(colorPixels[i], noPersonColorPixels[i], tolerance))
                         {
                             _greenScreenPixelData[i / 4] = -1;
