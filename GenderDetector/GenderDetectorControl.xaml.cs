@@ -63,7 +63,7 @@ namespace GenderDetector
             new Thread((ThreadStart)delegate
             {
                 // Rest Service initaliesieren
-                //InitializeService();
+                InitializeService();
 
                 // Bild speichern
                 String path = "";
@@ -163,6 +163,7 @@ namespace GenderDetector
         private void CalculateGender(String path)
         {
             Stream stream = System.IO.File.OpenRead(path);
+            //_result = null;
             _result = _client.Faces.EndDetect(_client.Faces.BeginDetect(null, new Stream[] { stream }, Detector.Normal, Attributes.Gender, null, null));
             stream.Close();
         }
@@ -172,16 +173,24 @@ namespace GenderDetector
         /// </summary>
         private void SetAttributes()
         {
-            if (_result.Photos[0].Tags.Count == 0)
+            if (_result != null)
             {
-                Gender = "No face tracked";
+
+                if (_result.Photos[0].Tags.Count == 0)
+                {
+                    Gender = "No face tracked";
+                }
+                else
+                {
+                    Gender = _result.Photos[0].Tags[0].Attributes.Gender.Value + "";
+                    Confidence = _result.Photos[0].Tags[0].Attributes.Gender.Confidence + "";
+
+                    //this.GenderText.Text = Gender + "\t" + Confidence;
+                }
             }
             else
             {
-                Gender = _result.Photos[0].Tags[0].Attributes.Gender.Value + "";
-                Confidence = _result.Photos[0].Tags[0].Attributes.Gender.Confidence + "";
-
-                //this.GenderText.Text = Gender + "\t" + Confidence;
+                Gender = "No Result";
             }
         }
     }
