@@ -100,10 +100,8 @@ namespace GreenScreenControl
                 Antialiasing(drawingContext);
         }
 
-        public void Antialiasing(DrawingContext drawingContext) //DepthImagePixel[] depthPixels, byte[] colorPixels,DepthImageFormat depthFormat, ColorImageFormat colorFormat)
+        public void Antialiasing(DrawingContext drawingContext)
         {
-            // do our processing outside of the using block
-            // so that we return resources to the kinect as soon as possible
             _sensor.CoordinateMapper.MapDepthFrameToColorFrame(
                 _sensor.DepthStream.Format,
                 _depthPixels,
@@ -138,11 +136,6 @@ namespace GreenScreenControl
                         int colorInDepthX = colorImagePoint.X / _colorToDepthDivisor;
                         int colorInDepthY = colorImagePoint.Y / _colorToDepthDivisor;
 
-
-                        // make sure the depth pixel maps to a valid point in color space
-                        // check y > 0 and y < depthHeight to make sure we don't write outside of the array
-                        // check x > 0 instead of >= 0 since to fill gaps we set opaque current pixel plus the one to the left
-                        // because of how the sensor works it is more correct to do it this way than to set to the right
                         if (colorInDepthX > 0 && colorInDepthX < _depthWidth && colorInDepthY >= 0 && colorInDepthY < _depthHeight)
                         {
                             // calculate index into the green screen pixel array
@@ -155,7 +148,6 @@ namespace GreenScreenControl
                             }
                             else
                             {
-
                                 _greenScreenPixelData[greenScreenIndex] = OpaquePoint;
                                 _greenScreenPixelData[greenScreenIndex - 1] = OpaquePoint;
                             }
@@ -170,8 +162,6 @@ namespace GreenScreenControl
                 //HidePixels();
             }
 
-        // do our processing outside of the using block
-        // so that we return resources to the kinect as soon as possible
             // Write the pixel data into our bitmap
             _colorBitmap.WritePixels(
                 new Int32Rect(0, 0, _colorBitmap.PixelWidth, _colorBitmap.PixelHeight),
