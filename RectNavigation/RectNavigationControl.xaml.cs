@@ -48,6 +48,8 @@ namespace RectNavigation
         private bool _isInOuterRect;
         private bool _wasInLastFrameInOuterRect;
 
+        private bool _veryFirstTime = true;
+
         private Point _handRightPoint = new Point(0, 0);
         private Rect _innerRect;
         private Rect _outerRect;
@@ -130,6 +132,14 @@ namespace RectNavigation
             _isInInnerRect = _innerRect.Contains(_handRightPoint);
             _isInOuterRect = _outerRect.Contains(_handRightPoint);
 
+
+            if (!_veryFirstTime)
+            {
+                if (!_isInOuterRect)
+                {
+                    Animate.Opacity(this, Opacity, 0, 0.3);
+                }
+            }
             // Inneres Rechteck wurde betreten oder verlassen
             if (_isInInnerRect != _wasInLastFrameInInnerRect)
             {
@@ -137,7 +147,7 @@ namespace RectNavigation
                 if (_isInInnerRect)
                 {
                     // Fade-out: Save timestamp when enter the inner rect
-                    Animate.Opacity(this, 0, 1, 1);
+                    Animate.Opacity(this, Opacity, 1, 0.3);
                     _enterInnerRectTimestamp = getTimeStamp();
                     _wasInInnerRect = true;
                     FireNoSwipe();
@@ -152,6 +162,7 @@ namespace RectNavigation
                 // Aeusseres Rechteck wurde betreten
                 if (_isInOuterRect)
                 {
+                    _veryFirstTime = false;
                 }
                 // Aeusseres Rechteck wurde verlassen
                 else
@@ -209,7 +220,7 @@ namespace RectNavigation
             if (getTimeStamp() - _enterInnerRectTimestamp > RectFadeOutTimer && _isInInnerRect)
             {
                 _wasInInnerRect = false;
-                Animate.Opacity(this, 1, 0, 1);
+                Animate.Opacity(this, Opacity, 0, 0.3);
             }
         }
 

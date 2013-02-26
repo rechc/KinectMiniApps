@@ -27,7 +27,7 @@ namespace HtwKinect
 
         // vars for Buffer
         private readonly ScreenMode[] _screenstatusarray;
-        private int buffersize = 20; //frames
+        private int buffersize = 20; //frames,
         private int _bufferIterator;
 
 
@@ -105,6 +105,9 @@ namespace HtwKinect
             _lookingPeople = _peopleDetector.GetLookingPeople().Count;
             _standingPeople = _peopleDetector.GetStayingPeople().Count;
 
+            //if (_currentScreen == ScreenMode.MainScreen && _mainWindow.IsGame()) {
+             //   return;
+            //}
 
             if (_positionOnlyPeople == 0 && _trackedPeople == 0 ) //Zustand 1
             {
@@ -242,7 +245,8 @@ namespace HtwKinect
         private void StartMainScreen()
         {
             RemoveOldScreen();
-            if (_mainWindow == null) { _mainWindow = new LoopScreen(); }
+            _mainWindow = new LoopScreen(); //bad perf, but less problems
+           // if (_mainWindow == null) { _mainWindow = new LoopScreen(); }
             _mainWindow.StartDisplay(StopLastScreenAndGetLastTravel());
             _currentScreen = ScreenMode.MainScreen;
             Grid.SetRow(_mainWindow, 1);

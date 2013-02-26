@@ -25,6 +25,7 @@ namespace HtwKinect.StateViews
         private KinectProjectUiBuilder _kinectProjectUiBuilder;
         private TravelOffer _currentOffer;
         private bool mouseOn = false;
+        private bool _isGameActive = false;
 
         private readonly List<Orientation> _savedDirections = new List<Orientation>();
         private bool _dragDirectionIsObvious;
@@ -134,8 +135,17 @@ namespace HtwKinect.StateViews
             if (e != null)
             {
                 LoopListArgs lla = (LoopListArgs)e;
-
-                _currentOffer = new TravelOfferDao().SelectById(lla.GetId());
+                if (lla.GetId() != -1) // Wenn Minigame
+                {
+                    GreenScreen.Opacity = 1;
+                    _isGameActive = false;
+                    _currentOffer = new TravelOfferDao().SelectById(lla.GetId());
+                }
+                else 
+                {
+                    _isGameActive = false;
+                    GreenScreen.Opacity = 0;
+                }
                 switch (lla.GetDirection())
                 {
                     case Direction.Top:
@@ -360,6 +370,11 @@ namespace HtwKinect.StateViews
             {
                 ExceptionTextBlock.Text = exc.Message + "\r\n" + exc.InnerException;
             }
+        }
+
+        public bool IsGame() 
+        {
+            return _isGameActive;
         }
     }
 }
