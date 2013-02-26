@@ -150,7 +150,7 @@ namespace MiniGame
          */
         private void GameStop()
         {
-            this.Status.Visibility = Visibility.Visible;
+            _play = false;
             if (_fallWorker != null)
             {
                 _fallWorker.GameOver = true;
@@ -364,18 +364,9 @@ namespace MiniGame
             MiniGameGrid.Background = img;
         }
 
-        /**
-         * Click Handler
-         */
-        private void Status_Click_1(object sender, RoutedEventArgs e)
-        {
-            _play = false;
-            this.Status.Visibility = Visibility.Hidden;
-        }
-
         public void Stop()
         {
-            Status_Click_1(null, null);
+            GameStop();
         }
     }
 }

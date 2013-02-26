@@ -9,6 +9,7 @@ using System.Windows.Input;
 using RectNavigation;
 using Database;
 using System.Diagnostics;
+using Database.DAO;
 
 namespace HtwKinect.StateViews
 {
@@ -131,7 +132,10 @@ namespace HtwKinect.StateViews
         {
             if (e != null)
             {
-                switch (((LoopListArgs) e).GetDirection())
+                LoopListArgs lla = (LoopListArgs)e;
+
+                _currentOffer = new TravelOfferDao().SelectById(lla.GetId());
+                switch (lla.GetDirection())
                 {
                     case Direction.Top:
                         _waitForTextList = MyTextLoopList.Anim(true);

@@ -21,7 +21,7 @@ namespace HtwKinect
         public void LoadElementsIntoList(KinectProjectUiBuilder kinectProjectUiBuilder, TravelOffer firstShownOffer)
         {
             var offerDao = new TravelOfferDao();
-            List<FrameworkElement> list = new List<FrameworkElement> ();
+            List<LoopListEntry> list = new List<LoopListEntry> ();
             List<TravelOffer> dbList = offerDao.SelectAllTopOffers();
             foreach (var offer in dbList)
             {
@@ -29,17 +29,21 @@ namespace HtwKinect
                 BuildBackground(grid, offer.ImgPath);
                 BuildInfoBox(grid, offer);
 
+                LoopListEntry entry = new LoopListEntry { FrameworkElement = grid, Id = offer.OfferId };
+
                 if(offer.OfferId == firstShownOffer.OfferId)
-                    list.Insert(0, grid);
+                    list.Insert(0, entry);
                 else
-                    list.Add(grid); 
+                    list.Add(entry); 
             }
             try
             {
                 MiniGame.MiniGameControl mg = new MiniGame.MiniGameControl();
                 mg.Start(KinectHelper.Instance.Sensor);
                 KinectHelper.Instance.ReadyEvent += (sender, _) => Instance_ReadyEvent(mg, kinectProjectUiBuilder.GetLoopList());
-                list.Add(mg);
+
+                LoopListEntry entry = new LoopListEntry { FrameworkElement = mg, Id = -1 };
+                list.Add(entry);
             }
             catch (Exception e)
             {
@@ -51,14 +55,15 @@ namespace HtwKinect
             //todo maybe ask db for categories and not enum
             foreach (CategoryEnum category in Enum.GetValues(typeof(CategoryEnum)).Cast<CategoryEnum>()) 
             {
-                list = new List<FrameworkElement>();
+                list = new List<LoopListEntry>();
                 dbList = offerDao.SelectOfferyByCategory(category);
                 foreach (var offer in dbList)
                 {
                     Grid grid = new Grid();
                     BuildBackground(grid, offer.ImgPath);
                     BuildInfoBox(grid, offer);
-                    list.Add(grid);
+                    LoopListEntry entry = new LoopListEntry { FrameworkElement = grid, Id = offer.OfferId };
+                    list.Add(entry);
                 }
                 kinectProjectUiBuilder.AddRow(dbList.First().Category.CategoryName, list);
             }
