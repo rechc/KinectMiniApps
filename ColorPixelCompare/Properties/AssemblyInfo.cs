@@ -13,7 +13,7 @@ using System.Windows;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Kinect for Windows Developer Toolkit GreenScreen - WPF")]
+[assembly: AssemblyTitle("Kinect for Windows Developer Toolkit ColorBasics - WPF")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyTrademark("")]
@@ -49,6 +49,6 @@ using System.Windows;
 //
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
-// [assembly: AssemblyVersion("1.0.*")]
-[assembly: NeutralResourcesLanguageAttribute("en-US")]
+// [assembly: AssemblyVersion("1.0.*")][assembly: NeutralResourcesLanguageAttribute("en-US")]
+[assembly: NeutralResourcesLanguage("en-US")]
 [assembly: CLSCompliant(true)]

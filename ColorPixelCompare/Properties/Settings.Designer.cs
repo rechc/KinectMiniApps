@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Microsoft.Samples.Kinect.GreenScreen.Properties
+namespace Microsoft.Samples.Kinect.ColorBasics.Properties
 {
 
 

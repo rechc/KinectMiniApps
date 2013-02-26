@@ -4,7 +4,7 @@
 // </copyright>
 //------------------------------------------------------------------------------
 
-namespace Microsoft.Samples.Kinect.GreenScreen
+namespace Microsoft.Samples.Kinect.ColorBasics
 {
     using System.Windows;
 

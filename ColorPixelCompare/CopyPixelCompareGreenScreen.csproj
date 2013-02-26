@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{BA49DE61-9346-4156-B382-75C2D5370DCD}</ProjectGuid>
+    <ProjectGuid>{82826309-C3AD-477F-B4E3-0D39F42BA412}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.Samples.Kinect.GreenScreen</RootNamespace>
-    <AssemblyName>GreenScreen-WPF</AssemblyName>
+    <RootNamespace>Microsoft.Samples.Kinect.ColorBasics</RootNamespace>
+    <AssemblyName>ColorBasics-WPF</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -102,13 +102,8 @@
     <Resource Include="Images\Kinect.ico" />
     <Resource Include="Images\Logo.png" />
     <Resource Include="Images\Status.png" />
-    <Resource Include="Images\Background.png" />
-    <Resource Include="Images\CheckedHover.png" />
-    <Resource Include="Images\CheckedNormal.png" />
     <Resource Include="Images\SnapHover.png" />
     <Resource Include="Images\SnapNormal.png" />
-    <Resource Include="Images\UncheckedHover.png" />
-    <Resource Include="Images\UncheckedNormal.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
