@@ -76,6 +76,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="LoopListEntry.cs" />
     <Compile Include="SwitchableUserControl.cs" />
     <Compile Include="StateViews\SplashScreen.xaml.cs">
       <DependentUpon>SplashScreen.xaml</DependentUpon>
@@ -231,100 +232,100 @@
     <Content Include="images\Beach\ruegen.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Bilder\Street\StreetBackground1.jpg">
+    <Content Include="images\MiniGame\Street\StreetBackground1.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Bilder\Street\StreetBackground2.jpg">
+    <Content Include="images\MiniGame\Street\StreetBackground2.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Bilder\Street\StreetObject1.png">
+    <Content Include="images\MiniGame\Street\StreetObject1.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Bilder\Street\StreetObject2.png">
+    <Content Include="images\MiniGame\Street\StreetObject2.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Bilder\Street\StreetObject3.png">
+    <Content Include="images\MiniGame\Street\StreetObject3.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Bilder\Street\StreetObject4.png">
+    <Content Include="images\MiniGame\Street\StreetObject4.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Bilder\Street\StreetObject5.png">
+    <Content Include="images\MiniGame\Street\StreetObject5.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Bilder\Street\StreetObject6.png">
+    <Content Include="images\MiniGame\Street\StreetObject6.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Bilder\Mountain\MountainBackground1.jpg">
+    <Content Include="images\MiniGame\Mountain\MountainBackground1.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Bilder\Mountain\MountainBackground2.jpg">
+    <Content Include="images\MiniGame\Mountain\MountainBackground2.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Bilder\Mountain\MountainObject1.png">
+    <Content Include="images\MiniGame\Mountain\MountainObject1.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Bilder\Mountain\MountainObject2.png">
+    <Content Include="images\MiniGame\Mountain\MountainObject2.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Bilder\Mountain\MountainObject3.png">
+    <Content Include="images\MiniGame\Mountain\MountainObject3.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Bilder\Mountain\MountainObject4.png">
+    <Content Include="images\MiniGame\Mountain\MountainObject4.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Bilder\Mountain\MountainObject5.png">
+    <Content Include="images\MiniGame\Mountain\MountainObject5.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Bilder\Mountain\MountainObject6.png">
+    <Content Include="images\MiniGame\Mountain\MountainObject6.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Bilder\Summer\SummerBackground1.jpg">
+    <Content Include="images\MiniGame\Summer\SummerBackground1.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Bilder\Summer\SummerBackground2.jpg">
+    <Content Include="images\MiniGame\Summer\SummerBackground2.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Bilder\Summer\SummerObject1.png">
+    <Content Include="images\MiniGame\Summer\SummerObject1.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Bilder\Summer\SummerObject2.png">
+    <Content Include="images\MiniGame\Summer\SummerObject2.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Bilder\Summer\SummerObject3.png">
+    <Content Include="images\MiniGame\Summer\SummerObject3.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Bilder\Summer\SummerObject4.png">
+    <Content Include="images\MiniGame\Summer\SummerObject4.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Bilder\Summer\SummerObject5.png">
+    <Content Include="images\MiniGame\Summer\SummerObject5.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Bilder\Summer\SummerObject6.png">
+    <Content Include="images\MiniGame\Summer\SummerObject6.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Bilder\Winter\WinterBackground1.jpg">
+    <Content Include="images\MiniGame\Winter\WinterBackground1.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Bilder\Winter\WinterBackground2.jpg">
+    <Content Include="images\MiniGame\Winter\WinterBackground2.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Bilder\Winter\WinterObject1.png">
+    <Content Include="images\MiniGame\Winter\WinterObject1.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Bilder\Winter\WinterObject2.png">
+    <Content Include="images\MiniGame\Winter\WinterObject2.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Bilder\Winter\WinterObject3.png">
+    <Content Include="images\MiniGame\Winter\WinterObject3.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Bilder\Winter\WinterObject4.png">
+    <Content Include="images\MiniGame\Winter\WinterObject4.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Bilder\Winter\WinterObject5.png">
+    <Content Include="images\MiniGame\Winter\WinterObject5.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="images\Bilder\Winter\WinterObject6.png">
+    <Content Include="images\MiniGame\Winter\WinterObject6.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="images\City\amsterdam.jpg">

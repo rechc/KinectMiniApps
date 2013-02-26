@@ -5,6 +5,12 @@ namespace LoopList
 {
     public class Node
     {
+        internal event EventHandler NodeChangedEvent;
+
+        public FrameworkElement FrameworkElement { get; internal set; }
+        public int Id { get; internal set; }
+
+
         private Node _left;
         private Node _right;
         private Node _above;
@@ -50,12 +56,10 @@ namespace LoopList
             }
         }
 
-        internal event EventHandler NodeChangedEvent;
-
-        public FrameworkElement FrameworkElement { get; internal set; }
-
-        internal Node(FrameworkElement frameworkElement)
+        
+        internal Node(int id, FrameworkElement frameworkElement)
         {
+            Id = id;
             FrameworkElement = frameworkElement;
             Left = this;
             Right = this;

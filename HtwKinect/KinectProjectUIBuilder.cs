@@ -19,14 +19,14 @@ namespace HtwKinect
             _textLoopList = textLoopList;
         }
 
-        public void AddRow(String rowName, List<FrameworkElement> row)
+        public void AddRow(String rowName, List<LoopListEntry> row)
         {
             _textLoopList.Add(rowName);
             Node anchor = null;
             Node first = null;
-            foreach (var frameworkElement in row)
+            foreach (var entry in row)
             {
-                anchor = _loopList.AddNewToRight(anchor, frameworkElement);
+                anchor = _loopList.AddNewToRight(anchor, entry.Id, entry.FrameworkElement);
                 if (first == null)
                     first = anchor;
             }
