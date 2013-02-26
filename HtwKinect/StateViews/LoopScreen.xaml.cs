@@ -8,6 +8,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using RectNavigation;
 using Database;
+using System.Diagnostics;
+using Database.DAO;
 
 namespace HtwKinect.StateViews
 {
@@ -16,42 +18,64 @@ namespace HtwKinect.StateViews
     /// </summary>
     public partial class LoopScreen : UserControl, ISwitchableUserControl
     {
-        private Point _oldMovePoint = new Point(0, 0);
+        private Point? _oldMovePoint;
         private bool _doDrag;
         private bool _waitForTextList;
-        private bool _mouseIsUp;
+        private bool _unclicked;
         private KinectProjectUiBuilder _kinectProjectUiBuilder;
         private TravelOffer _currentOffer;
+        private bool mouseOn = false;
 
         private readonly List<Orientation> _savedDirections = new List<Orientation>();
         private bool _dragDirectionIsObvious;
 
         public void SwipeLeft(object sender, EventArgs e)
         {
+            if (_unclicked)
+            {
+                Click(new Point(0, 0));
+            }
             SwipeArgs sa = (SwipeArgs)e;
-            Point newPoint = new Point(-MyLoopList.GetDraggableHLength() * sa.Progress, _oldMovePoint.Y);
+            Point newPoint = new Point(-MyLoopList.GetDraggableHLength() * sa.Progress, 0);
             Drag(newPoint, 0);
         }
 
         public void SwipeRight(object sender, EventArgs e)
         {
+            if (_unclicked)
+            {
+                Click(new Point(0, 0));
+            }
             SwipeArgs sa = (SwipeArgs)e;
-            Point newPoint = new Point(MyLoopList.GetDraggableHLength() * sa.Progress, _oldMovePoint.Y);
+            Point newPoint = new Point(MyLoopList.GetDraggableHLength() * sa.Progress, 0);
             Drag(newPoint, 0);
         }
 
         public void SwipeUp(object sender, EventArgs e)
         {
+            if (_unclicked)
+            {
+                Click(new Point(0, 0));
+            }
             SwipeArgs sa = (SwipeArgs)e;
-            Point newPoint = new Point( _oldMovePoint.X, MyLoopList.GetDraggableVLength() * sa.Progress);
+            Point newPoint = new Point(0, MyLoopList.GetDraggableVLength() * sa.Progress);
             Drag(newPoint, 0);
         }
 
         public void SwipeDown(object sender, EventArgs e)
         {
+            if (_unclicked)
+            {
+                Click(new Point(0, 0));
+            }
             SwipeArgs sa = (SwipeArgs)e;
-            Point newPoint = new Point(_oldMovePoint.X, -MyLoopList.GetDraggableVLength() * sa.Progress);
+            Point newPoint = new Point(0, -MyLoopList.GetDraggableVLength() * sa.Progress);
             Drag(newPoint, 0);
+        }
+
+        public void NoSwipe(object sender, EventArgs e)
+        {
+            UnClick();
         }
 
         private void InitList()
@@ -82,8 +106,6 @@ namespace HtwKinect.StateViews
             //MyTextLoopList.Add("lol");
         }
 
-
-
         /*Callback fur ein fertiges Frame vom Kinect-Sensor*/
         private void HelperReady()
         {
@@ -102,7 +124,7 @@ namespace HtwKinect.StateViews
         private void MyTextLoopList_Scrolled(object sender, EventArgs e)
         {
             _waitForTextList = false;
-            if (!_mouseIsUp)
+            if (!_unclicked)
                 _doDrag = true;
         }
 
@@ -111,7 +133,10 @@ namespace HtwKinect.StateViews
         {
             if (e != null)
             {
-                switch (((LoopListArgs) e).GetDirection())
+                LoopListArgs lla = (LoopListArgs)e;
+
+                _currentOffer = new TravelOfferDao().SelectById(lla.GetId());
+                switch (lla.GetDirection())
                 {
                     case Direction.Top:
                         _waitForTextList = MyTextLoopList.Anim(true);
@@ -121,7 +146,7 @@ namespace HtwKinect.StateViews
                         break;
                 }
                 ResetDragDirectionObvious();
-                if (!_mouseIsUp)
+                if (!_unclicked)
                     _doDrag = true;
             }
         }
@@ -132,12 +157,13 @@ namespace HtwKinect.StateViews
             {
                 if (!_doDrag)
                     return;
-                if (Math.Abs(_oldMovePoint.X - currentPos.X) < 0.000000001 &&
-                    Math.Abs(_oldMovePoint.Y - currentPos.Y) < 0.000000001)
+
+                if (Math.Abs(_oldMovePoint.Value.X - currentPos.X) < 0.000000001 &&
+                    Math.Abs(_oldMovePoint.Value.Y - currentPos.Y) < 0.000000001)
                     return; //keine Bewegung?
 
-                int xDistance = (int) (currentPos.X - _oldMovePoint.X);
-                int yDistance = (int) (currentPos.Y - _oldMovePoint.Y);
+                double xDistance = currentPos.X - _oldMovePoint.Value.X;
+                double yDistance = currentPos.Y - _oldMovePoint.Value.Y;
 
                 Orientation dragDirection = Math.Abs(xDistance) >= Math.Abs(yDistance) ? Orientation.Horizontal : Orientation.Vertical;
                 if (!_dragDirectionIsObvious && testDirectionTimes > 0)
@@ -201,20 +227,28 @@ namespace HtwKinect.StateViews
 
         private void myLoopList_MouseMove_1(object sender, MouseEventArgs e)
         {
-            Drag(e.GetPosition(MyLoopList), 20);
+            if (mouseOn)
+                Drag(e.GetPosition(MyLoopList), 20);
         }
 
         private void myLoopList_MouseUp_1(object sender, MouseButtonEventArgs e)
         {
+            if (mouseOn)
+                UnClick();
+        }
+
+        public void UnClick()
+        {
             try
             {
+                _oldMovePoint = null;
                 KinectFocusedRectangle.Visibility = Visibility.Collapsed;
-                _mouseIsUp = true;
+                _unclicked = true;
                 ResetDragDirectionObvious();
-                
+
                 _doDrag = false;
                 MyLoopList.AnimBack(); //zurueckspringen des Bildes
-                
+
             }
             catch (Exception exc)
             {
@@ -231,12 +265,17 @@ namespace HtwKinect.StateViews
 
         private void myLoopList_MouseDown_1(object sender, MouseButtonEventArgs e)
         {
-            _mouseIsUp = false;
-            _doDrag = true;
-            KinectFocusedRectangle.Visibility = Visibility.Visible;
-            _oldMovePoint = e.GetPosition(MyLoopList);
+            if (mouseOn)
+                Click(e.GetPosition(MyLoopList));
         }
 
+        private void Click(Point point)
+        {
+            _oldMovePoint = point;
+            _unclicked = false;
+            _doDrag = true;
+            KinectFocusedRectangle.Visibility = Visibility.Visible;
+        }
         public void DelegateKeyEvent(KeyEventArgs e) 
         {
             OnKeyDown(e);
@@ -306,7 +345,8 @@ namespace HtwKinect.StateViews
                 var helper = KinectHelper.Instance;
                 helper.ReadyEvent += (s, _) => HelperReady();
                 GreenScreen.Start(helper.Sensor, true);
-                AccessoryItem hat = new AccessoryItem(AccessoryPositon.Hat, @"images\Accessories\Hat.png", 0.25);
+                Accessories.AccessoryItems.Clear();
+                AccessoryItem hat = new AccessoryItem(AccessoryPositon.Hat, lastTravel.Category.CategoryId, false);
                 Accessories.AccessoryItems.Add(hat);
                 Accessories.Start(helper.Sensor);
                 RectNavigationControl.Start(helper.Sensor);
@@ -314,6 +354,7 @@ namespace HtwKinect.StateViews
                 RectNavigationControl.SwipeRightEvent += SwipeRight;
                 RectNavigationControl.SwipeUpEvent += SwipeUp;
                 RectNavigationControl.SwipeDownEvent += SwipeDown;
+                RectNavigationControl.NoSwipe += NoSwipe;
             }
             catch (Exception exc)
             {

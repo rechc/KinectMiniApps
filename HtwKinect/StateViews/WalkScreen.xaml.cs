@@ -16,6 +16,9 @@ namespace HtwKinect.StateViews
     {
 
         private TravelOffer _currentOffer;
+        /* For not every frame a new variable to allocate */
+        private KinectHelper helper;
+        private Skeleton skeleton;
 
         public WalkScreen()
         {
@@ -55,22 +58,22 @@ namespace HtwKinect.StateViews
 
         private void StopGreenScreenAndHat()
         {
-            helper.ReadyEvent -= (s, _) => HelperReady();
+            if (helper != null)
+                helper.ReadyEvent -= (s, _) => HelperReady();
         }
 
         private void StartGreenScreenAndHat()
         {
             var helper = KinectHelper.Instance;
             GreenScreen.Start(helper.Sensor, false);// TODO wieder auf true sonst kein antialiasing
-            AccessoryItem hat = new AccessoryItem(AccessoryPositon.Hat, @"images\Accessories\Hat.png", 0.25);
+            Accessories.AccessoryItems.Clear();
+            AccessoryItem hat = new AccessoryItem(AccessoryPositon.Hat, _currentOffer.Category.CategoryId, false);
             Accessories.AccessoryItems.Add(hat);
             Accessories.Start(helper.Sensor);
             helper.ReadyEvent += (s, _) => HelperReady();
         }
 
-        /* For not every frame a new variable to allocate */
-        private KinectHelper helper;
-        private Skeleton skeleton;
+
 
         /*
          * Event
