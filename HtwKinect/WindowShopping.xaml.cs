@@ -175,12 +175,26 @@ namespace HtwKinect
         private void PeopleDetectorSkeletonEvent(object sender, EventArgs e)
         {
             _peopleDetector.TrackSkeletons(KinectHelper.Instance.Skeletons);
-            OutputLabelX.Content =
+
+            if (_mainWindow == null)
+            {
+                OutputLabelX.Content =
+                "Erkannt:" + _peopleDetector.GetPositionOnlyPeople().Count +
+                    " Tracked:" + _peopleDetector.GetTrackedPeople().Count +
+                    " Walking:" + _peopleDetector.GetWalkingPeople().Count +
+                    " Standing:" + _peopleDetector.GetStayingPeople().Count +
+                    " Looking:" + _peopleDetector.GetLookingPeople().Count;
+            }
+            else
+            {
+                OutputLabelX.Content =
             "Erkannt:" + _peopleDetector.GetPositionOnlyPeople().Count +
                 " Tracked:" + _peopleDetector.GetTrackedPeople().Count +
                 " Walking:" + _peopleDetector.GetWalkingPeople().Count +
-                " Standing:" + _peopleDetector.GetStayingPeople().Count
-                + " Looking:" + _peopleDetector.GetLookingPeople().Count;
+                " Standing:" + _peopleDetector.GetStayingPeople().Count +
+                " Looking:" + _peopleDetector.GetLookingPeople().Count +
+                " Gender:" + _mainWindow.Gender;
+            }
             ChangeScreen();
         }
         #endregion PeopleDetector and Window start exit

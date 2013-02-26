@@ -143,6 +143,10 @@
       <Project>{da6c1fa9-f984-4fb5-9998-0907b6f044eb}</Project>
       <Name>Database</Name>
     </ProjectReference>
+    <ProjectReference Include="..\GenderDetector\GenderDetector.csproj">
+      <Project>{5b5e1c10-3ab6-4f22-ba0c-8288ce7a2cb0}</Project>
+      <Name>GenderDetector</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GreenScreenControl\GreenScreenLib.csproj">
       <Project>{b2aace14-c7f6-4615-9f1f-228f13780687}</Project>
       <Name>GreenScreenLib</Name>

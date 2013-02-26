@@ -20,6 +20,7 @@ namespace HtwKinect.StateViews
         private bool _waitForTextList;
         private bool _mouseIsUp;
         private KinectProjectUiBuilder _kinectProjectUiBuilder;
+        public String Gender { get; set; }
 
         private readonly List<Orientation> _savedDirections = new List<Orientation>();
         private bool _dragDirectionIsObvious;
@@ -41,6 +42,12 @@ namespace HtwKinect.StateViews
                 RectNavigationControl.SwipeRightEvent += SwipeRight;
                 RectNavigationControl.SwipeUpEvent += SwipeUp;
                 RectNavigationControl.SwipeDownEvent += SwipeDown;
+
+                GenderDetector.GenderDetectorControl gd = new GenderDetector.GenderDetectorControl();
+                gd.Start(KinectHelper.Instance.Sensor);
+                gd.SensorColorFrameReady(KinectHelper.Instance.GetFixedSkeleton(), KinectHelper.Instance.ColorPixels);
+                //KinectHelper.Instance.ReadyEvent += (sender, _) => gd.GenderCheck();
+
             }
             catch (Exception exc)
             {

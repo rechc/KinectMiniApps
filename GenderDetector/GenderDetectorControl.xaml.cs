@@ -34,7 +34,7 @@ namespace GenderDetector
         {
             _kinectSensor = sensor;
             _colorBitmap = new WriteableBitmap(sensor.ColorStream.FrameWidth, sensor.ColorStream.FrameHeight, 96.0, 96.0, PixelFormats.Bgr32, null);
-            this.Image.Source = _colorBitmap;
+            //this.Image.Source = _colorBitmap;
         }
 
         /// <summary>
@@ -50,13 +50,14 @@ namespace GenderDetector
                 _colorBitmap.PixelWidth * sizeof(int),
                 0);
             _activeSkeleton = skeleton;
+            GenderCheck(this, null);
 
         }
 
         /// <summary>
         /// Hauptfunction zur Altersbestimmung.
         /// </summary>
-        private void GenderCheck(object sender, RoutedEventArgs e)
+        public void GenderCheck(object sender, RoutedEventArgs e)
         {
             new Thread((ThreadStart)delegate
             {
@@ -172,14 +173,14 @@ namespace GenderDetector
         {
             if (_result.Photos[0].Tags.Count == 0)
             {
-                this.GenderText.Text = "No face tracked";
+                Gender = "No face tracked";
             }
             else
             {
                 Gender = _result.Photos[0].Tags[0].Attributes.Gender.Value + "";
                 Confidence = _result.Photos[0].Tags[0].Attributes.Gender.Confidence + "";
 
-                this.GenderText.Text = Gender + "\t" + Confidence;
+                //this.GenderText.Text = Gender + "\t" + Confidence;
             }
         }
     }
