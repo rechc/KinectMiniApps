@@ -105,9 +105,9 @@ namespace HtwKinect
             _lookingPeople = _peopleDetector.GetLookingPeople().Count;
             _standingPeople = _peopleDetector.GetStayingPeople().Count;
 
-            //if (_currentScreen == ScreenMode.MainScreen && _mainWindow.IsGame()) {
-             //   return;
-            //}
+            if (_currentScreen == ScreenMode.MainScreen && _mainWindow.IsGame()) {
+                return;
+            }
 
             if (_positionOnlyPeople == 0 && _trackedPeople == 0 ) //Zustand 1
             {

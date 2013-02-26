@@ -91,6 +91,7 @@ namespace MiniGame
          */
         private void PlayerHandler()
         {
+            if (_playerSkeleton == null) { return; } //test me
             if (_playerSkeleton.Joints[JointType.ShoulderCenter].Position.X < -0.25)
             {
                 Grid.SetColumn(_playerBox, 1);

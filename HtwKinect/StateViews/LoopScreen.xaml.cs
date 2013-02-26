@@ -10,6 +10,7 @@ using RectNavigation;
 using Database;
 using System.Diagnostics;
 using Database.DAO;
+using MiniGame;
 
 namespace HtwKinect.StateViews
 {
@@ -138,13 +139,15 @@ namespace HtwKinect.StateViews
                 if (lla.GetId() != -1) // Wenn Minigame
                 {
                     GreenScreen.Opacity = 1;
+                    Accessories.Opacity = 1;
                     _isGameActive = false;
                     _currentOffer = new TravelOfferDao().SelectById(lla.GetId());
                 }
                 else 
                 {
-                    _isGameActive = false;
-                    GreenScreen.Opacity = 0;
+                    _isGameActive = true;
+                    GreenScreen.Opacity = 0.2;
+                    Accessories.Opacity = 0.2;
                 }
                 switch (lla.GetDirection())
                 {
@@ -372,9 +375,10 @@ namespace HtwKinect.StateViews
             }
         }
 
+
         public bool IsGame() 
         {
-            return _isGameActive;
+            return (_isGameActive && KinectHelper.Instance.GetFixedSkeleton() != null);
         }
     }
 }
