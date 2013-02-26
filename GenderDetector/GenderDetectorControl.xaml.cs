@@ -112,21 +112,21 @@ namespace GenderDetector
         /// </summary>
         private CroppedBitmap CropBitmap(WriteableBitmap colorBitmap) 
         {
-            int width = 120;
-            int height = 120;
+            int width = 240;
+            int height = 340;
 
             // Ersten Player selektieren
             if (activeSkeleton != null)
             {
                 // Punkte des Kopfes auf ColorPoints mappen
-                var point = _kinectSensor.CoordinateMapper.MapSkeletonPointToColorPoint(activeSkeleton.Joints[JointType.Head].Position, ColorImageFormat.RgbResolution640x480Fps30);
+                var point = _kinectSensor.CoordinateMapper.MapSkeletonPointToColorPoint(activeSkeleton.Joints[JointType.Head].Position, ColorImageFormat.RgbResolution1280x960Fps12);
                     
                 // Überprüfung das nicht außerhalb des Bildes ausgenschnitten wird
-                if ((int)point.X - 70 <= 0 || (int)point.Y - 70 >= 470)
+                if ((int)point.X - 140 <= 0 || (int)point.Y - 140 >= 960)
                     return null;
                 // Array für auszuschneidendes Bild initialisierne
                 Int32Rect cropRect =
-                    new Int32Rect((int)point.X - 70, (int)point.Y - 70, width, height + 20);
+                    new Int32Rect((int)point.X - 140, (int)point.Y - 140, width, height);
 
                 // Neues Bild erstellen und zurückliefern
                 return new CroppedBitmap(this.colorBitmap, cropRect);
@@ -165,7 +165,7 @@ namespace GenderDetector
         private void CalculateGender(String path)
         {
             Stream stream = System.IO.File.OpenRead(path);
-            result = client.Faces.EndDetect(client.Faces.BeginDetect(null, new Stream[] { stream }, Detector.Normal, Attributes.Gender, null, null));
+            result = client.Faces.EndDetect(client.Faces.BeginDetect(null, new Stream[] { stream }, Detector.Normal, Attributes.All, null, null));
             stream.Close();
         }
 
