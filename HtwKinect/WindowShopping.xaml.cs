@@ -24,6 +24,12 @@ namespace HtwKinect
         private PeoplePositionDetector _peopleDetector;
         private ScreenMode _currentScreen = ScreenMode.Splash;
 
+
+        // vars for Buffer
+        private readonly ScreenMode[] _screenstatusarray;
+        private int _bufferIterator = 30;
+
+
         public enum ScreenMode
         {
             Splash,
@@ -37,6 +43,13 @@ namespace HtwKinect
         private StateViews.SplashScreen _sscreen;
         private WalkScreen _walkScreen;
         private WalkAndLookScreen _walkLookScreen;
+
+        private int _walkingPeople = 0;
+        private int _positionOnlyPeople = 0;
+        private int _trackedPeople = 0;
+        private int _lookingPeople = 0;
+        private int _standingPeople = 0;
+
 
         public FrameWindow()
         {
@@ -83,26 +96,72 @@ namespace HtwKinect
             }
             #endregion debug keys effect
 
-            if (_peopleDetector.GetPositionOnlyPeople().Count == 0 && _peopleDetector.GetTrackedPeople().Count == 0 && _currentScreen != ScreenMode.Splash) //Zustand 1
+
+            _walkingPeople = _peopleDetector.GetWalkingPeople().Count;
+            _positionOnlyPeople = _peopleDetector.GetPositionOnlyPeople().Count;
+            _trackedPeople = _peopleDetector.GetTrackedPeople().Count;
+            _lookingPeople = _peopleDetector.GetLookingPeople().Count;
+            _standingPeople = _peopleDetector.GetStayingPeople().Count;
+
+
+            if (_positionOnlyPeople == 0 && _trackedPeople == 0 && _currentScreen != ScreenMode.Splash) //Zustand 1
             {
                 StartSplashScreen();
             }
             else  // Zustand 2-4
             {
-                if (_peopleDetector.GetWalkingPeople().Count != 0 && _peopleDetector.GetLookingPeople().Count == 0 && _currentScreen != ScreenMode.Walk) // Zustand 2
+                if (_standingPeople == 0 &&  _walkingPeople != 0 && _lookingPeople == 0 && _currentScreen != ScreenMode.Walk) // Zustand 2
                 {
                     StartWalkScreen();
                 }
-                else if (_peopleDetector.GetWalkingPeople().Count != 0 && _peopleDetector.GetLookingPeople().Count != 0 && _currentScreen != ScreenMode.WalkandLook) // Zustand 3
+                else if (_standingPeople == 0 && _walkingPeople != 0 && _lookingPeople != 0 && _currentScreen != ScreenMode.WalkandLook) // Zustand 3
                 {
                     StartWalkandLookScreen();
                 }
-                else if (_peopleDetector.GetStayingPeople().Count != 0 && _peopleDetector.GetLookingPeople().Count != 0 && _currentScreen != ScreenMode.MainScreen) // Zustand 4
+                else if (_standingPeople != 0 && _lookingPeople != 0 && _currentScreen != ScreenMode.MainScreen) // Zustand 4
                 {
                     StartMainScreen();
                 }
             }
         }
+
+
+
+        private void bufferedChange() 
+        {
+            //loop overwrite
+            _bufferIterator = (_bufferIterator == _screenstatusarray.Length) ? 0 : _bufferIterator;
+            _screenstatusarray[_bufferIterator] = _currentScreen;
+            _bufferIterator++;
+
+            // double Counter
+            int splashCounter = 0;
+            int walkcounter = 0;
+            int walklookcounter = 0;
+            int maincounter = 0;
+            foreach (ScreenMode currentEntry in _screenstatusarray)
+            {
+                switch (currentEntry)
+                {
+                    case ScreenMode.Splash:
+                        splashCounter++;
+                        break;
+                    case ScreenMode.Walk:
+                        walkcounter++;
+                        break;
+                    case ScreenMode.WalkandLook:
+                        walklookcounter++;
+                        break;
+                    case ScreenMode.MainScreen:
+                        maincounter++;
+                        break;
+                    default:
+                        break;
+                }
+
+            }
+        }
+
 
         private void StartSplashScreen() 
         {
