@@ -46,7 +46,7 @@ namespace AccessoryLib
                     else
                     {
                         imagePath += "Hat_City_Male.png";
-                        width = 0.2;
+                        width = 0.215;
                     }
                     break;
                 // Wander
