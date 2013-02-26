@@ -998,5 +998,14 @@ namespace LoopList
                 }
             }
         }
+
+        public bool IsShowing(FrameworkElement fw)
+        {
+            if (_right.Children[8] == fw)
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

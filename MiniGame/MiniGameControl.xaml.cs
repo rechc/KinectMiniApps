@@ -151,9 +151,9 @@ namespace MiniGame
         private void GameStop()
         {
             this.Status.Visibility = Visibility.Visible;
-            if (_fallThread != null)
+            if (_fallWorker != null)
             {
-                _fallThread.Abort();
+                _fallWorker.GameOver = true;
             }
         }
 
@@ -371,6 +371,11 @@ namespace MiniGame
         {
             _play = false;
             this.Status.Visibility = Visibility.Hidden;
-        }  
+        }
+
+        public void Stop()
+        {
+            Status_Click_1(null, null);
+        }
     }
 }

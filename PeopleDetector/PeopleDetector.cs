@@ -1,6 +1,7 @@
 ﻿using Microsoft.Kinect;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace PeopleDetector
@@ -72,8 +73,7 @@ namespace PeopleDetector
             double currentDistance = 0.0;
             int currentDuration = 0;
             DateTime now = DateTime.Now;
-
-            for (int i = 0; i < skeletonList.Count -1 && currentDuration < _walkingDuration; i++)
+            for (int i = 0; i < skeletonList.Count - 1 && currentDuration < _walkingDuration; i++)
             {
                 currentDistance += Math.Abs(skeletonList[i].Skeleton.Position.X - skeletonList[i + 1].Skeleton.Position.X);
                 currentDuration = (now - skeletonList[i].Timestamp).Milliseconds;
@@ -196,8 +196,6 @@ namespace PeopleDetector
                                 skeletonList.RemoveAt(skeletonList.Count - 1);
                             }
                             skeletonList.Insert(0, new SkeletonTimestamp(skeleton));
-                            _skeletonsDict[skeleton.TrackingId] = skeletonList;
-
                         }
                         else
                         {
