@@ -162,7 +162,7 @@ namespace GenderDetector
         private void CalculateGender(String path)
         {
             Stream stream = System.IO.File.OpenRead(path);
-            _result = _client.Faces.EndDetect(_client.Faces.BeginDetect(null, new Stream[] { stream }, Detector.Normal, Attributes.Gender, null, null));
+            _result = _client.Faces.EndDetect(_client.Faces.BeginDetect(null, new Stream[] { stream }, Detector.Normal, Attributes.All, null, null));
             stream.Close();
         }
 

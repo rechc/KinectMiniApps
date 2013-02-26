@@ -349,16 +349,16 @@ namespace LoopList
             MarkDirections(node);
         }
 
-        public Node AddNewToLeft(Node anchor, FrameworkElement frameworkElement)
+        public Node AddNewToLeft(Node anchor, int id, FrameworkElement frameworkElement)
         {
             if (anchor == null)
             {
-                anchor = new Node(frameworkElement);
+                anchor = new Node(id, frameworkElement);
                 anchor.NodeChangedEvent += anchor_NodeChangedEvent;
             }
             else
             {
-                Node newNode = new Node(frameworkElement);
+                Node newNode = new Node(id, frameworkElement);
                 newNode.NodeChangedEvent += anchor_NodeChangedEvent;
                 Node first = anchor.Left;
                 anchor.Left = newNode;
@@ -381,16 +381,16 @@ namespace LoopList
             MarkDirections((Node)sender);
         }
 
-        public Node AddNewToRight(Node anchor, FrameworkElement frameworkElement)
+        public Node AddNewToRight(Node anchor, int id, FrameworkElement frameworkElement)
         {
             if (anchor == null)
             {
-                anchor = new Node(frameworkElement);
+                anchor = new Node(id, frameworkElement);
                 anchor.NodeChangedEvent += anchor_NodeChangedEvent;
             }
             else
             {
-                Node newNode = new Node(frameworkElement);
+                Node newNode = new Node(id, frameworkElement);
                 newNode.NodeChangedEvent += anchor_NodeChangedEvent;
                 Node first = anchor.Right;
                 anchor.Right = newNode;
@@ -409,16 +409,16 @@ namespace LoopList
             return anchor;
         }
 
-        public Node AddNewToAbove(Node anchor, FrameworkElement frameworkElement)
+        public Node AddNewToAbove(Node anchor, int id, FrameworkElement frameworkElement)
         {
             if (anchor == null)
             {
-                anchor = new Node(frameworkElement);
+                anchor = new Node(id, frameworkElement);
                 anchor.NodeChangedEvent += anchor_NodeChangedEvent;
             }
             else
             {
-                Node newNode = new Node(frameworkElement);
+                Node newNode = new Node(id, frameworkElement);
                 newNode.NodeChangedEvent += anchor_NodeChangedEvent;
                 Node first = anchor.Above;
                 anchor.Above = newNode;
@@ -436,16 +436,16 @@ namespace LoopList
             return anchor;
         }
 
-        public Node AddNewToBelow(Node anchor, FrameworkElement frameworkElement)
+        public Node AddNewToBelow(Node anchor, int id, FrameworkElement frameworkElement)
         {
             if (anchor == null)
             {
-                anchor = new Node(frameworkElement);
+                anchor = new Node(id, frameworkElement);
                 anchor.NodeChangedEvent += anchor_NodeChangedEvent;
             }
             else
             {
-                Node newNode = new Node(frameworkElement);
+                Node newNode = new Node(id, frameworkElement);
                 newNode.NodeChangedEvent += anchor_NodeChangedEvent;
                 Node first = anchor.Below;
                 anchor.Below = newNode;
@@ -523,7 +523,7 @@ namespace LoopList
                     }
                     if (ttRight.X <= -_right.ActualWidth)
                     {
-                        FireScrolled(new LoopListArgs(Direction.Left));
+                        FireScrolled(new LoopListArgs(Direction.Left, _currentNode.Id));
                         Grid tmp = _right;
                         _right = _left;
                         _left = tmp;
@@ -555,7 +555,7 @@ namespace LoopList
                     }
                     if (ttRight.X >= _right.ActualWidth)
                     {
-                        FireScrolled(new LoopListArgs(Direction.Right));
+                        FireScrolled(new LoopListArgs(Direction.Right, _currentNode.Id));
                         Grid tmp = _right;
                         _right = _left;
                         _left = tmp;
@@ -657,7 +657,7 @@ namespace LoopList
                         _right = _above;
                         _above = tmp;
                         _currentNode =  _currentNode.Below;
-                        FireScrolled(new LoopListArgs(Direction.Down));
+                        FireScrolled(new LoopListArgs(Direction.Down, _currentNode.Id));
                         ttRight = (TranslateTransform)_right.RenderTransform;
                         ttAbove = (TranslateTransform)_above.RenderTransform;
                         _lastY = 0;
@@ -689,7 +689,7 @@ namespace LoopList
                         _right = _above;
                         _above = tmp;
                         _currentNode = _currentNode.Above;
-                        FireScrolled(new LoopListArgs(Direction.Top));
+                        FireScrolled(new LoopListArgs(Direction.Top, _currentNode.Id));
                         ttRight = (TranslateTransform)_right.RenderTransform;
                         ttAbove = (TranslateTransform)_above.RenderTransform;
                         _lastY = 0;
@@ -759,8 +759,8 @@ namespace LoopList
             if (_animating == 0)
             {
                 LoopListArgs lla = _lastX > 0
-                                        ? new LoopListArgs(Direction.Right)
-                                        : new LoopListArgs(Direction.Left);
+                                        ? new LoopListArgs(Direction.Right, _currentNode.Id)
+                                        : new LoopListArgs(Direction.Left, _currentNode.Id);
                 _lastX = 0;
                 FireScrolled(lla);
             }
@@ -772,8 +772,8 @@ namespace LoopList
             if (_animating == 0)
             {
                 LoopListArgs lla = _lastY > 0
-                                        ? new LoopListArgs(Direction.Down)
-                                        : new LoopListArgs(Direction.Top);
+                                        ? new LoopListArgs(Direction.Down, _currentNode.Id)
+                                        : new LoopListArgs(Direction.Top, _currentNode.Id);
                 _lastY = 0;
                 FireScrolled(lla);
             }
@@ -904,6 +904,8 @@ namespace LoopList
             _above = tmp;
 
             _currentNode = _lastY < 0 ? _currentNode.Below : _currentNode.Above;
+
+
         }
 
         public bool IsAnimating()
@@ -995,6 +997,15 @@ namespace LoopList
                     _lastY = 0;
                 }
             }
+        }
+
+        public bool IsShowing(FrameworkElement fw)
+        {
+            if (_right.Children[8] == fw)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

@@ -7,7 +7,9 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using AccessoryLib;
+using Database;
 using Database.DAO;
+using System.Diagnostics;
 
 namespace HtwKinect
 {
@@ -16,22 +18,32 @@ namespace HtwKinect
     /// </summary>
     class LocalPictureUiLoader : IUiLoader
     {
-        public void LoadElementsIntoList(KinectProjectUiBuilder kinectProjectUiBuilder)
+        public void LoadElementsIntoList(KinectProjectUiBuilder kinectProjectUiBuilder, TravelOffer firstShownOffer)
         {
-            string[] paths = Directory.GetFiles(Environment.CurrentDirectory + @"\images\Top");
-            List<FrameworkElement> list = new List<FrameworkElement> ();
-            for (int i = 0; i < paths.Count(); i++) {
+            var offerDao = new TravelOfferDao();
+            List<LoopListEntry> list = new List<LoopListEntry> ();
+            List<TravelOffer> dbList = offerDao.SelectAllTopOffers();
+            foreach (var offer in dbList)
+            {
                 Grid grid = new Grid();
-                BuildBackground(grid, paths[i]);
-                BuildInfoBox(grid, i);
-                list.Add(grid);
+                BuildBackground(grid, offer.ImgPath);
+                BuildInfoBox(grid, offer);
+
+                LoopListEntry entry = new LoopListEntry { FrameworkElement = grid, Id = offer.OfferId };
+
+                if(offer.OfferId == firstShownOffer.OfferId)
+                    list.Insert(0, entry);
+                else
+                    list.Add(entry); 
             }
             try
             {
                 MiniGame.MiniGameControl mg = new MiniGame.MiniGameControl();
                 mg.Start(KinectHelper.Instance.Sensor);
-                KinectHelper.Instance.ReadyEvent += (sender, _) => Instance_ReadyEvent(mg);
-                list.Add(mg);
+                KinectHelper.Instance.ReadyEvent += (sender, _) => Instance_ReadyEvent(mg, kinectProjectUiBuilder.GetLoopList());
+
+                LoopListEntry entry = new LoopListEntry { FrameworkElement = mg, Id = -1 };
+                list.Add(entry);
             }
             catch (Exception e)
             {
@@ -40,63 +52,57 @@ namespace HtwKinect
 
             kinectProjectUiBuilder.AddRow("Top", list);
 
-            list = new List<FrameworkElement>();
-            paths = Directory.GetFiles(Environment.CurrentDirectory + @"\images\Beach");
-            for (int i = 0; i < paths.Count(); i++)
+            //todo maybe ask db for categories and not enum
+            foreach (CategoryEnum category in Enum.GetValues(typeof(CategoryEnum)).Cast<CategoryEnum>()) 
             {
-                Grid grid = new Grid();
-                BuildBackground(grid, paths[i]);
-                BuildInfoBox(grid, i);
-                list.Add(grid);
+                list = new List<LoopListEntry>();
+                dbList = offerDao.SelectOfferyByCategory(category);
+                foreach (var offer in dbList)
+                {
+                    Grid grid = new Grid();
+                    BuildBackground(grid, offer.ImgPath);
+                    BuildInfoBox(grid, offer);
+                    LoopListEntry entry = new LoopListEntry { FrameworkElement = grid, Id = offer.OfferId };
+                    list.Add(entry);
+                }
+                kinectProjectUiBuilder.AddRow(dbList.First().Category.CategoryName, list);
             }
-            kinectProjectUiBuilder.AddRow("Beach", list);
-
-            list = new List<FrameworkElement>();
-            paths = Directory.GetFiles(Environment.CurrentDirectory + @"\images\Snow");
-
-            for (int i = 0; i < paths.Count(); i++)
-            {
-                Grid grid = new Grid();
-                BuildBackground(grid, paths[i]);
-                BuildInfoBox(grid, i);
-                list.Add(grid);
-            }
-            kinectProjectUiBuilder.AddRow("Snow", list);
         }
 
-        void Instance_ReadyEvent(MiniGame.MiniGameControl mg)
+        void Instance_ReadyEvent(MiniGame.MiniGameControl mg, LoopList.LoopList loopList)
         {
-            mg.MinigameSkeletonEvent(KinectHelper.Instance.GetFixedSkeleton(), KinectHelper.Instance.DepthImagePixels, KinectHelper.Instance.ColorPixels);
-            KinectHelper.Instance.SetTransform(mg);
+            if (loopList.IsShowing(mg))
+            {
+                mg.MinigameSkeletonEvent(KinectHelper.Instance.GetFixedSkeleton(), KinectHelper.Instance.DepthImagePixels, KinectHelper.Instance.ColorPixels);
+                KinectHelper.Instance.SetTransform(mg);
+            }
+            else
+            {
+                mg.Stop();
+            }
+           
         }
 
         #region BackgroundPicture
         private void BuildBackground(Grid grid, string imgPath)
         {
-            try
-            {
-                var img = new Image { Source = new BitmapImage(new Uri(imgPath, UriKind.RelativeOrAbsolute)), Stretch = Stretch.Fill };
-                grid.Children.Add(img);
-            }
-            catch
-            {
-            }
+            grid.Background = new ImageBrush(new BitmapImage(new Uri(imgPath, UriKind.RelativeOrAbsolute)));
         }
         #endregion
 
         #region InfoBox
-        private void BuildInfoBox(Grid grid, int dbId)
+        private void BuildInfoBox(Grid grid, TravelOffer offer)
         {
             try
             {
                 var infoBanner = new InfoBanner.InfoBanner();
                 infoBanner.HorizontalAlignment = HorizontalAlignment.Left;
-                var offer = new TravelOfferDao().SelectById(dbId + 1);
                 infoBanner.Start(offer);
                 grid.Children.Add(infoBanner);
             }
             catch
             {
+                Console.WriteLine("Error in LocalPictureUiLoader");
             }
         }
 

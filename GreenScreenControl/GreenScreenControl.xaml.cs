@@ -48,19 +48,14 @@ namespace GreenScreenControl
 
         private bool _antialiasing;
 
-
-        public void RenderImageData(DepthImagePixel[] depthPixels, byte[] colorPixels)
-        {
-            _depthPixels = depthPixels;
-            _colorPixels = colorPixels;
-            InvalidateVisual();
-        }
-
         public GreenScreenControl()
         {
             InitializeComponent();
         }
 
+        /*
+         * Called once at start
+         */
         public void Start(KinectSensor sensor, bool antialiasing)
         {
             _antialiasing = antialiasing;
@@ -83,6 +78,19 @@ namespace GreenScreenControl
             _colorCoordinates = new ColorImagePoint[_sensor.DepthStream.FramePixelDataLength];
         }
 
+        /*
+         * This is the Eventhandler for the frames 
+         */
+        public void RenderImageData(DepthImagePixel[] depthPixels, byte[] colorPixels)
+        {
+            _depthPixels = depthPixels;
+            _colorPixels = colorPixels;
+            InvalidateVisual();
+        }
+
+        /*
+         * WPF onRender 
+         */
         protected override void OnRender(DrawingContext drawingContext)
         {
             base.OnRender(drawingContext);

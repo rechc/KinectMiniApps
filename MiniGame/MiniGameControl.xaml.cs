@@ -24,7 +24,7 @@ namespace MiniGame
     public partial class MiniGameControl
     {
 
-        private List<GridObjects> _gridObjects= new List<GridObjects>();
+        private List<GridObjects> _gridObjects = new List<GridObjects>();
         private FallWorker _fallWorker;
         private Viewbox _playerBox;
         private String _imagePath;
@@ -34,24 +34,15 @@ namespace MiniGame
 
         private bool _twoObjectsInOneColumn = false;
         private bool _play = false;
-       
+
         private GreenScreenControl.GreenScreenControl _gsc;
         private DepthImagePixel[] _depthImagePixels;
         private byte[] _colorPixels;
 
-
-        private const String Winter = "images/Bilder/Winter/Winter";
-        private const String Summer = "images/Bilder/Summer/Summer";
-        private const String Street = "images/Bilder/Street/Street";
-        private const String Mountain = "images/Bilder/Mountain/Mountain";
-
-        /**
-         * Variablen zum ausfuehren von MinigameTest 
-         */
-        //private const String Winter = "Bilder/Winter/Winter";
-        //private const String Summer = "Bilder/Summer/Summer";
-        //private const String Street = "images/Bilder/Street/Street";
-        //private const String Mountain = "images/Bilder/Mountain/Mountain";
+        private const String Winter = "../../../HtwKinect/images/MiniGame/Winter/Winter";
+        private const String Summer = "../../../HtwKinect/images/MiniGame/Summer/Summer";
+        private const String Street = "../../../HtwKinect/images/MiniGame/Street/Street";
+        private const String Mountain = "../../../HtwKinect/images/MiniGame/Mountain/Mountain";
 
         /**
          * Konstruktor
@@ -100,6 +91,7 @@ namespace MiniGame
          */
         private void PlayerHandler()
         {
+            if (_playerSkeleton == null) { return; } //test me
             if (_playerSkeleton.Joints[JointType.ShoulderCenter].Position.X < -0.25)
             {
                 Grid.SetColumn(_playerBox, 1);
@@ -113,12 +105,12 @@ namespace MiniGame
                 Grid.SetColumn(_playerBox, 2);
             }
         }
-        
+
         /**
          * Startet das Spiel
          */
         private void GameStart(int mode)
-        {            
+        {
             RemoveAllObjects();
             RemovePlayer();
             switch (mode)
@@ -150,10 +142,10 @@ namespace MiniGame
          */
         private void GameStop()
         {
-            this.Status.Visibility = Visibility.Visible;
-            if (_fallThread != null)
+            _play = false;
+            if (_fallWorker != null)
             {
-                _fallThread.Abort();
+                _fallWorker.GameOver = true;
             }
         }
 
@@ -184,7 +176,7 @@ namespace MiniGame
                         AddObjectsToGrid();
                     }
                 }
-                
+
             }));
 
             //FallWorker sleep
@@ -192,7 +184,7 @@ namespace MiniGame
             Dispatcher.BeginInvoke((Action)(() =>
             {
                 if (!_fallWorker.GameOver)
-                {                     
+                {
                     ShiftObjects(false);
                 }
                 else
@@ -200,7 +192,6 @@ namespace MiniGame
                     GameStop();
                 }
             }));
-
         }
 
         /**
@@ -237,7 +228,7 @@ namespace MiniGame
             {
                 if (go.row == 4 && go.column == Grid.GetColumn(this._playerBox))
                 {
-                    _fallWorker.GameOver=true;
+                    _fallWorker.GameOver = true;
                     break;
                 }
             }
@@ -250,9 +241,9 @@ namespace MiniGame
         {
             int x = CreateNewObject(new Random().Next(1, 4));
             //Falls keine 2 Objekte in der vorherigen Spalten waren und Random 0 ist
-            if (_twoObjectsInOneColumn == false && 0== new Random().Next(0,2))
+            if (_twoObjectsInOneColumn == false && 0 == new Random().Next(0, 2))
             {
-                
+
                 int y = new Random().Next(1, 4);
                 while (x == y)
                 {
@@ -271,8 +262,7 @@ namespace MiniGame
         /**
          * Erstellt ein neues Objekt
          */
-
-        private int CreateNewObject( int column)
+        private int CreateNewObject(int column)
         {
             Grid i = new Grid();
             BitmapImage bi = new BitmapImage(new Uri(_imagePath + "Object" + new Random().Next(1, 7) + ".png", UriKind.RelativeOrAbsolute));
@@ -280,16 +270,14 @@ namespace MiniGame
             ib.Stretch = Stretch.Uniform;
             ib.ImageSource = bi;
             i.Background = ib;
-          
-            
+
             MiniGameGrid.Children.Add(i);
 
             Grid.SetColumn(i, column);
             Grid.SetRow(i, 1);
             _gridObjects.Add(new GridObjects(i, column, 1));
-            
-            return column;
 
+            return column;
         }
 
         /**
@@ -309,7 +297,7 @@ namespace MiniGame
          */
         private void AddPlayer()
         {
-            _gsc = new GreenScreenControl.GreenScreenControl(); 
+            _gsc = new GreenScreenControl.GreenScreenControl();
             _gsc.Width = _sensor.ColorStream.FrameWidth;
             _gsc.Height = _sensor.ColorStream.FrameHeight;
             _gsc.Start(_sensor, false);
@@ -318,10 +306,9 @@ namespace MiniGame
             _playerBox.Child = _gsc;
             _playerBox.Stretch = Stretch.Fill;
             _playerBox.SetValue(Panel.ZIndexProperty, 1);
-            
+
             MiniGameGrid.Children.Add(_playerBox);
 
-            Debug.WriteLine(_playerSkeleton.Joints[JointType.ShoulderCenter].Position.X);
             if (_playerSkeleton.Joints[JointType.ShoulderCenter].Position.X < -0.25)
             {
                 Grid.SetColumn(_playerBox, 1);
@@ -334,17 +321,14 @@ namespace MiniGame
             {
                 Grid.SetColumn(_playerBox, 2);
             }
-
-           
             Grid.SetRow(_playerBox, 4);
-
         }
 
         private void RenderGreenScreen()
         {
             _gsc.RenderImageData(_depthImagePixels, _colorPixels);
         }
-        
+
         /**
          * Loescht den Player vom Grid
          */
@@ -358,19 +342,14 @@ namespace MiniGame
          */
         private void SetBackgroundImage()
         {
-
             ImageBrush img = new ImageBrush();
             img.ImageSource = new BitmapImage(new Uri(_imagePath + "Background" + new Random().Next(1, 3) + ".jpg", UriKind.RelativeOrAbsolute));
             MiniGameGrid.Background = img;
         }
 
-        /**
-         * Click Handler
-         */
-        private void Status_Click_1(object sender, RoutedEventArgs e)
+        public void Stop()
         {
-            _play = false;
-            this.Status.Visibility = Visibility.Hidden;
-        }  
+            GameStop();
+        }
     }
 }

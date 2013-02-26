@@ -331,11 +331,11 @@ namespace LoopList
             _animating--;
             if (_animating != 0) return;
             if (_lastY > 0)
-                FireScrolled(new LoopListArgs(Direction.Top));
+                FireScrolled(new LoopListTextArgs(Direction.Top));
             else
             {
                 if (_lastY < 0)
-                    FireScrolled(new LoopListArgs(Direction.Down));
+                    FireScrolled(new LoopListTextArgs(Direction.Down));
             }
         }
 

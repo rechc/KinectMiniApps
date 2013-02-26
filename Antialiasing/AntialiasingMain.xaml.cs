@@ -180,6 +180,7 @@ namespace Antialiasing
                 catch (IOException)
                 {
                     this.sensor = null;
+                    Console.WriteLine("Error Antialiasing");
                 }
             }
 

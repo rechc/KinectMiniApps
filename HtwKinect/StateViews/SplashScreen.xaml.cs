@@ -13,6 +13,7 @@ namespace HtwKinect.StateViews
     public partial class SplashScreen : UserControl, ISwitchableUserControl
     {
         private DispatcherTimer _timer = new DispatcherTimer();
+        private TravelOffer _currentOffer;
 
         public SplashScreen()
         {
@@ -41,26 +42,31 @@ namespace HtwKinect.StateViews
 
         public void SetSpashScreenOffer(TravelOffer offer)
         {
-            Category.Text = offer.Category.CategoryName;
-            Rating.Text = "Bewertung: " + offer.HotelRating;
-            HotelName.Text = offer.HotelName;
-            Place.Text = offer.Place;
-            PricePerPerson.Text = offer.PricePerPerson + ",-\n pro Person";
-            TravelInfo.Text = offer.DayCount + " tägige " + offer.TravelType + ", inkl. " + offer.BoardType;
-            string extInfo = "";
-            foreach (ExtendedInformation information in offer.ExtendedInformation)
-                extInfo += ("-" + information.Information + "\n");
-            ExtendedInfo.Text = extInfo;
+                if (offer != null)
+                {
+                    _currentOffer = offer;
+                    Category.Text = _currentOffer.Category.CategoryName;
+                    Rating.Text = "Bewertung: " + _currentOffer.HotelRating;
+                    HotelName.Text = _currentOffer.HotelName;
+                    Place.Text = _currentOffer.Place;
+                    PricePerPerson.Text = _currentOffer.PricePerPerson + ",-\n pro Person";
+                    TravelInfo.Text = _currentOffer.DayCount + " tägige " + _currentOffer.TravelType + ", inkl. " + _currentOffer.BoardType;
+                    string extInfo = "";
+                    foreach (ExtendedInformation information in _currentOffer.ExtendedInformation)
+                        extInfo += ("-" + information.Information + "\n");
+                    ExtendedInfo.Text = extInfo; 
+                }
         }
 
         public Database.TravelOffer StopDisplay()
         {
-            throw new NotImplementedException();
+            //TODO could anything be disposed ? 
+            return _currentOffer;
         }
 
         public void StartDisplay(Database.TravelOffer lastTravel)
         {
-            throw new NotImplementedException();
+            SetSpashScreenOffer(lastTravel);
         }
 
         private void UnloadWindow(object sender, System.Windows.RoutedEventArgs e)

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Kinect;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -47,6 +48,8 @@ namespace RectNavigation
         private bool _isInOuterRect;
         private bool _wasInLastFrameInOuterRect;
 
+        private bool _veryFirstTime = true;
+
         private Point _handRightPoint = new Point(0, 0);
         private Rect _innerRect;
         private Rect _outerRect;
@@ -61,6 +64,17 @@ namespace RectNavigation
         public event EventHandler SwipeRightEvent;
         public event EventHandler SwipeUpEvent;
         public event EventHandler SwipeDownEvent;
+        public event EventHandler NoSwipe;
+
+
+        private void FireNoSwipe()
+        {
+            if (NoSwipe != null)
+            {
+                NoSwipe(this, EventArgs.Empty);
+                Debug.WriteLine("no swipe");
+            }
+        }
 
         private void FireSwipeLeft(double progress)
         {
@@ -118,6 +132,14 @@ namespace RectNavigation
             _isInInnerRect = _innerRect.Contains(_handRightPoint);
             _isInOuterRect = _outerRect.Contains(_handRightPoint);
 
+
+            if (!_veryFirstTime)
+            {
+                if (!_isInOuterRect)
+                {
+                    Animate.Opacity(this, Opacity, 0, 0.3);
+                }
+            }
             // Inneres Rechteck wurde betreten oder verlassen
             if (_isInInnerRect != _wasInLastFrameInInnerRect)
             {
@@ -125,8 +147,10 @@ namespace RectNavigation
                 if (_isInInnerRect)
                 {
                     // Fade-out: Save timestamp when enter the inner rect
+                    Animate.Opacity(this, Opacity, 1, 0.3);
                     _enterInnerRectTimestamp = getTimeStamp();
                     _wasInInnerRect = true;
+                    FireNoSwipe();
                 }
 
                 _wasInLastFrameInInnerRect = _isInInnerRect;
@@ -138,6 +162,7 @@ namespace RectNavigation
                 // Aeusseres Rechteck wurde betreten
                 if (_isInOuterRect)
                 {
+                    _veryFirstTime = false;
                 }
                 // Aeusseres Rechteck wurde verlassen
                 else
@@ -146,11 +171,11 @@ namespace RectNavigation
                     {
                         if (_handRightPoint.X > _outerRect.TopRight.X) //leave right
                         {
-                            FireSwipeLeft(1);
+                            FireSwipeRight(1);
                         }
                         else if (_handRightPoint.X < _outerRect.TopLeft.X) //leave left
                         {
-                            FireSwipeRight(1);
+                            FireSwipeLeft(1);
                         }
                         else if (_handRightPoint.Y > _outerRect.BottomLeft.Y) //leave bottom
                         {
@@ -160,11 +185,12 @@ namespace RectNavigation
                         {
                             FireSwipeUp(1);
                         }
+                        FireNoSwipe();
                         _wasInInnerRect = false;
                     }
                 }
+                _wasInLastFrameInOuterRect = _isInOuterRect;
             }
-            _wasInLastFrameInOuterRect = _isInOuterRect;
 
             if (_isInOuterRect && !_isInInnerRect && _wasInInnerRect)
             {
@@ -194,8 +220,10 @@ namespace RectNavigation
             if (getTimeStamp() - _enterInnerRectTimestamp > RectFadeOutTimer && _isInInnerRect)
             {
                 _wasInInnerRect = false;
+                Animate.Opacity(this, Opacity, 0, 0.3);
             }
         }
+
 
         private long getTimeStamp()
         {
@@ -224,7 +252,7 @@ namespace RectNavigation
 
         private Rect GetOuterRect(Rect innerRect)
         {
-            const double border = 30;
+            const double border = 100;
             double x = innerRect.X - border;
             double y = innerRect.Y - border;
             double width = innerRect.Width + border * 2;

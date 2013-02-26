@@ -8,8 +8,8 @@
         xmlns:AccessoryLib="clr-namespace:AccessoryLib;assembly=AccessoryLib"
         xmlns:RectNavigation="clr-namespace:RectNavigation;assembly=RectNavigation"
         mc:Ignorable="d"
-        x:Class="HtwKinect.StateViews.LoopScreen"
-        d:DesignHeight="300" d:DesignWidth="600" >
+        x:Class="HtwKinect.StateViews.LoopScreen">
+        <!-- d:DesignHeight="300" d:DesignWidth="600" -->
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
