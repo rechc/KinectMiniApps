@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace LoopList
 {
-    public class LoopListArgs: EventArgs
+    public class LoopListTextArgs : EventArgs
     {
         private readonly Direction _direction;
-        internal LoopListArgs(Direction direction)
+        internal LoopListTextArgs(Direction direction)
         {
             _direction = direction;
         }
@@ -17,6 +17,21 @@ namespace LoopList
         public Direction GetDirection()
         {
             return _direction;
+        }
+    }
+
+    public class LoopListArgs: LoopListTextArgs
+    {
+        private readonly int _id;
+
+        internal LoopListArgs(Direction direction, int id): base(direction)
+        {
+            _id = id;
+        }
+
+        public int GetId()
+        {
+            return _id;
         }
     }
 
