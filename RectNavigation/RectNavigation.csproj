@@ -52,6 +52,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="Animate.cs" />
     <Compile Include="RectNavigationControl.xaml.cs">
       <DependentUpon>RectNavigationControl.xaml</DependentUpon>
       <SubType>Code</SubType>
