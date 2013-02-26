@@ -46,6 +46,7 @@ namespace HtwKinect.StateViews
                 GenderDetector.GenderDetectorControl gd = new GenderDetector.GenderDetectorControl();
                 gd.Start(KinectHelper.Instance.Sensor);
                 gd.SensorColorFrameReady(KinectHelper.Instance.GetFixedSkeleton(), KinectHelper.Instance.ColorPixels);
+                Gender = gd.Gender;
                 //KinectHelper.Instance.ReadyEvent += (sender, _) => gd.GenderCheck();
 
             }

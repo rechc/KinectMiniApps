@@ -19,6 +19,7 @@ namespace GenderDetector
         private FCClient _client;
         private FCResult _result;
         private Skeleton _activeSkeleton;
+        private const int CutRange = 70;
 
         public String Gender { get; set; }
         public String Confidence { get; set; }
@@ -62,7 +63,7 @@ namespace GenderDetector
             new Thread((ThreadStart)delegate
             {
                 // Rest Service initaliesieren
-                InitializeService();
+                //InitializeService();
 
                 // Bild speichern
                 String path = "";
@@ -109,21 +110,21 @@ namespace GenderDetector
         /// </summary>
         private CroppedBitmap CropBitmap(WriteableBitmap colorBitmap) 
         {
-            int width = 120;
-            int height = 120;
+            int width = 140;
+            int height = 140;
 
             // Ersten Player selektieren
             if (_activeSkeleton != null)
             {
                 // Punkte des Kopfes auf ColorPoints mappen
-                var point = _kinectSensor.CoordinateMapper.MapSkeletonPointToColorPoint(_activeSkeleton.Joints[JointType.Head].Position, ColorImageFormat.RgbResolution640x480Fps30);
+                var point = _kinectSensor.CoordinateMapper.MapSkeletonPointToColorPoint(_activeSkeleton.Joints[JointType.Head].Position, _kinectSensor.ColorStream.Format);
                     
                 // Überprüfung das nicht außerhalb des Bildes ausgenschnitten wird
-                if ((int)point.X - 70 <= 0 || (int)point.Y - 70 >= 470)
+                if ((int)point.X - CutRange <= 0 || (int)point.X - CutRange >= _kinectSensor.ColorStream.FrameWidth || (int)point.Y - CutRange <= 0 || (int)point.Y - CutRange >= _kinectSensor.ColorStream.FrameHeight)
                     return null;
                 // Array für auszuschneidendes Bild initialisierne
                 Int32Rect cropRect =
-                    new Int32Rect((int)point.X - 70, (int)point.Y - 70, width, height + 20);
+                    new Int32Rect((int)point.X - CutRange, (int)point.Y - CutRange, width, height +20);
 
                 // Neues Bild erstellen und zurückliefern
                 return new CroppedBitmap(_colorBitmap, cropRect);
