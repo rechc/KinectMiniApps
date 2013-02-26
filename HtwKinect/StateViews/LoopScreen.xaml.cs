@@ -136,6 +136,7 @@ namespace HtwKinect.StateViews
                 LoopListArgs lla = (LoopListArgs)e;
 
                 _currentOffer = new TravelOfferDao().SelectById(lla.GetId());
+                setNewHat();
                 switch (lla.GetDirection())
                 {
                     case Direction.Top:
@@ -345,9 +346,7 @@ namespace HtwKinect.StateViews
                 var helper = KinectHelper.Instance;
                 helper.ReadyEvent += (s, _) => HelperReady();
                 GreenScreen.Start(helper.Sensor, true);
-                Accessories.AccessoryItems.Clear();
-                AccessoryItem hat = new AccessoryItem(AccessoryPositon.Hat, lastTravel.Category.CategoryId, false);
-                Accessories.AccessoryItems.Add(hat);
+                setNewHat();
                 Accessories.Start(helper.Sensor);
                 RectNavigationControl.Start(helper.Sensor);
                 RectNavigationControl.SwipeLeftEvent += SwipeLeft;
@@ -360,6 +359,13 @@ namespace HtwKinect.StateViews
             {
                 ExceptionTextBlock.Text = exc.Message + "\r\n" + exc.InnerException;
             }
+        }
+
+        private void setNewHat()
+        {
+            Accessories.AccessoryItems.Clear();
+            AccessoryItem hat = new AccessoryItem(AccessoryPositon.Hat, _currentOffer.Category.CategoryId, false);
+            Accessories.AccessoryItems.Add(hat);
         }
     }
 }
