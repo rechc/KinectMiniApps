@@ -332,6 +332,7 @@ namespace HtwKinect.StateViews
                 var helper = KinectHelper.Instance;
                 helper.ReadyEvent += (s, _) => HelperReady();
                 GreenScreen.Start(helper.Sensor, true);
+                Accessories.AccessoryItems.Clear();
                 AccessoryItem hat = new AccessoryItem(AccessoryPositon.Hat, lastTravel.Category.CategoryId, false);
                 Accessories.AccessoryItems.Add(hat);
                 Accessories.Start(helper.Sensor);
