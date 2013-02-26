@@ -136,6 +136,7 @@ namespace HtwKinect.StateViews
             if (e != null)
             {
                 LoopListArgs lla = (LoopListArgs)e;
+
                 if (lla.GetId() != -1) // Wenn Minigame
                 {
                     GreenScreen.Opacity = 1;
@@ -149,6 +150,9 @@ namespace HtwKinect.StateViews
                     GreenScreen.Opacity = 0.2;
                     Accessories.Opacity = 0.2;
                 }
+
+                setNewHat();
+
                 switch (lla.GetDirection())
                 {
                     case Direction.Top:
@@ -358,9 +362,7 @@ namespace HtwKinect.StateViews
                 var helper = KinectHelper.Instance;
                 helper.ReadyEvent += (s, _) => HelperReady();
                 GreenScreen.Start(helper.Sensor, true);
-                Accessories.AccessoryItems.Clear();
-                AccessoryItem hat = new AccessoryItem(AccessoryPositon.Hat, lastTravel.Category.CategoryId, false);
-                Accessories.AccessoryItems.Add(hat);
+                setNewHat();
                 Accessories.Start(helper.Sensor);
                 RectNavigationControl.Start(helper.Sensor);
                 RectNavigationControl.SwipeLeftEvent += SwipeLeft;
@@ -376,9 +378,17 @@ namespace HtwKinect.StateViews
         }
 
 
-        public bool IsGame() 
+
+        public bool IsGame()
         {
             return (_isGameActive && KinectHelper.Instance.GetFixedSkeleton() != null);
+        }
+        private void setNewHat()
+        {
+            Accessories.AccessoryItems.Clear();
+            AccessoryItem hat = new AccessoryItem(AccessoryPositon.Hat, _currentOffer.Category.CategoryId, false);
+            Accessories.AccessoryItems.Add(hat);
+
         }
     }
 }

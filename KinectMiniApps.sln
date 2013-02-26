@@ -65,6 +65,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateRealDB", "CreateRealD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorGreenScreen", "..\ColorGreenScreenTest\ColorGreenScreen.csproj", "{18183EE7-09F6-414D-A061-918F1DD85A8F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CopyPixelCompareGreenScreen", "CopyPixelCompareGreenScreen\CopyPixelCompareGreenScreen.csproj", "{BA49DE61-9346-4156-B382-75C2D5370DCD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -355,6 +357,16 @@ Global
 		{18183EE7-09F6-414D-A061-918F1DD85A8F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{18183EE7-09F6-414D-A061-918F1DD85A8F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{18183EE7-09F6-414D-A061-918F1DD85A8F}.Release|x86.ActiveCfg = Release|Any CPU
+		{BA49DE61-9346-4156-B382-75C2D5370DCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA49DE61-9346-4156-B382-75C2D5370DCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA49DE61-9346-4156-B382-75C2D5370DCD}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{BA49DE61-9346-4156-B382-75C2D5370DCD}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{BA49DE61-9346-4156-B382-75C2D5370DCD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BA49DE61-9346-4156-B382-75C2D5370DCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA49DE61-9346-4156-B382-75C2D5370DCD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA49DE61-9346-4156-B382-75C2D5370DCD}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{BA49DE61-9346-4156-B382-75C2D5370DCD}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{BA49DE61-9346-4156-B382-75C2D5370DCD}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -388,5 +400,6 @@ Global
 		{A1E039C4-0B91-46DC-A556-9A5575E173AB} = {AA4E5625-C39A-4E0E-B82D-7C53C91C83C9}
 		{049FF75C-AF23-4AB1-A59A-86F61060F408} = {AA4E5625-C39A-4E0E-B82D-7C53C91C83C9}
 		{18183EE7-09F6-414D-A061-918F1DD85A8F} = {AA4E5625-C39A-4E0E-B82D-7C53C91C83C9}
+		{BA49DE61-9346-4156-B382-75C2D5370DCD} = {AA4E5625-C39A-4E0E-B82D-7C53C91C83C9}
 	EndGlobalSection
 EndGlobal
