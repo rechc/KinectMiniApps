@@ -24,6 +24,13 @@ namespace HtwKinect
         private PeoplePositionDetector _peopleDetector;
         private ScreenMode _currentScreen = ScreenMode.Splash;
 
+
+        // vars for Buffer
+        private readonly ScreenMode[] _screenstatusarray;
+        private int buffersize = 20; //frames
+        private int _bufferIterator;
+
+
         public enum ScreenMode
         {
             Splash,
@@ -38,8 +45,16 @@ namespace HtwKinect
         private WalkScreen _walkScreen;
         private WalkAndLookScreen _walkLookScreen;
 
+        private int _walkingPeople = 0;
+        private int _positionOnlyPeople = 0;
+        private int _trackedPeople = 0;
+        private int _lookingPeople = 0;
+        private int _standingPeople = 0;
+
+
         public FrameWindow()
         {
+            _screenstatusarray = new ScreenMode[buffersize];
             InitializeComponent();
             StartSplashScreen();           
         }
@@ -83,26 +98,112 @@ namespace HtwKinect
             }
             #endregion debug keys effect
 
-            if (_peopleDetector.GetPositionOnlyPeople().Count == 0 && _peopleDetector.GetTrackedPeople().Count == 0 && _currentScreen != ScreenMode.Splash) //Zustand 1
+
+            _walkingPeople = _peopleDetector.GetWalkingPeople().Count;
+            _positionOnlyPeople = _peopleDetector.GetPositionOnlyPeople().Count;
+            _trackedPeople = _peopleDetector.GetTrackedPeople().Count;
+            _lookingPeople = _peopleDetector.GetLookingPeople().Count;
+            _standingPeople = _peopleDetector.GetStayingPeople().Count;
+
+
+            if (_positionOnlyPeople == 0 && _trackedPeople == 0 ) //Zustand 1
             {
-                StartSplashScreen();
+                AddToBuffer(ScreenMode.Splash);
+                if (_currentScreen != ScreenMode.Splash && MostBufferedScreen() == ScreenMode.Splash)
+                {
+                    StartSplashScreen();
+                }
             }
             else  // Zustand 2-4
             {
-                if (_peopleDetector.GetWalkingPeople().Count != 0 && _peopleDetector.GetLookingPeople().Count == 0 && _currentScreen != ScreenMode.Walk) // Zustand 2
+                if (_standingPeople == 0 &&  _walkingPeople != 0 && _lookingPeople == 0 ) // Zustand 2
                 {
-                    StartWalkScreen();
+                    AddToBuffer(ScreenMode.Walk);
+                    if (_currentScreen != ScreenMode.Walk && MostBufferedScreen() == ScreenMode.Walk)
+                    {
+                        StartWalkScreen();
+                    }
                 }
-                else if (_peopleDetector.GetWalkingPeople().Count != 0 && _peopleDetector.GetLookingPeople().Count != 0 && _currentScreen != ScreenMode.WalkandLook) // Zustand 3
+                else if (_standingPeople == 0 && _walkingPeople != 0 && _lookingPeople != 0) // Zustand 3
                 {
-                    StartWalkandLookScreen();
+                    AddToBuffer(ScreenMode.WalkandLook);
+                    if (_currentScreen != ScreenMode.WalkandLook && MostBufferedScreen() == ScreenMode.WalkandLook)
+                    {
+                        StartWalkandLookScreen();
+                    }
                 }
-                else if (_peopleDetector.GetStayingPeople().Count != 0 && _peopleDetector.GetLookingPeople().Count != 0 && _currentScreen != ScreenMode.MainScreen) // Zustand 4
+                else if (_standingPeople != 0 && _lookingPeople != 0) // Zustand 4
                 {
-                    StartMainScreen();
+                    AddToBuffer(ScreenMode.MainScreen);
+                    if (_currentScreen != ScreenMode.MainScreen && MostBufferedScreen() == ScreenMode.MainScreen)
+                    {
+                        StartMainScreen();
+                    }
                 }
             }
         }
+
+
+
+        private void AddToBuffer(ScreenMode lastdetected) 
+        {
+            //loop overwrite
+            _bufferIterator = (_bufferIterator == _screenstatusarray.Length) ? 0 : _bufferIterator;
+            _screenstatusarray[_bufferIterator] = lastdetected;
+            _bufferIterator++;
+        }
+
+        private ScreenMode MostBufferedScreen()
+        {
+            // double Counter
+            int splashCounter = 0;
+            int walkcounter = 0;
+            int walklookcounter = 0;
+            int maincounter = 0;
+
+            foreach (ScreenMode currentEntry in _screenstatusarray)
+            {
+                switch (currentEntry)
+                {
+                    case ScreenMode.Splash:
+                        splashCounter++;
+                        break;
+                    case ScreenMode.Walk:
+                        walkcounter++;
+                        break;
+                    case ScreenMode.WalkandLook:
+                        walklookcounter++;
+                        break;
+                    case ScreenMode.MainScreen:
+                        maincounter++;
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+
+            if (splashCounter > _screenstatusarray.Length / 2)
+            {
+                return ScreenMode.Splash;
+            }
+            else if (walkcounter > _screenstatusarray.Length / 2)
+            {
+                return ScreenMode.Walk;
+            }
+            else if (walklookcounter > _screenstatusarray.Length / 2)
+            {
+                return ScreenMode.WalkandLook;
+            }
+            else if (maincounter > _screenstatusarray.Length / 2)
+            {
+                return ScreenMode.MainScreen;
+            }
+
+            //Default
+            return ScreenMode.Unknown;
+        }
+
 
         private void StartSplashScreen() 
         {

@@ -137,6 +137,7 @@ namespace RectNavigation
                 if (_isInInnerRect)
                 {
                     // Fade-out: Save timestamp when enter the inner rect
+                    Animate.Opacity(this, 0, 1, 1);
                     _enterInnerRectTimestamp = getTimeStamp();
                     _wasInInnerRect = true;
                     FireNoSwipe();
@@ -208,8 +209,10 @@ namespace RectNavigation
             if (getTimeStamp() - _enterInnerRectTimestamp > RectFadeOutTimer && _isInInnerRect)
             {
                 _wasInInnerRect = false;
+                Animate.Opacity(this, 1, 0, 1);
             }
         }
+
 
         private long getTimeStamp()
         {
