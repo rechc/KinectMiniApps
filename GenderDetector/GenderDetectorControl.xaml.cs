@@ -20,7 +20,6 @@ namespace GenderDetector
         private FCResult _result;
         private Skeleton _activeSkeleton;
         private const int CutRange = 70;
-        private Boolean run { get; set; }
 
         public String Gender { get; set; }
         public String Confidence { get; set; }
@@ -28,7 +27,6 @@ namespace GenderDetector
         public GenderDetectorControl()
         {
             InitializeComponent();
-            run = false;
         }
 
         public void Start(KinectSensor sensor)
@@ -51,10 +49,7 @@ namespace GenderDetector
                 0);
             _activeSkeleton = skeleton;
 
-            if (!run)
-            {
-                GenderCheck(this, null);
-            }
+            GenderCheck(this, null);
         }
 
         /// <summary>
@@ -62,7 +57,6 @@ namespace GenderDetector
         /// </summary>
         public void GenderCheck(object sender, RoutedEventArgs e)
         {
-            run = true;
             new Thread((ThreadStart)delegate
             {
                 // Rest Service initaliesieren
@@ -95,7 +89,6 @@ namespace GenderDetector
                     SetAttributes();
                     // Bild wieder löschen
                     File.Delete(path);
-                    run = false;
                 }));
             }).Start();
         }
