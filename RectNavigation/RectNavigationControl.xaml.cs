@@ -244,15 +244,21 @@ namespace RectNavigation
             double x = hipRight.X;
             double y = shoulderCenter.Y;
 
-            // Rechteck verschieben
-            const int offsetX = 15; // -5 
-            const int offsetY = 30;
-
             // inneres Rechteck verkleinern
-
-            double width = Math.Abs((spine.Y - y)*0.9);
+            double width = Math.Abs((spine.Y - y) * 0.9);
             double height = width * 0.8;
 
+
+            // Rechteck verschieben
+            const int offsetX = 15; // -5 
+             int offsetY = (int) (width/2) ; // geht so nicht ... skalierung
+
+            Console.WriteLine("x: " + x + " y: " + y);
+
+            
+
+
+            Console.WriteLine("width: " + width + "height: " + height);
             
 
             return new Rect(x + offsetX, y + offsetY, width, height);
@@ -260,7 +266,7 @@ namespace RectNavigation
 
         private Rect GetOuterRect(Rect innerRect)
         {
-            const double border = 75;
+            const double border = 40;
             double x = innerRect.X - border;
             double y = innerRect.Y - border;
             double width = innerRect.Width + border * 2;
@@ -307,7 +313,6 @@ namespace RectNavigation
             OuterRect.Width = _outerRect.Width;
             OuterRect.Height = _outerRect.Height;
         }
-
 
 
         private double GetPercentageSwipeLeft(Point hand)
