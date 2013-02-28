@@ -161,7 +161,7 @@ namespace GreenScreenControl
                 }
             }
 
-            WidenBorder(10);
+            WidenBorder(7);
             //HidePixels();
             CompareColorPixels();
 
@@ -222,7 +222,7 @@ namespace GreenScreenControl
 
             for (int i = 0; i < _greenScreenPixelData.Length; i++)
             {
-                if (_greenScreenPixelData[i] == -10)
+                if (_greenScreenPixelData[i] == -10 || _greenScreenPixelData[i] == -2)
                 {
                     int pixelIndex = i * 4; //todo look at resolutin
                     for (int j = 0; j < 3; j++)

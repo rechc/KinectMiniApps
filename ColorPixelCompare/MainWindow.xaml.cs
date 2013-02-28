@@ -144,11 +144,6 @@ namespace Microsoft.Samples.Kinect.ColorBasics
                     // Copy the pixel data from the image to a temporary array
                     colorFrame.CopyPixelDataTo(this.colorPixels);
 
-                    int tolerance = 0;
-                    int t = 0;
-                    if (int.TryParse(Trans.Text, out t))
-                        tolerance = (int)t;
-
                     for (int i = 0; i < colorPixels.Length; i++)
                     {
                         if(!IsEqual(colorPixels[i], noPersonColorPixels[i], tolerance))
@@ -230,5 +225,14 @@ namespace Microsoft.Samples.Kinect.ColorBasics
             {
             }
         }
+
+        private void ChangeTolerance(object sender, RoutedEventArgs e)
+        {
+            int t = 0;
+            if (int.TryParse(Trans.Text, out t))
+                tolerance = (int)t;
+        }
+
+        private int tolerance = 0;
     }
 }
