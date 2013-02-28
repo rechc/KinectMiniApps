@@ -106,7 +106,7 @@ namespace HtwKinect.StateViews
         {
             _gd = new GenderDetector.GenderDetectorControl();
             _gd.Start(KinectHelper.Instance.Sensor);
-            _gd.SensorColorFrameReady(KinectHelper.Instance.GetFixedSkeleton(), KinectHelper.Instance.ColorPixels);
+            _gd.GenderCheck(KinectHelper.Instance.GetFixedSkeleton(), KinectHelper.Instance.ColorPixels);
         }
 
         private void LoadPictures(IUiLoader uiLoader)
