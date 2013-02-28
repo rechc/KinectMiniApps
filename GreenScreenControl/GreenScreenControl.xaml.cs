@@ -153,26 +153,16 @@ namespace GreenScreenControl
                             if (_antialiasing)
                             {
                                 AddBorderPixels(greenScreenIndex);
-                                _greenScreenPixelData[greenScreenIndex] = OpaquePoint;
                             }
-                            else
-                            {
-                                _greenScreenPixelData[greenScreenIndex] = OpaquePoint;
-                                _greenScreenPixelData[greenScreenIndex - 1] = OpaquePoint;
-                            }
+                            _greenScreenPixelData[greenScreenIndex] = OpaquePoint;
+                            _greenScreenPixelData[greenScreenIndex - 1] = OpaquePoint;
                         }
                     }
                 }
             }
 
-            if (_antialiasing)
-            {
-                Antialiasing();
-                //HidePixels();
-            }
-
-            WidenBorder(5);
-            HidePixels();
+            WidenBorder(10);
+            //HidePixels();
             CompareColorPixels(20);
 
             // Write the pixel data into our bitmap
@@ -204,11 +194,24 @@ namespace GreenScreenControl
                 
         }
 
-        private void WidenBorder(int p)
+        private void WidenBorder(int size)
         {
             for (int i = 0; i < _greenScreenPixelData.Length; i++)
             {
-                
+                if(_greenScreenPixelData[i] == BorderPoint)
+                {
+                    for (int j = 0; j < size; j++)
+                    {
+                        for (int k = 0; k < size; k++)
+                        {
+                            int index = i + j + (_depthWidth*k);
+                            if (index < _greenScreenPixelData.Length)
+                            {
+                                _greenScreenPixelData[index] = -10; 
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -216,25 +219,34 @@ namespace GreenScreenControl
         {
             for (int i = 0; i < _greenScreenPixelData.Length; i++)
             {
-                int pixelIndex = i*4*2;
+                if (_greenScreenPixelData[i] == -10)
+                {
+                    int pixelIndex = i * 4 * 2;
+                    byte[] colorPixels = _colorPixels.Skip(pixelIndex).Take(3).ToArray();
+                    byte[] noPersonColorPixels = _colorPixels.Skip(pixelIndex).Take(3).ToArray();
 
-                if (IsByteEqual(_colorPixels, _noPersonColorPixels, i, tolerance))
-                {
-                    _greenScreenPixelData[i] = 0;
-                }
-                else
-                {
-                    _greenScreenPixelData[i] = -1;
+                    if (IsByteEqual(colorPixels, noPersonColorPixels, tolerance))
+                    {
+                        _greenScreenPixelData[i] = 0;
+                    }
+                    else
+                    {
+                        _greenScreenPixelData[i] = -1;
+                    } 
                 }
 
             }
         }
 
-        private bool IsByteEqual(byte[] _colorPixels, byte[] _noPersonColorPixels, int i, int tolerance)
+        private bool IsByteEqual(byte[] colorPixels, byte[] noPersonColorPixels, int tolerance)
         {
-            return (Math.Abs(_colorPixels[i] - _noPersonColorPixels[i]) < tolerance &&
-                    Math.Abs(_colorPixels[i + 1] - _noPersonColorPixels[i + 1]) < tolerance &&
-                    Math.Abs(_colorPixels[i +  2] - _noPersonColorPixels[i + 2]) < tolerance);
+            var pixels = colorPixels.Zip(noPersonColorPixels, (c, p) => new {colorPixel = c, noPersonPixel = p });
+            foreach (var pixel in pixels)
+            {
+                if (Math.Abs(pixel.colorPixel - pixel.noPersonPixel) > tolerance)
+                    return false;
+            }
+            return true;
         }
 
         private void AddBorderPixels(int greenScreenIndex)
@@ -292,7 +304,7 @@ namespace GreenScreenControl
         {
             for (int i = 0; i < _greenScreenPixelData.Length; i++)
             {
-                if (_greenScreenPixelData[i] == -1 || _greenScreenPixelData[i] == BorderPoint)
+                if (_greenScreenPixelData[i] == -1)
                 {
                     _greenScreenPixelData[i] = 0;
                 }
