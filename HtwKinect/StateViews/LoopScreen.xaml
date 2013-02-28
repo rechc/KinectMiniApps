@@ -16,7 +16,7 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <LoopList:LoopList x:Name="MyLoopList" Background="Beige" MouseDown="myLoopList_MouseDown_1" MouseMove="myLoopList_MouseMove_1" MouseUp="myLoopList_MouseUp_1" MouseLeave="myLoopList_MouseLeave_1" Grid.Column="1" />
-        <LoopList:TextLoopList x:Name="MyTextLoopList" FontStretch="UltraCondensed" FontWeight="Normal" Background="LightBlue" Width="250" Opacity="0.6"/>
+        <LoopList:TextLoopList x:Name="MyTextLoopList" FontStretch="UltraCondensed" FontWeight="Normal" Background="Blue" Width="250" />
         <TextBlock x:Name="ExceptionTextBlock" Grid.ColumnSpan="2" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Foreground="White" Background="Red" TextWrapping="Wrap"/>
         <GreenScreenControl:GreenScreenControl x:Name="GreenScreen" Grid.Column="1" Margin="25" IsHitTestVisible="False"/>
         <AccessoryLib:AccessoryControl x:Name="Accessories" Grid.Column="1" Margin="25" IsHitTestVisible="False"/>

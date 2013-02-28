@@ -134,7 +134,6 @@ namespace LoopList
 
         public void Add(string text)
         {
-            text.Replace("urlaub", "\nurlaubb");
 
             switch (_texts.Count)
             {

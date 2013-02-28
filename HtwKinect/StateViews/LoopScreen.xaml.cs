@@ -95,7 +95,7 @@ namespace HtwKinect.StateViews
             MyLoopList.Scrolled += MyLoopListOnScrolled;
             MyTextLoopList.Scrolled += MyTextLoopList_Scrolled;
             MyTextLoopList.SetFontSize(36);
-            MyTextLoopList.SetFontColor(Colors.Black);
+            MyTextLoopList.SetFontColor(Colors.White);
             //MyTextLoopList.SetWordWrap(TextWrapping.Wrap);
             //MyTextLoopList.SetFontFamily("Miriam Fixed");
             MyTextLoopList.SetDuration(new Duration(new TimeSpan(5500000)));
