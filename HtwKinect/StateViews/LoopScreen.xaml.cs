@@ -11,6 +11,7 @@ using Database;
 using System.Diagnostics;
 using Database.DAO;
 using MiniGame;
+using System.Windows.Media;
 
 namespace HtwKinect.StateViews
 {
@@ -93,18 +94,19 @@ namespace HtwKinect.StateViews
             MyLoopList.SetDuration(new Duration(new TimeSpan(3000000))); //300m
             MyLoopList.Scrolled += MyLoopListOnScrolled;
             MyTextLoopList.Scrolled += MyTextLoopList_Scrolled;
+            MyTextLoopList.SetFontSize(36);
+            MyTextLoopList.SetFontColor(Colors.White);
+            //MyTextLoopList.SetWordWrap(TextWrapping.Wrap);
+            //MyTextLoopList.SetFontFamily("Miriam Fixed");
             MyTextLoopList.SetDuration(new Duration(new TimeSpan(5500000)));
             LoadPictures(new LocalPictureUiLoader());
         }
 
-        private void InitGenderDetection(object sender, EventArgs ea)
+        private void InitGenderDetection()
         {
-            if (_gd == null)
-            {
-                _gd = new GenderDetector.GenderDetectorControl();
-                _gd.Start(KinectHelper.Instance.Sensor);
-            }    
-            _gd.SensorColorFrameReady(KinectHelper.Instance.GetFixedSkeleton(), KinectHelper.Instance.ColorPixels);
+            _gd = new GenderDetector.GenderDetectorControl();
+            _gd.Start(KinectHelper.Instance.Sensor);
+            _gd.GenderCheck(KinectHelper.Instance.GetFixedSkeleton(), KinectHelper.Instance.ColorPixels);
         }
 
         private void LoadPictures(IUiLoader uiLoader)
@@ -166,7 +168,7 @@ namespace HtwKinect.StateViews
                     Accessories.Opacity = 0.2;
                 }
 
-                SetNewHat(null, null);
+                SetNewHat();
 
                 switch (lla.GetDirection())
                 {
@@ -372,7 +374,7 @@ namespace HtwKinect.StateViews
                 var helper = KinectHelper.Instance;
                 helper.ReadyEvent += (s, _) => HelperReady();
                 GreenScreen.Start(helper.Sensor, true);
-                SetNewHat(null, null);
+                SetNewHat();
                 Accessories.Start(helper.Sensor);
                 RectNavigationControl.Start(helper.Sensor);
                 RectNavigationControl.SwipeLeftEvent += SwipeLeft;
@@ -380,9 +382,7 @@ namespace HtwKinect.StateViews
                 RectNavigationControl.SwipeUpEvent += SwipeUp;
                 RectNavigationControl.SwipeDownEvent += SwipeDown;
                 RectNavigationControl.NoSwipe += NoSwipe;
-                InitGenderDetection(null, null);
-                _gd.genderChanged += new GenderDetector.GenderDetectorControl.GenderChangedEventHandler(SetNewHat);
-                KinectHelper.Instance.playerChanged += new KinectHelper.PlayerChangedEventHandler(InitGenderDetection);
+                InitGenderDetection();
             }
             catch (Exception exc)
             {
@@ -395,7 +395,7 @@ namespace HtwKinect.StateViews
             return (_isGameActive && KinectHelper.Instance.GetFixedSkeleton() != null);
         }
 
-        private void SetNewHat(object sender, EventArgs ea)
+        private void SetNewHat()
         {
             Accessories.AccessoryItems.Clear();
             AccessoryItem hat = new AccessoryItem(AccessoryPositon.Hat, _currentOffer.Category.CategoryId, _gender == "Female" ? true : false);
