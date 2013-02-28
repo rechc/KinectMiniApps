@@ -104,7 +104,6 @@ namespace Microsoft.Samples.Kinect.ColorBasics
 
             if (null == this.sensor)
             {
-                this.statusBarText.Text = Properties.Resources.NoKinectReady;
             }
         }
 
@@ -144,7 +143,12 @@ namespace Microsoft.Samples.Kinect.ColorBasics
 
                     // Copy the pixel data from the image to a temporary array
                     colorFrame.CopyPixelDataTo(this.colorPixels);
-                    int tolerance = 30;
+
+                    int tolerance = 0;
+                    int t = 0;
+                    if (int.TryParse(Trans.Text, out t))
+                        tolerance = (int)t;
+
                     for (int i = 0; i < colorPixels.Length; i++)
                     {
                         if(!IsEqual(colorPixels[i], noPersonColorPixels[i], tolerance))
@@ -198,7 +202,6 @@ namespace Microsoft.Samples.Kinect.ColorBasics
         {
             if (null == this.sensor)
             {
-                this.statusBarText.Text = Properties.Resources.ConnectDeviceFirst;
                 return;
             }
 
@@ -222,11 +225,9 @@ namespace Microsoft.Samples.Kinect.ColorBasics
                     encoder.Save(fs);
                 }
 
-                this.statusBarText.Text = string.Format("{0} {1}", Properties.Resources.ScreenshotWriteSuccess, path);
             }
             catch (IOException)
             {
-                this.statusBarText.Text = string.Format("{0} {1}", Properties.Resources.ScreenshotWriteFailed, path);
             }
         }
     }
