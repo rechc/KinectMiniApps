@@ -33,8 +33,17 @@ namespace AccessoryLib
                     break;
                 // Ski
                 case 2:
-                    imagePath += "Hat_Ski.png";
-                    width = 0.255;
+                    switch (new Random().Next(0, 2))
+                    {
+                        case 1:
+                            imagePath += "Hat_Ski2.png";
+                            width = 0.17;
+                            break;
+                        default:
+                            imagePath += "Hat_Ski.png";
+                            width = 0.255;
+                            break;
+                    }
                     break;
                 // City
                 case 3:
@@ -51,8 +60,17 @@ namespace AccessoryLib
                     break;
                 // Wander
                 case 4:
-                    imagePath += "Hat_Wander.png";
-                    width = 0.27;
+                    switch (new Random().Next(0, 2))
+                    {
+                        case 1:
+                            imagePath += "Hat_Wander2.png";
+                            width = 0.3;
+                            break;
+                        default:
+                            imagePath += "Hat_Wander.png";
+                            width = 0.27;
+                            break;
+                    }
                     break;
                 default:
                     imagePath += "Hat_Default.png";
@@ -61,6 +79,14 @@ namespace AccessoryLib
             }
             Image = new BitmapImage(new Uri(@imagePath, UriKind.RelativeOrAbsolute));
             Width = width;
+        }
+
+        public AccessoryItem(AccessoryPositon position, String path)
+        {
+            Position = position;
+            String imagePath = PATH + path;
+            Image = new BitmapImage(new Uri(@imagePath, UriKind.RelativeOrAbsolute));
+            Width = 0.2;
         }
 
         public AccessoryPositon Position { get; private set; }
