@@ -11,6 +11,7 @@ using Database;
 using System.Diagnostics;
 using Database.DAO;
 using MiniGame;
+using System.Windows.Media;
 
 namespace HtwKinect.StateViews
 {
@@ -93,6 +94,10 @@ namespace HtwKinect.StateViews
             MyLoopList.SetDuration(new Duration(new TimeSpan(3000000))); //300m
             MyLoopList.Scrolled += MyLoopListOnScrolled;
             MyTextLoopList.Scrolled += MyTextLoopList_Scrolled;
+            MyTextLoopList.SetFontSize(36);
+            MyTextLoopList.SetFontColor(Colors.Black);
+            //MyTextLoopList.SetWordWrap(TextWrapping.Wrap);
+            //MyTextLoopList.SetFontFamily("Miriam Fixed");
             MyTextLoopList.SetDuration(new Duration(new TimeSpan(5500000)));
             LoadPictures(new LocalPictureUiLoader());
         }
