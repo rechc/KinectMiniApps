@@ -208,12 +208,10 @@ namespace HtwKinect.StateViews
                     {
                         _dragDirectionIsObvious = true;
                         dragDirection = greater == xCount ? Orientation.Horizontal : Orientation.Vertical;
-                        KinectVibratingRectangle.Visibility = Visibility.Collapsed;
                     }
                     _savedDirections.Clear();
                     if (!_dragDirectionIsObvious)
                     {
-                        KinectVibratingRectangle.Visibility = Visibility.Visible;
                         return;
                     }
                 }
@@ -257,7 +255,6 @@ namespace HtwKinect.StateViews
             try
             {
                 _oldMovePoint = null;
-                KinectFocusedRectangle.Visibility = Visibility.Collapsed;
                 _unclicked = true;
                 ResetDragDirectionObvious();
 
@@ -274,7 +271,6 @@ namespace HtwKinect.StateViews
         private void ResetDragDirectionObvious()
         {
             _dragDirectionIsObvious = false;
-            KinectVibratingRectangle.Visibility = Visibility.Collapsed;
             _savedDirections.Clear();
         }
 
@@ -289,7 +285,6 @@ namespace HtwKinect.StateViews
             _oldMovePoint = point;
             _unclicked = false;
             _doDrag = true;
-            KinectFocusedRectangle.Visibility = Visibility.Visible;
         }
         public void DelegateKeyEvent(KeyEventArgs e) 
         {
