@@ -24,12 +24,13 @@ namespace GenderDetector
         public String Gender { get; set; }
         public String Confidence { get; set; }
 
+        public delegate void GenderChangedEventHandler(object sender, EventArgs e);
+        public event GenderChangedEventHandler genderChanged;
+
         public GenderDetectorControl()
         {
             InitializeComponent();
         }
-
-
 
         public void Start(KinectSensor sensor)
         {
@@ -183,6 +184,7 @@ namespace GenderDetector
                     Gender = _result.Photos[0].Tags[0].Attributes.Gender.Value + "";
                     Confidence = _result.Photos[0].Tags[0].Attributes.Gender.Confidence + "";
                 }
+                genderChanged(this, null);
             }
             else
             {

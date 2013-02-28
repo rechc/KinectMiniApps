@@ -99,10 +99,13 @@ namespace HtwKinect.StateViews
             LoadPictures(new LocalPictureUiLoader());
         }
 
-        private void InitGenderDetection()
+        private void InitGenderDetection(object sender, EventArgs ea)
         {
-            _gd = new GenderDetector.GenderDetectorControl();
-            _gd.Start(KinectHelper.Instance.Sensor);
+            if (_gd == null)
+            {
+                _gd = new GenderDetector.GenderDetectorControl();
+                _gd.Start(KinectHelper.Instance.Sensor);
+            }    
             _gd.SensorColorFrameReady(KinectHelper.Instance.GetFixedSkeleton(), KinectHelper.Instance.ColorPixels);
         }
 
@@ -165,7 +168,7 @@ namespace HtwKinect.StateViews
                     Accessories.Opacity = 0.2;
                 }
 
-                setNewHat();
+                SetNewHat(null, null);
 
                 switch (lla.GetDirection())
                 {
@@ -376,7 +379,7 @@ namespace HtwKinect.StateViews
                 var helper = KinectHelper.Instance;
                 helper.ReadyEvent += (s, _) => HelperReady();
                 GreenScreen.Start(helper.Sensor, true);
-                setNewHat();
+                SetNewHat(null, null);
                 Accessories.Start(helper.Sensor);
                 RectNavigationControl.Start(helper.Sensor);
                 RectNavigationControl.SwipeLeftEvent += SwipeLeft;
@@ -384,6 +387,9 @@ namespace HtwKinect.StateViews
                 RectNavigationControl.SwipeUpEvent += SwipeUp;
                 RectNavigationControl.SwipeDownEvent += SwipeDown;
                 RectNavigationControl.NoSwipe += NoSwipe;
+                InitGenderDetection(null, null);
+                _gd.genderChanged += new GenderDetector.GenderDetectorControl.GenderChangedEventHandler(SetNewHat);
+                KinectHelper.Instance.playerChanged += new KinectHelper.PlayerChangedEventHandler(InitGenderDetection);
             }
             catch (Exception exc)
             {
@@ -391,18 +397,16 @@ namespace HtwKinect.StateViews
             }
         }
 
-
-
         public bool IsGame()
         {
             return (_isGameActive && KinectHelper.Instance.GetFixedSkeleton() != null);
         }
-        private void setNewHat()
+
+        private void SetNewHat(object sender, EventArgs ea)
         {
             Accessories.AccessoryItems.Clear();
-            AccessoryItem hat = new AccessoryItem(AccessoryPositon.Hat, _currentOffer.Category.CategoryId, false);
+            AccessoryItem hat = new AccessoryItem(AccessoryPositon.Hat, _currentOffer.Category.CategoryId, _gender == "Female" ? true : false);
             Accessories.AccessoryItems.Add(hat);
-
         }
     }
 }
