@@ -44,18 +44,18 @@ namespace HtwKinect.StateViews
         {
             char star = '\u2605';
             String bullet = Convert.ToString('\u2023');
-            String ratingText = "";
+            String ratingStars = "";
                 if (offer != null)
                 {
                     _currentOffer = offer;
                     Category.Text = _currentOffer.Category.CategoryName;
                     for (int i = 0; i <= _currentOffer.HotelRating; i++)
                     {
-                        ratingText += Convert.ToString(star);
+                        ratingStars += Convert.ToString(star);
                     }
 
 
-                    Stars.Text = ratingText;
+                    Stars.Text = ratingStars;
                     HotelName.Text = _currentOffer.HotelName;
                     Place.Text = _currentOffer.Place;
                     PricePerPerson.Text = _currentOffer.PricePerPerson + ",-\n pro Person";

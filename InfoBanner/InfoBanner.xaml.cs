@@ -1,6 +1,7 @@
 ﻿using Database;
 using System.Windows.Controls;
 using System.Linq;
+using System;
 
 
 namespace InfoBanner
@@ -17,8 +18,17 @@ namespace InfoBanner
 
         public void Start(TravelOffer offer)
         {
+
+            char star = '\u2605';
+            String bullet = Convert.ToString('\u2023');
+            String ratingStars = "";
+
+            for (int i = 0; i <= offer.HotelRating; i++)
+            {
+                ratingStars += Convert.ToString(star);
+            }
             Category.Text = offer.Category.CategoryName;
-            Rating.Text = "Bewertung: " + offer.HotelRating;
+            Stars.Text = ratingStars;
             HotelName.Text = offer.HotelName;
             Place.Text = offer.Place;
             PricePerPerson.Text = offer.PricePerPerson + ",-\n pro Person";
@@ -26,7 +36,7 @@ namespace InfoBanner
 
             string extInfo = "";
             foreach (ExtendedInformation information in offer.ExtendedInformation)
-                extInfo += ("-" + information.Information + "\n");
+                extInfo += (bullet + " " + information.Information + "\n");
             ExtendetInfo.Text = extInfo;
 
             //var iterator = offer.ExtendedInformation.GetEnumerator();

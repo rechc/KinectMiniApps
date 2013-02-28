@@ -203,7 +203,9 @@
     <Resource Include="images\Accessories\Hat_Default.png" />
     <Resource Include="images\Accessories\Hat_Ski.png" />
     <Resource Include="images\Accessories\Hat_Wander.png" />
-    <Resource Include="images\Backgrounds\BackgroundSplashScreen.jpg" />
+    <Content Include="images\Backgrounds\BackgroundSplashScreen.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="images\Beach\blankenberge.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

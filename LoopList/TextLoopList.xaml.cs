@@ -64,7 +64,6 @@ namespace LoopList
             _center.RenderTransform = new TranslateTransform();
             _bottom.RenderTransform = new TranslateTransform();
 
-
             RootGrid.Children.Add(_top);
             RootGrid.Children.Add(_center);
             RootGrid.Children.Add(_bottom);
@@ -95,6 +94,21 @@ namespace LoopList
             _bottom.Height = fontSize + 2;
         }
 
+        public void SetFontColor(Color color)
+        {
+            SolidColorBrush colorBrush = new SolidColorBrush(color);
+            ((TextBlock)_top.Child).Foreground = colorBrush;
+            ((TextBlock)_center.Child).Foreground = colorBrush;
+            ((TextBlock)_bottom.Child).Foreground = colorBrush;
+        }
+
+        public void SetWordWrap(TextWrapping wrap)
+        {         
+            ((TextBlock)_top.Child).TextWrapping = wrap;
+            ((TextBlock)_center.Child).TextWrapping = wrap;
+            ((TextBlock)_bottom.Child).TextWrapping = wrap;
+        }
+
 
         private void FireScrolled(EventArgs args)
         {
@@ -120,6 +134,8 @@ namespace LoopList
 
         public void Add(string text)
         {
+            text.Replace("urlaub", "\nurlaubb");
+
             switch (_texts.Count)
             {
                 case 0:
