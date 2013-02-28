@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Kinect;
+using System.Linq;
 
 namespace GreenScreenControl
 {
@@ -25,6 +26,8 @@ namespace GreenScreenControl
 
         private DepthImagePixel[] _depthPixels;
         private byte[] _colorPixels;
+        private byte[] _noPersonColorPixels;
+        private bool _personColorPixelsTaken = false;
 
         //Variables for antialiasing
         private int[] _border;
@@ -83,6 +86,12 @@ namespace GreenScreenControl
          */
         public void RenderImageData(DepthImagePixel[] depthPixels, byte[] colorPixels)
         {
+            if(!_personColorPixelsTaken)
+            {
+                _personColorPixelsTaken = true;
+                _noPersonColorPixels = colorPixels;
+            }
+
             _depthPixels = depthPixels;
             _colorPixels = colorPixels;
             InvalidateVisual();
@@ -162,6 +171,10 @@ namespace GreenScreenControl
                 //HidePixels();
             }
 
+            WidenBorder(5);
+            HidePixels();
+            CompareColorPixels(20);
+
             // Write the pixel data into our bitmap
             _colorBitmap.WritePixels(
                 new Int32Rect(0, 0, _colorBitmap.PixelWidth, _colorBitmap.PixelHeight),
@@ -189,6 +202,39 @@ namespace GreenScreenControl
             drawingContext.PushOpacityMask(new ImageBrush { ImageSource = _playerOpacityMaskImage});
             drawingContext.DrawImage(_colorBitmap, new Rect(0, 0, ActualWidth, ActualHeight)); 
                 
+        }
+
+        private void WidenBorder(int p)
+        {
+            for (int i = 0; i < _greenScreenPixelData.Length; i++)
+            {
+                
+            }
+        }
+
+        private void CompareColorPixels(int tolerance)
+        {
+            for (int i = 0; i < _greenScreenPixelData.Length; i++)
+            {
+                int pixelIndex = i*4*2;
+
+                if (IsByteEqual(_colorPixels, _noPersonColorPixels, i, tolerance))
+                {
+                    _greenScreenPixelData[i] = 0;
+                }
+                else
+                {
+                    _greenScreenPixelData[i] = -1;
+                }
+
+            }
+        }
+
+        private bool IsByteEqual(byte[] _colorPixels, byte[] _noPersonColorPixels, int i, int tolerance)
+        {
+            return (Math.Abs(_colorPixels[i] - _noPersonColorPixels[i]) < tolerance &&
+                    Math.Abs(_colorPixels[i + 1] - _noPersonColorPixels[i + 1]) < tolerance &&
+                    Math.Abs(_colorPixels[i +  2] - _noPersonColorPixels[i + 2]) < tolerance);
         }
 
         private void AddBorderPixels(int greenScreenIndex)
