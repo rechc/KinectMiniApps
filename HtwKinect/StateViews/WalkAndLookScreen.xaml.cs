@@ -37,7 +37,6 @@ namespace HtwKinect.StateViews
 
         public Database.TravelOffer StopDisplay()
         {
-            //TODO could anything be disposed ? 
             StopGreenScreenAndHat();
             return _currentOffer;
         }

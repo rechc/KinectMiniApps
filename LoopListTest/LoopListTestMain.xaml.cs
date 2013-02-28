@@ -49,15 +49,15 @@ namespace LoopListTest
 
             string[] paths = Directory.GetFiles(Environment.CurrentDirectory + @"\images\Beach");
             Image img = new Image { Source = new BitmapImage(new Uri(paths[0], UriKind.RelativeOrAbsolute)) };
-            Node node1 = MyLoopList.AddNewToLeft(null, img);
+            Node node1 = MyLoopList.AddNewToLeft(null, -1, img);
             img = new Image { Source = new BitmapImage(new Uri(paths[1], UriKind.RelativeOrAbsolute)) };
-            Node node2 = MyLoopList.AddNewToLeft(null, img);
+            Node node2 = MyLoopList.AddNewToLeft(null, -1, img);
             node1.Right = node2;
             node2.Left = node1;
             node2.Below = node1;
             node2.Right = node1;
-            Node nodeHallo = MyLoopList.AddNewToAbove(null, new Button { Content = "Hallo", Width = 40, Height = 40 });
-            Node nodeToll = MyLoopList.AddNewToLeft(nodeHallo, new Button { Content = "Toll, ne?", Width = 100, Height = 40 });
+            Node nodeHallo = MyLoopList.AddNewToAbove(null, -1, new Button { Content = "Hallo", Width = 40, Height = 40 });
+            Node nodeToll = MyLoopList.AddNewToLeft(nodeHallo, -1, new Button { Content = "Toll, ne?", Width = 100, Height = 40 });
             node2.Above = nodeToll;
             nodeToll.Below = nodeHallo;
             nodeToll.Above = nodeHallo;
