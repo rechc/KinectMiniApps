@@ -42,18 +42,27 @@ namespace HtwKinect.StateViews
 
         public void SetSpashScreenOffer(TravelOffer offer)
         {
+            char star = '\u2605';
+            String bullet = Convert.ToString('\u2023');
+            String ratingText = "";
                 if (offer != null)
                 {
                     _currentOffer = offer;
                     Category.Text = _currentOffer.Category.CategoryName;
-                    Rating.Text = "Bewertung: " + _currentOffer.HotelRating;
+                    for (int i = 0; i <= _currentOffer.HotelRating; i++)
+                    {
+                        ratingText += Convert.ToString(star);
+                    }
+
+
+                    Stars.Text = ratingText;
                     HotelName.Text = _currentOffer.HotelName;
                     Place.Text = _currentOffer.Place;
                     PricePerPerson.Text = _currentOffer.PricePerPerson + ",-\n pro Person";
                     TravelInfo.Text = _currentOffer.DayCount + " tägige " + _currentOffer.TravelType + ", inkl. " + _currentOffer.BoardType;
                     string extInfo = "";
                     foreach (ExtendedInformation information in _currentOffer.ExtendedInformation)
-                        extInfo += ("-" + information.Information + "\n");
+                        extInfo += (bullet+ "  " + information.Information + "\n");
                     ExtendedInfo.Text = extInfo; 
                 }
         }
