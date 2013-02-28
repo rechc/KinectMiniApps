@@ -147,7 +147,6 @@ namespace HtwKinect
         }
 
 
-
         private void AddToBuffer(ScreenMode lastdetected) 
         {
             //loop overwrite
@@ -275,9 +274,9 @@ namespace HtwKinect
 
         private void RemoveOldScreen()
         {
-            if (GridX.Children.Count > 1)
+            if (GridX.Children.Count > 0)
             {
-                GridX.Children.RemoveAt(1);
+                GridX.Children.RemoveAt(0);
             }
         }
 
@@ -389,12 +388,6 @@ namespace HtwKinect
         private void PeopleDetectorSkeletonEvent(object sender, EventArgs e)
         {
             _peopleDetector.TrackSkeletons(KinectHelper.Instance.Skeletons);
-            OutputLabelX.Content =
-            "Erkannt:" + _peopleDetector.GetPositionOnlyPeople().Count +
-                " Tracked:" + _peopleDetector.GetTrackedPeople().Count +
-                " Walking:" + _peopleDetector.GetWalkingPeople().Count +
-                " Standing:" + _peopleDetector.GetStayingPeople().Count
-                + " Looking:" + _peopleDetector.GetLookingPeople().Count;
             ChangeScreen();
         }
         #endregion PeopleDetector and Window start exit

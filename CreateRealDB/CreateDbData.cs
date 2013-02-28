@@ -20,16 +20,16 @@ namespace CreateRealDB
                 switch (category)
                 {
                     case CategoryEnum.Beach:
-                        categoryName = "Strandurlaub";
+                        categoryName = "Strand";
                         break;
                     case CategoryEnum.Ski:
-                        categoryName = "Ski-Urlaub";
+                        categoryName = "Ski";
                         break;
                     case CategoryEnum.City:
-                        categoryName = "Städtereise";
+                        categoryName = "Stadt";
                         break;
                     case CategoryEnum.Wander:
-                        categoryName = "Wanderurlaub";
+                        categoryName = "Wandern";
                         break;
                 }
 
@@ -48,7 +48,7 @@ namespace CreateRealDB
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
-                Console.WriteLine("Create Categores: Error in entry.");
+                Console.WriteLine("Create Categories: Error in entry.");
             }
         }
 
@@ -112,11 +112,11 @@ namespace CreateRealDB
             CreateOffers(240, "London", 3, "Hotel Big Bang", "Flugreise", 3, "Halbpension", CategoryEnum.City, "images/City/london.jpg", false, "5 min Fußweg zum Big Ben", "", "");
             CreateOffers(699, "LasVegas", 5, "Cesarius Palast", "Flugreise", 5, "Vollpension", CategoryEnum.City, "images/City/lasvegas.jpg", false, "Abflug Frankfurt a.M.", "", "");
             CreateOffers(549, "NewYork", 3, "Hotel Staars Residenz", "Flugreise", 6, "Halbpension", CategoryEnum.City, "images/City/newyork.jpg", false, "inkl. Stadtführung", "", "");
-            CreateOffers(659, "SanFrancisco", 4, "Hotel Blondie", "Flugreise", 7, "Halbpension", CategoryEnum.City, "images/City/sanfrancisco.jpg", false, "inkl. Cityticket", "", "");
-            CreateOffers(899, "Sidney", 5, "Hotel Kängurus", "Flugreise", 14, "Halbpension", CategoryEnum.City, "images/City/sydney.jpg", true, "Besuch der Australien Open möglich", "Reise zur Kängaru Farm", "");
+            CreateOffers(659, "San Francisco", 4, "Hotel Blondie", "Flugreise", 7, "Halbpension", CategoryEnum.City, "images/City/sanfrancisco.jpg", false, "inkl. Cityticket", "", "");
+            CreateOffers(899, "Sydney", 5, "Hotel Kängurus", "Flugreise", 14, "Halbpension", CategoryEnum.City, "images/City/sydney.jpg", true, "Besuch der Australien Open möglich", "Reise zur Kängaru Farm", "");
             //Beach
             CreateOffers(150, "Blankenberge", 3, "Hotel Belgie", "eigene Anreise", 5, "Halbpension", CategoryEnum.Beach, "images/Beach/blankenberge.jpg", false, "wunderschöne klassische Einrichtung", "", "");
-            CreateOffers(219, "DominikanischeRepublik", 3, "Apartment de Sol", "Flugreise", 6, "Selbstverpflegung", CategoryEnum.Beach, "images/Beach/domrep.jpg", false, "", "", "");
+            CreateOffers(219, "Dominikanische Republik", 3, "Apartment de Sol", "Flugreise", 6, "Selbstverpflegung", CategoryEnum.Beach, "images/Beach/domrep.jpg", false, "", "", "");
             CreateOffers(329, "Fuerteventura", 4, "Hotel Ventura", "Flugreise", 5, "Vollpension", CategoryEnum.Beach, "images/Beach/fuerteventura.jpg", false, "Freies W-LAN", "", "");
             CreateOffers(399, "Gran Canaria", 3, "Avenida de Canar", "Schiffsfahrt", 5, "All Inclusive", CategoryEnum.Beach, "images/Beach/grancanaria.jpg", false, "Tauchkurse zubuchbar", "", "");
             CreateOffers(199, "Haweii", 3, "Magma Palace", "Flugreise", 5, "Halbpension", CategoryEnum.Beach, "images/Beach/haweii.jpg", true, "2 min vom Strand", "", "");
@@ -131,9 +131,9 @@ namespace CreateRealDB
             CreateOffers(459, "Badlandsnationalpark", 3, "Hotel of Buffalo", "Flugreise", 6, "Halbpension", CategoryEnum.Wander, "images/Wander/badlandsnationalpark.jpg", false, "", "", "");
             CreateOffers(109, "Bayrischerwald", 3, "Hotel zum Bayer", "eigene Anreise", 3, "Halbpension", CategoryEnum.Wander, "images/Wander/bayrischerwald.jpg", false, "inkl. Bierverkostung", "exkl. Besuch bei Bayrisch Bräu", "");
             CreateOffers(399, "China", 2, "Best Eastern", "Flugreise", 8, "Vollpension", CategoryEnum.Wander, "images/Wander/china.jpg", false, "Bergsteigen ganz traditionell", "exkl. Besuch der Großen Mauer", "");
-            CreateOffers(499, "Grandcanyon", 3, "Best Sight Hotel", "Flugreise", 6, "Halbpension", CategoryEnum.Wander, "images/Wander/grandcanyon.jpg", true, "inkl. Ausflug zum Canyon Skywalk", "", "");
+            CreateOffers(499, "Grand Canyon", 3, "Best Sight Hotel", "Flugreise", 6, "Halbpension", CategoryEnum.Wander, "images/Wander/grandcanyon.jpg", true, "inkl. Ausflug zum Canyon Skywalk", "", "");
             CreateOffers(219, "Irland", 4, "Whisky Palace", "Flugreise", 5, "Vollpension", CategoryEnum.Wander, "images/Wander/ireland.jpg", false, "inkl. Whiskey-Tasting", "", "");
-            CreateOffers(89, "Plälzerwald", 3, "Hochwald Hotel", "eigene Anreise", 3, "Halbpension", CategoryEnum.Wander, "images/Wander/plälzerwald.jpg", false, "", "", "");
+            CreateOffers(89, "Pfälzerwald", 3, "Hochwald Hotel", "eigene Anreise", 3, "Halbpension", CategoryEnum.Wander, "images/Wander/plälzerwald.jpg", false, "", "", "");
             CreateOffers(599, "Yellowstone", 4, "Big Stone Hotel", "Flugreise", 7, "Vollpension", CategoryEnum.Wander, "images/Wander/yellowstone.jpg", true, "inkl. Wellness Angebot", "", "");
             //Ski
             CreateOffers(1499, "Banff", 4, "Banff Lodge", "Flugreise", 10, "Halbpension", CategoryEnum.Ski, "images/Snow/banff.jpg", false, "inkl. Leihski", "Heliskiing", "");
