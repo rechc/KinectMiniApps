@@ -251,7 +251,7 @@ namespace RectNavigation
 
             // Rechteck verschieben
             const int offsetX = 15; // -5 
-             int offsetY = (int) (width/2) ; // geht so nicht ... skalierung
+             int offsetY = (int) (width/2) ;
 
             Console.WriteLine("x: " + x + " y: " + y);
 
