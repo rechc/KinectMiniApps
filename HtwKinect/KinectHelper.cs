@@ -33,7 +33,7 @@ namespace HtwKinect
                             Smoothing = 0.8f
                         },
                         false,
-                        ColorImageFormat.RgbResolution1280x960Fps12,
+                        ColorImageFormat.RgbResolution640x480Fps30, //todo change resolution
                         DepthImageFormat.Resolution640x480Fps30);
                 return _instance;
             }

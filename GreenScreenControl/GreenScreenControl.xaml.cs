@@ -27,7 +27,6 @@ namespace GreenScreenControl
         private DepthImagePixel[] _depthPixels;
         private byte[] _colorPixels;
         private byte[] _noPersonColorPixels;
-        private bool _personColorPixelsTaken = false;
 
         //Variables for antialiasing
         private int[] _border;
@@ -79,6 +78,7 @@ namespace GreenScreenControl
 
             _greenScreenPixelData = new int[_sensor.DepthStream.FramePixelDataLength];
             _colorCoordinates = new ColorImagePoint[_sensor.DepthStream.FramePixelDataLength];
+
         }
 
         /*
@@ -86,10 +86,10 @@ namespace GreenScreenControl
          */
         public void RenderImageData(DepthImagePixel[] depthPixels, byte[] colorPixels)
         {
-            if(!_personColorPixelsTaken)
+            if (_noPersonColorPixels == null)
             {
-                _personColorPixelsTaken = true;
-                _noPersonColorPixels = colorPixels;
+                _noPersonColorPixels = new byte[colorPixels.Length];
+                Array.Copy(colorPixels, _noPersonColorPixels, colorPixels.Length);
             }
 
             _depthPixels = depthPixels;
@@ -163,7 +163,7 @@ namespace GreenScreenControl
 
             WidenBorder(10);
             //HidePixels();
-            CompareColorPixels(20);
+            CompareColorPixels();
 
             // Write the pixel data into our bitmap
             _colorBitmap.WritePixels(
@@ -204,8 +204,8 @@ namespace GreenScreenControl
                     {
                         for (int k = 0; k < size; k++)
                         {
-                            int index = i + j + (_depthWidth*k);
-                            if (index < _greenScreenPixelData.Length)
+                            int index = i + j + (_depthWidth * k) -(size/2) - (size/2 * _depthWidth);
+                            if (index > 0 && index < _greenScreenPixelData.Length)
                             {
                                 _greenScreenPixelData[index] = -10; 
                             }
@@ -215,17 +215,23 @@ namespace GreenScreenControl
             }
         }
 
-        private void CompareColorPixels(int tolerance)
+        private void CompareColorPixels(int tolerance = 45)
         {
+            byte[] colorBytes = new byte[3];
+            byte[] noPersonColorBytes = new byte[3];
+
             for (int i = 0; i < _greenScreenPixelData.Length; i++)
             {
                 if (_greenScreenPixelData[i] == -10)
                 {
-                    int pixelIndex = i * 4 * 2;
-                    byte[] colorPixels = _colorPixels.Skip(pixelIndex).Take(3).ToArray();
-                    byte[] noPersonColorPixels = _colorPixels.Skip(pixelIndex).Take(3).ToArray();
+                    int pixelIndex = i * 4; //todo look at resolutin
+                    for (int j = 0; j < 3; j++)
+                    {
+                        colorBytes[j] = _colorPixels[pixelIndex + j];
+                        noPersonColorBytes[j] = _noPersonColorPixels[pixelIndex + j];
+                    }
 
-                    if (IsByteEqual(colorPixels, noPersonColorPixels, tolerance))
+                    if (AreBytesEqual(colorBytes, noPersonColorBytes, tolerance))
                     {
                         _greenScreenPixelData[i] = 0;
                     }
@@ -238,12 +244,18 @@ namespace GreenScreenControl
             }
         }
 
-        private bool IsByteEqual(byte[] colorPixels, byte[] noPersonColorPixels, int tolerance)
+        private bool AreBytesEqual(byte[] bytes1, byte[] bytes2, int tolerance)
         {
-            var pixels = colorPixels.Zip(noPersonColorPixels, (c, p) => new {colorPixel = c, noPersonPixel = p });
-            foreach (var pixel in pixels)
+            //var bytes = bytes1.Zip(bytes2, (c, p) => new { p1 = c, p2 = p });
+            //foreach (var b in bytes)
+            //{
+            //    if (Math.Abs(b.p1 - b.p2) > tolerance)
+            //        return false;
+            //}
+
+            for (int i = 0; i < bytes1.Length; i++)
             {
-                if (Math.Abs(pixel.colorPixel - pixel.noPersonPixel) > tolerance)
+                if (Math.Abs(bytes1[i] - bytes2[i]) > tolerance)
                     return false;
             }
             return true;
