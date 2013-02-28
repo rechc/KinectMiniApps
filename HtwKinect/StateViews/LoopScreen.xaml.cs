@@ -86,8 +86,6 @@ namespace HtwKinect.StateViews
             MyLoopList.SetDuration(new Duration(new TimeSpan(3000000))); //300m
             MyLoopList.Scrolled += MyLoopListOnScrolled;
             MyTextLoopList.Scrolled += MyTextLoopList_Scrolled;
-            MyTextLoopList.SetFontSize(36);
-            MyTextLoopList.SetFontFamily("Miriam Fixed");
             MyTextLoopList.SetDuration(new Duration(new TimeSpan(5500000)));
             LoadPictures(new LocalPictureUiLoader());
         }
