@@ -60,6 +60,9 @@ namespace RectNavigation
         private const int RectFadeOutTimer = 2000; // Miliseconds   -> Time when Fade-out animation starts
         private long _enterInnerRectTimestamp;
 
+        private int DownSwipeBlockTimer = 1000;
+        private long _upSwipeTimestamp;
+
         public event EventHandler SwipeLeftEvent;
         public event EventHandler SwipeRightEvent;
         public event EventHandler SwipeUpEvent;
@@ -98,6 +101,7 @@ namespace RectNavigation
         {
             if (SwipeLeftEvent != null)
             {
+                _upSwipeTimestamp = getTimeStamp();
                 SwipeArgs e = new SwipeArgs { Progress = progress };
                 SwipeUpEvent(this, e);
             }
@@ -107,6 +111,8 @@ namespace RectNavigation
         {
             if (SwipeLeftEvent != null)
             {
+                if (getTimeStamp() - _upSwipeTimestamp < DownSwipeBlockTimer)
+                    return;
                 SwipeArgs e = new SwipeArgs { Progress = progress };
                 SwipeDownEvent(this, e);
             }
@@ -239,20 +245,22 @@ namespace RectNavigation
             double y = shoulderCenter.Y;
 
             // Rechteck verschieben
-            const int offsetX = 20;
-            const int offsetY = 0;
+            const int offsetX = 15; // -5 
+            const int offsetY = 30;
 
             // inneres Rechteck verkleinern
-            double height = Math.Abs(spine.Y - y);
 
-            double width = height;
+            double width = Math.Abs((spine.Y - y)*0.9);
+            double height = width * 0.8;
+
+            
 
             return new Rect(x + offsetX, y + offsetY, width, height);
         }
 
         private Rect GetOuterRect(Rect innerRect)
         {
-            const double border = 100;
+            const double border = 75;
             double x = innerRect.X - border;
             double y = innerRect.Y - border;
             double width = innerRect.Width + border * 2;
