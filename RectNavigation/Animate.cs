@@ -13,7 +13,7 @@ namespace RectNavigation
 
     class Animate
     {
-        public static void Opacity(UIElement element, int from, int to, double seconds, AnimationCompletedDelegate callback)
+        public static void Opacity(UIElement element, double from, double to, double seconds, AnimationCompletedDelegate callback)
         {
             DoubleAnimation fadeOutAnimation = new DoubleAnimation
             {
@@ -30,7 +30,7 @@ namespace RectNavigation
             element.BeginAnimation(UIElement.OpacityProperty, fadeOutAnimation);
         }
 
-        public static void Opacity(UIElement element, int from, int to, double seconds)
+        public static void Opacity(UIElement element, double from, double to, double seconds)
         {
             Opacity(element, from, to, seconds, null);
         }

@@ -48,6 +48,8 @@ namespace RectNavigation
         private bool _isInOuterRect;
         private bool _wasInLastFrameInOuterRect;
 
+        private bool _veryFirstTime = true;
+
         private Point _handRightPoint = new Point(0, 0);
         private Rect _innerRect;
         private Rect _outerRect;
@@ -57,6 +59,9 @@ namespace RectNavigation
         // Rectangle Fade out variables
         private const int RectFadeOutTimer = 2000; // Miliseconds   -> Time when Fade-out animation starts
         private long _enterInnerRectTimestamp;
+
+        private int DownSwipeBlockTimer = 1000;
+        private long _upSwipeTimestamp;
 
         public event EventHandler SwipeLeftEvent;
         public event EventHandler SwipeRightEvent;
@@ -96,6 +101,7 @@ namespace RectNavigation
         {
             if (SwipeLeftEvent != null)
             {
+                _upSwipeTimestamp = getTimeStamp();
                 SwipeArgs e = new SwipeArgs { Progress = progress };
                 SwipeUpEvent(this, e);
             }
@@ -105,6 +111,8 @@ namespace RectNavigation
         {
             if (SwipeLeftEvent != null)
             {
+                if (getTimeStamp() - _upSwipeTimestamp < DownSwipeBlockTimer)
+                    return;
                 SwipeArgs e = new SwipeArgs { Progress = progress };
                 SwipeDownEvent(this, e);
             }
@@ -130,6 +138,14 @@ namespace RectNavigation
             _isInInnerRect = _innerRect.Contains(_handRightPoint);
             _isInOuterRect = _outerRect.Contains(_handRightPoint);
 
+
+            if (!_veryFirstTime)
+            {
+                if (!_isInOuterRect)
+                {
+                    Animate.Opacity(this, Opacity, 0, 0.3);
+                }
+            }
             // Inneres Rechteck wurde betreten oder verlassen
             if (_isInInnerRect != _wasInLastFrameInInnerRect)
             {
@@ -137,7 +153,7 @@ namespace RectNavigation
                 if (_isInInnerRect)
                 {
                     // Fade-out: Save timestamp when enter the inner rect
-                    Animate.Opacity(this, 0, 1, 1);
+                    Animate.Opacity(this, Opacity, 1, 0.3);
                     _enterInnerRectTimestamp = getTimeStamp();
                     _wasInInnerRect = true;
                     FireNoSwipe();
@@ -152,6 +168,7 @@ namespace RectNavigation
                 // Aeusseres Rechteck wurde betreten
                 if (_isInOuterRect)
                 {
+                    _veryFirstTime = false;
                 }
                 // Aeusseres Rechteck wurde verlassen
                 else
@@ -209,7 +226,7 @@ namespace RectNavigation
             if (getTimeStamp() - _enterInnerRectTimestamp > RectFadeOutTimer && _isInInnerRect)
             {
                 _wasInInnerRect = false;
-                Animate.Opacity(this, 1, 0, 1);
+                Animate.Opacity(this, Opacity, 0, 0.3);
             }
         }
 
@@ -227,21 +244,29 @@ namespace RectNavigation
             double x = hipRight.X;
             double y = shoulderCenter.Y;
 
-            // Rechteck verschieben
-            const int offsetX = 20;
-            const int offsetY = 0;
-
             // inneres Rechteck verkleinern
-            double height = Math.Abs(spine.Y - y);
+            double width = Math.Abs((spine.Y - y) * 0.9);
+            double height = width * 0.8;
 
-            double width = height;
+
+            // Rechteck verschieben
+            const int offsetX = 15; // -5 
+             int offsetY = (int) (width/2) ; // geht so nicht ... skalierung
+
+            Console.WriteLine("x: " + x + " y: " + y);
+
+            
+
+
+            Console.WriteLine("width: " + width + "height: " + height);
+            
 
             return new Rect(x + offsetX, y + offsetY, width, height);
         }
 
         private Rect GetOuterRect(Rect innerRect)
         {
-            const double border = 100;
+            const double border = 40;
             double x = innerRect.X - border;
             double y = innerRect.Y - border;
             double width = innerRect.Width + border * 2;
@@ -288,7 +313,6 @@ namespace RectNavigation
             OuterRect.Width = _outerRect.Width;
             OuterRect.Height = _outerRect.Height;
         }
-
 
 
         private double GetPercentageSwipeLeft(Point hand)

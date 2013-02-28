@@ -9,12 +9,12 @@
         <Viewbox>
             <Canvas Name="DrawingCanvas" Width="640" Height="480">
                 <Ellipse Name="Hand" Width="30" Height="30" Fill="Gray"></Ellipse>
-                <Rectangle Name="InnerRect" Width="50" Height="50" Stroke="Gray" StrokeThickness="2">
+                <Rectangle Name="InnerRect" Width="50" Height="50" Stroke="Orange" Opacity="0.7" StrokeThickness="2">
                     <Rectangle.RenderTransform>
                         <TranslateTransform></TranslateTransform>
                     </Rectangle.RenderTransform>
                 </Rectangle>
-                <Rectangle Name="OuterRect" Width="100" Height="100" Stroke="Orange" StrokeThickness="2">
+                <Rectangle Name="OuterRect" Width="100" Height="100" Stroke="Gray" Opacity="0.8" StrokeThickness="2">
                     <Rectangle.RenderTransform>
                         <TranslateTransform></TranslateTransform>
                     </Rectangle.RenderTransform>

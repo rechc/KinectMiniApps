@@ -27,7 +27,7 @@ namespace HtwKinect
 
         // vars for Buffer
         private readonly ScreenMode[] _screenstatusarray;
-        private int buffersize = 20; //frames
+        private int buffersize = 20; //frames,
         private int _bufferIterator;
 
 
@@ -105,6 +105,9 @@ namespace HtwKinect
             _lookingPeople = _peopleDetector.GetLookingPeople().Count;
             _standingPeople = _peopleDetector.GetStayingPeople().Count;
 
+            if (_currentScreen == ScreenMode.MainScreen && _mainWindow.IsGame()) {
+                return;
+            }
 
             if (_positionOnlyPeople == 0 && _trackedPeople == 0 ) //Zustand 1
             {
@@ -142,7 +145,6 @@ namespace HtwKinect
                 }
             }
         }
-
 
 
         private void AddToBuffer(ScreenMode lastdetected) 
@@ -242,7 +244,8 @@ namespace HtwKinect
         private void StartMainScreen()
         {
             RemoveOldScreen();
-            if (_mainWindow == null) { _mainWindow = new LoopScreen(); }
+            _mainWindow = new LoopScreen(); //bad perf, but less problems
+           // if (_mainWindow == null) { _mainWindow = new LoopScreen(); }
             _mainWindow.StartDisplay(StopLastScreenAndGetLastTravel());
             _currentScreen = ScreenMode.MainScreen;
             Grid.SetRow(_mainWindow, 1);
@@ -271,9 +274,9 @@ namespace HtwKinect
 
         private void RemoveOldScreen()
         {
-            if (GridX.Children.Count > 1)
+            if (GridX.Children.Count > 0)
             {
-                GridX.Children.RemoveAt(1);
+                GridX.Children.RemoveAt(0);
             }
         }
 
@@ -385,12 +388,26 @@ namespace HtwKinect
         private void PeopleDetectorSkeletonEvent(object sender, EventArgs e)
         {
             _peopleDetector.TrackSkeletons(KinectHelper.Instance.Skeletons);
-            OutputLabelX.Content =
-            "Erkannt:" + _peopleDetector.GetPositionOnlyPeople().Count +
-                " Tracked:" + _peopleDetector.GetTrackedPeople().Count +
-                " Walking:" + _peopleDetector.GetWalkingPeople().Count +
-                " Standing:" + _peopleDetector.GetStayingPeople().Count
-                + " Looking:" + _peopleDetector.GetLookingPeople().Count;
+
+            if (_mainWindow == null)
+            {
+                OutputLabelX.Content =
+                    "Erkannt:" + _peopleDetector.GetPositionOnlyPeople().Count +
+                    " Tracked:" + _peopleDetector.GetTrackedPeople().Count +
+                    " Walking:" + _peopleDetector.GetWalkingPeople().Count +
+                    " Standing:" + _peopleDetector.GetStayingPeople().Count +
+                    " Looking:" + _peopleDetector.GetLookingPeople().Count;
+            }
+            else
+            {
+                OutputLabelX.Content =
+                    "Erkannt:" + _peopleDetector.GetPositionOnlyPeople().Count +
+                    " Tracked:" + _peopleDetector.GetTrackedPeople().Count +
+                    " Walking:" + _peopleDetector.GetWalkingPeople().Count +
+                    " Standing:" + _peopleDetector.GetStayingPeople().Count +
+                    " Looking:" + _peopleDetector.GetLookingPeople().Count +
+                    " Gender:" + _mainWindow.Gender;
+            }
             ChangeScreen();
         }
         #endregion PeopleDetector and Window start exit

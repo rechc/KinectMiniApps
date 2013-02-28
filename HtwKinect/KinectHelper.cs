@@ -19,6 +19,9 @@ namespace HtwKinect
         private int _id = -1;
         private static KinectHelper _instance;
 
+        public delegate void PlayerChangedEventHandler(object sender, EventArgs e);
+        public event PlayerChangedEventHandler playerChanged;
+
         public static KinectHelper Instance {
             get
             { //test
@@ -101,6 +104,7 @@ namespace HtwKinect
                         if (skeleton != null)
                         {
                             _id = skeleton.TrackingId;
+                            playerChanged(this, null);
                         }
                         else
                         {
