@@ -274,9 +274,9 @@ namespace HtwKinect
 
         private void RemoveOldScreen()
         {
-            if (GridX.Children.Count > 0)
+            if (GridX.Children.Count > 0+1)
             {
-                GridX.Children.RemoveAt(0);
+                GridX.Children.RemoveAt(0+1);
             }
         }
 

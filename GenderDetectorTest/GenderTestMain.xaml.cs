@@ -29,7 +29,7 @@ namespace GenderDetectorTest
 
         void Instance_ReadyEvent(object sender, EventArgs e)
         {
-            detector.SensorColorFrameReady(KinectHelper.Instance.GetFixedSkeleton(), KinectHelper.Instance.ColorPixels);
+            detector.GenderCheck(KinectHelper.Instance.GetFixedSkeleton(), KinectHelper.Instance.ColorPixels);
         }
     }
 }

@@ -37,7 +37,7 @@ namespace GenderDetector
         /// <summary>
         /// EventHandler zum Zeichnen des Bildes.
         /// </summary>
-        public void SensorColorFrameReady(Skeleton skeleton, byte[] colorImagePoints)
+        public void GenderCheck(Skeleton skeleton, byte[] colorImagePoints)
         {
             
             // Write the pixel data into our bitmap
@@ -49,13 +49,13 @@ namespace GenderDetector
                 0);
             _activeSkeleton = skeleton;
 
-            GenderCheck(this, null);
+            GenderCheckCutOut();
         }
 
         /// <summary>
         /// Hauptfunction zur Altersbestimmung.
         /// </summary>
-        public void GenderCheck(object sender, RoutedEventArgs e)
+        private void GenderCheckCutOut()
         {
             new Thread((ThreadStart)delegate
             {
