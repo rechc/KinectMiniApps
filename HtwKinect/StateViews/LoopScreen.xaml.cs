@@ -24,12 +24,19 @@ namespace HtwKinect.StateViews
         private bool _waitForTextList;
         private bool _unclicked;
         private KinectProjectUiBuilder _kinectProjectUiBuilder;
+        private String _gender;
+        public String Gender
+        {
+            get { return _gender = _gd.Gender; }
+            set { _gender = value; }
+        }
         private TravelOffer _currentOffer;
         private bool mouseOn = false;
         private bool _isGameActive = false;
 
         private readonly List<Orientation> _savedDirections = new List<Orientation>();
         private bool _dragDirectionIsObvious;
+        private GenderDetector.GenderDetectorControl _gd;
 
         public void SwipeLeft(object sender, EventArgs e)
         {
@@ -88,6 +95,16 @@ namespace HtwKinect.StateViews
             MyTextLoopList.Scrolled += MyTextLoopList_Scrolled;
             MyTextLoopList.SetDuration(new Duration(new TimeSpan(5500000)));
             LoadPictures(new LocalPictureUiLoader());
+        }
+
+        private void InitGenderDetection(object sender, EventArgs ea)
+        {
+            if (_gd == null)
+            {
+                _gd = new GenderDetector.GenderDetectorControl();
+                _gd.Start(KinectHelper.Instance.Sensor);
+            }    
+            _gd.SensorColorFrameReady(KinectHelper.Instance.GetFixedSkeleton(), KinectHelper.Instance.ColorPixels);
         }
 
         private void LoadPictures(IUiLoader uiLoader)
@@ -149,7 +166,7 @@ namespace HtwKinect.StateViews
                     Accessories.Opacity = 0.2;
                 }
 
-                setNewHat();
+                SetNewHat(null, null);
 
                 switch (lla.GetDirection())
                 {
@@ -208,12 +225,10 @@ namespace HtwKinect.StateViews
                     {
                         _dragDirectionIsObvious = true;
                         dragDirection = greater == xCount ? Orientation.Horizontal : Orientation.Vertical;
-                        KinectVibratingRectangle.Visibility = Visibility.Collapsed;
                     }
                     _savedDirections.Clear();
                     if (!_dragDirectionIsObvious)
                     {
-                        KinectVibratingRectangle.Visibility = Visibility.Visible;
                         return;
                     }
                 }
@@ -257,7 +272,6 @@ namespace HtwKinect.StateViews
             try
             {
                 _oldMovePoint = null;
-                KinectFocusedRectangle.Visibility = Visibility.Collapsed;
                 _unclicked = true;
                 ResetDragDirectionObvious();
 
@@ -274,7 +288,6 @@ namespace HtwKinect.StateViews
         private void ResetDragDirectionObvious()
         {
             _dragDirectionIsObvious = false;
-            KinectVibratingRectangle.Visibility = Visibility.Collapsed;
             _savedDirections.Clear();
         }
 
@@ -289,7 +302,6 @@ namespace HtwKinect.StateViews
             _oldMovePoint = point;
             _unclicked = false;
             _doDrag = true;
-            KinectFocusedRectangle.Visibility = Visibility.Visible;
         }
         public void DelegateKeyEvent(KeyEventArgs e) 
         {
@@ -360,7 +372,7 @@ namespace HtwKinect.StateViews
                 var helper = KinectHelper.Instance;
                 helper.ReadyEvent += (s, _) => HelperReady();
                 GreenScreen.Start(helper.Sensor, true);
-                setNewHat();
+                SetNewHat(null, null);
                 Accessories.Start(helper.Sensor);
                 RectNavigationControl.Start(helper.Sensor);
                 RectNavigationControl.SwipeLeftEvent += SwipeLeft;
@@ -368,6 +380,9 @@ namespace HtwKinect.StateViews
                 RectNavigationControl.SwipeUpEvent += SwipeUp;
                 RectNavigationControl.SwipeDownEvent += SwipeDown;
                 RectNavigationControl.NoSwipe += NoSwipe;
+                InitGenderDetection(null, null);
+                _gd.genderChanged += new GenderDetector.GenderDetectorControl.GenderChangedEventHandler(SetNewHat);
+                KinectHelper.Instance.playerChanged += new KinectHelper.PlayerChangedEventHandler(InitGenderDetection);
             }
             catch (Exception exc)
             {
@@ -375,18 +390,16 @@ namespace HtwKinect.StateViews
             }
         }
 
-
-
         public bool IsGame()
         {
             return (_isGameActive && KinectHelper.Instance.GetFixedSkeleton() != null);
         }
-        private void setNewHat()
+
+        private void SetNewHat(object sender, EventArgs ea)
         {
             Accessories.AccessoryItems.Clear();
-            AccessoryItem hat = new AccessoryItem(AccessoryPositon.Hat, _currentOffer.Category.CategoryId, false);
+            AccessoryItem hat = new AccessoryItem(AccessoryPositon.Hat, _currentOffer.Category.CategoryId, _gender == "Female" ? true : false);
             Accessories.AccessoryItems.Add(hat);
-
         }
     }
 }

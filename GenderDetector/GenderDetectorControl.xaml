@@ -13,6 +13,6 @@
         </Grid.ColumnDefinitions>
         <Image x:Name="Image" Grid.ColumnSpan="2" Width="640" Height="480"/>
         <TextBlock x:Name="GenderText" FontSize="20" Grid.Column="0" Grid.Row="1"/>
-        <Button Content="Check" Grid.Column="1" Grid.Row="1" Click="GenderCheck"/>
+        <Button Content="Check" Grid.Column="1" Grid.Row="1"/>
     </Grid>
 </UserControl>
