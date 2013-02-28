@@ -83,7 +83,7 @@ namespace AccessorySample
                 this.sensor.SkeletonStream.Enable();
                 this.sensor.SkeletonFrameReady += this.SkeletonFrameReady;
 
-                AccessoryItem hat = new AccessoryItem(AccessoryPositon.Hat, new Random().Next(1,6), false);
+                AccessoryItem hat = new AccessoryItem(AccessoryPositon.Hat, "4.png");
                 Accessories.AccessoryItems.Add(hat);
 
                 Accessories.Start(sensor);
