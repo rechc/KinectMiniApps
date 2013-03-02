@@ -111,6 +111,7 @@ namespace HtwKinect
 
             if (_positionOnlyPeople == 0 && _trackedPeople == 0 ) //Zustand 1
             {
+                new PictureDao().SavePicture(KinectHelper.Instance.ColorPixels);
                 AddToBuffer(ScreenMode.Splash);
                 if (_currentScreen != ScreenMode.Splash && MostBufferedScreen() == ScreenMode.Splash)
                 {

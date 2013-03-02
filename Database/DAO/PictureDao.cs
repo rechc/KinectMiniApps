@@ -25,7 +25,7 @@ namespace Database.DAO
            {
                return (from p in con.PictureSet
                        orderby p.Time ascending 
-                       select p).First(); //todo check if database is not empty
+                       select p).FirstOrDefault();
            }
         }
 
@@ -35,7 +35,7 @@ namespace Database.DAO
             {
                 var oldestPicture = (from p in con.PictureSet
                                      orderby p.Time descending
-                                     select p).First(); //todo check if database is not empty
+                                     select p).FirstOrDefault();
                 con.PictureSet.Remove(oldestPicture);
             }
         }
@@ -50,6 +50,5 @@ namespace Database.DAO
                            };
             Insert();
         }
-
     }
 }
