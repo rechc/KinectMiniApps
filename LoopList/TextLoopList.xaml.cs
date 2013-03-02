@@ -127,7 +127,7 @@ namespace LoopList
                 DoubleAnimation doubleAnimationTop = new DoubleAnimation
                     {
                         From = 0,
-                        To = -RootGrid.ActualHeight,
+                        To = -RootGrid.ActualHeight/2,
                         Duration = _duration,
                         FillBehavior = FillBehavior.Stop
                     };
@@ -171,7 +171,7 @@ namespace LoopList
 
                 DoubleAnimation doubleAnimationBottom = new DoubleAnimation
                 {
-                    From = -RootGrid.ActualHeight,
+                    From = -RootGrid.ActualHeight/2,
                     To = 0,
                     Duration = _duration,
                     FillBehavior = FillBehavior.Stop
