@@ -29,6 +29,8 @@ namespace Database.DAO
            }
         }
 
+
+        //todo clean db in specific intervall
         public void DeleteOldestPicture()
         {
             using (var con = new Model1Container())
@@ -42,13 +44,17 @@ namespace Database.DAO
 
         public void SavePicture(byte[] noPersonPicture)
         {
+            var lastTime = SelectLastTakenPicture().Time;
 
-            _picture = new Picture()
-                           {
-                               Time = DateTime.Now,
-                               NoPersonPicture = noPersonPicture
-                           };
-            Insert();
+            if ((DateTime.Now - lastTime) > new TimeSpan(0, 0, 5, 0)) //only take picture each 5 minutes //todo set time intervall
+            {
+                _picture = new Picture()
+                               {
+                                   Time = DateTime.Now,
+                                   NoPersonPicture = noPersonPicture
+                               };
+                Insert();
+            }
         }
     }
 }
