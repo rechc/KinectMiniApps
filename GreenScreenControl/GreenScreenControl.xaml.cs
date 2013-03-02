@@ -4,6 +4,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Kinect;
 using System.Linq;
+using Database.DAO;
 
 namespace GreenScreenControl
 {
@@ -79,6 +80,7 @@ namespace GreenScreenControl
             _greenScreenPixelData = new int[_sensor.DepthStream.FramePixelDataLength];
             _colorCoordinates = new ColorImagePoint[_sensor.DepthStream.FramePixelDataLength];
 
+            _noPersonColorPixels = new PictureDao().SelectLastTakenPicture().NoPersonPicture;
         }
 
         /*
@@ -86,11 +88,11 @@ namespace GreenScreenControl
          */
         public void RenderImageData(DepthImagePixel[] depthPixels, byte[] colorPixels)
         {
-            if (_noPersonColorPixels == null)
-            {
-                _noPersonColorPixels = new byte[colorPixels.Length];
-                Array.Copy(colorPixels, _noPersonColorPixels, colorPixels.Length);
-            }
+            //if (_noPersonColorPixels == null)
+            //{
+            //    _noPersonColorPixels = new byte[colorPixels.Length];
+            //    Array.Copy(colorPixels, _noPersonColorPixels, colorPixels.Length);
+            //}
 
             _depthPixels = depthPixels;
             _colorPixels = colorPixels;
@@ -162,9 +164,12 @@ namespace GreenScreenControl
                 }
             }
 
-            WidenBorder(7);
-            //HidePixels();
-            CompareColorPixels();
+            if (_noPersonColorPixels == null)
+            {
+                WidenBorder(7);
+                //HidePixels();
+                CompareColorPixels();
+            }
 
             // Write the pixel data into our bitmap
             _colorBitmap.WritePixels(
