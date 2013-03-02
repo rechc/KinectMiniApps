@@ -11,12 +11,8 @@
         x:Class="HtwKinect.StateViews.LoopScreen">
         <!-- d:DesignHeight="300" d:DesignWidth="600" -->
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
         <LoopList:LoopList x:Name="MyLoopList" Background="Beige" MouseDown="myLoopList_MouseDown_1" MouseMove="myLoopList_MouseMove_1" MouseUp="myLoopList_MouseUp_1" MouseLeave="myLoopList_MouseLeave_1" Grid.Column="1" />
-        <LoopList:TextLoopList x:Name="MyTextLoopList" FontStretch="UltraCondensed" FontWeight="Normal" Background="Blue" Width="250" />
+        <LoopList:TextLoopList x:Name="MyTextLoopList" FontWeight="Normal" Background="Blue" Width="250" Height="150" HorizontalAlignment="Left" Margin="30 0 0 30" VerticalAlignment="Bottom"/>
         <TextBlock x:Name="ExceptionTextBlock" Grid.ColumnSpan="2" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Foreground="White" Background="Red" TextWrapping="Wrap"/>
         <GreenScreenControl:GreenScreenControl x:Name="GreenScreen" Grid.Column="1" Margin="25" IsHitTestVisible="False"/>
         <AccessoryLib:AccessoryControl x:Name="Accessories" Grid.Column="1" Margin="25" IsHitTestVisible="False"/>
