@@ -90,6 +90,7 @@
             <End Role="TravelOffer" EntitySet="TravelOfferSet" />
             <End Role="ExtendedInformation" EntitySet="ExtendedInformationSet" />
           </AssociationSet>
+          <EntitySet Name="PictureSet" EntityType="Model1.Picture" />
         </EntityContainer>
         <EntityType Name="TravelOffer">
           <Key>
@@ -151,6 +152,14 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="Picture">
+          <Key>
+            <PropertyRef Name="PictureId" />
+          </Key>
+          <Property Type="Int32" Name="PictureId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="DateTime" Name="Time" Nullable="false" />
+          <Property Type="Binary" Name="NoPersonPicture" Nullable="false" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->

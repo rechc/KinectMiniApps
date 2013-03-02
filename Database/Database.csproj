@@ -68,6 +68,7 @@
     <Compile Include="CategoryEnum.cs" />
     <Compile Include="ConnectionStringHelper.cs" />
     <Compile Include="DAO\ExtendedInformationDao.cs" />
+    <Compile Include="DAO\PictureDao.cs" />
     <Compile Include="DAO\TravelOfferDao.cs" />
     <Compile Include="ExtendedInformation.cs">
       <DependentUpon>ModelObjects.tt</DependentUpon>
@@ -95,6 +96,9 @@
     <Compile Include="ModelObjects.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
+      <DependentUpon>ModelObjects.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Picture.cs">
       <DependentUpon>ModelObjects.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />

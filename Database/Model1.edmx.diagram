@@ -10,6 +10,7 @@
         <AssociationConnector Association="Model1.TravelOfferCountry" />
         <EntityTypeShape EntityType="Model1.ExtendedInformation" Width="2.125" PointX="4.75" PointY="3.125" />
         <AssociationConnector Association="Model1.TravelOfferExtendedInformation" />
+        <EntityTypeShape EntityType="Model1.Picture" Width="2.875" PointX="7.5" PointY="1" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
