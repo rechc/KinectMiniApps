@@ -172,7 +172,7 @@ namespace GenderDetector
             if (_result != null)
             {
 
-                if (_result.Photos[0].Tags.Count == 0)
+                if (_result.Photos[0].Tags != null && _result.Photos[0].Tags.Count == 0)
                 {
                     Gender = "No face tracked";
                 }
