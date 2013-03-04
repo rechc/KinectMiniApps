@@ -81,9 +81,6 @@
     <Compile Include="StateViews\SplashScreen.xaml.cs">
       <DependentUpon>SplashScreen.xaml</DependentUpon>
     </Compile>
-    <Compile Include="StateViews\WalkAndLookScreen.xaml.cs">
-      <DependentUpon>WalkAndLookScreen.xaml</DependentUpon>
-    </Compile>
     <Compile Include="StateViews\WalkScreen.xaml.cs">
       <DependentUpon>WalkScreen.xaml</DependentUpon>
     </Compile>
@@ -107,10 +104,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="StateViews\SplashScreen.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="StateViews\WalkAndLookScreen.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -464,7 +457,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>copy "$(ProjectDir)OriginDatabase.sdf" "$(ProjectDir)WindowShoppingDatabase.sdf"</PreBuildEvent> 
+    <PreBuildEvent>copy "$(ProjectDir)OriginDatabase.sdf" "$(ProjectDir)WindowShoppingDatabase.sdf"</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
