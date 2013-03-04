@@ -114,17 +114,19 @@ namespace HtwKinect.StateViews
 
           private void GenderTestEvent() 
           {
-
-              if (lastControlSkeleton != KinectHelper.Instance.GetFixedSkeleton().TrackingId)
+              if (KinectHelper.Instance.GetFixedSkeleton() != null)
               {
-                  Console.WriteLine("joooooooooooooooooo");
-                  if (_gd != null)
+                  if (lastControlSkeleton != KinectHelper.Instance.GetFixedSkeleton().TrackingId)
                   {
-                      _gd.GenderCheck(KinectHelper.Instance.GetFixedSkeleton(), KinectHelper.Instance.ColorPixels);
-                      Gender = _gd.Gender;
-                  }
+                      Console.WriteLine("joooooooooooooooooo");
+                      if (_gd != null)
+                      {
+                          _gd.GenderCheck(KinectHelper.Instance.GetFixedSkeleton(), KinectHelper.Instance.ColorPixels);
+                          Gender = _gd.Gender;
+                      }
 
-                  lastControlSkeleton = KinectHelper.Instance.GetFixedSkeleton().TrackingId;            
+                      lastControlSkeleton = KinectHelper.Instance.GetFixedSkeleton().TrackingId;
+                  }
               }
           }
 
