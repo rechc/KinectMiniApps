@@ -26,6 +26,7 @@ namespace HtwKinect.StateViews
         private bool _unclicked;
         private KinectProjectUiBuilder _kinectProjectUiBuilder;
         private String _gender;
+        private int lastControlSkeleton = -1;
         public String Gender
         {
             get { return _gender = _gd.Gender; }
@@ -104,10 +105,28 @@ namespace HtwKinect.StateViews
 
         private void InitGenderDetection()
         {
+            var helper = KinectHelper.Instance;
             _gd = new GenderDetector.GenderDetectorControl();
             _gd.Start(KinectHelper.Instance.Sensor);
-            _gd.GenderCheck(KinectHelper.Instance.GetFixedSkeleton(), KinectHelper.Instance.ColorPixels);
+            helper.ReadyEvent += (s, _) => GenderTestEvent();
         }
+
+
+          private void GenderTestEvent() 
+          {
+
+              if (lastControlSkeleton != KinectHelper.Instance.GetFixedSkeleton().TrackingId)
+              {
+                  Console.WriteLine("joooooooooooooooooo");
+                  if (_gd != null)
+                  {
+                      _gd.GenderCheck(KinectHelper.Instance.GetFixedSkeleton(), KinectHelper.Instance.ColorPixels);
+                      Gender = _gd.Gender;
+                  }
+
+                  lastControlSkeleton = KinectHelper.Instance.GetFixedSkeleton().TrackingId;            
+              }
+          }
 
         private void LoadPictures(IUiLoader uiLoader)
         {
