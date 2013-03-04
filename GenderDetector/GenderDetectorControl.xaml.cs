@@ -140,8 +140,8 @@ namespace GenderDetector
             // Schreibt die colorBitmap in den Encoder
             encoder.Frames.Add(BitmapFrame.Create(colorBitmap));
 
-            // Speicherpfad erzuegen
-            String time = System.DateTime.Now.ToString("hh'-'mm'-'ss");
+            // Speicherpfad erzeugen
+            String time = System.DateTime.Now.ToFileTime().ToString();//System.DateTime.Now.ToString("hh'-'mm'-'ss");
             String myPhotos = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
             String path = System.IO.Path.Combine(myPhotos, "KinectSnapshot-" + time + ".png");
 

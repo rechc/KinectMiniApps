@@ -118,14 +118,12 @@ namespace HtwKinect.StateViews
               {
                   if (lastControlSkeleton != KinectHelper.Instance.GetFixedSkeleton().TrackingId)
                   {
-                      Console.WriteLine("joooooooooooooooooo");
+                      lastControlSkeleton = KinectHelper.Instance.GetFixedSkeleton().TrackingId;
                       if (_gd != null)
                       {
                           _gd.GenderCheck(KinectHelper.Instance.GetFixedSkeleton(), KinectHelper.Instance.ColorPixels);
                           Gender = _gd.Gender;
                       }
-
-                      lastControlSkeleton = KinectHelper.Instance.GetFixedSkeleton().TrackingId;
                   }
               }
           }
