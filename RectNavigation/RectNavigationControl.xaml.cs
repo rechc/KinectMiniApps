@@ -253,12 +253,8 @@ namespace RectNavigation
             const int offsetX = 15; // -5 
              int offsetY = (int) (width/2) ;
 
-            Console.WriteLine("x: " + x + " y: " + y);
-
-            
-
-
-            Console.WriteLine("width: " + width + "height: " + height);
+           // Console.WriteLine("x: " + x + " y: " + y);
+           // Console.WriteLine("width: " + width + "height: " + height);
             
 
             return new Rect(x + offsetX, y + offsetY, width, height);
