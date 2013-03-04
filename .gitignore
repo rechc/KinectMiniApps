@@ -19,6 +19,7 @@
 [Bb]in
 [Dd]ebug*/
 *.lib
+WindowShoppingDatabase.sdf
 *.sbr
 obj/
 [Rr]elease*/

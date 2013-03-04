@@ -96,7 +96,7 @@ namespace HtwKinect.StateViews
             MyLoopList.Scrolled += MyLoopListOnScrolled;
             MyTextLoopList.Scrolled += MyTextLoopList_Scrolled;
             MyTextLoopList.SetFontSize(36);
-            MyTextLoopList.SetFontColor(Colors.Black);
+            MyTextLoopList.SetFontColor(Colors.White);
             //MyTextLoopList.SetWordWrap(TextWrapping.Wrap);
             //MyTextLoopList.SetFontFamily("Miriam Fixed");
             MyTextLoopList.SetDuration(new Duration(new TimeSpan(5500000)));
@@ -164,6 +164,9 @@ namespace HtwKinect.StateViews
             _waitForTextList = false;
             if (!_unclicked)
                 _doDrag = true;
+            string[] texts = MyTextLoopList.GetNeighbourTexts();
+            RectNavigationControl.SetTopText(texts[0]);
+            RectNavigationControl.SetBottomText(texts[1]);
         }
 
         /*Wenn die LoopList vertical gescrollt wurde, wird die TextLoopList gescrollt.*/
@@ -401,11 +404,14 @@ namespace HtwKinect.StateViews
                 RectNavigationControl.SwipeUpEvent += SwipeUp;
                 RectNavigationControl.SwipeDownEvent += SwipeDown;
                 RectNavigationControl.NoSwipe += NoSwipe;
+                string[] texts = MyTextLoopList.GetNeighbourTexts();
+                RectNavigationControl.SetTopText(texts[0]);
+                RectNavigationControl.SetBottomText(texts[1]);
                 InitGenderDetection();
             }
             catch (Exception exc)
             {
-                ExceptionTextBlock.Text = exc.Message + "\r\n" + exc.InnerException;
+                ExceptionTextBlock.Text = exc.Message + "\r\n" + exc.InnerException + "\r\n" + exc.StackTrace;
             }
         }
 

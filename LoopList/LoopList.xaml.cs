@@ -92,7 +92,7 @@ namespace LoopList
                     new Point(20, 0)
                 };
             hPolygon.Points = polygonPoints;
-            hPolygon.Fill = new SolidColorBrush(Colors.DarkBlue);
+            hPolygon.Fill = new SolidColorBrush(Colors.Blue);
 
 
             
@@ -118,7 +118,7 @@ namespace LoopList
                     new Point(0, 20)
                 };
             vPolygon.Points = polygonPoints;
-            vPolygon.Fill = new SolidColorBrush(Colors.DarkBlue);
+            vPolygon.Fill = new SolidColorBrush(Colors.Blue);
 
             Viewbox topDirViewbox = new Viewbox
                 {

@@ -39,7 +39,7 @@ namespace GenderDetector
         /// </summary>
         public void GenderCheck(Skeleton skeleton, byte[] colorImagePoints)
         {
-            
+            if (skeleton == null || colorImagePoints == null) return;
             // Write the pixel data into our bitmap
             _colorBitmap = new WriteableBitmap(_kinectSensor.ColorStream.FrameWidth, _kinectSensor.ColorStream.FrameHeight, 96.0, 96.0, PixelFormats.Bgr32, null);
             _colorBitmap.WritePixels(
