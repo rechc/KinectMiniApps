@@ -170,7 +170,7 @@ namespace GenderDetector
         /// </summary>
         private void SetAttributes()
         {
-            if (_result != null)
+            if (_result != null && _result.Photos != null)
             {
 
                 if (_result.Photos[0].Tags != null && _result.Photos[0].Tags.Count == 0)
