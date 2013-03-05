@@ -114,45 +114,44 @@ namespace HtwKinect
 
         private void AllFramesReady(object sender, AllFramesReadyEventArgs e)
         {
-            using (ColorImageFrame colorImageFrame = e.OpenColorImageFrame())
-            {
-                using (DepthImageFrame depthImageFrame = e.OpenDepthImageFrame())
+                using (ColorImageFrame colorImageFrame = e.OpenColorImageFrame())
                 {
-                    using (SkeletonFrame skeletonFrame = e.OpenSkeletonFrame())
+                    if (colorImageFrame != null)
                     {
-                        if (colorImageFrame != null)
-                        {
-                            if (ColorPixels == null)
-                                ColorPixels = new byte[colorImageFrame.PixelDataLength];
-                            colorImageFrame.CopyPixelDataTo(ColorPixels);
-                            ColorImageFrame = colorImageFrame;
-                        }
-
-                        if (depthImageFrame != null)
-                        {
-                            if (DepthImagePixels == null)
-                                DepthImagePixels = new DepthImagePixel[depthImageFrame.PixelDataLength];
-                            depthImageFrame.CopyDepthImagePixelDataTo(DepthImagePixels);
-                            if (DepthPixels == null)
-                                DepthPixels = new short[depthImageFrame.PixelDataLength];
-                            depthImageFrame.CopyPixelDataTo(DepthPixels);
-                            DepthImageFrame = depthImageFrame;
-                            _faceFrame = null;
-                            
-                        }
-
-                        if (skeletonFrame != null)
-                        {
-                            if (Skeletons == null)
-                                Skeletons = new Skeleton[skeletonFrame.SkeletonArrayLength];
-                            skeletonFrame.CopySkeletonDataTo(Skeletons);
-                            //CorrectRoomCoords();
-                        }
-
-                        FireAllFramesDispatched();
+                        if (ColorPixels == null)
+                            ColorPixels = new byte[colorImageFrame.PixelDataLength];
+                        colorImageFrame.CopyPixelDataTo(ColorPixels);
+                        ColorImageFrame = colorImageFrame;
                     }
                 }
-            }
+
+                using (DepthImageFrame depthImageFrame = e.OpenDepthImageFrame())
+                {
+                    if (depthImageFrame != null)
+                    {
+                        if (DepthImagePixels == null)
+                            DepthImagePixels = new DepthImagePixel[depthImageFrame.PixelDataLength];
+                        depthImageFrame.CopyDepthImagePixelDataTo(DepthImagePixels);
+                        if (DepthPixels == null)
+                            DepthPixels = new short[depthImageFrame.PixelDataLength];
+                        depthImageFrame.CopyPixelDataTo(DepthPixels);
+                        DepthImageFrame = depthImageFrame;
+                        _faceFrame = null;
+                    }
+                }
+
+                using (SkeletonFrame skeletonFrame = e.OpenSkeletonFrame())
+                {
+                    if (skeletonFrame != null)
+                    {
+                        if (Skeletons == null)
+                            Skeletons = new Skeleton[skeletonFrame.SkeletonArrayLength];
+                        skeletonFrame.CopySkeletonDataTo(Skeletons);
+                        //CorrectRoomCoords();
+                    }
+                }
+
+            FireAllFramesDispatched();
         }
 
         /// <summary>
