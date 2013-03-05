@@ -180,7 +180,7 @@ namespace MiniGame
             }));
 
             //FallWorker sleep
-            Thread.Sleep(300);
+            Thread.Sleep(500);
             Dispatcher.BeginInvoke((Action)(() =>
             {
                 if (!_fallWorker.GameOver)

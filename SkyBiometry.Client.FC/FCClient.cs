@@ -209,7 +209,14 @@ namespace SkyBiometry.Client.FC
 			/// <returns>A <see cref="FCResult"/> than contains result of the method call.</returns>
 			protected FCResult EndCallMethod(IAsyncResult asyncResult)
 			{
-				return _owner.EndCallMethod(asyncResult);
+                try
+                {
+                    return _owner.EndCallMethod(asyncResult);
+                }
+                catch 
+                {
+                    return null;
+                }
 			}
 
 			#endregion
