@@ -2,6 +2,7 @@
 using SkyBiometry.Client.FC;
 using System;
 using System.IO;
+using System.Net;
 using System.Threading;
 using System.Windows;
 using System.Windows.Media;
@@ -49,7 +50,10 @@ namespace GenderDetector
                 0);
             _activeSkeleton = skeleton;
 
-            GenderCheckCutOut();
+            if (CheckForInternetConnection())
+            {
+                GenderCheckCutOut();
+            }
         }
 
         /// <summary>
@@ -185,6 +189,22 @@ namespace GenderDetector
             else
             {
                 Gender = "No Result";
+            }
+        }
+
+        public static bool CheckForInternetConnection()
+        {
+            try
+            {
+                using (var client = new WebClient())
+                using (var stream = client.OpenRead("http://www.google.com"))
+                {
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
             }
         }
     }
