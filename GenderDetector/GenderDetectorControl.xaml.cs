@@ -98,8 +98,8 @@ namespace GenderDetector
         /// </summary>
         private void InitializeService()
         {
-            _client = new FCClient("5f228f0a0ce14e86a7c901f62ca5a569", "1231e9f2e95d4d90adf436e3de20f0f6");
-            _result = _client.Account.EndAuthenticate(_client.Account.BeginAuthenticate(null, null));
+                _client = new FCClient("5f228f0a0ce14e86a7c901f62ca5a569", "1231e9f2e95d4d90adf436e3de20f0f6");
+                _result = _client.Account.EndAuthenticate(_client.Account.BeginAuthenticate(null, null));
         }
 
         /// <summary>
@@ -176,7 +176,7 @@ namespace GenderDetector
                 {
                     Gender = "No face tracked";
                 }
-                else
+                else if (_result.Photos[0].Tags != null)
                 {
                     Gender = _result.Photos[0].Tags[0].Attributes.Gender.Value + "";
                     Confidence = _result.Photos[0].Tags[0].Attributes.Gender.Confidence + "";
