@@ -12,15 +12,12 @@ namespace LoopList
     /// </summary>
     public partial class TextLoopList
     {
-        private Border _top = new Border();
-        private Border _center = new Border();
-        private Border _bottom = new Border();
+        private Viewbox _top = new Viewbox();
+        private Viewbox _bottom = new Viewbox();
         private readonly List<string> _texts = new List<string>();
         private int _animating;
         private int _lastY;
-        private int _lastLastY;
         private int _index;
-        private double _topYPos, _bottomYPos;
         private Duration _duration;
 
         public event EventHandler Scrolled;
@@ -33,42 +30,32 @@ namespace LoopList
 
             _duration = new Duration(new TimeSpan(0, 0, 0, 0, 250));
 
-            TextBlock centerBlock = new TextBlock();
             TextBlock topBlock = new TextBlock();
             TextBlock bottomBlock = new TextBlock();
 
-            centerBlock.HorizontalAlignment = HorizontalAlignment.Center;
-            centerBlock.VerticalAlignment = VerticalAlignment.Center;
-            centerBlock.Foreground = new SolidColorBrush(Colors.White);
 
-            topBlock.HorizontalAlignment = HorizontalAlignment.Center;
-            topBlock.VerticalAlignment = VerticalAlignment.Center;
             topBlock.Foreground = new SolidColorBrush(Colors.White);
 
-            bottomBlock.HorizontalAlignment = HorizontalAlignment.Center;
-            bottomBlock.Foreground = new SolidColorBrush(Colors.White);
             bottomBlock.VerticalAlignment = VerticalAlignment.Center;
 
             _top.Child = topBlock;
-            _center.Child = centerBlock;
             _bottom.Child = bottomBlock;
 
             _top.Margin = new Thickness(20);
-            _center.Margin = new Thickness(20);
             _bottom.Margin = new Thickness(20);
 
-            SetFontSize(10);
             SetFontFamily("Verdana");
 
             _top.RenderTransform = new TranslateTransform();
-            _center.RenderTransform = new TranslateTransform();
             _bottom.RenderTransform = new TranslateTransform();
 
             RootGrid.Children.Add(_top);
-            RootGrid.Children.Add(_center);
             RootGrid.Children.Add(_bottom);
 
-            SizeChanged +=TextLoopList_SizeChanged;
+            TranslateTransform ttBottom = (TranslateTransform)_bottom.RenderTransform;
+
+            ttBottom.Y = RootGrid.ActualHeight;
+
         }
 
         public void SetDuration(Duration duration)
@@ -79,33 +66,28 @@ namespace LoopList
         public void SetFontFamily(string ff)
         {
             ((TextBlock)_top.Child).FontFamily = new FontFamily(ff);
-            ((TextBlock)_center.Child).FontFamily = new FontFamily(ff);
             ((TextBlock)_bottom.Child).FontFamily = new FontFamily(ff);
         }
 
         public void SetFontSize(int fontSize)
         {
             ((TextBlock)_top.Child).FontSize = fontSize;
-            ((TextBlock)_center.Child).FontSize = fontSize;
             ((TextBlock)_bottom.Child).FontSize = fontSize;
 
-            _top.Height = fontSize + 2;
-            _center.Height = fontSize + 2;
-            _bottom.Height = fontSize + 2;
+            _top.Height = fontSize;
+            _bottom.Height = fontSize;
         }
 
         public void SetFontColor(Color color)
         {
             SolidColorBrush colorBrush = new SolidColorBrush(color);
             ((TextBlock)_top.Child).Foreground = colorBrush;
-            ((TextBlock)_center.Child).Foreground = colorBrush;
             ((TextBlock)_bottom.Child).Foreground = colorBrush;
         }
 
         public void SetWordWrap(TextWrapping wrap)
         {         
             ((TextBlock)_top.Child).TextWrapping = wrap;
-            ((TextBlock)_center.Child).TextWrapping = wrap;
             ((TextBlock)_bottom.Child).TextWrapping = wrap;
         }
 
@@ -116,38 +98,12 @@ namespace LoopList
             Scrolled(this, args);
         }
 
-        private void TextLoopList_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            TranslateTransform ttTop = (TranslateTransform)_top.RenderTransform;
-            TranslateTransform ttCenter = (TranslateTransform)_center.RenderTransform;
-            TranslateTransform ttBottom = (TranslateTransform)_bottom.RenderTransform;
-
-
-            _topYPos = -RootGrid.ActualHeight/3.5 + _top.ActualHeight/2.0;
-            _bottomYPos = RootGrid.ActualHeight/3.5 - _bottom.ActualHeight/2.0;
-
-            ttTop.Y = _topYPos;
-            ttCenter.Y = 0;
-            ttBottom.Y = _bottomYPos;
-        }
 
 
         public void Add(string text)
         {
-
-            switch (_texts.Count)
-            {
-                case 0:
-                    ((TextBlock)_center.Child).Text = text;
-                    break;
-                case 1:
-                    ((TextBlock)_top.Child).Text = text;
-                    ((TextBlock)_bottom.Child).Text = text;
-                    break;
-                default:
-                    ((TextBlock)_top.Child).Text = text;
-                    break;
-            }
+            if (_texts.Count == 0)
+                ((TextBlock)_top.Child).Text = text;
             _texts.Add(text);
         }
 
@@ -157,95 +113,79 @@ namespace LoopList
             
             if (_animating > 0 || _texts.Count <= 1) return false;
             TranslateTransform ttTop = (TranslateTransform)_top.RenderTransform;
-            TranslateTransform ttCenter = (TranslateTransform)_center.RenderTransform;
             TranslateTransform ttBottom = (TranslateTransform)_bottom.RenderTransform;
 
             _animating = 4;
 
-            _lastLastY = _lastY;
-
-            Border disappearing; 
+            Viewbox disappearing = null;
+            Viewbox appearing = null;
             if (up)
             {
+
+                appearing = _bottom;
                 disappearing = _top;
                 DoubleAnimation doubleAnimationTop = new DoubleAnimation
                     {
-                        From = ttTop.Y,
-                        To = _topYPos*2,
+                        From = 0,
+                        To = -RootGrid.ActualHeight/2,
                         Duration = _duration,
                         FillBehavior = FillBehavior.Stop
                     };
-                ttTop.Y = _topYPos * 2;
+                doubleAnimationTop.Completed += (s, _) => AnimCompleted();
+                ttTop.Y = RootGrid.ActualHeight;
                 ttTop.BeginAnimation(TranslateTransform.YProperty, doubleAnimationTop);
-
-                DoubleAnimation doubleAnimationCenter = new DoubleAnimation
-                    {
-                        From = ttCenter.Y,
-                        To = _topYPos,
-                        Duration = _duration,
-                        FillBehavior = FillBehavior.Stop
-                    };
-                doubleAnimationCenter.Completed += (s, _) => AnimCompleted();
-                ttCenter.Y = _topYPos;
-                ttCenter.BeginAnimation(TranslateTransform.YProperty, doubleAnimationCenter);
-
+                
                 DoubleAnimation doubleAnimationBottom = new DoubleAnimation
                     {
-                        From = ttBottom.Y,
+                        From = RootGrid.ActualHeight,
                         To = 0,
                         Duration = _duration,
                         FillBehavior = FillBehavior.Stop
                     };
                 doubleAnimationBottom.Completed += (s, _) => AnimCompleted();
-
                 ttBottom.Y = 0;
                 ttBottom.BeginAnimation(TranslateTransform.YProperty, doubleAnimationBottom);
+
+                _index = NextIndex();
+
+                ((TextBlock)_bottom.Child).Text = _texts[_index];
+               
+
                 _lastY = 1;
-                Border tmp = _top;
-                _top = _center;
-                _center = _bottom;
-                _bottom = tmp;
             }
             else
             {
-                disappearing = _bottom;
+  
+                appearing = _bottom;
+                disappearing = _top;
                 DoubleAnimation doubleAnimationTop = new DoubleAnimation
                 {
-                    From = ttTop.Y,
-                    To = 0,
+                    From = 0,
+                    To = RootGrid.ActualHeight,
                     Duration = _duration,
                     FillBehavior = FillBehavior.Stop
                 };
                 doubleAnimationTop.Completed += (s, _) => AnimCompleted();
-                ttTop.Y = 0;
+                ttTop.Y = RootGrid.ActualHeight;
                 ttTop.BeginAnimation(TranslateTransform.YProperty, doubleAnimationTop);
-
-                DoubleAnimation doubleAnimationCenter = new DoubleAnimation
-                {
-                    From = ttCenter.Y,
-                    To = _bottomYPos,
-                    Duration = _duration,
-                    FillBehavior = FillBehavior.Stop
-                };
-                doubleAnimationCenter.Completed += (s, _) => AnimCompleted();
-                ttCenter.Y = _bottomYPos;
-                ttCenter.BeginAnimation(TranslateTransform.YProperty, doubleAnimationCenter);
 
                 DoubleAnimation doubleAnimationBottom = new DoubleAnimation
                 {
-                    From = ttBottom.Y,
-                    To = _bottomYPos*2,
+                    From = -RootGrid.ActualHeight/2,
+                    To = 0,
                     Duration = _duration,
                     FillBehavior = FillBehavior.Stop
                 };
-                ttBottom.Y = _bottomYPos * 2;
+                doubleAnimationBottom.Completed += (s, _) => AnimCompleted();
+                ttBottom.Y = 0;
                 ttBottom.BeginAnimation(TranslateTransform.YProperty, doubleAnimationBottom);
-                
+
+                _index = PreviousIndex();
+
+                ((TextBlock)_bottom.Child).Text = _texts[_index];
+
+
                 _lastY = -1;
-                Border tmp = _bottom;
-                _bottom = _center;
-                _center = _top;
-                _top= tmp;
             }
             DoubleAnimation fadeOut = new DoubleAnimation
             {
@@ -254,90 +194,21 @@ namespace LoopList
                 Duration = _duration.TimeSpan.Subtract(new TimeSpan((int)(_duration.TimeSpan.Ticks*0.5))),
                 FillBehavior = FillBehavior.Stop
             };
-            fadeOut.Completed += (s, _) => FadeOutAnimCompleted();
+            fadeOut.Completed += (s, _) => AnimCompleted();
             disappearing.Opacity = 0;
             disappearing.BeginAnimation(OpacityProperty, fadeOut);
-            return true;
-        }
 
-        private void FadeOutAnimCompleted()
-        {
-            Border appearing;
-            if (_lastY > 0)
-            {
-                appearing = _bottom;
-                NextIndex();
-                if (_lastLastY == 0)
-                {
-                    NextIndex();
-                }
-                else
-                {
-                    if (_lastLastY < 0)
-                    {
-                        NextIndex();
-                        NextIndex();
-                    }
-
-                }
-
-                ((TextBlock)_bottom.Child).Text = _texts[_index];
-
-                TranslateTransform ttBottom = (TranslateTransform)_bottom.RenderTransform;
-                DoubleAnimation doubleAnimationBottom = new DoubleAnimation
-                {
-                    From = _bottomYPos * 2,
-                    To = _bottomYPos,
-                    Duration = _duration,
-                    FillBehavior = FillBehavior.Stop
-                };
-                doubleAnimationBottom.Completed += (s, _) => AnimCompleted();
-                ttBottom.Y = _bottomYPos;
-                ttBottom.BeginAnimation(TranslateTransform.YProperty, doubleAnimationBottom);
-
-            }
-            else
-            {
-                appearing = _top;
-                PreviousIndex();
-                if (_lastLastY == 0)
-                {
-                    PreviousIndex();
-                }
-                else
-                {
-                    if (_lastLastY > 0)
-                    {
-                        PreviousIndex();
-                        PreviousIndex();
-                    }
-                }
-
-                ((TextBlock)_top.Child).Text = _texts[_index];
-
-                TranslateTransform ttBottom = (TranslateTransform)_top.RenderTransform;
-                DoubleAnimation doubleAnimationBottom = new DoubleAnimation
-                {
-                    From = _topYPos * 2,
-                    To = _topYPos,
-                    Duration = _duration,
-                    FillBehavior = FillBehavior.Stop
-                };
-                doubleAnimationBottom.Completed += (s, _) => AnimCompleted();
-                ttBottom.Y = _topYPos;
-                ttBottom.BeginAnimation(TranslateTransform.YProperty, doubleAnimationBottom);
-
-            }
             DoubleAnimation fadeIn = new DoubleAnimation
             {
                 From = 0,
                 To = 1,
-                Duration = _duration,
+                Duration = _duration.TimeSpan.Subtract(new TimeSpan((int)(_duration.TimeSpan.Ticks * 0.5))),
                 FillBehavior = FillBehavior.Stop
             };
+            fadeOut.Completed += (s, _) => AnimCompleted();
             appearing.Opacity = 1;
-            fadeIn.Completed += (s, _) => AnimCompleted();
             appearing.BeginAnimation(OpacityProperty, fadeIn);
+            return true;
 
         }
 
@@ -345,6 +216,9 @@ namespace LoopList
         {
             _animating--;
             if (_animating != 0) return;
+            Viewbox tmp = _bottom;
+            _bottom = _top;
+            _top = tmp;
             if (_lastY > 0)
                 FireScrolled(new LoopListTextArgs(Direction.Top));
             else
@@ -354,22 +228,32 @@ namespace LoopList
             }
         }
 
-        private void NextIndex()
+        private int NextIndex()
         {
-            _index++;
-            if (_index == _texts.Count)
+            int tmpIndex = _index + 1;
+            if (tmpIndex == _texts.Count)
             {
-                _index = 0;
+                tmpIndex = 0;
             }
+            return tmpIndex;
         }
 
-        private void PreviousIndex()
+        private int PreviousIndex()
         {
-            _index--;
-            if (_index == -1)
+            int tmpIndex = _index - 1;
+            if (tmpIndex == -1)
             {
-                _index = _texts.Count - 1;
+                tmpIndex = _texts.Count - 1;
             }
+            return tmpIndex;
+        }
+
+        public string[] GetNeighbourTexts()
+        {
+            string[] texts = new string[2];
+            texts[0] = _texts[PreviousIndex()];
+            texts[1] = _texts[NextIndex()];
+            return texts;
         }
     }
 }

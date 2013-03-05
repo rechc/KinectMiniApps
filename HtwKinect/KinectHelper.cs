@@ -112,6 +112,19 @@ namespace HtwKinect
             return skeleton;
         }
 
+        public Skeleton SetNewFixedSkeleton()
+        {
+            foreach (Skeleton s in Skeletons)
+            {
+                if (s.TrackingId != _id && s.TrackingState == SkeletonTrackingState.Tracked)
+                {
+                    _id = s.TrackingId;
+                    return s;
+                }
+            }
+            return null;
+        }
+
         private void AllFramesReady(object sender, AllFramesReadyEventArgs e)
         {
                 using (ColorImageFrame colorImageFrame = e.OpenColorImageFrame())

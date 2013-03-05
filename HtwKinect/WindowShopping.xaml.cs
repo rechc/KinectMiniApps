@@ -15,7 +15,6 @@ namespace HtwKinect
     public partial class FrameWindow : Window
     {
         #region debug keys
-        private bool _debugOnlyScreen4;
         private bool _debugOnlyScreen2;
         private bool _debugOnlyScreen3;
         private bool _debugOnlyScreen1;
@@ -35,7 +34,6 @@ namespace HtwKinect
         {
             Splash,
             Walk,
-            WalkandLook,
             MainScreen,
             Unknown
         }
@@ -43,7 +41,6 @@ namespace HtwKinect
         private LoopScreen _mainWindow;
         private StateViews.SplashScreen _sscreen;
         private WalkScreen _walkScreen;
-        private WalkAndLookScreen _walkLookScreen;
 
         private int _walkingPeople = 0;
         private int _positionOnlyPeople = 0;
@@ -63,13 +60,6 @@ namespace HtwKinect
         {
 
             #region debug keys effect
-            if (_debugOnlyScreen4) {
-                if (_currentScreen != ScreenMode.MainScreen) {
-                    StartMainScreen();
-                }
-                return;
-            }
-
             if (_debugOnlyScreen2)
             {
                 if (_currentScreen != ScreenMode.Walk)
@@ -81,9 +71,9 @@ namespace HtwKinect
 
             if (_debugOnlyScreen3)
             {
-                if (_currentScreen != ScreenMode.WalkandLook)
+                if (_currentScreen != ScreenMode.MainScreen)
                 {
-                    StartWalkandLookScreen();
+                    StartMainScreen();
                 }
                 return;
             }
@@ -127,15 +117,7 @@ namespace HtwKinect
                         StartWalkScreen();
                     }
                 }
-                else if (_standingPeople == 0 && _walkingPeople != 0 && _lookingPeople != 0) // Zustand 3
-                {
-                    AddToBuffer(ScreenMode.WalkandLook);
-                    if (_currentScreen != ScreenMode.WalkandLook && MostBufferedScreen() == ScreenMode.WalkandLook)
-                    {
-                        StartWalkandLookScreen();
-                    }
-                }
-                else if (_standingPeople != 0 && _lookingPeople != 0) // Zustand 4
+                else if (_standingPeople != 0 && _lookingPeople != 0) // Zustand 3
                 {
                     AddToBuffer(ScreenMode.MainScreen);
                     if (_currentScreen != ScreenMode.MainScreen && MostBufferedScreen() == ScreenMode.MainScreen)
@@ -160,7 +142,6 @@ namespace HtwKinect
             // double Counter
             int splashCounter = 0;
             int walkcounter = 0;
-            int walklookcounter = 0;
             int maincounter = 0;
 
             foreach (ScreenMode currentEntry in _screenstatusarray)
@@ -172,9 +153,6 @@ namespace HtwKinect
                         break;
                     case ScreenMode.Walk:
                         walkcounter++;
-                        break;
-                    case ScreenMode.WalkandLook:
-                        walklookcounter++;
                         break;
                     case ScreenMode.MainScreen:
                         maincounter++;
@@ -192,10 +170,6 @@ namespace HtwKinect
             else if (walkcounter > _screenstatusarray.Length / 2)
             {
                 return ScreenMode.Walk;
-            }
-            else if (walklookcounter > _screenstatusarray.Length / 2)
-            {
-                return ScreenMode.WalkandLook;
             }
             else if (maincounter > _screenstatusarray.Length / 2)
             {
@@ -231,16 +205,6 @@ namespace HtwKinect
             GridX.Children.Add(_walkScreen);
         }
 
-        private void StartWalkandLookScreen()
-        {
-            RemoveOldScreen();  
-            if (_walkLookScreen == null) { _walkLookScreen = new WalkAndLookScreen(); }
-            _walkLookScreen.StartDisplay(StopLastScreenAndGetLastTravel());
-            _currentScreen = ScreenMode.WalkandLook;
-            Grid.SetRow(_walkLookScreen, 1);
-            GridX.Children.Add(_walkLookScreen);
-        }
-
         private void StartMainScreen()
         {
             RemoveOldScreen();
@@ -263,8 +227,6 @@ namespace HtwKinect
                     return _sscreen.StopDisplay();
                 case ScreenMode.Walk:
                     return _walkScreen.StopDisplay();
-                case ScreenMode.WalkandLook:
-                    return _walkLookScreen.StopDisplay();
                 case ScreenMode.MainScreen:
                     return _mainWindow.StopDisplay();
                 default:
@@ -274,9 +236,9 @@ namespace HtwKinect
 
         private void RemoveOldScreen()
         {
-            if (GridX.Children.Count > 0+1)
+            if (GridX.Children.Count > 1)
             {
-                GridX.Children.RemoveAt(0+1);
+                GridX.Children.RemoveAt(1);
             }
         }
 
@@ -301,23 +263,13 @@ namespace HtwKinect
                             break;
                         #region debug keys trigger
                         case Key.Space:
-                            _debugOnlyScreen4 = !_debugOnlyScreen4;
                             _debugOnlyScreen2 = false;
-                            _debugOnlyScreen3 = false;
-                            _debugOnlyScreen1 = false;
-                            ChangeScreen();
-                            e.Handled = true;
-                            break;
-                        case Key.D4:
-                            _debugOnlyScreen4 = !_debugOnlyScreen4;
-                            _debugOnlyScreen2 = false;
-                            _debugOnlyScreen3 = false;
+                            _debugOnlyScreen3 = !_debugOnlyScreen3;
                             _debugOnlyScreen1 = false;
                             ChangeScreen();
                             e.Handled = true;
                             break;
                         case Key.D2:
-                            _debugOnlyScreen4 = false;
                             _debugOnlyScreen3 = false;
                             _debugOnlyScreen1 = false;
                             _debugOnlyScreen2 = !_debugOnlyScreen2;
@@ -325,7 +277,6 @@ namespace HtwKinect
                             e.Handled = true;
                             break;
                         case Key.D1:
-                            _debugOnlyScreen4 = false;
                             _debugOnlyScreen2 = false;
                             _debugOnlyScreen3 = false;
                             _debugOnlyScreen1 = !_debugOnlyScreen1;
@@ -333,7 +284,6 @@ namespace HtwKinect
                             e.Handled = true;
                             break;
                         case Key.D3:
-                            _debugOnlyScreen4 = false;
                             _debugOnlyScreen2 = false;
                             _debugOnlyScreen1 = false;
                             _debugOnlyScreen3 = !_debugOnlyScreen3;

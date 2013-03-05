@@ -8,17 +8,65 @@
     <Grid Name="LayoutGrid">
         <Viewbox>
             <Canvas Name="DrawingCanvas" Width="640" Height="480">
-                <Ellipse Name="Hand" Width="30" Height="30" Fill="Gray"></Ellipse>
-                <Rectangle Name="InnerRect" Width="50" Height="50" Stroke="Orange" Opacity="0.7" StrokeThickness="2">
+                <Ellipse Name="Hand" Width="30" Height="30" Fill="Gray">
+                    <Ellipse.RenderTransform>
+                        <TranslateTransform/>
+                    </Ellipse.RenderTransform>
+                </Ellipse>
+                <Viewbox Name="TopTextViewBox" Width="100" Height="100">
+                    <TextBlock Name="TopText" Text="Top" Foreground="White">
+                        <TextBlock.Effect>
+                            <DropShadowEffect
+                              ShadowDepth="0"
+                              Direction="0"
+                              Color="Black"
+                              Opacity="1"
+                             BlurRadius="2"/>
+                        </TextBlock.Effect>
+                    </TextBlock>
+                    <Viewbox.RenderTransform>
+                        <TranslateTransform/>
+                    </Viewbox.RenderTransform>
+                </Viewbox>
+                <Viewbox Name="BottomTextViewBox" Width="100" Height="100">
+                    <TextBlock Name="BottomText" Text="Bottom" Foreground="White">
+                        <TextBlock.Effect>
+                            <DropShadowEffect
+                              ShadowDepth="0"
+                              Direction="0"
+                              Color="Black"
+                              Opacity="1"
+                             BlurRadius="2"/>
+                        </TextBlock.Effect>
+                    </TextBlock>
+                    <Viewbox.RenderTransform>
+                        <TranslateTransform/>
+                    </Viewbox.RenderTransform>
+                </Viewbox>
+                <Rectangle Name="InnerRect" Width="50" Height="50" Stroke="Orange" Opacity="0.7" StrokeThickness="2" StrokeDashArray="0.5 1.0 0.3">
                     <Rectangle.RenderTransform>
                         <TranslateTransform></TranslateTransform>
                     </Rectangle.RenderTransform>
                 </Rectangle>
-                <Rectangle Name="OuterRect" Width="100" Height="100" Stroke="Gray" Opacity="0.8" StrokeThickness="2">
+                <Rectangle Name="OuterRect" Width="100" Height="100" Stroke="Gray" Opacity="0.8" StrokeThickness="2" Visibility="Hidden">
                     <Rectangle.RenderTransform>
                         <TranslateTransform></TranslateTransform>
                     </Rectangle.RenderTransform>
                 </Rectangle>
+                <Viewbox Name="ArrowRightViewBox">
+                    <Path Fill="Black" Opacity="0.7" StrokeThickness="3" Data="M 0 10 l 30 0 l 0 -10 l 20 20 l -20 20 l 0 -10 l -30 0 Z" Stroke="White"/>
+                    <Viewbox.RenderTransform>
+                        <TranslateTransform/>
+                    </Viewbox.RenderTransform>
+                </Viewbox>
+                <Viewbox Name="ArrowLeftViewBox">
+                    <Path Fill="Black" Opacity="0.7" StrokeThickness="3" Data="M 0 20 l 20 20 l 0 -10 l 30 0 l 0 -20 l -30 0 l 0 -10 Z" Stroke="White"/>
+                    <Viewbox.RenderTransform>
+                        <TranslateTransform/>
+                    </Viewbox.RenderTransform>
+                </Viewbox>
+                
+                
             </Canvas>
         </Viewbox>
     </Grid>

@@ -26,6 +26,7 @@ namespace HtwKinect.StateViews
         private bool _unclicked;
         private KinectProjectUiBuilder _kinectProjectUiBuilder;
         private String _gender;
+        private int lastControlSkeleton = -1;
         public String Gender
         {
             get { return _gender = _gd.Gender; }
@@ -104,10 +105,28 @@ namespace HtwKinect.StateViews
 
         private void InitGenderDetection()
         {
+            var helper = KinectHelper.Instance;
             _gd = new GenderDetector.GenderDetectorControl();
             _gd.Start(KinectHelper.Instance.Sensor);
-            _gd.GenderCheck(KinectHelper.Instance.GetFixedSkeleton(), KinectHelper.Instance.ColorPixels);
+            helper.ReadyEvent += (s, _) => GenderTestEvent();
         }
+
+
+          private void GenderTestEvent() 
+          {
+              if (KinectHelper.Instance.GetFixedSkeleton() != null)
+              {
+                  if (lastControlSkeleton != KinectHelper.Instance.GetFixedSkeleton().TrackingId)
+                  {
+                      lastControlSkeleton = KinectHelper.Instance.GetFixedSkeleton().TrackingId;
+                      if (_gd != null)
+                      {
+                          _gd.GenderCheck(KinectHelper.Instance.GetFixedSkeleton(), KinectHelper.Instance.ColorPixels);
+                          Gender = _gd.Gender;
+                      }
+                  }
+              }
+          }
 
         private void LoadPictures(IUiLoader uiLoader)
         {
@@ -133,10 +152,34 @@ namespace HtwKinect.StateViews
             if (skeleton != null)
                 RectNavigationControl.GestureRecognition(skeleton);
             GreenScreen.RenderImageData(helper.DepthImagePixels, helper.ColorPixels);
-            Accessories.SetSkeletons(helper.Skeletons);
+            SetAccessoriesNew(helper);
             KinectHelper.Instance.SetTransform(GreenScreen);
             KinectHelper.Instance.SetTransform(Accessories);
             KinectHelper.Instance.SetTransform(RectNavigationControl);
+        }
+
+        private void SetAccessoriesNew(KinectHelper helper)
+        {
+            Skeleton activeSkeleton = helper.GetFixedSkeleton();
+            if (activeSkeleton != null) 
+            {
+                if (helper.Skeletons.Length > 1 && Accessories.AccessoryRect != null)
+                {
+                    int offset = 100;
+                    Rect accessoryRect = Accessories.AccessoryRect;
+                    var right = helper.Sensor.CoordinateMapper.MapSkeletonPointToColorPoint(activeSkeleton.Joints[JointType.HandRight].Position, helper.Sensor.ColorStream.Format);
+                    var left = helper.Sensor.CoordinateMapper.MapSkeletonPointToColorPoint(activeSkeleton.Joints[JointType.HandLeft].Position, helper.Sensor.ColorStream.Format);
+                    //Console.Write("LR: {0} - {1}, TB: {2} - {3}, RHX: {4}, RHY: {5}\n", accessoryRect.Left - offset, accessoryRect.Right + offset, accessoryRect.Top - offset, accessoryRect.Bottom + offset, right.X, right.Y);
+                    if ((right.X >= accessoryRect.Left - offset && right.X <= accessoryRect.Right + offset &&
+                        right.Y >= accessoryRect.Top - offset && right.Y <= accessoryRect.Bottom + offset) ||
+                        (left.X >= accessoryRect.Left - offset && left.X <= accessoryRect.Right + offset &&
+                        left.Y >= accessoryRect.Top - offset && left.Y <= accessoryRect.Bottom + offset))
+                    {
+                        activeSkeleton = helper.SetNewFixedSkeleton();
+                    }
+                }
+            }
+            Accessories.SetActiveSkeleton(activeSkeleton);
         }
        
         /*Erst wenn die Scrollanimation der TextLoopList beendet ist, darf die LoopList weiterscrollen (vertical).*/
@@ -145,6 +188,9 @@ namespace HtwKinect.StateViews
             _waitForTextList = false;
             if (!_unclicked)
                 _doDrag = true;
+            string[] texts = MyTextLoopList.GetNeighbourTexts();
+            RectNavigationControl.SetTopText(texts[0]);
+            RectNavigationControl.SetBottomText(texts[1]);
         }
 
         /*Wenn die LoopList vertical gescrollt wurde, wird die TextLoopList gescrollt.*/
@@ -382,11 +428,14 @@ namespace HtwKinect.StateViews
                 RectNavigationControl.SwipeUpEvent += SwipeUp;
                 RectNavigationControl.SwipeDownEvent += SwipeDown;
                 RectNavigationControl.NoSwipe += NoSwipe;
+                string[] texts = MyTextLoopList.GetNeighbourTexts();
+                RectNavigationControl.SetTopText(texts[0]);
+                RectNavigationControl.SetBottomText(texts[1]);
                 InitGenderDetection();
             }
             catch (Exception exc)
             {
-                ExceptionTextBlock.Text = exc.Message + "\r\n" + exc.InnerException;
+                ExceptionTextBlock.Text = exc.Message + "\r\n" + exc.InnerException + "\r\n" + exc.StackTrace;
             }
         }
 
