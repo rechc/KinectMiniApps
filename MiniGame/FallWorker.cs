@@ -24,7 +24,7 @@ namespace MiniGame
         {
             while (!this.GameOver)
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(1200);
                 eventFallen(this, null);
             }
         }
