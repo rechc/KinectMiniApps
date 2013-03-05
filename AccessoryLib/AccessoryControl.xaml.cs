@@ -13,6 +13,7 @@ namespace AccessoryLib
         private Skeleton[] _skeletons;
         private Skeleton _activeSkeleton;
         private Boolean _oneHut;
+        public Rect AccessoryRect { get; private set; }
 
         // Liste von Gegenstaenden, die gezeichnet werden sollen.
         public List<AccessoryItem> AccessoryItems { get; private set; }
@@ -36,6 +37,7 @@ namespace AccessoryLib
             _oneHut = true;
             InvalidateVisual();
         }
+
 
         public void Start(KinectSensor sensor)
         {
@@ -100,7 +102,6 @@ namespace AccessoryLib
             switch (item.Position)
             {
                 case AccessoryPositon.Hat:
-
                     offsetY = -1.1*imgHeight;
                     break;
                 case AccessoryPositon.Beard:
@@ -111,8 +112,9 @@ namespace AccessoryLib
             double headX = colorImagePoint.X * (ActualWidth / _sensor.ColorStream.FrameWidth) + offsetX;
             double headY = colorImagePoint.Y * (ActualHeight / _sensor.ColorStream.FrameHeight) + offsetY;
 
-            //Console.WriteLine("Z: {0}, imgW: {1}, imgH: {2}, X: {3}, Y: {4}", headPos.Z, imgWidth, imgHeight, cloc.X, cloc.Y);
-            drawingContext.DrawImage(item.Image, new Rect(headX - imgWidth / 2, headY, imgWidth, imgHeight));
+            //Console.WriteLine("Z: {0}, imgW: {1}, imgH: {2}, X: {3}, Y: {4}", headPos.Z, imgWidth, imgHeight, headX, headY);
+            AccessoryRect = new Rect(headX - imgWidth / 2, headY, imgWidth, imgHeight);
+            drawingContext.DrawImage(item.Image, AccessoryRect);
         }
     }
 }

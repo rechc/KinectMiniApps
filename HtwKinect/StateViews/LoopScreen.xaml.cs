@@ -152,10 +152,34 @@ namespace HtwKinect.StateViews
             if (skeleton != null)
                 RectNavigationControl.GestureRecognition(skeleton);
             GreenScreen.RenderImageData(helper.DepthImagePixels, helper.ColorPixels);
-            Accessories.SetActiveSkeleton(helper.GetFixedSkeleton());
+            SetAccessoriesNew(helper);
             KinectHelper.Instance.SetTransform(GreenScreen);
             KinectHelper.Instance.SetTransform(Accessories);
             KinectHelper.Instance.SetTransform(RectNavigationControl);
+        }
+
+        private void SetAccessoriesNew(KinectHelper helper)
+        {
+            Skeleton activeSkeleton = helper.GetFixedSkeleton();
+            if (activeSkeleton != null) 
+            {
+                if (helper.Skeletons.Length > 1 && Accessories.AccessoryRect != null)
+                {
+                    int offset = 100;
+                    Rect accessoryRect = Accessories.AccessoryRect;
+                    var right = helper.Sensor.CoordinateMapper.MapSkeletonPointToColorPoint(activeSkeleton.Joints[JointType.HandRight].Position, helper.Sensor.ColorStream.Format);
+                    var left = helper.Sensor.CoordinateMapper.MapSkeletonPointToColorPoint(activeSkeleton.Joints[JointType.HandLeft].Position, helper.Sensor.ColorStream.Format);
+                    //Console.Write("LR: {0} - {1}, TB: {2} - {3}, RHX: {4}, RHY: {5}\n", accessoryRect.Left - offset, accessoryRect.Right + offset, accessoryRect.Top - offset, accessoryRect.Bottom + offset, right.X, right.Y);
+                    if ((right.X >= accessoryRect.Left - offset && right.X <= accessoryRect.Right + offset &&
+                        right.Y >= accessoryRect.Top - offset && right.Y <= accessoryRect.Bottom + offset) ||
+                        (left.X >= accessoryRect.Left - offset && left.X <= accessoryRect.Right + offset &&
+                        left.Y >= accessoryRect.Top - offset && left.Y <= accessoryRect.Bottom + offset))
+                    {
+                        activeSkeleton = helper.SetNewFixedSkeleton();
+                    }
+                }
+            }
+            Accessories.SetActiveSkeleton(activeSkeleton);
         }
        
         /*Erst wenn die Scrollanimation der TextLoopList beendet ist, darf die LoopList weiterscrollen (vertical).*/
