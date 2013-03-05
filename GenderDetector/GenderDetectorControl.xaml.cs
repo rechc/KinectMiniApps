@@ -20,7 +20,7 @@ namespace GenderDetector
         private FCClient _client;
         private FCResult _result;
         private Skeleton _activeSkeleton;
-        private const int CutRange = 70;
+        private const int CutRange = 125;
 
         public String Gender { get; set; }
         public String Confidence { get; set; }
@@ -111,9 +111,6 @@ namespace GenderDetector
         /// </summary>
         private CroppedBitmap CropBitmap(WriteableBitmap colorBitmap) 
         {
-            int width = 140;
-            int height = 140;
-
             // Ersten Player selektieren
             if (_activeSkeleton != null)
             {
@@ -121,11 +118,11 @@ namespace GenderDetector
                 var point = _kinectSensor.CoordinateMapper.MapSkeletonPointToColorPoint(_activeSkeleton.Joints[JointType.Head].Position, _kinectSensor.ColorStream.Format);
                     
                 // Überprüfung das nicht außerhalb des Bildes ausgenschnitten wird
-                if ((int)point.X - CutRange <= 0 || (int)point.X - CutRange >= _kinectSensor.ColorStream.FrameWidth || (int)point.Y - CutRange <= 0 || (int)point.Y - CutRange >= _kinectSensor.ColorStream.FrameHeight)
+                if ((int)point.X - CutRange <= 0 || (int)point.X + CutRange >= _kinectSensor.ColorStream.FrameWidth || (int)point.Y - CutRange <= 0 || (int)point.Y + CutRange >= _kinectSensor.ColorStream.FrameHeight)
                     return null;
                 // Array für auszuschneidendes Bild initialisierne
                 Int32Rect cropRect =
-                    new Int32Rect((int)point.X - CutRange, (int)point.Y - CutRange, width, height +20);
+                    new Int32Rect((int)point.X - CutRange, (int)point.Y - CutRange, CutRange * 2, CutRange * 2);
 
                 // Neues Bild erstellen und zurückliefern
                 return new CroppedBitmap(_colorBitmap, cropRect);
