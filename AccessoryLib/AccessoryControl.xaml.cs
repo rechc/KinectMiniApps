@@ -11,6 +11,8 @@ namespace AccessoryLib
     {
         private KinectSensor _sensor;
         private Skeleton[] _skeletons;
+        private Skeleton _activeSkeleton;
+        private Boolean _oneHut;
 
         // Liste von Gegenstaenden, die gezeichnet werden sollen.
         public List<AccessoryItem> AccessoryItems { get; private set; }
@@ -24,6 +26,14 @@ namespace AccessoryLib
         public void SetSkeletons(Skeleton[] skeletons)
         {
             _skeletons = skeletons;
+            _oneHut = false;
+            InvalidateVisual();
+        }
+
+        public void SetActiveSkeleton(Skeleton activeSkeleton)
+        {
+            _activeSkeleton = activeSkeleton;
+            _oneHut = true;
             InvalidateVisual();
         }
 
@@ -37,17 +47,28 @@ namespace AccessoryLib
         {
             base.OnRender(drawingContext);
 
-            if (_skeletons == null)
-                return;
-
             // Nicht ueber den Rand des Controls hinaus zeichnen.
             //drawingContext.PushClip(new RectangleGeometry(new Rect(0, 0, ActualWidth, ActualHeight)));
 
             // Items fuer alle Personen zeichnen.
-            foreach (Skeleton person in _skeletons)
+            if (_oneHut)
             {
-                if (person.TrackingState == SkeletonTrackingState.Tracked)
-                    RenderAccessories(drawingContext, person);
+                if (_activeSkeleton == null)
+                    return;
+
+                if (_activeSkeleton.TrackingState == SkeletonTrackingState.Tracked)
+                    RenderAccessories(drawingContext, _activeSkeleton);
+            }
+            else
+            {
+                if (_skeletons == null)
+                    return;
+
+                foreach (Skeleton person in _skeletons)
+                {
+                    if (person.TrackingState == SkeletonTrackingState.Tracked)
+                        RenderAccessories(drawingContext, person);
+                }
             }
         }
 
