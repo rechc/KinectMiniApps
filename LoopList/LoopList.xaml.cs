@@ -73,10 +73,10 @@ namespace LoopList
             Rectangle topBorderRect = new Rectangle();
             Rectangle bottomBorderRect = new Rectangle();
 
-            leftBorderRect.Fill = new SolidColorBrush(Colors.Red);
-            rightBorderRect.Fill = new SolidColorBrush(Colors.Red);
-            topBorderRect.Fill = new SolidColorBrush(Colors.Red);
-            bottomBorderRect.Fill = new SolidColorBrush(Colors.Red);
+            //leftBorderRect.Fill = new SolidColorBrush(Colors.Red);
+            //rightBorderRect.Fill = new SolidColorBrush(Colors.Red);
+            //topBorderRect.Fill = new SolidColorBrush(Colors.Red);
+            //bottomBorderRect.Fill = new SolidColorBrush(Colors.Red);
 
             leftBorderRect.Visibility = Visibility.Collapsed;
             rightBorderRect.Visibility = Visibility.Collapsed;
