@@ -82,7 +82,7 @@ namespace GenderDetector
                 }));
 
                 // Warten bis Bild gespeichert wurde
-                while (path == "") { }
+                while (path == "") { }  //TODO = nogo
 
                 // Auswertung des Bildes
                 CalculateGender(path);
@@ -147,11 +147,16 @@ namespace GenderDetector
             String path = System.IO.Path.Combine(myPhotos, "KinectSnapshot-" + time + ".png");
 
             // Speichern des Bildes
-            using (FileStream fs = new FileStream(path, FileMode.Create))
+            try
             {
-                encoder.Save(fs);
+                using (FileStream fs = new FileStream(path, FileMode.Create))
+                {
+                    encoder.Save(fs);
+                }
             }
-
+            catch {
+                Console.WriteLine("Gender Image failed");
+            }
             return path;
         }
 
