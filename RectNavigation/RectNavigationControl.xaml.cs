@@ -48,17 +48,6 @@ namespace RectNavigation
         private bool _isInOuterRect;
         private bool _wasInLastFrameInOuterRect;
 
-        private double enlargeTopWidth;
-        private double enlargeTopHeight;
-
-        private double enlargeBottomWidth;
-        private double enlargeBottomHeight;
-
-
-        private double translateTop;
-
-        private double translateBottom;
-
         private bool _veryFirstTime = true;
 
         private Point _handRightPoint = new Point(0, 0);
@@ -68,7 +57,7 @@ namespace RectNavigation
         private bool _wasInInnerRect;
 
         // Rectangle Fade out variables
-        private const int RectFadeOutTimer = 3000; // Miliseconds   -> Time when Fade-out animation starts
+        private const int RectFadeOutTimer = 2000; // Miliseconds -> Time when Fade-out animation starts
         private long _enterInnerRectTimestamp;
 
         private int DownSwipeBlockTimer = 1000;
@@ -113,9 +102,6 @@ namespace RectNavigation
             if (SwipeLeftEvent != null)
             {
                 _upSwipeTimestamp = getTimeStamp();
-                enlargeTopWidth = (OuterRect.ActualWidth/5) * progress;
-                enlargeTopHeight = (OuterRect.ActualHeight/5) * progress;
-                translateTop = (OuterRect.ActualHeight / 30) * progress;
                 SwipeArgs e = new SwipeArgs { Progress = progress };
                 SwipeUpEvent(this, e);
             }
@@ -127,23 +113,9 @@ namespace RectNavigation
             {
                 if (getTimeStamp() - _upSwipeTimestamp < DownSwipeBlockTimer)
                     return;
-                enlargeBottomWidth = (OuterRect.ActualWidth/5) * progress;
-                enlargeBottomHeight = (OuterRect.ActualHeight/5) * progress;
-                translateBottom = (OuterRect.ActualHeight / 20) * progress;
                 SwipeArgs e = new SwipeArgs { Progress = progress };
                 SwipeDownEvent(this, e);
             }
-        }
-
-
-        public void SetTopText(string text)
-        {
-            TopText.Text = text;
-        }
-
-        public void SetBottomText(string text)
-        {
-            BottomText.Text = text;
         }
 
         public void Start(KinectSensor sensor)
@@ -171,7 +143,7 @@ namespace RectNavigation
             {
                 if (!_isInOuterRect)
                 {
-                    Animate.Opacity(this, Opacity, 0, 0.2);
+                    Animate.Opacity(this, Opacity, 0, 0.3); // value changed
                 }
             }
             // Inneres Rechteck wurde betreten oder verlassen
@@ -181,16 +153,10 @@ namespace RectNavigation
                 if (_isInInnerRect)
                 {
                     // Fade-out: Save timestamp when enter the inner rect
-                    Animate.Opacity(this, Opacity, 1, 0.2);
+                    Animate.Opacity(this, Opacity, 1, 0.3);
                     _enterInnerRectTimestamp = getTimeStamp();
                     _wasInInnerRect = true;
                     FireNoSwipe();
-                    enlargeTopHeight = 0;
-                    enlargeTopWidth = 0;
-                    enlargeBottomHeight = 0;
-                    enlargeBottomWidth = 0;
-                    translateBottom = 0;
-                    translateTop = 0;
                 }
 
                 _wasInLastFrameInInnerRect = _isInInnerRect;
@@ -203,12 +169,6 @@ namespace RectNavigation
                 if (_isInOuterRect)
                 {
                     _veryFirstTime = false;
-                    enlargeTopHeight = 0;
-                    enlargeTopWidth = 0;
-                    enlargeBottomHeight = 0;
-                    enlargeBottomWidth = 0;
-                    translateBottom = 0;
-                    translateTop = 0;
                 }
                 // Aeusseres Rechteck wurde verlassen
                 else
@@ -266,7 +226,7 @@ namespace RectNavigation
             if (getTimeStamp() - _enterInnerRectTimestamp > RectFadeOutTimer && _isInInnerRect)
             {
                 _wasInInnerRect = false;
-                Animate.Opacity(this, Opacity, 0, 0.2);
+                Animate.Opacity(this, Opacity, 0, 0.3);
             }
         }
 
@@ -290,12 +250,16 @@ namespace RectNavigation
 
 
             // Rechteck verschieben
-            const int offsetX = 15; // -5 
-             int offsetY = (int) (width/2) ;
+            const int offsetX = 15; // -5
+            int offsetY = (int)(width / 2);
 
-           // Console.WriteLine("x: " + x + " y: " + y);
-           // Console.WriteLine("width: " + width + "height: " + height);
-            
+            Console.WriteLine("x: " + x + " y: " + y);
+
+
+
+
+            Console.WriteLine("width: " + width + "height: " + height);
+
 
             return new Rect(x + offsetX, y + offsetY, width, height);
         }
@@ -329,7 +293,7 @@ namespace RectNavigation
 
         private void TransformHand()
         {
-            TranslateTransform transform = (TranslateTransform)Hand.RenderTransform;
+            TranslateTransform transform = new TranslateTransform();
             Hand.RenderTransform = transform;
             transform.X = _handRightPoint.X - (Hand.Width / 2);
             transform.Y = _handRightPoint.Y - (Hand.Height / 2);
@@ -348,32 +312,6 @@ namespace RectNavigation
             transformOuterRect.Y = _outerRect.Y;
             OuterRect.Width = _outerRect.Width;
             OuterRect.Height = _outerRect.Height;
-
-            TranslateTransform transformTopTextBlockViewBox = (TranslateTransform)TopTextViewBox.RenderTransform;
-            transformTopTextBlockViewBox.X = ((TranslateTransform)OuterRect.RenderTransform).X - enlargeTopWidth/2;
-            transformTopTextBlockViewBox.Y = ((TranslateTransform)OuterRect.RenderTransform).Y + translateTop;
-
-            TranslateTransform transformBottomTextBlockViewBox = (TranslateTransform)BottomTextViewBox.RenderTransform;
-            transformBottomTextBlockViewBox.X = ((TranslateTransform)OuterRect.RenderTransform).X - enlargeBottomWidth/2;
-            transformBottomTextBlockViewBox.Y = ((TranslateTransform)OuterRect.RenderTransform).Y + OuterRect.ActualHeight - BottomTextViewBox.ActualHeight - translateBottom;
-
-            TranslateTransform transformArrowRightViewBox = (TranslateTransform)ArrowRightViewBox.RenderTransform;
-            transformArrowRightViewBox.X = ((TranslateTransform)OuterRect.RenderTransform).X + OuterRect.ActualWidth - ArrowLeftViewBox.ActualWidth;
-            transformArrowRightViewBox.Y = ((TranslateTransform)OuterRect.RenderTransform).Y + OuterRect.ActualHeight / 2 - ArrowRightViewBox.ActualHeight / 2;
-            
-            TranslateTransform transformArrowLeftViewBox = (TranslateTransform)ArrowLeftViewBox.RenderTransform;
-            transformArrowLeftViewBox.X = ((TranslateTransform)OuterRect.RenderTransform).X;
-            transformArrowLeftViewBox.Y = ((TranslateTransform)OuterRect.RenderTransform).Y + OuterRect.ActualHeight / 2 - ArrowLeftViewBox.ActualHeight / 2;
-
-            
-            TopTextViewBox.Width = OuterRect.ActualWidth + enlargeTopWidth;
-            TopTextViewBox.Height = transformInnerRect.Y - transformOuterRect.Y + enlargeTopHeight;
-
-            BottomTextViewBox.Width = OuterRect.ActualWidth + enlargeBottomWidth;
-            BottomTextViewBox.Height = transformInnerRect.Y - transformOuterRect.Y + enlargeBottomHeight;
-
-            ArrowRightViewBox.Width = transformInnerRect.X - transformOuterRect.X;
-            ArrowLeftViewBox.Width = transformInnerRect.X - transformOuterRect.X;
         }
 
 
@@ -418,6 +356,18 @@ namespace RectNavigation
         {
             ColorImagePoint colorPoint = _sensor.CoordinateMapper.MapSkeletonPointToColorPoint(skelpoint, _sensor.ColorStream.Format);
             return new Point(colorPoint.X, colorPoint.Y);
+        }
+
+        public static void SetBottomText(string p)
+        {
+            //eingebunden aus letzter version um die aufrufe gleich zu lassen
+            //throw new NotImplementedException();
+        }
+
+        public static void SetTopText(string p)
+        {
+            //eingebunden aus letzter version um die aufrufe gleich zu lassen
+            //throw new NotImplementedException();
         }
     }
 }
