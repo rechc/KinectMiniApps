@@ -129,6 +129,12 @@ namespace RectNavigation
         {
             Joint handRight = skel.Joints[JointType.HandRight];
 
+            if (handRight.TrackingState != JointTrackingState.Tracked) { //falls keine hand erkannt, breche ab
+                return;
+            }
+
+
+
             _innerRect = GetInnerRect(skel);
             _outerRect = GetOuterRect(_innerRect);
             TransformRectangles();
@@ -253,13 +259,8 @@ namespace RectNavigation
             const int offsetX = 15; // -5
             int offsetY = (int)(width / 2);
 
-            Console.WriteLine("x: " + x + " y: " + y);
-
-
-
-
-            Console.WriteLine("width: " + width + "height: " + height);
-
+            //Console.WriteLine("x: " + x + " y: " + y);
+            //Console.WriteLine("width: " + width + "height: " + height);
 
             return new Rect(x + offsetX, y + offsetY, width, height);
         }
