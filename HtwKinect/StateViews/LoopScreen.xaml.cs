@@ -167,8 +167,11 @@ namespace HtwKinect.StateViews
                 {
                     Rect accessoryRect = Accessories.AccessoryRect;
                     var left = helper.Sensor.CoordinateMapper.MapSkeletonPointToColorPoint(activeSkeleton.Joints[JointType.HandLeft].Position, helper.Sensor.ColorStream.Format);
-                    if (left.X >= accessoryRect.Left && left.X <= accessoryRect.Right &&
-                        left.Y >= accessoryRect.Top + accessoryRect.Height && left.Y <= accessoryRect.Bottom + accessoryRect.Height)
+                    var right = helper.Sensor.CoordinateMapper.MapSkeletonPointToColorPoint(activeSkeleton.Joints[JointType.HandRight].Position, helper.Sensor.ColorStream.Format);
+                    if ((left.X >= accessoryRect.Left && left.X <= accessoryRect.Right &&
+                        left.Y >= accessoryRect.Top + accessoryRect.Height && left.Y <= accessoryRect.Bottom + accessoryRect.Height) ||
+                        (right.X >= accessoryRect.Left && right.X <= accessoryRect.Right &&
+                        right.Y >= accessoryRect.Top + accessoryRect.Height && right.Y <= accessoryRect.Bottom + accessoryRect.Height))
                     {
                         activeSkeleton = helper.SetNewFixedSkeleton();
                     }
