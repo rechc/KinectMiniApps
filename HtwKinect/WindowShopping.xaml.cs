@@ -236,9 +236,9 @@ namespace HtwKinect
 
         private void RemoveOldScreen()
         {
-            if (GridX.Children.Count > 1)
+            if (GridX.Children.Count > 0)
             {
-                GridX.Children.RemoveAt(1);
+                GridX.Children.RemoveAt(0);
             }
         }
 
@@ -339,7 +339,7 @@ namespace HtwKinect
         {
             _peopleDetector.TrackSkeletons(KinectHelper.Instance.Skeletons);
 
-            if (_mainWindow == null)
+            /*if (_mainWindow == null)
             {
                 OutputLabelX.Content =
                     "Erkannt:" + _peopleDetector.GetPositionOnlyPeople().Count +
@@ -357,7 +357,7 @@ namespace HtwKinect
                     " Standing:" + _peopleDetector.GetStayingPeople().Count +
                     " Looking:" + _peopleDetector.GetLookingPeople().Count +
                     " Gender:" + _mainWindow.Gender;
-            }
+            }*/
             ChangeScreen();
         }
         #endregion PeopleDetector and Window start exit
