@@ -16,7 +16,7 @@
         </TextBlock>
         <TextBlock x:Name="TravelInfo" Text="TravelInfo" HorizontalAlignment="Left" Height="70" Margin="10,0,0,0" Width="260" FontSize="24" Foreground="White"/>
         <TextBlock Name="ExtendetInfo" Text="ExtendetInfo" TextWrapping="Wrap" HorizontalAlignment="Left" Height="130" Margin="10,0,0,0" VerticalAlignment="Top" Width="260" FontSize="18"  Foreground="White"/>
-        <TextBlock x:Name ="PricePerPerson" Text="PricePerPerson" HorizontalAlignment="Left" Margin="10,0,0,0" Height="80" Width="260" FontSize="28" FontStyle="Italic" FontWeight="Bold" Foreground="White"/>
+        <TextBlock x:Name ="PricePerPerson" Text="PricePerPerson" HorizontalAlignment="Left" Margin="10,0,0,0" Height="100" Width="260" FontSize="36" FontStyle="Italic" FontWeight="Bold" Foreground="White"/>
         <!--<ListViewItem Name="ListViewExtendedInformations">
             <StackPanel Orientation="Vertical">
                 <Image Name="ExtendetInfoImg1" Source="Images/Arrow.png" Height="15" VerticalAlignment="Top" HorizontalAlignment="Left" />
