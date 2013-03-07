@@ -33,6 +33,47 @@ namespace RectNavigation
             InitializeComponent();
         }
 
+        // Einschließender Winkel zwischen zwei Vektoren
+        private double GetRotateAngle(Vector arrow, Vector rect)
+        {
+            return Math.Acos((arrow * rect) / (arrow.Length * rect.Length)) * (180 / Math.PI);
+        }
+
+        bool pointerAnimationRunning = false;
+        public void AnimatePointerArrow()
+        {
+            if (!pointerAnimationRunning)
+            {
+                pointerAnimationRunning = true;
+
+                Canvas.SetLeft(PointerArrow, _handRightPoint.X - (PointerArrow.Width / 2));
+                Canvas.SetTop(PointerArrow, _handRightPoint.Y - (PointerArrow.Height / 2));
+
+                Point innerRectMiddlePoint = new Point(_innerRect.Left + (_innerRect.Width / 2),
+                                                          _innerRect.Top + (_innerRect.Height / 2));
+
+                Vector handToRectVector = new Vector(innerRectMiddlePoint.X - _handRightPoint.X, innerRectMiddlePoint.Y - _handRightPoint.Y);
+
+                // new Vector ist der Vektor von Handposition auf selber ebene nach links
+                double rotateAngle = GetRotateAngle(handToRectVector, new Vector(-10, 0));
+
+                // Drehrichtung des Pfeiles in Oberen Haelfte umdrehen
+                if (_handRightPoint.Y < innerRectMiddlePoint.Y)
+                {
+                    rotateAngle = -rotateAngle;
+                }
+
+                double duration = 1.3;
+                Animate.MoveWithRotationAndFadeOut(PointerArrow, new Point(handToRectVector.X, handToRectVector.Y), rotateAngle, duration, ArrowAnimationCompleted);
+            }
+        }
+
+        private void ArrowAnimationCompleted(object sender, EventArgs e)
+        {
+            pointerAnimationRunning = false;
+        }
+
+
         /// <summary>
         /// Active Kinect sensor
         /// </summary>
@@ -113,8 +154,8 @@ namespace RectNavigation
             if (SwipeLeftEvent != null)
             {
                 _upSwipeTimestamp = getTimeStamp();
-                enlargeTopWidth = (OuterRect.ActualWidth/5) * progress;
-                enlargeTopHeight = (OuterRect.ActualHeight/5) * progress;
+                enlargeTopWidth = (OuterRect.ActualWidth / 5) * progress;
+                enlargeTopHeight = (OuterRect.ActualHeight / 5) * progress;
                 translateTop = (OuterRect.ActualHeight / 30) * progress;
                 SwipeArgs e = new SwipeArgs { Progress = progress };
                 SwipeUpEvent(this, e);
@@ -127,8 +168,8 @@ namespace RectNavigation
             {
                 if (getTimeStamp() - _upSwipeTimestamp < DownSwipeBlockTimer)
                     return;
-                enlargeBottomWidth = (OuterRect.ActualWidth/5) * progress;
-                enlargeBottomHeight = (OuterRect.ActualHeight/5) * progress;
+                enlargeBottomWidth = (OuterRect.ActualWidth / 5) * progress;
+                enlargeBottomHeight = (OuterRect.ActualHeight / 5) * progress;
                 translateBottom = (OuterRect.ActualHeight / 20) * progress;
                 SwipeArgs e = new SwipeArgs { Progress = progress };
                 SwipeDownEvent(this, e);
@@ -162,6 +203,8 @@ namespace RectNavigation
             TransformRectangles();
             TransformHand();
             _handRightPoint = SkeletonPointToScreen(handRight.Position);
+
+            AnimatePointerArrow();
 
             _isInInnerRect = _innerRect.Contains(_handRightPoint);
             _isInOuterRect = _outerRect.Contains(_handRightPoint);
@@ -291,11 +334,11 @@ namespace RectNavigation
 
             // Rechteck verschieben
             const int offsetX = 15; // -5 
-             int offsetY = (int) (width/2) ;
+            int offsetY = (int)(width / 2);
 
-           // Console.WriteLine("x: " + x + " y: " + y);
-           // Console.WriteLine("width: " + width + "height: " + height);
-            
+            // Console.WriteLine("x: " + x + " y: " + y);
+            // Console.WriteLine("width: " + width + "height: " + height);
+
 
             return new Rect(x + offsetX, y + offsetY, width, height);
         }
@@ -350,22 +393,22 @@ namespace RectNavigation
             OuterRect.Height = _outerRect.Height;
 
             TranslateTransform transformTopTextBlockViewBox = (TranslateTransform)TopTextViewBox.RenderTransform;
-            transformTopTextBlockViewBox.X = ((TranslateTransform)OuterRect.RenderTransform).X - enlargeTopWidth/2;
+            transformTopTextBlockViewBox.X = ((TranslateTransform)OuterRect.RenderTransform).X - enlargeTopWidth / 2;
             transformTopTextBlockViewBox.Y = ((TranslateTransform)OuterRect.RenderTransform).Y + translateTop;
 
             TranslateTransform transformBottomTextBlockViewBox = (TranslateTransform)BottomTextViewBox.RenderTransform;
-            transformBottomTextBlockViewBox.X = ((TranslateTransform)OuterRect.RenderTransform).X - enlargeBottomWidth/2;
+            transformBottomTextBlockViewBox.X = ((TranslateTransform)OuterRect.RenderTransform).X - enlargeBottomWidth / 2;
             transformBottomTextBlockViewBox.Y = ((TranslateTransform)OuterRect.RenderTransform).Y + OuterRect.ActualHeight - BottomTextViewBox.ActualHeight - translateBottom;
 
             TranslateTransform transformArrowRightViewBox = (TranslateTransform)ArrowRightViewBox.RenderTransform;
             transformArrowRightViewBox.X = ((TranslateTransform)OuterRect.RenderTransform).X + OuterRect.ActualWidth - ArrowLeftViewBox.ActualWidth;
             transformArrowRightViewBox.Y = ((TranslateTransform)OuterRect.RenderTransform).Y + OuterRect.ActualHeight / 2 - ArrowRightViewBox.ActualHeight / 2;
-            
+
             TranslateTransform transformArrowLeftViewBox = (TranslateTransform)ArrowLeftViewBox.RenderTransform;
             transformArrowLeftViewBox.X = ((TranslateTransform)OuterRect.RenderTransform).X;
             transformArrowLeftViewBox.Y = ((TranslateTransform)OuterRect.RenderTransform).Y + OuterRect.ActualHeight / 2 - ArrowLeftViewBox.ActualHeight / 2;
 
-            
+
             TopTextViewBox.Width = OuterRect.ActualWidth + enlargeTopWidth;
             TopTextViewBox.Height = transformInnerRect.Y - transformOuterRect.Y + enlargeTopHeight;
 

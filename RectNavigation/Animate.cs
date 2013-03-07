@@ -72,5 +72,34 @@ namespace RectNavigation
         {
             Move(element, to.X, to.Y);
         }
+
+        public static void MoveWithRotationAndFadeOut(FrameworkElement element, Point to, double rotationAngle, double seconds, AnimationCompletedDelegate callback)
+        {
+            TransformGroup transformGroup = new TransformGroup();
+            transformGroup.Children.Add(new RotateTransform(rotationAngle, element.Width / 2, element.Height / 2));
+
+            Duration duration = new Duration(TimeSpan.FromSeconds(seconds));
+            DoubleAnimation animationX = new DoubleAnimation(to.X, duration);
+            DoubleAnimation animationY = new DoubleAnimation(to.Y, duration);
+            DoubleAnimation fadeOutAnimation = new DoubleAnimation
+            {
+                From = 1,
+                To = 0.4,
+                Duration = duration,
+                FillBehavior = FillBehavior.Stop
+            };
+
+            animationX.Completed += (sender, _) => callback(sender, _);
+
+            TranslateTransform trans = new TranslateTransform();
+            element.RenderTransform = transformGroup;
+
+            trans.BeginAnimation(TranslateTransform.XProperty, animationX);
+            trans.BeginAnimation(TranslateTransform.YProperty, animationY);
+
+            element.Opacity = 0.4;
+            element.BeginAnimation(UIElement.OpacityProperty, fadeOutAnimation);
+            transformGroup.Children.Add(trans);
+        }
     }
 }

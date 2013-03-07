@@ -65,8 +65,9 @@
                         <TranslateTransform/>
                     </Viewbox.RenderTransform>
                 </Viewbox>
-                
-                
+                <Viewbox Name="PointerArrow" Width="52" Height="44">
+                    <Path Fill="#FF2BF317" Opacity="0.7" StrokeThickness="3" Data="M 0 20 l 20 20 l 0 -10 l 30 0 l 0 -20 l -30 0 l 0 -10 Z" Stroke="White"/>
+                </Viewbox>
             </Canvas>
         </Viewbox>
     </Grid>

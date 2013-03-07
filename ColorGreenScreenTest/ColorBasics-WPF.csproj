@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{49EA2D7C-A2D2-42F0-A447-966AFFD19E42}</ProjectGuid>
+    <ProjectGuid>{18183EE7-09F6-414D-A061-918F1DD85A8F}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Microsoft.Samples.Kinect.ColorBasics</RootNamespace>
