@@ -34,7 +34,7 @@ namespace RectNavigation
         }
 
         // Einschließender Winkel zwischen zwei Vektoren
-        private double GetRotateAngle(Vector arrow, Vector rect)
+        private double getRotateAngle(Vector arrow, Vector rect)
         {
             return Math.Acos((arrow * rect) / (arrow.Length * rect.Length)) * (180 / Math.PI);
         }
@@ -55,7 +55,7 @@ namespace RectNavigation
                 Vector handToRectVector = new Vector(innerRectMiddlePoint.X - _handRightPoint.X, innerRectMiddlePoint.Y - _handRightPoint.Y);
 
                 // new Vector ist der Vektor von Handposition auf selber ebene nach links
-                double rotateAngle = GetRotateAngle(handToRectVector, new Vector(-10, 0));
+                double rotateAngle = getRotateAngle(handToRectVector, new Vector(-10, 0));
 
                 // Drehrichtung des Pfeiles in Oberen Haelfte umdrehen
                 if (_handRightPoint.Y < innerRectMiddlePoint.Y)
@@ -202,27 +202,17 @@ namespace RectNavigation
                 return;
             }
 
-
-
             _innerRect = GetInnerRect(skel);
             _outerRect = GetOuterRect(_innerRect);
             TransformRectangles();
             TransformHand();
             _handRightPoint = SkeletonPointToScreen(handRight.Position);
 
-            AnimatePointerArrow();
-
             _isInInnerRect = _innerRect.Contains(_handRightPoint);
             _isInOuterRect = _outerRect.Contains(_handRightPoint);
+            AnimatePointerArrow();
+            
 
-
-            if (!_veryFirstTime)
-            {
-                if (!_isInOuterRect)
-                {
-                    Animate.Opacity(this, Opacity, 0, 0.2);
-                }
-            }
             // Inneres Rechteck wurde betreten oder verlassen
             if (_isInInnerRect != _wasInLastFrameInInnerRect)
             {
@@ -230,7 +220,7 @@ namespace RectNavigation
                 if (_isInInnerRect)
                 {
                     // Fade-out: Save timestamp when enter the inner rect
-                    Animate.Opacity(this, Opacity, 1, 0.2);
+                    setRectVisible();
                     _enterInnerRectTimestamp = getTimeStamp();
                     _wasInInnerRect = true;
                     FireNoSwipe();
@@ -282,6 +272,7 @@ namespace RectNavigation
                         }
                         FireNoSwipe();
                         _wasInInnerRect = false;
+                        setRectInvisible();
                     }
                 }
                 _wasInLastFrameInOuterRect = _isInOuterRect;
@@ -315,8 +306,31 @@ namespace RectNavigation
             if (getTimeStamp() - _enterInnerRectTimestamp > RectFadeOutTimer && _isInInnerRect)
             {
                 _wasInInnerRect = false;
-                Animate.Opacity(this, Opacity, 0, 0.2);
+                setRectInvisible();
             }
+        }
+
+        private void setRectInvisible()
+        {
+            Animate.Opacity(ArrowLeftViewBox, ArrowLeftViewBox.Opacity, 0, 0.2);
+            Animate.Opacity(ArrowRightViewBox, ArrowRightViewBox.Opacity, 0, 0.2);
+            Animate.Opacity(TopTextViewBox, TopTextViewBox.Opacity, 0, 0.2);
+            Animate.Opacity(BottomTextViewBox, BottomTextViewBox.Opacity, 0, 0.2);
+            Animate.Opacity(Hand, Hand.Opacity, 0, 0.2);
+            Animate.Opacity(InnerRect, InnerRect.Opacity, 0, 0.2);
+            PointerArrow.Visibility = Visibility.Visible;
+
+        }
+
+        private void setRectVisible()
+        {
+            Animate.Opacity(ArrowLeftViewBox, ArrowLeftViewBox.Opacity, 1, 0.2);
+            Animate.Opacity(ArrowRightViewBox, ArrowRightViewBox.Opacity, 1, 0.2);
+            Animate.Opacity(TopTextViewBox, TopTextViewBox.Opacity, 1, 0.2);
+            Animate.Opacity(BottomTextViewBox, BottomTextViewBox.Opacity, 1, 0.2);
+            Animate.Opacity(Hand, Hand.Opacity, 1, 0.2);
+            Animate.Opacity(InnerRect, InnerRect.Opacity, 1, 0.2);
+            PointerArrow.Visibility = Visibility.Hidden;
         }
 
 
