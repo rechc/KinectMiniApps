@@ -21,9 +21,8 @@ namespace HtwKinect
 
         public static KinectHelper Instance {
             get
-            { //test
-                if (_instance == null)
-                    _instance = new KinectHelper(
+            {
+                _instance = _instance ?? new KinectHelper(
                         new TransformSmoothParameters
                         {
                             Correction = 0,
@@ -31,10 +30,7 @@ namespace HtwKinect
                             MaxDeviationRadius = 0.8f,
                             Prediction = 0,
                             Smoothing = 0.8f
-                        },
-                        false,
-                        ColorImageFormat.RgbResolution1280x960Fps12,
-                        DepthImageFormat.Resolution640x480Fps30);
+                        });
                 return _instance;
             }
         }
@@ -50,7 +46,10 @@ namespace HtwKinect
 
         public event EventHandler ReadyEvent;
         
-        private KinectHelper(TransformSmoothParameters tsp, bool near, ColorImageFormat colorFormat, DepthImageFormat depthFormat) {
+        private KinectHelper(TransformSmoothParameters tsp, bool near = false, 
+                             ColorImageFormat colorFormat = ColorImageFormat.RgbResolution1280x960Fps12, 
+                             DepthImageFormat depthFormat = DepthImageFormat.Resolution640x480Fps30) 
+        {
             _kinectSensor = KinectSensor.KinectSensors.FirstOrDefault(s => s.Status == KinectStatus.Connected);
 
             if (_kinectSensor == null)
@@ -63,6 +62,10 @@ namespace HtwKinect
                 _kinectSensor.DepthStream.Range = DepthRange.Near;
                 _kinectSensor.SkeletonStream.EnableTrackingInNearRange = true;
             }
+
+            DepthImageFormat = depthFormat;
+            ColorImageFormat = colorFormat;
+
             _kinectSensor.SkeletonStream.Enable(tsp);
             _kinectSensor.ColorStream.Enable(colorFormat);
             _kinectSensor.DepthStream.Enable(depthFormat);
@@ -70,14 +73,11 @@ namespace HtwKinect
             
             _kinectSensor.Start();
             _faceTracker = new FaceTracker(_kinectSensor);
-
-            DepthImageFormat = depthFormat;
-            ColorImageFormat = colorFormat;
         }
 
 
         /// <summary>
-        /// Sorgt dafür, dass immer zuverlaessig immer nur der Skeleton der selben Person zurückgegeben wird.
+        /// Sorgt dafür, dass immer zuverlaessig nur der Skeleton der selben Person zurückgegeben wird.
         /// </summary>
         public Skeleton GetFixedSkeleton()
         {
@@ -91,6 +91,7 @@ namespace HtwKinect
                     {
                         _id = skeleton.TrackingId;
                     }
+                    //_id = (skeleton != null) ? skeleton.TrackingId : -1;
                 }
                 else
                 {
