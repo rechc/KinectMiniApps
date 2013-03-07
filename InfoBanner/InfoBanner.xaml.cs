@@ -21,18 +21,24 @@ namespace InfoBanner
 
             char star = '\u2605';
             String bullet = Convert.ToString('\u2023');
+            String euro = Convert.ToString('\u20AC');
             String ratingStars = "";
 
             for (int i = 0; i <= offer.HotelRating; i++)
             {
                 ratingStars += Convert.ToString(star);
             }
-            Category.Text = offer.Category.CategoryName;
+            if (offer.Category.CategoryName == "Wandern")
+                Category.Text = "Wanderurlaub";
+            else
+                Category.Text = offer.Category.CategoryName + "urlaub";
             Stars.Text = ratingStars;
             HotelName.Text = offer.HotelName;
+            if (HotelName.Text.Length <= 16)
+                HotelName.Height = 40;
             Place.Text = offer.Place;
-            PricePerPerson.Text = offer.PricePerPerson + ",-\n pro Person";
-            TravelInfo.Text = offer.DayCount + " tägige " + offer.TravelType + "\ninkl. " + offer.BoardType;
+            PricePerPerson.Text = offer.PricePerPerson + ",- "+ euro +"\npro Person";
+            TravelInfo.Text = offer.DayCount + "-tägige " + offer.TravelType + "\ninkl. " + offer.BoardType;
 
             string extInfo = "";
             foreach (ExtendedInformation information in offer.ExtendedInformation)

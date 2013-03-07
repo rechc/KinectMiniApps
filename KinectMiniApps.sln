@@ -63,7 +63,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SwipeLock", "SwipeLock\Swip
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateRealDB", "CreateRealDB\CreateRealDB.csproj", "{E87F4F4C-749F-4A09-8915-0DBB0BFD1D2B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorGreenScreen", "ColorGreenScreenTest\ColorBasics-WPF.csproj", "{18183EE7-09F6-414D-A061-918F1DD85A8F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorBasics-WPF", "ColorGreenScreenTest\ColorBasics-WPF.csproj", "{18183EE7-09F6-414D-A061-918F1DD85A8F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CopyPixelCompareGreenScreen", "CopyPixelCompareGreenScreen\CopyPixelCompareGreenScreen.csproj", "{BA49DE61-9346-4156-B382-75C2D5370DCD}"
 EndProject

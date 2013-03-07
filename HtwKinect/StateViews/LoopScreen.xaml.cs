@@ -152,10 +152,32 @@ namespace HtwKinect.StateViews
             if (skeleton != null)
                 RectNavigationControl.GestureRecognition(skeleton);
             GreenScreen.RenderImageData(helper.DepthImagePixels, helper.ColorPixels);
-            Accessories.SetSkeletons(helper.Skeletons);
+            SetAccessoriesNew(helper);
             KinectHelper.Instance.SetTransform(GreenScreen);
             KinectHelper.Instance.SetTransform(Accessories);
             KinectHelper.Instance.SetTransform(RectNavigationControl);
+        }
+
+        private void SetAccessoriesNew(KinectHelper helper)
+        {
+            Skeleton activeSkeleton = helper.GetFixedSkeleton();
+            if (activeSkeleton != null) 
+            {
+                if (helper.Skeletons.Length > 1 && Accessories.AccessoryRect != null)
+                {
+                    Rect accessoryRect = Accessories.AccessoryRect;
+                    var left = helper.Sensor.CoordinateMapper.MapSkeletonPointToColorPoint(activeSkeleton.Joints[JointType.HandLeft].Position, helper.Sensor.ColorStream.Format);
+                    var right = helper.Sensor.CoordinateMapper.MapSkeletonPointToColorPoint(activeSkeleton.Joints[JointType.HandRight].Position, helper.Sensor.ColorStream.Format);
+                    if ((left.X >= accessoryRect.Left && left.X <= accessoryRect.Right &&
+                        left.Y >= accessoryRect.Top + accessoryRect.Height && left.Y <= accessoryRect.Bottom + accessoryRect.Height) ||
+                        (right.X >= accessoryRect.Left && right.X <= accessoryRect.Right &&
+                        right.Y >= accessoryRect.Top + accessoryRect.Height && right.Y <= accessoryRect.Bottom + accessoryRect.Height))
+                    {
+                        activeSkeleton = helper.SetNewFixedSkeleton();
+                    }
+                }
+            }
+            Accessories.SetActiveSkeleton(activeSkeleton);
         }
        
         /*Erst wenn die Scrollanimation der TextLoopList beendet ist, darf die LoopList weiterscrollen (vertical).*/

@@ -9,7 +9,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="1.5*"/>
             <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1.5*"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
@@ -18,22 +18,22 @@
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="0.5*"/>
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
         <TextBlock Name="Place" Text ="Place" FontWeight="Medium" FontSize="150" Grid.Row="0"  Grid.Column="0" Grid.ColumnSpan="6" TextAlignment="Center" VerticalAlignment="Bottom"/>
-        <TextBlock Name="TravelInfo" Text="TravelInfo" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="3" FontSize="36" VerticalAlignment="Center"/>
-        <TextBlock Name="ExtendedInfo" Text="ExtendedInfo" TextWrapping="Wrap"  Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="3" FontSize="36" />
+        <TextBlock Name="TravelInfo" Text="TravelInfo" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="4"  FontSize="36" VerticalAlignment="Center" TextAlignment="Left"/>
+        <TextBlock Name="ExtendedInfo" Text="ExtendedInfo" TextWrapping="Wrap"  Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="4" FontSize="36" TextAlignment="Left"/>
 
-        <TextBlock Name="Rating" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="20,0,0,0" VerticalAlignment="Bottom">
-            <TextBlock Text="Bewertung" FontSize="36"/>
+        <TextBlock Name="Rating" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Margin="20,0,0,0" VerticalAlignment="Top">
+            <TextBlock Text="Hotelsterne" FontSize="36"/>
             <TextBlock Name="Stars" Text="Test" FontSize="36" Foreground="Yellow"/>
         </TextBlock>
         <TextBlock Name="HotelName" Text="HotelName" FontWeight="Medium" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" FontSize="72" Margin="20,0,0,0" VerticalAlignment="Center"/>
-        <TextBlock Name="Category" Text="Category" Grid.Row="5" Grid.Column="0"  Grid.ColumnSpan="2" FontSize="36" Margin="20,0,0,0" VerticalAlignment="Top"/>
+        <TextBlock Name="Category" Text="Category" Grid.Row="3" Grid.Column="0"  Grid.ColumnSpan="2" FontSize="36" Margin="20,0,0,0" VerticalAlignment="Bottom"/>
 
-        <TextBlock Name="PricePerPerson" Text="PricePerPerson" FontWeight="Medium" Grid.Row="4" Grid.Column="4" Grid.ColumnSpan="2" Grid.RowSpan="2" FontSize="72" VerticalAlignment="Top"/>
+        <TextBlock Name="PricePerPerson" Text="PricePerPerson" FontWeight="Medium" Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="3" Grid.RowSpan="2" FontSize="72" Margin="0,5,5,0" VerticalAlignment="Top" HorizontalAlignment="Right"/>
        
        
     </Grid>

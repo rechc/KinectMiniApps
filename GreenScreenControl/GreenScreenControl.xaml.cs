@@ -125,9 +125,9 @@ namespace GreenScreenControl
                     DepthImagePixel depthPixel = _depthPixels[depthIndex];
 
                     int player = depthPixel.PlayerIndex;
-
+                    int depthDist = depthPixel.Depth;
                     // if we're tracking a player for the current pixel, do green screen
-                    if (player > 0)
+                    if (player > 0 && (depthDist > 400 && depthDist < 3500))
                     {
                         //found = true;
 
