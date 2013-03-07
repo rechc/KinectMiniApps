@@ -418,7 +418,14 @@ namespace RectNavigation
         private Point SkeletonPointToScreen(SkeletonPoint skelpoint)
         {
             ColorImagePoint colorPoint = _sensor.CoordinateMapper.MapSkeletonPointToColorPoint(skelpoint, _sensor.ColorStream.Format);
-            return new Point(colorPoint.X, colorPoint.Y);
+            Point p = new Point(colorPoint.X, colorPoint.Y);
+            if (Math.Abs(p.X) > 1000000 || Math.Abs(p.Y) > 1000000)
+            {
+                p.X = 0;
+                p.Y = 0;
+            }
+            return p;
+            
         }
     }
 }
