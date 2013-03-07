@@ -157,6 +157,12 @@ namespace RectNavigation
         {
             Joint handRight = skel.Joints[JointType.HandRight];
 
+            if (handRight.TrackingState != JointTrackingState.Tracked) { //falls keine hand erkannt, breche ab
+                return;
+            }
+
+
+
             _innerRect = GetInnerRect(skel);
             _outerRect = GetOuterRect(_innerRect);
             TransformRectangles();
@@ -290,13 +296,8 @@ namespace RectNavigation
 
 
             // Rechteck verschieben
-            const int offsetX = 15; // -5 
-             int offsetY = (int) (width/2) ;
-
-           // Console.WriteLine("x: " + x + " y: " + y);
-           // Console.WriteLine("width: " + width + "height: " + height);
-            
-
+            const int offsetX = 15; // -5
+            int offsetY = (int)(width / 2);
             return new Rect(x + offsetX, y + offsetY, width, height);
         }
 
@@ -417,7 +418,14 @@ namespace RectNavigation
         private Point SkeletonPointToScreen(SkeletonPoint skelpoint)
         {
             ColorImagePoint colorPoint = _sensor.CoordinateMapper.MapSkeletonPointToColorPoint(skelpoint, _sensor.ColorStream.Format);
-            return new Point(colorPoint.X, colorPoint.Y);
+            Point p = new Point(colorPoint.X, colorPoint.Y);
+            if (Math.Abs(p.X) > 1000000 || Math.Abs(p.Y) > 1000000)
+            {
+                p.X = 0;
+                p.Y = 0;
+            }
+            return p;
+            
         }
     }
 }

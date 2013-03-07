@@ -68,6 +68,7 @@ namespace GenderDetector
 
                 // Bild speichern
                 String path = "";
+                bool imagefailed = false;
                 Dispatcher.BeginInvoke((Action)(() =>
                 {
                     CroppedBitmap colorBitmap = CropBitmap(_colorBitmap);
@@ -82,17 +83,30 @@ namespace GenderDetector
                 }));
 
                 // Warten bis Bild gespeichert wurde
-                while (path == "") { }
-
+                int currentminute = System.DateTime.Now.Minute;
+                int diff = 0;
+                while (path == "" && !imagefailed) {
+                    diff = System.DateTime.Now.Minute - currentminute;
+                    if (diff > 2 || diff < -2) { // wenns länger als 1 min braucht brich ab
+                        imagefailed = true;
+                    }
+                }
+                Console.WriteLine(System.DateTime.Now.Minute);
                 // Auswertung des Bildes
-                CalculateGender(path);
+                if (!imagefailed)
+                {
+                    CalculateGender(path);
+                }
 
                 Dispatcher.BeginInvoke((Action)(() =>
                 {
                     // Attribute setzen
                     SetAttributes();
                     // Bild wieder löschen
-                    File.Delete(path);
+                    if (!imagefailed)
+                    {
+                        File.Delete(path);
+                    }
                 }));
             }).Start();
         }
@@ -147,11 +161,16 @@ namespace GenderDetector
             String path = System.IO.Path.Combine(myPhotos, "KinectSnapshot-" + time + ".png");
 
             // Speichern des Bildes
-            using (FileStream fs = new FileStream(path, FileMode.Create))
+            try
             {
-                encoder.Save(fs);
+                using (FileStream fs = new FileStream(path, FileMode.Create))
+                {
+                    encoder.Save(fs);
+                }
             }
-
+            catch {
+                Console.WriteLine("Gender Image failed");
+            }
             return path;
         }
 
@@ -170,7 +189,7 @@ namespace GenderDetector
         /// </summary>
         private void SetAttributes()
         {
-            if (_result != null)
+            if (_result != null && _result.Photos != null)
             {
 
                 if (_result.Photos[0].Tags != null && _result.Photos[0].Tags.Count == 0)

@@ -44,11 +44,16 @@ namespace HtwKinect.StateViews
         {
             char star = '\u2605';
             String bullet = Convert.ToString('\u2023');
+            String euro = Convert.ToString('\u20AC');
             String ratingStars = "";
                 if (offer != null)
                 {
                     _currentOffer = offer;
-                    Category.Text = _currentOffer.Category.CategoryName;
+                    if (_currentOffer.Category.CategoryName == "Wandern")
+                        Category.Text = "Wanderurlaub";
+                    else
+                        Category.Text = _currentOffer.Category.CategoryName+"urlaub";
+                   
                     for (int i = 0; i <= _currentOffer.HotelRating; i++)
                     {
                         ratingStars += Convert.ToString(star);
@@ -58,8 +63,8 @@ namespace HtwKinect.StateViews
                     Stars.Text = ratingStars;
                     HotelName.Text = _currentOffer.HotelName;
                     Place.Text = _currentOffer.Place;
-                    PricePerPerson.Text = _currentOffer.PricePerPerson + ",-\n pro Person";
-                    TravelInfo.Text = _currentOffer.DayCount + " tägige " + _currentOffer.TravelType + ", inkl. " + _currentOffer.BoardType;
+                    PricePerPerson.Text = _currentOffer.PricePerPerson + ",- " + euro + "\npro Person";
+                    TravelInfo.Text = _currentOffer.DayCount + "-tägige " + _currentOffer.TravelType + ", inkl. " + _currentOffer.BoardType;
                     string extInfo = "";
                     foreach (ExtendedInformation information in _currentOffer.ExtendedInformation)
                         extInfo += (bullet+ "  " + information.Information + "\n");

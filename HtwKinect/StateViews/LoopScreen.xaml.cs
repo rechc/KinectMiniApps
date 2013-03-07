@@ -165,15 +165,13 @@ namespace HtwKinect.StateViews
             {
                 if (helper.Skeletons.Length > 1 && Accessories.AccessoryRect != null)
                 {
-                    int offset = 100;
                     Rect accessoryRect = Accessories.AccessoryRect;
-                    var right = helper.Sensor.CoordinateMapper.MapSkeletonPointToColorPoint(activeSkeleton.Joints[JointType.HandRight].Position, helper.Sensor.ColorStream.Format);
                     var left = helper.Sensor.CoordinateMapper.MapSkeletonPointToColorPoint(activeSkeleton.Joints[JointType.HandLeft].Position, helper.Sensor.ColorStream.Format);
-                    //Console.Write("LR: {0} - {1}, TB: {2} - {3}, RHX: {4}, RHY: {5}\n", accessoryRect.Left - offset, accessoryRect.Right + offset, accessoryRect.Top - offset, accessoryRect.Bottom + offset, right.X, right.Y);
-                    if ((right.X >= accessoryRect.Left - offset && right.X <= accessoryRect.Right + offset &&
-                        right.Y >= accessoryRect.Top - offset && right.Y <= accessoryRect.Bottom + offset) ||
-                        (left.X >= accessoryRect.Left - offset && left.X <= accessoryRect.Right + offset &&
-                        left.Y >= accessoryRect.Top - offset && left.Y <= accessoryRect.Bottom + offset))
+                    var right = helper.Sensor.CoordinateMapper.MapSkeletonPointToColorPoint(activeSkeleton.Joints[JointType.HandRight].Position, helper.Sensor.ColorStream.Format);
+                    if ((left.X >= accessoryRect.Left && left.X <= accessoryRect.Right &&
+                        left.Y >= accessoryRect.Top + accessoryRect.Height && left.Y <= accessoryRect.Bottom + accessoryRect.Height) ||
+                        (right.X >= accessoryRect.Left && right.X <= accessoryRect.Right &&
+                        right.Y >= accessoryRect.Top + accessoryRect.Height && right.Y <= accessoryRect.Bottom + accessoryRect.Height))
                     {
                         activeSkeleton = helper.SetNewFixedSkeleton();
                     }
