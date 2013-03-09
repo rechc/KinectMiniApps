@@ -46,19 +46,19 @@ namespace RectNavigation
             {
                 pointerAnimationRunning = true;
 
-                Canvas.SetLeft(PointerArrow, _handRightPoint.X - (PointerArrow.Width / 2));
-                Canvas.SetTop(PointerArrow, _handRightPoint.Y - (PointerArrow.Height / 2));
+                Canvas.SetLeft(PointerArrow, _handPoint.X - (PointerArrow.Width / 2));
+                Canvas.SetTop(PointerArrow, _handPoint.Y - (PointerArrow.Height / 2));
 
                 Point innerRectMiddlePoint = new Point(_innerRect.Left + (_innerRect.Width / 2),
                                                           _innerRect.Top + (_innerRect.Height / 2));
 
-                Vector handToRectVector = new Vector(innerRectMiddlePoint.X - _handRightPoint.X, innerRectMiddlePoint.Y - _handRightPoint.Y);
+                Vector handToRectVector = new Vector(innerRectMiddlePoint.X - _handPoint.X, innerRectMiddlePoint.Y - _handPoint.Y);
 
                 // new Vector ist der Vektor von Handposition auf selber ebene nach links
                 double rotateAngle = getRotateAngle(handToRectVector, new Vector(-10, 0));
 
                 // Drehrichtung des Pfeiles in Oberen Haelfte umdrehen
-                if (_handRightPoint.Y < innerRectMiddlePoint.Y)
+                if (_handPoint.Y < innerRectMiddlePoint.Y)
                 {
                     rotateAngle = -rotateAngle;
                 }
@@ -100,11 +100,11 @@ namespace RectNavigation
 
         private double translateBottom;
 
-        private bool _veryFirstTime = true;
-
-        private Point _handRightPoint = new Point(0, 0);
+        private Point _handPoint = new Point(0, 0);
         private Rect _innerRect;
         private Rect _outerRect;
+
+        private bool leftRect;
 
         private bool _wasInInnerRect;
 
@@ -127,7 +127,7 @@ namespace RectNavigation
             if (NoSwipe != null)
             {
                 NoSwipe(this, EventArgs.Empty);
-                Debug.WriteLine("no swipe");
+                //Debug.WriteLine("no swipe");
             }
         }
 
@@ -197,19 +197,61 @@ namespace RectNavigation
         public void GestureRecognition(Skeleton skel)
         {
             Joint handRight = skel.Joints[JointType.HandRight];
+            Joint handLeft = skel.Joints[JointType.HandLeft];
 
-            if (handRight.TrackingState != JointTrackingState.Tracked) { //falls keine hand erkannt, breche ab
+            
+
+            if (handRight.TrackingState != JointTrackingState.Tracked && handLeft.TrackingState != JointTrackingState.Tracked)
+            { //falls keine hand erkannt, breche ab
                 return;
             }
 
-            _innerRect = GetInnerRect(skel);
-            _outerRect = GetOuterRect(_innerRect);
-            TransformRectangles();
-            TransformHand();
-            _handRightPoint = SkeletonPointToScreen(handRight.Position);
+            if (handLeft.TrackingState == JointTrackingState.Tracked)
+            {
+                Point handLeftPoint = SkeletonPointToScreen(handLeft.Position);
+                Rect innerRect = GetInnerRectLeft(skel);
+                bool isInInnerRect = innerRect.Contains(handLeftPoint);
+                Rect outerRect = GetOuterRect(innerRect);
+                bool isInOuterRect = outerRect.Contains(handLeftPoint);
+                if (isInOuterRect)
+                    leftRect = true;
+                if (leftRect)
+                {
+                    _handPoint = handLeftPoint;
+                    _innerRect = innerRect;
+                    _isInInnerRect = isInInnerRect;
+                    _outerRect = outerRect;
+                    _isInOuterRect = isInOuterRect;
+                }
+            }
 
-            _isInInnerRect = _innerRect.Contains(_handRightPoint);
-            _isInOuterRect = _outerRect.Contains(_handRightPoint);
+            if (handRight.TrackingState == JointTrackingState.Tracked)
+            {
+                Point handRightPoint = SkeletonPointToScreen(handRight.Position);
+                Rect innerRect = GetInnerRectRight(skel);
+                bool isInInnerRect = innerRect.Contains(handRightPoint);
+                Rect outerRect = GetOuterRect(innerRect);
+                bool isInOuterRect = outerRect.Contains(handRightPoint);
+                if (isInOuterRect)
+                    leftRect = false;
+                if (!leftRect)
+                {
+                    _handPoint = handRightPoint;
+                    _innerRect = innerRect;
+                    _isInInnerRect = isInInnerRect;
+                    _outerRect = outerRect;
+                    _isInOuterRect = isInOuterRect;
+                }
+            }
+
+
+            
+            TransformRectangles();
+            TransformHand(_handPoint);
+            
+            
+            
+
             AnimatePointerArrow();
             
 
@@ -241,7 +283,6 @@ namespace RectNavigation
                 // Aeusseres Rechteck wurde betreten
                 if (_isInOuterRect)
                 {
-                    _veryFirstTime = false;
                     enlargeTopHeight = 0;
                     enlargeTopWidth = 0;
                     enlargeBottomHeight = 0;
@@ -254,19 +295,19 @@ namespace RectNavigation
                 {
                     if (_wasInInnerRect)
                     {
-                        if (_handRightPoint.X > _outerRect.TopRight.X) //leave right
+                        if (_handPoint.X > _outerRect.TopRight.X) //leave right
                         {
                             FireSwipeRight(1);
                         }
-                        else if (_handRightPoint.X < _outerRect.TopLeft.X) //leave left
+                        else if (_handPoint.X < _outerRect.TopLeft.X) //leave left
                         {
                             FireSwipeLeft(1);
                         }
-                        else if (_handRightPoint.Y > _outerRect.BottomLeft.Y) //leave bottom
+                        else if (_handPoint.Y > _outerRect.BottomLeft.Y) //leave bottom
                         {
                             FireSwipeDown(1);
                         }
-                        else if (_handRightPoint.Y < _outerRect.TopLeft.Y) //leave top
+                        else if (_handPoint.Y < _outerRect.TopLeft.Y) //leave top
                         {
                             FireSwipeUp(1);
                         }
@@ -280,10 +321,10 @@ namespace RectNavigation
 
             if (_isInOuterRect && !_isInInnerRect && _wasInInnerRect)
             {
-                double swipeLeft = GetPercentageSwipeLeft(_handRightPoint);
-                double swipeRight = GetPercentageSwipeRight(_handRightPoint);
-                double swipeUp = GetPercentageSwipeTop(_handRightPoint);
-                double swipeDown = GetPercentageSwipeBottom(_handRightPoint);
+                double swipeLeft = GetPercentageSwipeLeft(_handPoint);
+                double swipeRight = GetPercentageSwipeRight(_handPoint);
+                double swipeUp = GetPercentageSwipeTop(_handPoint);
+                double swipeDown = GetPercentageSwipeBottom(_handPoint);
                 if (swipeLeft >= 0)
                 {
                     FireSwipeLeft(swipeLeft);
@@ -339,7 +380,7 @@ namespace RectNavigation
             return DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
         }
 
-        private Rect GetInnerRect(Skeleton skeleton)
+        private Rect GetInnerRectRight(Skeleton skeleton)
         {
             Point spine = SkeletonPointToScreen(skeleton.Joints[JointType.Spine].Position);
             Point hipRight = SkeletonPointToScreen(skeleton.Joints[JointType.HipRight].Position);
@@ -353,7 +394,27 @@ namespace RectNavigation
 
 
             // Rechteck verschieben
-            const int offsetX = 15; // -5 
+            int offsetX = (int)(width/2); // -5 
+            int offsetY = (int)(width / 2);
+
+            return new Rect(x + offsetX, y + offsetY, width, height);
+        }
+
+        private Rect GetInnerRectLeft(Skeleton skeleton)
+        {
+            Point spine = SkeletonPointToScreen(skeleton.Joints[JointType.Spine].Position);
+            Point hipRight = SkeletonPointToScreen(skeleton.Joints[JointType.HipLeft].Position);
+            Point shoulderCenter = SkeletonPointToScreen(skeleton.Joints[JointType.ShoulderCenter].Position);
+            double x = hipRight.X;
+            double y = shoulderCenter.Y;
+
+            // inneres Rechteck verkleinern
+            double width = Math.Abs((spine.Y - y) * 0.9);
+            double height = width * 0.8;
+
+
+            // Rechteck verschieben
+            int offsetX = (int)-width; // -5 
             int offsetY = (int)(width / 2);
 
             return new Rect(x + offsetX, y + offsetY, width, height);
@@ -383,15 +444,15 @@ namespace RectNavigation
 
         private void AnimationCompleted(object sender, EventArgs e)
         {
-            AnimateHandPoint(_handRightPoint, _innerRect.TopLeft);
+            AnimateHandPoint(_handPoint, _innerRect.TopLeft);
         }
 
-        private void TransformHand()
+        private void TransformHand(Point point)
         {
             TranslateTransform transform = (TranslateTransform)Hand.RenderTransform;
             Hand.RenderTransform = transform;
-            transform.X = _handRightPoint.X - (Hand.Width / 2);
-            transform.Y = _handRightPoint.Y - (Hand.Height / 2);
+            transform.X = point.X - (Hand.Width / 2);
+            transform.Y = point.Y - (Hand.Height / 2);
         }
 
         private void TransformRectangles()

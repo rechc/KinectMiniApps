@@ -91,7 +91,7 @@ namespace GenderDetector
                         imagefailed = true;
                     }
                 }
-                Console.WriteLine(System.DateTime.Now.Minute);
+                //Console.WriteLine(System.DateTime.Now.Minute);
                 // Auswertung des Bildes
                 if (!imagefailed)
                 {

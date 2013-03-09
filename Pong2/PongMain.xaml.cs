@@ -242,7 +242,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                 {
                     Skeleton player1 = skeletons.First(p => p.TrackingState == SkeletonTrackingState.Tracked);
                     Skeleton player2 = skeletons.Last(p => p.TrackingState == SkeletonTrackingState.Tracked);
-                    Console.WriteLine(player1.Position.Z.ToString());
+                    //Console.WriteLine(player1.Position.Z.ToString());
                     paddleLeft.MoveTo((RenderHeight / 2 - paddleLeft.h / 2) + (player1.Position.Z - 2) * 500);
                     paddleRight.MoveTo((RenderHeight / 2 - paddleRight.h / 2) + (player2.Position.Z - 2) * 500); //TODO change to player2
                 }

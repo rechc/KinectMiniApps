@@ -329,7 +329,7 @@ namespace HtwKinect
         /// </summary>
         private void WindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            Console.WriteLine("Joke: Fenster Klose");
+            //Console.WriteLine("Joke: Fenster Klose");
         }
 
         /// <summary>

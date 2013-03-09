@@ -565,7 +565,7 @@ namespace LoopList
                         _lastX = 0;
                         if (ttRight.X > 0)
                         {
-                            Debug.WriteLine(ttRight.X);
+                            //Debug.WriteLine(ttRight.X);
                             if (_currentNode.HasLeftNeighbour())
                             {
                                 ttLeft.X = -_right.ActualWidth + ttRight.X;
