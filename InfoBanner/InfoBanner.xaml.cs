@@ -34,8 +34,6 @@ namespace InfoBanner
                 Category.Text = offer.Category.CategoryName + "urlaub";
             Stars.Text = ratingStars;
             HotelName.Text = offer.HotelName;
-            if (HotelName.Text.Length <= 16)
-                HotelName.Height = 40;
             Place.Text = offer.Place;
             PricePerPerson.Text = offer.PricePerPerson + ",- "+ euro +"\npro Person";
             TravelInfo.Text = offer.DayCount + "-tägige " + offer.TravelType + "\ninkl. " + offer.BoardType;

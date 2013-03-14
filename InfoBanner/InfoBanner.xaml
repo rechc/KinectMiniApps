@@ -7,9 +7,9 @@
              d:DesignHeight="650" Width="280">
     <!--<Grid Background="White" Opacity="0.60" IsHitTestVisible="True" Width="100" HorizontalAlignment="Left" VerticalAlignment="Top">-->
     <StackPanel Background="SlateGray" Opacity="0.7" IsHitTestVisible="True" Width="280" HorizontalAlignment="Left" Margin="0,0,0,-0">
-        <TextBlock x:Name="Place" Text="Place" HorizontalAlignment="Left" TextWrapping="Wrap" Margin="10,20,0,0" Height="100"  Width="260" FontSize="40" FontWeight="Bold" Foreground="White"/>
+        <TextBlock x:Name="Place" Text="Place" HorizontalAlignment="Left" TextWrapping="Wrap" Margin="10,20,0,0" Height="Auto"  Width="260" FontSize="40" FontWeight="Bold" Foreground="White"/>
         <TextBlock x:Name="Category" Text="Categorie" HorizontalAlignment="Left" Margin="10,0,0,0" Width="260" FontSize="20" Height="31" Foreground="White"/>
-        <TextBlock x:Name ="HotelName" Text="HotelName" HorizontalAlignment="Left" Height="80" TextWrapping="Wrap" Margin="10,0,0,0" Width="260" FontSize="28" FontWeight="Bold" Foreground="White"/>
+        <TextBlock x:Name ="HotelName" Text="HotelName" HorizontalAlignment="Left" Height="Auto" TextWrapping="Wrap" Margin="10,0,0,0" Width="260" FontSize="28" FontWeight="Bold" Foreground="White"/>
         <TextBlock x:Name="Rating" HorizontalAlignment="Left" Height="33" Margin="10,0,0,0" Width="260" FontSize="16">
             <TextBlock Text="Hotelsterne" Foreground="White"/>
             <TextBlock Name="Stars" Text="Test" Foreground="Yellow"/>

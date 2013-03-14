@@ -20,6 +20,8 @@ namespace LoopList
         private int _index;
         private Duration _duration;
 
+        TextBlock Kategorie = new TextBlock();
+
         public event EventHandler Scrolled;
 
 
@@ -27,6 +29,9 @@ namespace LoopList
         {
             InitializeComponent();
 
+            Kategorie.Text = "Kategorie:";
+            Kategorie.FontSize = 32;
+            Kategorie.HorizontalAlignment = HorizontalAlignment.Center;
 
             _duration = new Duration(new TimeSpan(0, 0, 0, 0, 250));
 
@@ -48,7 +53,8 @@ namespace LoopList
 
             _top.RenderTransform = new TranslateTransform();
             _bottom.RenderTransform = new TranslateTransform();
-
+        
+            RootGrid.Children.Add(Kategorie);
             RootGrid.Children.Add(_top);
             RootGrid.Children.Add(_bottom);
 
@@ -65,6 +71,7 @@ namespace LoopList
 
         public void SetFontFamily(string ff)
         {
+            Kategorie.FontFamily = new FontFamily(ff);
             ((TextBlock)_top.Child).FontFamily = new FontFamily(ff);
             ((TextBlock)_bottom.Child).FontFamily = new FontFamily(ff);
         }
@@ -81,6 +88,7 @@ namespace LoopList
         public void SetFontColor(Color color)
         {
             SolidColorBrush colorBrush = new SolidColorBrush(color);
+            Kategorie.Foreground = colorBrush;
             ((TextBlock)_top.Child).Foreground = colorBrush;
             ((TextBlock)_bottom.Child).Foreground = colorBrush;
         }

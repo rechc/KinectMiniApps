@@ -21,7 +21,7 @@ namespace HtwKinect
 
         public void AddRow(String rowName, List<LoopListEntry> row)
         {
-            _textLoopList.Add("Kategorie "+rowName);
+            _textLoopList.Add(rowName);
             Node anchor = null;
             Node first = null;
             foreach (var entry in row)
