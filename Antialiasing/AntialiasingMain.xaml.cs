@@ -170,7 +170,7 @@ namespace Antialiasing
                 // Add an event handler to be called whenever there is new depth frame data
                 this.sensor.AllFramesReady += this.SensorAllFramesReady;
 
-                GreenScreen.Start(sensor, true);
+                GreenScreen.Start(sensor, false);
 
                 // Start the sensor!
                 try

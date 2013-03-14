@@ -417,7 +417,7 @@ namespace HtwKinect.StateViews
                 InitList();
                 var helper = KinectHelper.Instance;
                 helper.ReadyEvent += (s, _) => HelperReady();
-                GreenScreen.Start(helper.Sensor, true);
+                GreenScreen.Start(helper.Sensor, false);
                 SetNewHat();
                 Accessories.Start(helper.Sensor);
                 RectNavigationControl.Start(helper.Sensor);
