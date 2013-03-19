@@ -78,17 +78,23 @@ namespace AccessoryLib
         {
             if (_activeSkeleton != null && AccessoryRect != null)
             {
-                var left = _sensor.CoordinateMapper.MapSkeletonPointToColorPoint(_activeSkeleton.Joints[JointType.HandLeft].Position, _sensor.ColorStream.Format);
-                var right = _sensor.CoordinateMapper.MapSkeletonPointToColorPoint(_activeSkeleton.Joints[JointType.HandRight].Position, _sensor.ColorStream.Format);
+                Point left = SkeletonPointToScreen(_activeSkeleton.Joints[JointType.HandLeft].Position);
+                Point right = SkeletonPointToScreen(_activeSkeleton.Joints[JointType.HandRight].Position);
                 if ((left.X >= AccessoryRect.Left && left.X <= AccessoryRect.Right &&
-                     left.Y >= AccessoryRect.Top + AccessoryRect.Height && left.Y <= AccessoryRect.Bottom + AccessoryRect.Height) ||
+                     left.Y >= AccessoryRect.Top && left.Y <= AccessoryRect.Bottom) ||
                     (right.X >= AccessoryRect.Left && right.X <= AccessoryRect.Right &&
-                     right.Y >= AccessoryRect.Top + AccessoryRect.Height && right.Y <= AccessoryRect.Bottom + AccessoryRect.Height))
+                     right.Y >= AccessoryRect.Top && right.Y <= AccessoryRect.Bottom))
                 {
                     return true;
                 }
             }
             return false;
+        }
+
+        private Point SkeletonPointToScreen(SkeletonPoint skelpoint)
+        {
+            ColorImagePoint colorPoint = _sensor.CoordinateMapper.MapSkeletonPointToColorPoint(skelpoint, _sensor.ColorStream.Format);
+            return new Point(colorPoint.X, colorPoint.Y * 0.75);
         }
 
         // Zeichnet alle Items fuer eine einzelne Person.
@@ -132,6 +138,8 @@ namespace AccessoryLib
             //Console.WriteLine("Z: {0}, imgW: {1}, imgH: {2}, X: {3}, Y: {4}", headPos.Z, imgWidth, imgHeight, headX, headY);
             AccessoryRect = new Rect(headX - imgWidth / 2, headY, imgWidth, imgHeight);
             drawingContext.DrawImage(item.Image, AccessoryRect);
+
+            drawingContext.DrawRectangle(Brushes.Transparent, new Pen(Brushes.Black, 2), AccessoryRect);
         }
     }
 }
