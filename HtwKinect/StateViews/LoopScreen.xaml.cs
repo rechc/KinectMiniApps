@@ -193,6 +193,7 @@ namespace HtwKinect.StateViews
                 {
                     GreenScreen.Opacity = 1;
                     Accessories.Opacity = 1;
+                    MyTextLoopList.Opacity = 0.7;
                     _isGameActive = false;
                     _currentOffer = new TravelOfferDao().SelectById(lla.GetId());
                 }
@@ -201,6 +202,7 @@ namespace HtwKinect.StateViews
                     _isGameActive = true;
                     GreenScreen.Opacity = 0.2;
                     Accessories.Opacity = 0.2;
+                    MyTextLoopList.Opacity = 0;
                 }
 
                 SetNewHat();
