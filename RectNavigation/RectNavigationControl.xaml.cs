@@ -403,9 +403,9 @@ namespace RectNavigation
         private Rect GetInnerRectLeft(Skeleton skeleton)
         {
             Point spine = SkeletonPointToScreen(skeleton.Joints[JointType.Spine].Position);
-            Point hipRight = SkeletonPointToScreen(skeleton.Joints[JointType.HipLeft].Position);
+            Point hipLeft = SkeletonPointToScreen(skeleton.Joints[JointType.HipLeft].Position);
             Point shoulderCenter = SkeletonPointToScreen(skeleton.Joints[JointType.ShoulderCenter].Position);
-            double x = hipRight.X;
+            double x = hipLeft.X;
             double y = shoulderCenter.Y;
 
             // inneres Rechteck verkleinern
@@ -414,7 +414,7 @@ namespace RectNavigation
 
 
             // Rechteck verschieben
-            int offsetX = (int)-width; // -5 
+            int offsetX = (int)-(1.5*width); // -5 
             int offsetY = (int)(width / 2);
 
             return new Rect(x + offsetX, y + offsetY, width, height);
