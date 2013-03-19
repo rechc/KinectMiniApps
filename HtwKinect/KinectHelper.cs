@@ -126,6 +126,19 @@ namespace HtwKinect
             return null;
         }
 
+        public int GetTrackedSkeletons()
+        {
+            int counter = 0;
+            foreach (Skeleton s in Skeletons)
+            {
+                if (s.TrackingState == SkeletonTrackingState.Tracked)
+                {
+                    counter++;
+                }
+            }
+            return counter;
+        }
+
         private void AllFramesReady(object sender, AllFramesReadyEventArgs e)
         {
                 using (ColorImageFrame colorImageFrame = e.OpenColorImageFrame())

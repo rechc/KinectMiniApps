@@ -74,6 +74,23 @@ namespace AccessoryLib
             }
         }
 
+        public Boolean CheckAccessoriesNew()
+        {
+            if (_activeSkeleton != null && AccessoryRect != null)
+            {
+                var left = _sensor.CoordinateMapper.MapSkeletonPointToColorPoint(_activeSkeleton.Joints[JointType.HandLeft].Position, _sensor.ColorStream.Format);
+                var right = _sensor.CoordinateMapper.MapSkeletonPointToColorPoint(_activeSkeleton.Joints[JointType.HandRight].Position, _sensor.ColorStream.Format);
+                if ((left.X >= AccessoryRect.Left && left.X <= AccessoryRect.Right &&
+                     left.Y >= AccessoryRect.Top + AccessoryRect.Height && left.Y <= AccessoryRect.Bottom + AccessoryRect.Height) ||
+                    (right.X >= AccessoryRect.Left && right.X <= AccessoryRect.Right &&
+                     right.Y >= AccessoryRect.Top + AccessoryRect.Height && right.Y <= AccessoryRect.Bottom + AccessoryRect.Height))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         // Zeichnet alle Items fuer eine einzelne Person.
         private void RenderAccessories(DrawingContext drawingContext, Skeleton person)
         {

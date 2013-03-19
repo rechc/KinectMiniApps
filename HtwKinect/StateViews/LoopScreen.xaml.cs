@@ -161,20 +161,11 @@ namespace HtwKinect.StateViews
         private void SetAccessoriesNew(KinectHelper helper)
         {
             Skeleton activeSkeleton = helper.GetFixedSkeleton();
-            if (activeSkeleton != null) 
+            if (helper.GetTrackedSkeletons() > 1) 
             {
-                if (helper.Skeletons.Length > 1 && Accessories.AccessoryRect != null)
+                if (Accessories.CheckAccessoriesNew())
                 {
-                    Rect accessoryRect = Accessories.AccessoryRect;
-                    var left = helper.Sensor.CoordinateMapper.MapSkeletonPointToColorPoint(activeSkeleton.Joints[JointType.HandLeft].Position, helper.Sensor.ColorStream.Format);
-                    var right = helper.Sensor.CoordinateMapper.MapSkeletonPointToColorPoint(activeSkeleton.Joints[JointType.HandRight].Position, helper.Sensor.ColorStream.Format);
-                    if ((left.X >= accessoryRect.Left && left.X <= accessoryRect.Right &&
-                        left.Y >= accessoryRect.Top + accessoryRect.Height && left.Y <= accessoryRect.Bottom + accessoryRect.Height) ||
-                        (right.X >= accessoryRect.Left && right.X <= accessoryRect.Right &&
-                        right.Y >= accessoryRect.Top + accessoryRect.Height && right.Y <= accessoryRect.Bottom + accessoryRect.Height))
-                    {
-                        activeSkeleton = helper.SetNewFixedSkeleton();
-                    }
+                    activeSkeleton = helper.SetNewFixedSkeleton();
                 }
             }
             Accessories.SetActiveSkeleton(activeSkeleton);
