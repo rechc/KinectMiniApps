@@ -15,7 +15,8 @@ namespace AccessoryLib
         private Boolean _oneHut;
         public Rect AccessoryRect { get; private set; }
 
-        private Point p;
+        private Point pl;
+        private Point pr;
 
         // Liste von Gegenstaenden, die gezeichnet werden sollen.
         public List<AccessoryItem> AccessoryItems { get; private set; }
@@ -81,8 +82,9 @@ namespace AccessoryLib
             if (_activeSkeleton != null && AccessoryRect != null)
             {
                 Point left = SkeletonPointToScreen(_activeSkeleton.Joints[JointType.HandLeft].Position);
-                p = new Point(left.X, left.Y);
+                pl = new Point(left.X, left.Y);
                 Point right = SkeletonPointToScreen(_activeSkeleton.Joints[JointType.HandRight].Position);
+                pr = new Point(right.X, right.Y);
                 if ((left.X >= AccessoryRect.Left && left.X <= AccessoryRect.Right &&
                      left.Y >= AccessoryRect.Top && left.Y <= AccessoryRect.Bottom) ||
                     (right.X >= AccessoryRect.Left && right.X <= AccessoryRect.Right &&
@@ -145,8 +147,8 @@ namespace AccessoryLib
             drawingContext.DrawImage(item.Image, AccessoryRect);
 
             drawingContext.DrawRectangle(Brushes.Transparent, new Pen(Brushes.Black, 2), AccessoryRect);
-            drawingContext.DrawEllipse(Brushes.Red, new Pen(Brushes.Red, 5), p, 15, 15);
-
+            drawingContext.DrawEllipse(Brushes.Red, new Pen(Brushes.Red, 5), pl, 15, 15);
+            drawingContext.DrawEllipse(Brushes.Green, new Pen(Brushes.Green, 5), pr, 15, 15);
         }
     }
 }
