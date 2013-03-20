@@ -15,6 +15,8 @@ namespace AccessoryLib
         private Boolean _oneHut;
         public Rect AccessoryRect { get; private set; }
 
+        private Point p;
+
         // Liste von Gegenstaenden, die gezeichnet werden sollen.
         public List<AccessoryItem> AccessoryItems { get; private set; }
 
@@ -79,6 +81,7 @@ namespace AccessoryLib
             if (_activeSkeleton != null && AccessoryRect != null)
             {
                 Point left = SkeletonPointToScreen(_activeSkeleton.Joints[JointType.HandLeft].Position);
+                p = new Point(left.X, left.Y);
                 Point right = SkeletonPointToScreen(_activeSkeleton.Joints[JointType.HandRight].Position);
                 if ((left.X >= AccessoryRect.Left && left.X <= AccessoryRect.Right &&
                      left.Y >= AccessoryRect.Top && left.Y <= AccessoryRect.Bottom) ||
@@ -94,7 +97,9 @@ namespace AccessoryLib
         private Point SkeletonPointToScreen(SkeletonPoint skelpoint)
         {
             ColorImagePoint colorPoint = _sensor.CoordinateMapper.MapSkeletonPointToColorPoint(skelpoint, _sensor.ColorStream.Format);
-            return new Point(colorPoint.X, colorPoint.Y * 0.75);
+            double scalX = System.Windows.SystemParameters.PrimaryScreenWidth / _sensor.ColorStream.FrameWidth; 
+            double scalY = System.Windows.SystemParameters.PrimaryScreenHeight / _sensor.ColorStream.FrameHeight;
+            return new Point(colorPoint.X * scalX, colorPoint.Y * scalY);
         }
 
         // Zeichnet alle Items fuer eine einzelne Person.
@@ -140,6 +145,8 @@ namespace AccessoryLib
             drawingContext.DrawImage(item.Image, AccessoryRect);
 
             drawingContext.DrawRectangle(Brushes.Transparent, new Pen(Brushes.Black, 2), AccessoryRect);
+            drawingContext.DrawEllipse(Brushes.Red, new Pen(Brushes.Red, 5), p, 15, 15);
+
         }
     }
 }

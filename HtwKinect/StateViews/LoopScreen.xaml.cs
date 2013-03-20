@@ -161,7 +161,7 @@ namespace HtwKinect.StateViews
         private void SetAccessoriesNew(KinectHelper helper)
         {
             Skeleton activeSkeleton = helper.GetFixedSkeleton();
-            if (helper.GetTrackedSkeletons() > 1) 
+            if (helper.GetTrackedSkeletons() > 0) 
             {
                 if (Accessories.CheckAccessoriesNew())
                 {
