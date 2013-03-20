@@ -15,9 +15,6 @@ namespace AccessoryLib
         private Boolean _oneHut;
         public Rect AccessoryRect { get; private set; }
 
-        private Point pl;
-        private Point pr;
-
         // Liste von Gegenstaenden, die gezeichnet werden sollen.
         public List<AccessoryItem> AccessoryItems { get; private set; }
 
@@ -82,9 +79,7 @@ namespace AccessoryLib
             if (_activeSkeleton != null && AccessoryRect != null)
             {
                 Point left = SkeletonPointToScreen(_activeSkeleton.Joints[JointType.HandLeft].Position);
-                pl = new Point(left.X, left.Y);
                 Point right = SkeletonPointToScreen(_activeSkeleton.Joints[JointType.HandRight].Position);
-                pr = new Point(right.X, right.Y);
                 if ((left.X >= AccessoryRect.Left && left.X <= AccessoryRect.Right &&
                      left.Y >= AccessoryRect.Top && left.Y <= AccessoryRect.Bottom) ||
                     (right.X >= AccessoryRect.Left && right.X <= AccessoryRect.Right &&
@@ -98,9 +93,10 @@ namespace AccessoryLib
 
         private Point SkeletonPointToScreen(SkeletonPoint skelpoint)
         {
+            int marginWindow = 50;
             ColorImagePoint colorPoint = _sensor.CoordinateMapper.MapSkeletonPointToColorPoint(skelpoint, _sensor.ColorStream.Format);
-            double scalX = System.Windows.SystemParameters.PrimaryScreenWidth / _sensor.ColorStream.FrameWidth; 
-            double scalY = System.Windows.SystemParameters.PrimaryScreenHeight / _sensor.ColorStream.FrameHeight;
+            double scalX = (System.Windows.SystemParameters.PrimaryScreenWidth - marginWindow) / _sensor.ColorStream.FrameWidth; 
+            double scalY = (System.Windows.SystemParameters.PrimaryScreenHeight - marginWindow) / _sensor.ColorStream.FrameHeight;
             return new Point(colorPoint.X * scalX, colorPoint.Y * scalY);
         }
 
@@ -145,10 +141,6 @@ namespace AccessoryLib
             //Console.WriteLine("Z: {0}, imgW: {1}, imgH: {2}, X: {3}, Y: {4}", headPos.Z, imgWidth, imgHeight, headX, headY);
             AccessoryRect = new Rect(headX - imgWidth / 2, headY, imgWidth, imgHeight);
             drawingContext.DrawImage(item.Image, AccessoryRect);
-
-            drawingContext.DrawRectangle(Brushes.Transparent, new Pen(Brushes.Black, 2), AccessoryRect);
-            drawingContext.DrawEllipse(Brushes.Red, new Pen(Brushes.Red, 5), pl, 15, 15);
-            drawingContext.DrawEllipse(Brushes.Green, new Pen(Brushes.Green, 5), pr, 15, 15);
         }
     }
 }
