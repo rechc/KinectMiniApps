@@ -239,7 +239,7 @@ namespace HtwKinect
             if (skeleton != null)
             {
                 depthHandLeft = (int)(skeleton.Joints[JointType.HandLeft].Position.Z * 1000);
-                depthHandRight = (int)(skeleton.Joints[JointType.HandLeft].Position.Z * 1000);
+                depthHandRight = (int)(skeleton.Joints[JointType.HandRight].Position.Z * 1000);
                 depthHead = (int)(skeleton.Joints[JointType.Head].Position.Z * 1000);
                 depthFoot = (int)(skeleton.Joints[JointType.FootLeft].Position.Z * 1000);
             }
