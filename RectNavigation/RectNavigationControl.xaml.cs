@@ -95,6 +95,7 @@ namespace RectNavigation
         private double enlargeBottomWidth;
         private double enlargeBottomHeight;
 
+        private int _handSide; //0 = left , 1 = right
 
         private double translateTop;
 
@@ -222,6 +223,7 @@ namespace RectNavigation
                     _isInInnerRect = isInInnerRect;
                     _outerRect = outerRect;
                     _isInOuterRect = isInOuterRect;
+                    _handSide = 0;
                 }
             }
 
@@ -241,6 +243,7 @@ namespace RectNavigation
                     _isInInnerRect = isInInnerRect;
                     _outerRect = outerRect;
                     _isInOuterRect = isInOuterRect;
+                    _handSide = 1;
                 }
             }
 
@@ -394,7 +397,7 @@ namespace RectNavigation
 
 
             // Rechteck verschieben
-            int offsetX = (int)(width/2); // -5 
+            int offsetX = (int)(width/2);
             int offsetY = (int)(width / 2);
 
             return new Rect(x + offsetX, y + offsetY, width, height);
@@ -414,7 +417,7 @@ namespace RectNavigation
 
 
             // Rechteck verschieben
-            int offsetX = (int)-(1.5*width); // -5 
+            int offsetX = (int)-(1.5*width);
             int offsetY = (int)(width / 2);
 
             return new Rect(x + offsetX, y + offsetY, width, height);
@@ -433,7 +436,7 @@ namespace RectNavigation
         private void AnimateHandPoint(Point from, Point to)
         {
             Duration duration = new Duration(TimeSpan.FromSeconds(1));
-            DoubleAnimation animationX = new DoubleAnimation(from.X, to.X + 75, duration);
+            DoubleAnimation animationX = new DoubleAnimation(from.X, to.X, duration);
             DoubleAnimation animationY = new DoubleAnimation(from.Y, to.Y, duration);
             animationX.Completed += AnimationCompleted;
             TranslateTransform trans = new TranslateTransform();
@@ -450,9 +453,15 @@ namespace RectNavigation
         private void TransformHand(Point point)
         {
             TranslateTransform transform = (TranslateTransform)Hand.RenderTransform;
-            Hand.RenderTransform = transform;
-            transform.X = point.X - (Hand.Width / 2);
-            transform.Y = point.Y - (Hand.Height / 2);
+            //Hand.RenderTransform = transform;
+            if (_handSide == 0)
+                transform.X = point.X - (Hand.Width / 2);
+            else if (_handSide == 1)
+                transform.X = point.X + (Hand.Width / 2);
+            else
+                transform.X = point.X;
+
+            transform.Y = point.Y - (Hand.Width / 2);
         }
 
         private void TransformRectangles()
