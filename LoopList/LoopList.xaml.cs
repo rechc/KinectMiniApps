@@ -238,6 +238,7 @@ namespace LoopList
             _autoDrag = autoDrag;
         }
 
+        //Richtungspfeile setzen
         private void MarkDirections(Node node)
         {
             Grid grid;
@@ -321,7 +322,7 @@ namespace LoopList
         }
 
         
-
+        
         private void SetChild(Grid grid, FrameworkElement frameworkElement, Node node)
         {
             if (grid == _above) //es kann sein, dass ein einzufügendes element noch in _left unnötig geladen ist.
@@ -349,6 +350,7 @@ namespace LoopList
             MarkDirections(node);
         }
 
+        //erzeuge neuen Node links von anchor
         public Node AddNewToLeft(Node anchor, int id, FrameworkElement frameworkElement)
         {
             if (anchor == null)
@@ -381,6 +383,7 @@ namespace LoopList
             MarkDirections((Node)sender);
         }
 
+        //erzeuge neuen Node rechts von anchor
         public Node AddNewToRight(Node anchor, int id, FrameworkElement frameworkElement)
         {
             if (anchor == null)
@@ -409,6 +412,7 @@ namespace LoopList
             return anchor;
         }
 
+        //erzeuge neuen Node über anchor
         public Node AddNewToAbove(Node anchor, int id, FrameworkElement frameworkElement)
         {
             if (anchor == null)
@@ -436,6 +440,7 @@ namespace LoopList
             return anchor;
         }
 
+        //erzeuge neuen Node unter anchor
         public Node AddNewToBelow(Node anchor, int id, FrameworkElement frameworkElement)
         {
             if (anchor == null)
@@ -481,20 +486,21 @@ namespace LoopList
             }
         }
 
+        //prozentuales draggen
         public bool HDragPercent(double xPercent)
         {
             double way = _right.ActualWidth * _autoDrag;
             return HDrag(way * xPercent);
 
         }
-
+        //prozentuales draggen
         public bool VDragPercent(double yPercent)
         {
             double way = _right.ActualHeight * _autoDrag;
             return VDrag(way * yPercent);
 
         }
-
+        //draggen
         public bool HDrag(double xDistance)
         {
             if (_animating != 0) return false;
@@ -622,6 +628,7 @@ namespace LoopList
             return true;
         }
 
+        //draggen
         public bool VDrag(double yDistance)
         {
             if (_animating != 0) return false;
@@ -784,6 +791,7 @@ namespace LoopList
             _animating--;
         }
 
+        //automatischer vollständiger Bildwechsel durch Animation
         public void AnimH(bool leftDir)
         {
             if (_animating != 0 || !(leftDir && _currentNode.HasRightNeighbour() || !leftDir && _currentNode.HasLeftNeighbour())) return;
@@ -845,6 +853,7 @@ namespace LoopList
             _currentNode = _lastX < 0 ? _currentNode.Right : _currentNode.Left;
         }
 
+        //automatischer vollständiger Bildwechsel durch Animation
         public void AnimV(bool upDir)
         {
             if (_animating != 0 || !(upDir && _currentNode.HasBelowNeighbour() || !upDir && _currentNode.HasAboveNeighbour())) return;
@@ -913,6 +922,7 @@ namespace LoopList
             return _animating > 0;
         }
 
+        //automatisches vollständiges Zurücksetzen des Bildes
         public void AnimBack()
         {
             if (_animating != 0) return;
@@ -999,6 +1009,7 @@ namespace LoopList
             }
         }
 
+        //wird fw gerade in der LoopList angezeigt?
         public bool IsShowing(FrameworkElement fw)
         {
             if (_right.Children[8] == fw)
