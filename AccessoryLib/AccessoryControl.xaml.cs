@@ -1,4 +1,4 @@
-﻿using Microsoft.Kinect;
+using Microsoft.Kinect;
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -7,6 +7,9 @@ using System.Windows.Media;
 
 namespace AccessoryLib
 {
+	/**
+	 * Klasse zum zeichnen der Accessoiries
+	 */
     public partial class AccessoryControl : UserControl
     {
         private KinectSensor _sensor;
@@ -15,15 +18,21 @@ namespace AccessoryLib
         private Boolean _oneHut;
         public Rect AccessoryRect { get; private set; }
 
-        // Liste von Gegenstaenden, die gezeichnet werden sollen.
+        // Liste von Accessoiries
         public List<AccessoryItem> AccessoryItems { get; private set; }
 
+		/**
+		 * Konstruktor
+		 */
         public AccessoryControl()
         {
             InitializeComponent();
             AccessoryItems = new List<AccessoryItem>();
         }
 
+		/**
+		 * Setzt die Skeletons neu
+		 */
         public void SetSkeletons(Skeleton[] skeletons)
         {
             _skeletons = skeletons;
@@ -31,6 +40,9 @@ namespace AccessoryLib
             InvalidateVisual();
         }
 
+		/**
+		 * Setzt den aktiven Skeleton neu
+		 */
         public void SetActiveSkeleton(Skeleton activeSkeleton)
         {
             _activeSkeleton = activeSkeleton;
@@ -38,23 +50,25 @@ namespace AccessoryLib
             InvalidateVisual();
         }
 
-
+		/**
+		 * Initialisiert den Sensor
+		 */
         public void Start(KinectSensor sensor)
         {
             _sensor = sensor;
         }
 
-        // Control neu zeichnen.
+        /**
+		 * Überladung der OnRender Methode 
+		 */
         protected override void OnRender(DrawingContext drawingContext)
         {
             base.OnRender(drawingContext);
 
-            // Nicht ueber den Rand des Controls hinaus zeichnen.
-            //drawingContext.PushClip(new RectangleGeometry(new Rect(0, 0, ActualWidth, ActualHeight)));
-
-            // Items fuer alle Personen zeichnen.
+            
             if (_oneHut)
             {
+				// Nur Accessoiries für die aktive Person
                 if (_activeSkeleton == null)
                     return;
 
@@ -63,6 +77,7 @@ namespace AccessoryLib
             }
             else
             {
+			 	// Alle Personen bekommen die Accessories
                 if (_skeletons == null)
                     return;
 
@@ -74,6 +89,9 @@ namespace AccessoryLib
             }
         }
 
+        /**
+		 * Überprüft ob die aktive Person geändert werden soll
+		 */
         public Boolean CheckAccessoriesNew()
         {
             if (_activeSkeleton != null && AccessoryRect != null)
@@ -91,6 +109,9 @@ namespace AccessoryLib
             return false;
         }
 
+        /**
+		 * Methode zum mappen der Skeleton Punkte zu Farbpunkten 
+		 */
         private Point SkeletonPointToScreen(SkeletonPoint skelpoint)
         {
             int marginWindow = 50;
@@ -100,7 +121,9 @@ namespace AccessoryLib
             return new Point(colorPoint.X * scalX, colorPoint.Y * scalY);
         }
 
-        // Zeichnet alle Items fuer eine einzelne Person.
+        /**
+		 * Zeichnet alle Items fuer eine einzelne Person. 
+		 */
         private void RenderAccessories(DrawingContext drawingContext, Skeleton person)
         {
             foreach (var item in AccessoryItems)
@@ -109,7 +132,9 @@ namespace AccessoryLib
             }
         }
 
-        // Zeichnet ein Item.
+        /**
+		 * Zeichnet ein Item
+		 */
         private void RenderAccessoryItem(DrawingContext drawingContext, Skeleton person, AccessoryItem item)
         {
             SkeletonPoint headPos = person.Joints[JointType.Head].Position;
@@ -138,7 +163,6 @@ namespace AccessoryLib
             double headX = colorImagePoint.X * (ActualWidth / _sensor.ColorStream.FrameWidth) + offsetX;
             double headY = colorImagePoint.Y * (ActualHeight / _sensor.ColorStream.FrameHeight) + offsetY;
 
-            //Console.WriteLine("Z: {0}, imgW: {1}, imgH: {2}, X: {3}, Y: {4}", headPos.Z, imgWidth, imgHeight, headX, headY);
             AccessoryRect = new Rect(headX - imgWidth / 2, headY, imgWidth, imgHeight);
             drawingContext.DrawImage(item.Image, AccessoryRect);
         }

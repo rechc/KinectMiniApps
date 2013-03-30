@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,6 +7,9 @@ using System.Windows.Controls;
 
 namespace MiniGame
 {
+	/**
+	 * Objekt-Klasse für die verschiedenen Spielsteine
+	 */
     class GridObjects
     {
         public Grid image;
@@ -15,6 +18,9 @@ namespace MiniGame
 
         public int row;
 
+		/**
+	 	 * Konstruktor
+	 	 */
         public GridObjects(Grid image, int column, int row)
         {
             this.image = image;

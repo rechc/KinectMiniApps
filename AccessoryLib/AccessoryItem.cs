@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,6 +7,9 @@ using System.Windows.Media.Imaging;
 
 namespace AccessoryLib
 {
+    /**
+	 * Enum für Items 
+     */
     public enum AccessoryPositon
     {
         Hat,
@@ -14,11 +17,17 @@ namespace AccessoryLib
         Beard
     }
 
+    /**
+	 * Klasse für die Accessories Items
+     */
     public class AccessoryItem
     {
+		// Pfad zu den Bildern
         private const String PATH = "../../../HtwKinect/Images/Accessories/";
 
-        /// <param name="width">Breite in m.</param>
+        /**
+	 	 * Konstruktor
+         */
         public AccessoryItem(AccessoryPositon position, int category, bool female)
         {
             Position = position;
@@ -81,6 +90,9 @@ namespace AccessoryLib
             Width = width;
         }
 
+        /**
+	 	 * Konstruktor, für die AccessorySample Projekt
+         */
         public AccessoryItem(AccessoryPositon position, String path)
         {
             Position = position;
