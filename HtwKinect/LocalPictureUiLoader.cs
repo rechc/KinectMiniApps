@@ -14,10 +14,15 @@ using System.Diagnostics;
 namespace HtwKinect
 {
     /// <summary>
-    /// Diese Klasse lädt lokale Testbilder in die LoopList.
+    /// Diese Klasse lädt die Angebote in die Loop-Liste
     /// </summary>
     class LocalPictureUiLoader : IUiLoader
     {
+        /// <summary>
+        /// Loads offers from db and add it to loop list
+        /// </summary>
+        /// <param name="kinectProjectUiBuilder"></param>
+        /// <param name="firstShownOffer">offer which should shown first</param>
         public void LoadElementsIntoList(KinectProjectUiBuilder kinectProjectUiBuilder, TravelOffer firstShownOffer)
         {
             var offerDao = new TravelOfferDao();
@@ -84,6 +89,9 @@ namespace HtwKinect
         }
 
         #region BackgroundPicture
+        /// <summary>
+        /// Adds background picture to grid
+        /// </summary>
         private void BuildBackground(Grid grid, string imgPath)
         {
             grid.Background = new ImageBrush(new BitmapImage(new Uri(imgPath, UriKind.RelativeOrAbsolute)));
@@ -91,6 +99,9 @@ namespace HtwKinect
         #endregion
 
         #region InfoBox
+        /// <summary>
+        /// Creates the InfoBox for the current offer
+        /// </summary>
         private void BuildInfoBox(Grid grid, TravelOffer offer)
         {
             try

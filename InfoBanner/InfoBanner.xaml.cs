@@ -16,6 +16,10 @@ namespace InfoBanner
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Writes the informations given by the object to the info banner screen
+        /// </summary>
+        /// <param name="offer">Offer which like to show</param>
         public void Start(TravelOffer offer)
         {
 

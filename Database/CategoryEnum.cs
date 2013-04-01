@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Database
 {
+    /// <summary>
+    /// Enum with supported categories
+    /// </summary>
     public enum CategoryEnum
     {
         Beach =1,

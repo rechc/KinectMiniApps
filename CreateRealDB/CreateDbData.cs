@@ -39,6 +39,10 @@ namespace CreateRealDB
             SaveToDb(context);
         }
 
+        /// <summary>
+        /// Saves current context to database
+        /// </summary>
+        /// <param name="context">db context</param>
         private void SaveToDb(Model1Container context)
         {
             try
@@ -52,6 +56,22 @@ namespace CreateRealDB
             }
         }
 
+        /// <summary>
+        /// Creates a new offer
+        /// </summary>
+        /// <param name="price"></param>
+        /// <param name="place"></param>
+        /// <param name="rating"></param>
+        /// <param name="hotelname"></param>
+        /// <param name="anfahrt"></param>
+        /// <param name="daycount"></param>
+        /// <param name="futtertyp"></param>
+        /// <param name="category"></param>
+        /// <param name="image"></param>
+        /// <param name="top"></param>
+        /// <param name="zusatzinf"></param>
+        /// <param name="zusatz2"></param>
+        /// <param name="zusatz3"></param>
         public void CreateOffers(int price, String place, int rating, String hotelname, String anfahrt, int daycount, String futtertyp, CategoryEnum category, String image, bool top, String zusatzinf, String zusatz2, String zusatz3)
         {
             try
@@ -114,6 +134,8 @@ namespace CreateRealDB
             CreateOffers(549, "New York", 3, "Hotel Staars Residenz", "Flugreise", 6, "Halbpension", CategoryEnum.City, "images/City/newyork.jpg", false, "inkl. Stadtführung", "", "");
             CreateOffers(659, "San Francisco", 4, "Hotel Blondie", "Flugreise", 7, "Halbpension", CategoryEnum.City, "images/City/sanfrancisco.jpg", false, "inkl. Cityticket", "", "");
             CreateOffers(899, "Sydney", 5, "Hotel Kängurus", "Flugreise", 14, "Halbpension", CategoryEnum.City, "images/City/sydney.jpg", true, "Besuch der Australian Open möglich", "Reise zur Kängurufarm", "");
+            //todo Lizenzfreies Bild von Berlin einfügen
+            //CreateOffers(170, "Berlin", 3, "one80", "Flugreise", 4, "", CategoryEnum.City, "", true, "Die Abschlussfahrt für Studenten", "vom 14.06.2013 bis 17.06.2013", "Gute Flugzeiten");
             //Beach
             CreateOffers(150, "Blankenberge", 3, "Hotel Belgie", "Eigene Anreise", 5, "Halbpension", CategoryEnum.Beach, "images/Beach/blankenberge.jpg", false, "Wunderschöne klassische Einrichtung", "", "");
             CreateOffers(219, "Dominikanische Republik", 3, "Apartment de Sol", "Flugreise", 6, "Selbstverpflegung", CategoryEnum.Beach, "images/Beach/domrep.jpg", false, "", "", "");
@@ -147,6 +169,10 @@ namespace CreateRealDB
             CreateOffers(499, "Zermatt", 3, "Garni Hotel Emma", "Zug", 5, "Frühstück", CategoryEnum.Ski, "images/Snow/zermatt.jpg", false, "Herrlicher Blick auf das Matterhorn", "Skibus-Haltestelle direkt vor dem Haus", "");
         }
 
+        /// <summary>
+        /// Deletes all entries in database
+        /// </summary>
+        /// <param name="context">db context</param>
         public void FlushDbData(Model1Container context)
         {
             if (context.Database.Exists())

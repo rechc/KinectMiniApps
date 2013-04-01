@@ -252,6 +252,9 @@ namespace GreenScreenControl
             }
         }
 
+        /// <summary>
+        /// Method only needed for intern tests. Needed to show only the border of a person
+        /// </summary>
         private void HidePixels()
         {
             for (int i = 0; i < _greenScreenPixelData.Length; i++)
@@ -263,6 +266,9 @@ namespace GreenScreenControl
             }
         }
 
+        /// <summary>
+        /// Starts the antialiasing
+        /// </summary>
         private void Antialiasing()
         {
             for (int i = 0; i < _greenScreenPixelData.Length; i++)
