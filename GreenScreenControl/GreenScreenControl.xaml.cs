@@ -201,6 +201,10 @@ namespace GreenScreenControl
                 
         }
 
+        /// <summary>
+        /// Adds border pixels around the border of Pixels marked as OpaquePoint
+        /// </summary>
+        /// <param name="greenScreenIndex"></param>
         private void AddBorderPixels(int greenScreenIndex)
         {
             int leftPixel = greenScreenIndex - 1;
@@ -391,7 +395,13 @@ namespace GreenScreenControl
                 }
             }
         }
-
+         
+        /// <summary>
+        /// Returns the most top pixel still having an opaquepoint neighbor
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="site"></param>
+        /// <returns></returns>
         private int TopSearch(int index, int site)
         {
             Boolean found = false;
@@ -413,6 +423,12 @@ namespace GreenScreenControl
             return (x - 1);
         }
 
+        /// <summary>
+        /// Returns the most right pixel still having an opaquepoint neighbor
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="site"></param>
+        /// <returns></returns>
         private int RightSearch(int index, int site)
         {
             Boolean found = false;
@@ -432,6 +448,12 @@ namespace GreenScreenControl
             return (x - 1);
         }
 
+        /// <summary>
+        /// Returns the most bottom pixel still having an opaquepoint neighbor
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="site"></param>
+        /// <returns></returns>
         private int BottomSearch(int index, int site)
         {
             Boolean found = false;
@@ -454,6 +476,12 @@ namespace GreenScreenControl
             return (x - 1);
         }
 
+        /// <summary>
+        /// Returns the most left pixel still having a opaquepoint neighbor
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="site"></param>
+        /// <returns></returns>
         private int LeftSearch(int index, int site)
         {
             Boolean found = false;

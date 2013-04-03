@@ -40,6 +40,10 @@ namespace RectNavigation
         }
 
         bool pointerAnimationRunning = false;
+
+        /// <summary>
+        /// Animates the Pointer Arrow from the right hand to the rectangle
+        /// </summary>
         public void AnimatePointerArrow()
         {
             if (!pointerAnimationRunning)
@@ -195,6 +199,10 @@ namespace RectNavigation
             DrawingCanvas.Height = sensor.ColorStream.FrameHeight;
         }
 
+        /// <summary>
+        /// Handles the rectangle gesture recognition.
+        /// </summary>
+        /// <param name="skel"></param>
         public void GestureRecognition(Skeleton skel)
         {
             Joint handRight = skel.Joints[JointType.HandRight];
@@ -383,6 +391,11 @@ namespace RectNavigation
             return DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
         }
 
+        /// <summary>
+        /// Calculates the innerRect for the right side based on sekeleton input. Spine, hip and shoulder are used.
+        /// </summary>
+        /// <param name="skeleton"></param>
+        /// <returns></returns>
         private Rect GetInnerRectRight(Skeleton skeleton)
         {
             Point spine = SkeletonPointToScreen(skeleton.Joints[JointType.Spine].Position);
@@ -403,6 +416,11 @@ namespace RectNavigation
             return new Rect(x + offsetX, y + offsetY, width, height);
         }
 
+        /// <summary>
+        /// Calculates the innerRect for the left side based on sekeleton input. Spine, hip and shoulder are used.
+        /// </summary>
+        /// <param name="skeleton"></param>
+        /// <returns></returns>
         private Rect GetInnerRectLeft(Skeleton skeleton)
         {
             Point spine = SkeletonPointToScreen(skeleton.Joints[JointType.Spine].Position);
@@ -423,6 +441,11 @@ namespace RectNavigation
             return new Rect(x + offsetX, y + offsetY, width, height);
         }
 
+        /// <summary>
+        /// Calculates the outerRect based on the innerRect.
+        /// </summary>
+        /// <param name="skeleton"></param>
+        /// <returns></returns>
         private Rect GetOuterRect(Rect innerRect)
         {
             const double border = 40;
@@ -433,6 +456,11 @@ namespace RectNavigation
             return new Rect(x, y, width, height);
         }
 
+        /// <summary>
+        /// Moves the Hand WPF Element to the hand skeleton position.
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
         private void AnimateHandPoint(Point from, Point to)
         {
             Duration duration = new Duration(TimeSpan.FromSeconds(1));
@@ -464,6 +492,9 @@ namespace RectNavigation
             transform.Y = point.Y - (Hand.Width / 2);
         }
 
+        /// <summary>
+        /// Moves and resizes the innerRect and outerRect WPF elements.
+        /// </summary>
         private void TransformRectangles()
         {
             TranslateTransform transformInnerRect = (TranslateTransform)InnerRect.RenderTransform;
@@ -505,7 +536,11 @@ namespace RectNavigation
             ArrowLeftViewBox.Width = transformInnerRect.X - transformOuterRect.X;
         }
 
-
+        /// <summary>
+        /// Returns a value (between 0 and 1) indicating how much the SwipeLeft gesture is complete.
+        /// </summary>
+        /// <param name="hand"></param>
+        /// <returns></returns>
         private double GetPercentageSwipeLeft(Point hand)
         {
 
@@ -514,6 +549,11 @@ namespace RectNavigation
             return handDistance / rectDistance;
         }
 
+        /// <summary>
+        /// Returns a value (between 0 and 1) indicating how much the SwipeRight gesture is complete.
+        /// </summary>
+        /// <param name="hand"></param>
+        /// <returns></returns>
         private double GetPercentageSwipeRight(Point hand)
         {
 
@@ -522,6 +562,11 @@ namespace RectNavigation
             return handDistance / rectDistance;
         }
 
+        /// <summary>
+        /// Returns a value (between 0 and 1) indicating how much the SwipeTop gesture is complete.
+        /// </summary>
+        /// <param name="hand"></param>
+        /// <returns></returns>
         private double GetPercentageSwipeTop(Point hand)
         {
 
@@ -530,6 +575,11 @@ namespace RectNavigation
             return handDistance / rectDistance;
         }
 
+        /// <summary>
+        /// Returns a value (between 0 and 1) indicating how much the SwipeBottom gesture is complete.
+        /// </summary>
+        /// <param name="hand"></param>
+        /// <returns></returns>
         private double GetPercentageSwipeBottom(Point hand)
         {
 

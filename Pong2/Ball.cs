@@ -7,6 +7,9 @@ using System.Windows.Media;
 
 namespace Microsoft.Samples.Kinect.SkeletonBasics
 {
+    /// <summary>
+    /// Ball representation. Handles its own position speed and direction.
+    /// </summary>
     class Ball
     {
         public Brush color { get; set; }

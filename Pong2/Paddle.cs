@@ -7,6 +7,9 @@ using System.Windows.Media;
 
 namespace Microsoft.Samples.Kinect.SkeletonBasics
 {
+    /// <summary>
+    /// Paddle handles its own position.
+    /// </summary>
     public class Paddle
     {
         public Brush Color { get; set; }
